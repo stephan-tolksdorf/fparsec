@@ -1,0 +1,58 @@
+// Copyright (c) Microsoft Corporation 2005-2006.
+// This sample code is provided "as is" without warranty of any kind. 
+// We disclaim all warranties, either express or implied, including the 
+// warranties of merchantability and fitness for a particular purpose. 
+//
+
+// This example shows how to write an F# Yacc parser file which creates 
+// nodes that carry F# values.
+
+%{
+
+// This prelude is F# code that is available throughout this file. In this
+// case we just open a module to reveal some datatype definitions.
+open Ast
+
+%}
+
+// The start token becomes a parser function in the compiled code: */
+%start start
+
+// These are the terminal tokens of the grammar along with the types of
+// the data carried by each token:
+%token <string> ID
+%token <System.Int32> INT
+%token <System.Double> FLOAT
+%token DECR LPAREN RPAREN WHILE DO END BEGIN IF THEN ELSE PRINT SEMI ASSIGN EOF
+
+// This is the type of the data produced by a successful reduction of the 'start'
+// symbol:
+%type < Ast.prog > start
+
+%%
+
+// These are the rules of the grammar along with the F# code of the 
+// actions executed as rules are reduced.  In this case the actions 
+// produce data using F# data construction terms.
+start: Prog {  $1 }
+
+
+Prog: StmtList { Prog(List.rev($1)) }
+
+Expr: ID                      { Val($1); }
+    | INT                     { Int($1)  }
+    | FLOAT                   { Float($1)  }
+    | DECR LPAREN Expr RPAREN { Decr($3)  }
+
+Stmt: ID ASSIGN Expr              { Assign($1,$3) }
+    | WHILE Expr DO Stmt          { While($2,$4) }
+    | BEGIN StmtList END          { Seq(List.rev($2)) }
+    | IF Expr THEN Stmt           { IfThen($2,$4) }
+    | IF Expr THEN Stmt ELSE Stmt { IfThenElse($2,$4,$6) }
+    | PRINT Expr                  { Print($2) }
+
+StmtList: 
+    | Stmt               { [$1] }
+    | StmtList SEMI Stmt { $3 :: $1  }
+
+
