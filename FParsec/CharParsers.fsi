@@ -109,7 +109,7 @@ val userStateSatisfies: ('u -> bool) -> Parser<unit,'u>
 // --------------------
 
 /// `pchar c` parses the char `c` and returns `c`.
-/// If `c = '\r'` or `c = '\n'` then `pchar c` will parse any one newline (`"\n"`, `"\r\n"` or `"\r"`) and return `c`.
+/// If `c = '\r'` or `c = '\n'` then `pchar c` will parse any one newline ("\n", "\r\n" or "\r") and return `c`.
 val pchar:    char -> Parser<char,'u>
 
 /// `skipChar c` is an optimized implementation of `pchar c |>> ignore`.
@@ -118,8 +118,8 @@ val skipChar: char -> Parser<unit,'u>
 /// `charReturn c x` is an optimized implementation of `pchar c >>$ x`.
 val charReturn: char -> 'a -> Parser<'a,'u>
 
-/// `anyChar` parses any single char or newline (`"\n"`, `"\r\n"` or `"\r"`).
-/// Returns the parsed char, or `'\n'` in case a newline was parsed.
+/// `anyChar` parses any single char or newline ("\n", "\r\n" or "\r").
+/// Returns the parsed char, or '\n' in case a newline was parsed.
 val anyChar: Parser<char,'u>
 
 /// `skipAnyChar` is an optimized implementation of `anyChar |>> ignore`.
@@ -128,9 +128,9 @@ val skipAnyChar: Parser<unit,'u>
 
 /// `satisfy f` parses any one char or newline for which the predicate function `f` returns `true`.
 /// It returns the parsed char.
-/// Any newline (`"\n"`, `"\r\n"` or `"\r"`) is converted to the single char `'\n'`.
+/// Any newline ("\n", "\r\n" or "\r") is converted to the single char '\n'.
 /// Thus, to accept a newline `f '\n'` must return `true`. `f` will never be called
-/// with `'\r'` and `satisfy f` will never return `'\r'`.
+/// with '\r' and `satisfy f` will never return '\r'.
 val satisfy:      (char -> bool)           -> Parser<char,'u>
 
 /// `skipSatisfy f` is an optimized implementation of `satisfy f |>> ignore`.
@@ -144,31 +144,31 @@ val skipSatisfyL: (char -> bool) -> string -> Parser<unit,'u>
 
 
 /// `anyOf str` parses any char contained in the string `str`. It returns the parsed char.
-/// If `str` contains the char `'\n'`, `anyOf str` parses any newline (`"\n"`, `"\r\n"` or `"\r"`)
-/// and returns it as `'\n'`. (Note that it does not make a difference whether or not
-///`str` contains `'\r'` and that `anyOf str` will never return `'\r'`.)
+/// If `str` contains the char '\n', `anyOf str` parses any newline ("\n", "\r\n" or "\r")
+/// and returns it as '\n'. (Note that it does not make a difference whether or not
+///`str` contains '\r' and that `anyOf str` will never return '\r'.)
 val anyOf: string -> Parser<char,'u>
 
 /// `skipAnyOf str` is an optimized implementation of `anyOf str |>> ignore`.
 val skipAnyOf:  string -> Parser<unit,'u>
 
 /// `noneOf str` parses any char not contained in the string `str`. It returns the parsed char.
-/// If `str` does not contain the char `'\n'`, `noneOf str` parses any newline (`"\n"`, `"\r\n"` or `"\r"`)
-/// and returns it as  as `'\n'`. (Note that it does not make a difference whether or not
-/// `str` contains `'\r'` and that `noneOf str` will never return `'\r'`.)
+/// If `str` does not contain the char '\n', `noneOf str` parses any newline ("\n", "\r\n" or "\r")
+/// and returns it as  as '\n'. (Note that it does not make a difference whether or not
+/// `str` contains '\r' and that `noneOf str` will never return '\r'.)
 val noneOf:     string -> Parser<char,'u>
 
 /// `skipNoneOf s` is equivalent to `noneOf s |>> ignore`.
 val skipNoneOf: string -> Parser<unit,'u>
 
 
-/// Parses any char in the range `'A'` - `'Z'`. Returns the parsed char.
+/// Parses any char in the range 'A' - 'Z'. Returns the parsed char.
 val asciiUpper: Parser<char,'u>
 
-/// Parses any char in the range `'a'` - `'z'`. Returns the parsed char.
+/// Parses any char in the range 'a' - 'z'. Returns the parsed char.
 val asciiLower: Parser<char,'u>
 
-/// Parses any char in the range `'a'` - `'z'` and `'A'` - `'Z'`. Returns the parsed char.
+/// Parses any char in the range 'a' - 'z' and 'A' - 'Z'. Returns the parsed char.
 val asciiLetter: Parser<char,'u>
 
 /// Parses any unicode uppercase letter char identified by `System.Char.IsUpper`.
@@ -183,13 +183,13 @@ val lower: Parser<char,'u>
 /// Returns the parsed char.
 val letter: Parser<char,'u>
 
-/// Parses any one char in the range `'0'` - `'9'`. Returns the parsed char.
+/// Parses any one char in the range '0' - '9'. Returns the parsed char.
 val digit: Parser<char,'u>
 
-/// Parses any one char in the range `'0'` - `'9'`, `'a'` - `'f'` and `'A'` - `'F'`. Returns the parsed char.
+/// Parses any one char in the range '0' - '9', 'a' - 'f' and 'A' - 'F'. Returns the parsed char.
 val hex: Parser<char,'u>
 
-/// Parses any one char in the range `'0'` - `'7'`. Returns the parsed char.
+/// Parses any one char in the range '0' - '7'. Returns the parsed char.
 val octal: Parser<char,'u>
 
 // predicate functions corresponding to the above parsers
@@ -200,11 +200,11 @@ val isAnyOf: string -> (char -> bool)
 /// `isNoneOf str` returns a predicate function.
 /// When this predicate function is applied to a char, it returns `true` if and only if the char is not contained in `str`.
 val isNoneOf: string -> (char -> bool)
-/// Returns `true` for any char in the range `'A'` - `'Z'` and `false` for all other chars.
+/// Returns `true` for any char in the range 'A' - 'Z' and `false` for all other chars.
 val inline isAsciiUpper:    char -> bool
-/// Returns `true` for any char in the range `'a'` - `'z'` and `false` for all other chars.
+/// Returns `true` for any char in the range 'a' - 'z' and `false` for all other chars.
 val inline isAsciiLower:    char -> bool
-/// Returns `true` for any char in the range `'a'` - `'z'`, `'A'` - `'Z'` and `false` for all other chars.
+/// Returns `true` for any char in the range 'a' - 'z', 'A' - 'Z' and `false` for all other chars.
 val inline isAsciiLetter:   char -> bool
 /// `isUpper` is equivalent to `System.Char.IsUpper`.
 val inline isUpper:         char -> bool
@@ -212,11 +212,11 @@ val inline isUpper:         char -> bool
 val inline isLower:         char -> bool
 /// `isLetter` is equivalent to `System.Char.IsLetter`.
 val inline isLetter:        char -> bool
-/// Returns `true` for any char in the range `'0'` - `'9'` and `false` for all other chars.
+/// Returns `true` for any char in the range '0' - '9' and `false` for all other chars.
 val inline isDigit:         char -> bool
-/// Returns `true` for any char in the range `'0'` - `'9'`, `'a'` - `'f'`, `'A'` - `'F'` and `false` for all other chars.
+/// Returns `true` for any char in the range '0' - '9', 'a' - 'f', 'A' - 'F' and `false` for all other chars.
 val inline isHex:           char -> bool
-/// Returns `true` for any char in the range `'0'` - `'7'` and `false` for all other chars.
+/// Returns `true` for any char in the range '0' - '7' and `false` for all other chars.
 val inline isOctal:         char -> bool
 
 
@@ -224,11 +224,11 @@ val inline isOctal:         char -> bool
 // Parsing whitespace
 // ------------------
 
-/// Parses the tab char `'\t'` and returns `'\t'`. Note that a tab char is treated like any other non-newline char:
+/// Parses the tab char '\t' and returns '\t'. Note that a tab char is treated like any other non-newline char:
 /// the column number is incremented by (only) 1.
 val tab: Parser<char,'u>
 
-/// Parses a newline (`"\n"`, `"\r\n"` or `"\r"`). Returns `'\n'`.
+/// Parses a newline ("\n", "\r\n" or "\r"). Returns '\n'.
 /// Is equivalent to `pchar '\n'`.
 val newline: Parser<char,'u>
 
@@ -238,29 +238,29 @@ val skipNewline: Parser<unit,'u>
 /// `newlineReturn x` is an optimized implementation of `newline >>$ x`.
 val newlineReturn: 'a -> Parser<'a,'u>
 
-/// Parses a unicode newline (`"\n"`, `"\r\n"`, `"\r"`, `"\u0085"`, `"\u000C"`,
-/// `"\u2028"`, or `"\u2029"`). Returns `'\n'`.
+/// Parses a unicode newline ("\n", "\r\n", "\r", `"\u0085"`, `"\u000C"`,
+/// `"\u2028"`, or `"\u2029"`). Returns '\n'.
 /// In contrast to all other parsers in FParsec except `unicodeWhitespace` this parser
-/// also increments the internal line count for unicode newline characters other than `'\n'` and `'\r'`.
+/// also increments the internal line count for unicode newline characters other than '\n' and '\r'.
 val unicodeNewline: Parser<char,'u>
 
-/// Parses a space (`' '`), a tab (`'\t'`) or a newline (`"\n"`, `"\r\n"` or `"\r"`).
-/// Returns `'\n'` for a newline and otherwise the parsed char.
+/// Parses a space (' '), a tab ('\t') or a newline ("\n", "\r\n" or "\r").
+/// Returns '\n' for a newline and otherwise the parsed char.
 val whitespace: Parser<char,'u>
 
-/// Parses a unicode newline (`"\n"`, `"\r\n"`, `"\r"`, `"\u0085"`, `"\u000C"`,
+/// Parses a unicode newline ("\n", "\r\n", "\r", `"\u0085"`, `"\u000C"`,
 /// `"\u2028"`, or `"\u2029"`) or any whitespace char identified by `System.Char.IsWhiteSpace`.
-/// Returns `'\n'` for a newline and otherwise the parsed char.
+/// Returns '\n' for a newline and otherwise the parsed char.
 /// In contrast to all other parsers in FParsec except `unicodeNewline` this parser
-/// also increments the internal line count for unicode newline characters other than `'\n'` and `'\r'`.
+/// also increments the internal line count for unicode newline characters other than '\n' and '\r'.
 val unicodeWhitespace: Parser<char,'u>
 
-/// Skips over any sequence of *zero* or more whitespaces (space (`' '`), tab (`'\t'`)
-/// or newline (`"\n"`, `"\r\n"` or `"\r"`)).
+/// Skips over any sequence of *zero* or more whitespaces (space (' '), tab ('\t')
+/// or newline ("\n", "\r\n" or "\r")).
 val spaces: Parser<unit,'u>
 
-/// Skips over any sequence of *one* or more whitespaces (space (`' '`), tab(`'\t'`)
-/// or newline (`"\n"`, `"\r\n"` or `"\r"`)).
+/// Skips over any sequence of *one* or more whitespaces (space (' '), tab('\t')
+/// or newline ("\n", "\r\n" or "\r")).
 val spaces1: Parser<unit,'u>
 
 /// The parser `eof` only succeeds at the end of the input. It never consumes input.
@@ -287,36 +287,36 @@ val skipStringCI: string -> Parser<unit,'u>
 /// `stringCIReturn str x` is an optimized implementation of `pstringCI str >>$ x`.
 val stringCIReturn: string -> 'a -> Parser<'a,'u>
 
-/// `anyString n` parses any sequence of `n` chars or newlines (`"\n"`, `"\r\n"` or `"\r"`).
-/// It returns the parsed string. In the returned string all newlines are normalized to `"\n"`.
+/// `anyString n` parses any sequence of `n` chars or newlines ("\n", "\r\n" or "\r").
+/// It returns the parsed string. In the returned string all newlines are normalized to "\n".
 /// `anyString n` is an atomic parser: either it succeeds or it fails without consuming any input.
 val anyString:  int32  -> Parser<string,'u>
 /// `skipAnyString n` is an optimized implementation of `anyString n |>> ignore`.
 val skipAnyString:  int32  -> Parser<unit,'u>
 
 /// Parses any chars before the end of the line and skips to the beginning of the next line (if there is one).
-/// The line is terminated by a newline (`"\n"`, `"\r\n"` or `"\r"`) or the end of the input stream.
+/// The line is terminated by a newline ("\n", "\r\n" or "\r") or the end of the input stream.
 /// Returns the parsed chars before the end of the line as a string (without a newline).
 val restOfLine: Parser<string,'u>
 
 /// `skipRestOfLine` is an optimized implementation of `restOfLine |>> ignore`.
 val skipRestOfLine: Parser<unit,'u>
 
-/// Skips over any chars before the end of the line. Stops before the newline (`"\n"`, `"\r\n"` or `"\r"`)
+/// Skips over any chars before the end of the line. Stops before the newline ("\n", "\r\n" or "\r")
 /// or at the end of the input stream, if there is no newline.
 val skipToEndOfLine: Parser<unit,'u>
 
 /// `skipToString str nMax` skips over all chars before the first occurance of the string `str`.
 /// If more than `nMax` chars come before the first occurance of `str`, the parser *fails after consuming* `nMax` chars.
 /// `skipToString` throws an exception if `nMax` is negative.
-/// Newlines (`"\n"`, `"\r\n"` or `"\r"`) are counted as single chars.
+/// Newlines ("\n", "\r\n" or "\r") are counted as single chars.
 val skipToString:        string -> int -> Parser<unit,'u>
 /// `charsTillString str nMax` parses all chars before the first occurance of the string `str`and
 /// then skips over `str`. It returns the parsed chars before the string.
 /// If more than `nMax` chars  come before the first occurance of `str`, the parser *fails after consuming* `nMax` chars.
 /// `charsTillString` throws an exception if `nMax` is negative.
-/// Newlines (`"\n"`, `"\r\n"` or `"\r"`) are counted as single chars and
-/// in the returned string all newlines are normalized to `"\n"`.
+/// Newlines ("\n", "\r\n" or "\r") are counted as single chars and
+/// in the returned string all newlines are normalized to "\n".
 val charsTillString:     string -> int -> Parser<string,'u>
 /// `skipCharsTillString str nMax` is an optimized implementation of `charsTillString str nMax |>> ignore`.
 val skipCharsTillString: string -> int -> Parser<unit,'u>
@@ -325,15 +325,15 @@ val skipCharsTillString: string -> int -> Parser<unit,'u>
 /// If more than `nMax` chars come before the first case-insensitive occurance of `str`,
 /// the parser *fails after consuming* `nMax` chars.
 /// `skipToStringCI` throws an exception if `nMax` is negative.
-/// Newlines (`"\n"`, `"\r\n"` or `"\r"`) are counted as single chars.
+/// Newlines ("\n", "\r\n" or "\r") are counted as single chars.
 val skipToStringCI:        string -> int -> Parser<unit,'u>
 /// `charsTillStringCI str nMax` parses all chars before the first case-insensitive occurance of the string `str`
 /// and then skips over it. It returns the parsed chars before the string.
 /// If more than `nMax` chars come before the first case-insensitive occurance of `str`,
 /// the parser *fails* after consuming `nMax` chars.
 /// `charsTillStringCI` throws an exception if `nMax` is negative.
-/// Newlines (`"\n"`, `"\r\n"` or `"\r"`) are counted as single chars and
-/// in the returned string all newlines are normalized to `"\n"`.
+/// Newlines ("\n", "\r\n" or "\r") are counted as single chars and
+/// in the returned string all newlines are normalized to "\n".
 val charsTillStringCI:     string -> int -> Parser<string,'u>
 /// `skipCharsTillStringCI str nMax` is an optimized implementation of `charsTillStringCI str nMax |>> ignore`.
 val skipCharsTillStringCI: string -> int -> Parser<unit,'u>
@@ -341,9 +341,9 @@ val skipCharsTillStringCI: string -> int -> Parser<unit,'u>
 /// `manySatisfy f` parses a sequence of *zero* or more chars that satisfy the predicate function `f`
 /// (i.e.  chars for which `f` returns `true`). It returns the parsed chars as a string.
 ///
-/// Any newline (`"\n"`, `"\r\n"` or `"\r"`) is converted to the single char `'\n'`.
+/// Any newline ("\n", "\r\n" or "\r") is converted to the single char '\n'.
 /// Thus, to accept a newline `f '\n'` must return `true`. `f` will never be called
-/// with `'\r'` and the string returned by `manySatisfy f` will never contain an `'\r'`.
+/// with '\r' and the string returned by `manySatisfy f` will never contain an '\r'.
 val manySatisfy:        (char -> bool)                   -> Parser<string,'u>
 /// `manySatisfy2 f1 f` behaves like `manySatisfy f`, except that the
 /// first char of the parsed string must satisfy `f1` instead of `f`.
@@ -357,9 +357,9 @@ val skipManySatisfy2:   (char -> bool) -> (char -> bool) -> Parser<unit,'u>
 /// (i.e. chars for which `f` returns `true`). It returns the parsed chars as a string.
 /// If the first char does not satisfy `f`, this parser fails without consuming input.
 ///
-/// Any newline (`"\n"`, `"\r\n"` or `"\r"`) is converted to the single char `'\n'`.
+/// Any newline ("\n", "\r\n" or "\r") is converted to the single char '\n'.
 /// Thus, to accept a newline `f '\n'` must return `true`. `f` will never be called
-/// with `'\r'` and the string returned by `many1Satisfy f` will never contain an `'\r'`.
+/// with '\r' and the string returned by `many1Satisfy f` will never contain an '\r'.
 val many1Satisfy:       (char -> bool)                   -> Parser<string,'u>
 /// `many1Satisfy2 f1 f` behaves like `many1Satisfy f`, except that the
 /// first char of the parsed string must satisfy `f1` instead of `f`.
@@ -384,9 +384,9 @@ val skipMany1Satisfy2L: (char -> bool) -> (char -> bool) -> string -> Parser<uni
 /// do not all satisfy `f`, the parser fails without consuming any input.
 /// `manyMinMaxSatisfy` throws an exception if `nMax` is negative.
 ///
-/// Any newline (`"\n"`, `"\r\n"` or `"\r"`) is converted to the single char `'\n'`.
-/// Thus, to accept a newline `f '\n'` must return `true`. `f` will never be called with `'\r'`
-/// and the string returned by `manyMinMaxSatisfy nMin nMax f` will never contain an `'\r'`.
+/// Any newline ("\n", "\r\n" or "\r") is converted to the single char '\n'.
+/// Thus, to accept a newline `f '\n'` must return `true`. `f` will never be called with '\r'
+/// and the string returned by `manyMinMaxSatisfy nMin nMax f` will never contain an '\r'.
 val manyMinMaxSatisfy:       int -> int -> (char -> bool)                   -> Parser<string,'u>
 /// `manyMinMaxSatisfy2 nMin nMax f1 f` behaves like `manyMinMaxSatisfy nMin nMax f`, except that the first char of the parsed string must satisfy `f1` instead of `f`.
 val manyMinMaxSatisfy2:      int -> int -> (char -> bool) -> (char -> bool) -> Parser<string,'u>
@@ -412,9 +412,9 @@ val skipManyMinMaxSatisfy2L: int -> int -> (char -> bool) -> (char -> bool) -> s
 /// with the `RegexOptions` `MultiLine` and `ExplicitCapture`. In order to ensure that the regular expression
 /// can only match at the beginning of a string, `"\A"` is automatically prepended to the pattern.
 ///
-/// Newline chars (`'\r'` and `'\n'`) in the pattern are interpreted literally.
-/// For example, an `'\n'` char in the pattern will only match `"\n"`, not `"\r"` or `"\r\n"`.
-/// However, in the returned string all newlines (`"\n"`, `"\r\n"` or `"\r"`) are normalized to `"\n"`.
+/// Newline chars ('\r' and '\n') in the pattern are interpreted literally.
+/// For example, an '\n' char in the pattern will only match "\n", not "\r" or "\r\n".
+/// However, in the returned string all newlines ("\n", "\r\n" or "\r") are normalized to "\n".
 ///
 /// For large files the regular expression is *not* applied to a string containing *all* the remaining chars
 /// in the stream. The number of chars that are guaranteed to be visible to the regular expression is specified
