@@ -254,7 +254,7 @@ type ParserError(pos: Pos, error: ErrorMessageList) =
             if    expectedA.Count = 0 && unexpectedA.Count = 0 && messageA.Count = 0
                && compoundA.Count = 0 && backtrackA.Count = 0
             then
-                fprintfn tw "%sUnkown error(s)" ind
+                fprintfn tw "%sUnknown error(s)" ind
         printMessages pos error ind
 
 

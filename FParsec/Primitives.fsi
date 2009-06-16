@@ -138,7 +138,7 @@ val (>>=): Parser<'a,'u> -> ('a -> Parser<'b,'u>) -> Parser<'b,'u>
 //
 // `>>=` establishes the *standard error handling* protocol for all combinators that
 // chain multiple parsers: Error messages from different parsers are merged when they
-// belong to the same state. When an intermediate parser run fails, the error is
+// have the same state. When an intermediate parser run fails, the error is
 // immediately propagated.
 
 // In most situations one of the following specialized operators will be more
@@ -235,11 +235,11 @@ val choiceL: seq<Parser<'a,'u>> -> string -> Parser<'a,'u>
 val (<|>$): Parser<'a,'u> -> 'a -> Parser<'a,'u>
 
 /// The parser `opt p` parses an optional occurrence of `p` as an option value.
-/// `opt p` is an optimized implementation of  to `(p |>> Some) <|>$ None`.
+/// `opt p` is an optimized implementation of `(p |>> Some) <|>$ None`.
 val opt: Parser<'a,'u> -> Parser<'a option,'u>
 
 /// The parser `optional p` skips over an optional occurrence of `p`.
-/// `optional p` is an optimized implementation of  to `(p >>$ ()) <|>$ ()`.
+/// `optional p` is an optimized implementation of `(p >>$ ()) <|>$ ()`.
 val optional: Parser<'a,'u> -> Parser<unit,'u>
 
 
@@ -265,17 +265,17 @@ val attempt: Parser<'a,'u> -> Parser<'a,'u>
 
 /// The parser `p >>=? f` behaves like `p >>= f`, except that it will
 /// backtrack to the beginning if the parser returned by `f` fails with a
-/// non-fatal error and with an unchanged state, even if `p1` has changed the `state`.
+/// non-fatal error and with an unchanged state, even if `p` has changed the state.
 val (>>=?): Parser<'a,'u> -> ('a -> Parser<'b,'u>) -> Parser<'b,'u>
 
 /// The parser `p1 >>? p2` behaves like `p1 >>. p2`, except that it will backtrack
-/// to the beginning if `p2` fails with a non-fatal error and with an unchanged state,
-/// even if `p1` has changed the `state`.
+/// to the beginning if `p2` fails with a non-fatal error and without changing state,
+/// even if `p1` has changed the state.
 val (>>?): Parser<'a,'u> -> Parser<'b,'u> -> Parser<'b,'u>
 
 /// The parser `p1 .>>? p2` behaves like `p1 .>> p2`, except that it will backtrack
-/// to the beginning if `p2` fails with a non-fatal error and with an unchanged state,
-/// even if `p1` has changed the `state`.
+/// to the beginning if `p2` fails with a non-fatal error and without changing state,
+/// even if `p1` has changed the state.
 val (.>>?): Parser<'a,'u> -> Parser<'b,'u> -> Parser<'a,'u>
 
 
@@ -291,7 +291,7 @@ val (.>>?): Parser<'a,'u> -> Parser<'b,'u> -> Parser<'a,'u>
 val followedBy: Parser<'a,'u> -> Parser<unit,'u>
 
 /// The parser `followedByL p` behaves like `followedBy p`,
-/// except that it returns an `Expected label` error message in case the parser `p` fails.
+/// except that it returns an `Expected label` error message when the parser `p` fails.
 val followedByL: Parser<'a,'u> -> string -> Parser<unit,'u>
 
 /// The parser `notFollowedBy p` succeeds if the parser `p` fails to parse at the current position.
@@ -302,7 +302,7 @@ val followedByL: Parser<'a,'u> -> string -> Parser<unit,'u>
 val notFollowedBy: Parser<'a,'u> -> Parser<unit,'u>
 
 /// The parser `notFollowedByL p` behaves like `notFollowedBy p`,
-/// except that it returns an `Unexpected label` error message in case the parser `p` fails.
+/// except that it returns an `Unexpected label` error message when the parser `p` fails.
 val notFollowedByL: Parser<'a,'u> -> string -> Parser<unit,'u>
 
 /// The parser `lookAhead p` parses `p` and restores the original input state afterwards.
@@ -561,7 +561,7 @@ val inline sepEndBy1FoldApply:    ('a -> 'b) -> ('b -> 'a -> 'b) -> ('b -> 'c)
 
 
 /// The parser `manyTill p endp` repeatedly applies the parser `p`
-/// for as long  as `endp` does not succeed.
+/// while `endp` does not succeed.
 /// It stops at the parser state returned by `endp` and
 /// returns a list of the results returned by `p`.
 /// `manyTill p endp` is an optimized implementation of `many (notFollowedBy endp >>. p) .>> endp`
@@ -631,7 +631,7 @@ val chainr:  Parser<'a,'u> -> Parser<('a -> 'a -> 'a),'u> -> 'a -> Parser<'a,'u>
 // ------------------------------
 
 /// The type of the "builder object" that can be used to build parsers with
-/// F#'s "computation expression" sytax a.k.a. "workflow" syntax.
+/// F#'s "computation expression" syntax a.k.a. "workflow" syntax.
 [<Sealed>]
 type ParserCombinator =
     new : unit -> ParserCombinator

@@ -100,7 +100,7 @@ val setUserState: 'u -> Parser<unit,'u>
 val updateUserState: ('u -> 'u) -> Parser<unit,'u>
 
 /// The parser `userStateSatisfies f` succeeds if `f` returns `true`
-/// when applied to the current `UserState`, otherwise it fails.
+/// when applied to the current user state, otherwise it fails.
 val userStateSatisfies: ('u -> bool) -> Parser<unit,'u>
 
 
@@ -146,7 +146,7 @@ val skipSatisfyL: (char -> bool) -> string -> Parser<unit,'u>
 /// `anyOf str` parses any char contained in the string `str`. It returns the parsed char.
 /// If `str` contains the char '\n', `anyOf str` parses any newline ("\n", "\r\n" or "\r")
 /// and returns it as '\n'. (Note that it does not make a difference whether or not
-///`str` contains '\r' and that `anyOf str` will never return '\r'.)
+/// `str` contains '\r'; `anyOf str` will never return '\r'.)
 val anyOf: string -> Parser<char,'u>
 
 /// `skipAnyOf str` is an optimized implementation of `anyOf str |>> ignore`.
@@ -155,7 +155,7 @@ val skipAnyOf:  string -> Parser<unit,'u>
 /// `noneOf str` parses any char not contained in the string `str`. It returns the parsed char.
 /// If `str` does not contain the char '\n', `noneOf str` parses any newline ("\n", "\r\n" or "\r")
 /// and returns it as  as '\n'. (Note that it does not make a difference whether or not
-/// `str` contains '\r' and that `noneOf str` will never return '\r'.)
+/// `str` contains '\r'; `noneOf str` will never return '\r'.)
 val noneOf:     string -> Parser<char,'u>
 
 /// `skipNoneOf s` is equivalent to `noneOf s |>> ignore`.

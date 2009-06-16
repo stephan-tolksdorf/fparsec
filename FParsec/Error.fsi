@@ -90,7 +90,7 @@ val inline mergeErrors: ErrorMessageList -> ErrorMessageList -> ErrorMessageList
 val inline mergeErrorsIfNeeded:    State<'u> -> ErrorMessageList
                                 -> State<'u> -> ErrorMessageList -> ErrorMessageList
 
-/// `mergeErrorsIfNeeded veryOldState veryOldError oldState oldError newState newError` is equivalent to
+/// `mergeErrorsIfNeeded3 veryOldState veryOldError oldState oldError newState newError` is equivalent to
 /// `mergeErrorsIfNeeded oldState (mergeErrorsIfNeeded veryOldState veryOldError oldState oldError) newState newError`.
 val inline mergeErrorsIfNeeded3:    State<'u> -> ErrorMessageList
                                  -> State<'u> -> ErrorMessageList
