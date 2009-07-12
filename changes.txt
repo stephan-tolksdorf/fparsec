@@ -71,6 +71,7 @@ Other breaking changes:
     `many (p .>> sep)` and `endBy1 p sep` with `many1 (p .>> sep)`)
 
 - FParsec.CharParsers:
+  * renamed `manyTillString` to `charsTillString`
   * removed `applyParser` from the public interface
   * removed `getIndex`, `skip`, `registerNL`, `extract`, `regexp`
     (these low-level operations should be done directly through the

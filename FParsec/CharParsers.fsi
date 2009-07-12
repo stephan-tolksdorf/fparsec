@@ -24,12 +24,14 @@ type ParserResult<'Result,'UserState> =
 
 // Note that `ParserResult` and `ParserError` values contain no references to the input
 // `CharStream` or to any `State<_>` value with a nested `CharStream` reference.
-// This is important because the lifetime of CharStreams has to be carefully managed.
+// This is important because most of the `runParser` functions dispose the `CharStream`
+// used as the input source before they return the `ParserResult` value.
 
 /// `runParser p ustate streamName charStream` runs the parser `p` on the content of `charStream`,
 /// starting with the initial user state `ustate`. The `streamName` is used in error messages
 /// to describe the source of the input (e.g. a file path) and may be empty.
 /// The parser's `Reply` is captured and returned as a `ParserResult` value.
+/// `runParser` *does not* dispose the `CharStream` after use.
 val runParser: Parser<'a,'u> -> 'u -> streamName: string -> CharStream -> ParserResult<'a,'u>
 
 /// `runParserOnString p ustate streamName str` runs the parser `p` directly on the content of the string `str`,
