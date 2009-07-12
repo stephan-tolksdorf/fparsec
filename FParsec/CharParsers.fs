@@ -945,6 +945,8 @@ type NumberLiteralOptions =
      | AllowInfinity                    = 0b001000000000
      | AllowNaN                         = 0b010000000000
 
+     | IncludeSuffixCharsInString       = 0b100000000000
+
      | DefaultInteger                   = 0b000111000110
      | DefaultUnsignedInteger           = 0b000111000000
      | DefaultFloat                     = 0b011001101110
@@ -994,7 +996,6 @@ type NumberLiteral(string, info, suffixChar1, suffixChar2, suffixChar3, suffixCh
     member t.IsNaN          = int (info &&& NLF.IsNaN) <> 0
     member t.IsInfinity     = int (info &&& NLF.IsInfinity) <> 0
 end
-
 
 
 let numberLiteralE (opt: NumberLiteralOptions) (errorInCaseNoLiteralFound: ErrorMessageList) (state: State<'u>) =
@@ -1103,32 +1104,36 @@ let numberLiteralE (opt: NumberLiteralOptions) (errorInCaseNoLiteralFound: Error
                     c <- iter._Increment()
 
         if isNull error then
-            let str = state.Iter.ReadUntil(iter)
-            let mutable nSuffix = 0
-            let mutable s1 = EOS
-            let mutable s2 = EOS
-            let mutable s3 = EOS
-            let mutable s4 = EOS
-            if int (opt &&& NLO.AllowSuffix) <> 0 && isNull error then
+            if int (opt &&& NLO.AllowSuffix) = 0  || not (isAsciiLetter c) then
+                let str = state.Iter.ReadUntil(iter)
+                let newState = state.AdvanceTo(iter)
+                Reply<_,_>(NumberLiteral(str, flags, EOS, EOS, EOS, EOS), newState)
+            else
+                let mutable str = if int (opt &&& NLO.IncludeSuffixCharsInString) <> 0 then null
+                                  else state.Iter.ReadUntil(iter)
+                let mutable nSuffix = 1
+                let mutable s1 = c
+                let mutable s2 = EOS
+                let mutable s3 = EOS
+                let mutable s4 = EOS
+                c <- iter._Increment()
                 if isAsciiLetter c then
-                    nSuffix <- 1
-                    s1 <- c
+                    nSuffix <- 2
+                    s2 <- c
                     c <- iter._Increment()
                     if isAsciiLetter c then
-                        nSuffix <- nSuffix + 1
-                        s2 <- c
+                        nSuffix <- 3
+                        s3 <- c
                         c <- iter._Increment()
                         if isAsciiLetter c then
-                            nSuffix <- nSuffix + 1
-                            s3 <- c
+                            nSuffix <- 4
+                            s4 <- c
                             c <- iter._Increment()
-                            if isAsciiLetter c then
-                                nSuffix <- nSuffix + 1
-                                s4 <- c
-                                c <- iter._Increment()
-                    flags <- flags ||| (enum) nSuffix
-            let nl = NumberLiteral(str, flags, s1, s2, s3, s4)
-            Reply<_,_>(nl, state.AdvanceTo(iter))
+                flags <- flags ||| (enum) nSuffix
+                if int (opt &&& NLO.IncludeSuffixCharsInString) <> 0 then
+                    str <- state.Iter.ReadUntil(iter)
+                let newState = state.AdvanceTo(iter)
+                Reply<_,_>(NumberLiteral(str, flags, s1, s2, s3, s4), newState)
         else
             Reply<_,_>(Error, error, state.AdvanceTo(iter))
     else
@@ -1161,7 +1166,9 @@ let numberLiteralE (opt: NumberLiteralOptions) (errorInCaseNoLiteralFound: Error
                         iter._Increment(3u) |> ignore
 
         if int (flags &&& (NLF.IsInfinity ||| NLF.IsNaN)) <> 0 then
-            Reply<_,_>(NumberLiteral(state.Iter.ReadUntil(iter), flags, EOS, EOS, EOS, EOS), state.AdvanceTo(iter))
+            let str = state.Iter.ReadUntil(iter)
+            let newState = state.AdvanceTo(iter)
+            Reply<_,_>(NumberLiteral(str, flags, EOS, EOS, EOS, EOS), newState)
         else
             Reply<_,_>(Error, errorInCaseNoLiteralFound, state)
 

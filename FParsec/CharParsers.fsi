@@ -530,19 +530,24 @@ type NumberLiteralOptions =
      | AllowInfinity                    = 0b001000000000
      | AllowNaN                         = 0b010000000000
 
+     | IncludeSuffixCharsInString       = 0b100000000000
+
      | DefaultInteger                   = 0b000111000110
      | DefaultUnsignedInteger           = 0b000111000000
      | DefaultFloat                     = 0b011001101110
 
 /// The return type of the `numberLiteral` parser. An instance contains the parsed
 /// number literal and various bits of information about it.
-/// Note that the `String` member contains the string literal *without* the suffix chars.
-/// The parsed suffix chars are available through the `SuffixChar1` - `4` members.
+/// Note that the `String` member contains the string literal without the suffix chars,
+/// except if the `NumberLiteralOptions` passed to the `numberLiteral` parser have the
+/// `IncludeSuffixCharsInString` flag set.
+/// Any parsed suffix chars are always available through the `SuffixChar1` - `4` members.
 type NumberLiteral = struct
     new: string:string * info:NumberLiteralResultFlags
          * suffixChar0: char * suffixChar1: char * suffixChar2: char * suffixChar3: char -> NumberLiteral
 
-    /// The parsed number literal string without suffix.
+    /// The parsed number literal string. Only includes the parsed suffix chars if the
+    /// `NumberLiteralOptions` passed to the `numberLiteral` parser have the `IncludeSuffixCharsInString` flag set.
     member String: string
     /// Eencodes various bits of information on the string literal.
     member Info: NumberLiteralResultFlags

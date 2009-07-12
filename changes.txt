@@ -44,6 +44,9 @@ Bug fixes:
 - In previous FParsec versions the `NumberLiteral.String` returned by the
   `numberLiteral` parser included parsed suffix chars despite the
   documentation claiming the opposite. (The testing code was buggy too.)
+  Applications that rely on this behaviour can now use the new 
+  `NumberLiteralOptions.IncludeSuffixCharsInString` to force the 
+  `numberLiteral` parser to include any suffix chars in the returned string.
 
 Other breaking changes:
 - renamed the module `CharParser` to `CharParsers`
