@@ -424,8 +424,13 @@ val many1Reduce: ('a -> 'a -> 'a) -> Parser<'a,'u> -> Parser<'a,'u>
 /// |>> function
 ///     | []     -> emptyF ()
 ///     | hd::tl -> applyF (List.fold foldF (f1 hd) tl)
-val inline manyFoldApply:     ('a -> 'b) -> ('b -> 'a -> 'b) -> ('b -> 'c) -> (unit -> 'c)
-                           -> Parser<'a,'u> -> Parser<'c,'u>
+#if NOINLINE
+val
+#else
+val inline
+#endif
+           manyFoldApply:    ('a -> 'b) -> ('b -> 'a -> 'b) -> ('b -> 'c) -> (unit -> 'c)
+                          -> Parser<'a,'u> -> Parser<'c,'u>
 
 /// The parser `manyFoldApply2 f1 foldF applyF emptyF p1 p` expands to an optimized implementation of
 ///
@@ -433,17 +438,32 @@ val inline manyFoldApply:     ('a -> 'b) -> ('b -> 'a -> 'b) -> ('b -> 'c) -> (u
 /// |>> function
 ///     | []     -> emptyF ()
 ///     | hd::tl -> applyF (List.fold foldF (f1 hd) tl)
-val inline manyFoldApply2:    ('a -> 'b) -> ('b -> 'c -> 'b) -> ('b -> 'd) -> (unit -> 'd)
+#if NOINLINE
+val
+#else
+val inline
+#endif
+           manyFoldApply2:    ('a -> 'b) -> ('b -> 'c -> 'b) -> ('b -> 'd) -> (unit -> 'd)
                            -> Parser<'a,'u> -> Parser<'c,'u> -> Parser<'d,'u>
 
 /// The parser `many1FoldApply f1 foldF applyF p` expands to an optimized implementation of
 /// `many1 p |>> function hd::tl -> applyF (List.fold foldF (f1 hd) tl)`.
-val inline many1FoldApply:      ('a -> 'b) -> ('b -> 'a -> 'b) -> ('b -> 'c)
+#if NOINLINE
+val
+#else
+val inline
+#endif
+           many1FoldApply:    ('a -> 'b) -> ('b -> 'a -> 'b) -> ('b -> 'c)
                            -> Parser<'a,'u> -> Parser<'c,'u>
 
 /// The parser `many1FoldApply2 f1 foldF applyF p1 p` expands to an optimized implementation of
 /// `pipe2 p1 (many p) (fun hd tl -> applyF (List.fold foldF (f1 hd) tl))`
-val inline many1FoldApply2:   ('a -> 'b) -> ('b -> 'c -> 'b) -> ('b -> 'd)
+#if NOINLINE
+val
+#else
+val inline
+#endif
+           many1FoldApply2:   ('a -> 'b) -> ('b -> 'c -> 'b) -> ('b -> 'd)
                            -> Parser<'a,'u> -> Parser<'c,'u> -> Parser<'d,'u>
 
 
@@ -473,7 +493,12 @@ val sepByReduce: ('a -> 'a -> 'a) -> 'a -> Parser<'a,'u> -> Parser<'b,'u> -> Par
 /// |>> function
 ///     | []     -> emptyF ()
 ///     | hd::tl -> applyF (List.fold foldF (f1 hd) tl)
-val inline sepByFoldApply:     ('a -> 'b) -> ('b -> 'a -> 'b) -> ('b -> 'c) -> (unit -> 'c)
+#if NOINLINE
+val
+#else
+val inline
+#endif
+           sepByFoldApply:     ('a -> 'b) -> ('b -> 'a -> 'b) -> ('b -> 'c) -> (unit -> 'c)
                             -> Parser<'a,'u> -> Parser<'d,'u> -> Parser<'c,'u>
 
 
@@ -499,7 +524,12 @@ val sepBy1Reduce: ('a -> 'a -> 'a) -> Parser<'a,'u> -> Parser<'b,'u> -> Parser<'
 
 /// The parser `sepBy1FoldApply f1 foldF applyF p sep` expands to an optimized implementation of
 /// `sepBy1 p |>> function hd::tl -> applyF (List.fold foldF (f1 hd) tl)`.
-val inline sepBy1FoldApply:    ('a -> 'b) -> ('b -> 'a -> 'b) -> ('b -> 'c)
+#if NOINLINE
+val
+#else
+val inline
+#endif
+           sepBy1FoldApply:    ('a -> 'b) -> ('b -> 'a -> 'b) -> ('b -> 'c)
                             -> Parser<'a,'u> -> Parser<'d,'u> -> Parser<'c,'u>
 
 // (p (sep p)* sep?)?
@@ -529,7 +559,12 @@ val sepEndByReduce: ('a -> 'a -> 'a) -> 'a -> Parser<'a,'u> -> Parser<'b,'u> -> 
 /// |>> function
 ///     | []     -> emptyF ()
 ///     | hd::tl -> applyF (List.fold foldF (f1 hd) tl)
-val inline sepEndByFoldApply:     ('a -> 'b) -> ('b -> 'a -> 'b) -> ('b -> 'c) -> (unit -> 'c)
+#if NOINLINE
+val
+#else
+val inline
+#endif
+           sepEndByFoldApply:     ('a -> 'b) -> ('b -> 'a -> 'b) -> ('b -> 'c) -> (unit -> 'c)
                                -> Parser<'a,'u> -> Parser<'d,'u> -> Parser<'c,'u>
 
 
@@ -556,7 +591,12 @@ val sepEndBy1Reduce: ('a -> 'a -> 'a) -> Parser<'a,'u> -> Parser<'b,'u> -> Parse
 
 /// The parser `sepEndBy1FoldApply f1 foldF applyF p sep` expands to an optimized implementation of
 /// `sepEndBy1 p |>> function hd::tl -> applyF (List.fold foldF (f1 hd) tl)`.
-val inline sepEndBy1FoldApply:    ('a -> 'b) -> ('b -> 'a -> 'b) -> ('b -> 'c)
+#if NOINLINE
+val
+#else
+val inline
+#endif
+           sepEndBy1FoldApply:    ('a -> 'b) -> ('b -> 'a -> 'b) -> ('b -> 'c)
                                -> Parser<'a,'u> -> Parser<'d,'u> -> Parser<'c,'u>
 
 
@@ -592,7 +632,12 @@ val manyTillReduce: ('a -> 'a -> 'a) -> 'a -> Parser<'a,'u> -> Parser<'b,'u> -> 
 ///            match lst with
 ///            | []     -> emptyF b
 ///            | hd::tl -> applyF (List.fold foldF (f1 hd) tl)) b
-val inline manyTillFoldApply:    ('a -> 'c) -> ('c -> 'a -> 'c) -> ('c -> 'b -> 'd) -> ('b -> 'd)
+#if NOINLINE
+val
+#else
+val inline
+#endif
+           manyTillFoldApply:    ('a -> 'c) -> ('c -> 'a -> 'c) -> ('c -> 'b -> 'd) -> ('b -> 'd)
                               -> Parser<'a,'u> -> Parser<'b,'u> -> Parser<'d,'u>
 
 

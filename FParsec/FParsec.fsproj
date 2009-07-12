@@ -39,6 +39,7 @@
     <OutputPath>..\Build\Debug\</OutputPath>
     <OtherFlags>
     </OtherFlags>
+    <DefineConstants>TRACE;DEBUG;NOINLINE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />

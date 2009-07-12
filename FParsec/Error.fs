@@ -120,16 +120,31 @@ let rec concatErrorMessages msgs msgs2 =
     | AddErrorMessage(hd, tl) -> concatErrorMessages (AddErrorMessage(hd, msgs)) tl
     | NoErrorMessages         -> msgs
 
-let inline mergeErrors msgs1 msgs2 =
+let
+#if NOINLINE
+#else
+    inline
+#endif
+           mergeErrors msgs1 msgs2 =
     match msgs1 with
     | NoErrorMessages -> msgs2
     | _ -> concatErrorMessages msgs1 msgs2
 
-let inline mergeErrorsIfNeeded (oldState: State<'u>) oldError (newState: State<'u>) newError =
+let
+#if NOINLINE
+#else
+    inline
+#endif
+           mergeErrorsIfNeeded (oldState: State<'u>) oldError (newState: State<'u>) newError =
     if isNull oldError || newState != oldState then newError
     else concatErrorMessages oldError newError
 
-let inline mergeErrorsIfNeeded3 (veryOldState: State<'u>) veryOldError
+let
+#if NOINLINE
+#else
+    inline
+#endif
+           mergeErrorsIfNeeded3 (veryOldState: State<'u>) veryOldError
                                 (oldState: State<'u>) oldError
                                 (newState: State<'u>) newError =
     let error = mergeErrorsIfNeeded veryOldState veryOldError oldState oldError

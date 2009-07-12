@@ -199,19 +199,34 @@ let skipAnyChar : Parser<unit,'u> =
 
 
 // doesn't check for newlines or EOS
-let inline internal fastInlineSatisfyE f error : Parser<char,'u> =
+let
+#if NOINLINE
+#else
+    inline
+#endif
+           internal fastInlineSatisfyE f error : Parser<char,'u> =
     fun state ->
         let c = state.Iter.Read()
         if f c then Reply<_,_>(c, state.Next)
         else Reply<_,_>(Error, error, state)
 
-let inline internal fastInlineSkipSatisfyE f error : Parser<unit,'u> =
+let
+#if NOINLINE
+#else
+    inline
+#endif
+           internal fastInlineSkipSatisfyE f error : Parser<unit,'u> =
     fun state ->
         let c = state.Iter.Read()
         if f c then Reply<_,_>((), state.Next)
         else Reply<_,_>(Error, error, state)
 
-let inline internal inlineSatisfyE f error : Parser<char,'u> =
+let
+#if NOINLINE
+#else
+    inline
+#endif
+           internal inlineSatisfyE f error : Parser<char,'u> =
     fun state ->
         let c = state.Iter.Read()
         if isCertainlyNoNLOrEOS c then
@@ -223,7 +238,12 @@ let inline internal inlineSatisfyE f error : Parser<char,'u> =
         elif c <> EOS && f c then Reply<_,_>(c, state.Next)
         else Reply<_,_>(Error, error, state)
 
-let inline internal inlineSkipSatisfyE f error : Parser<unit,'u> =
+let
+#if NOINLINE
+#else
+    inline
+#endif
+           internal inlineSkipSatisfyE f error : Parser<unit,'u> =
     fun state ->
         let c = state.Iter.Read()
         if isCertainlyNoNLOrEOS c then
@@ -507,15 +527,24 @@ let skipCharsTillStringCI (s: string) maxChars : Parser<unit,'u> =
         if foundString then Reply<_,_>((), state2.Advance(s.Length))
         else Reply<_,_>(Error, error, state2)
 
-
-let inline internal manySatisfyImpl require1 f1 f error : Parser<string,'u> =
+let
+#if NOINLINE
+#else
+    inline
+#endif
+           internal manySatisfyImpl require1 f1 f error : Parser<string,'u> =
     fun state ->
         let mutable str = null
         let newState = state.SkipCharsOrNewlinesWhile(f1, f, &str)
         if not require1 || not (referenceEquals newState state) then Reply<_,_>(str, newState)
         else Reply<_,_>(Error, error, newState)
 
-let inline internal skipManySatisfyImpl require1 f1 f error : Parser<unit,'u> =
+let
+#if NOINLINE
+#else
+    inline
+#endif
+           internal skipManySatisfyImpl require1 f1 f error : Parser<unit,'u> =
     fun state ->
         let newState = state.SkipCharsOrNewlinesWhile(f1, f)
         if not require1 || not (referenceEquals newState state) then Reply<_,_>((), newState)
@@ -665,7 +694,12 @@ type internal StructCharList = struct
 end
 
 
-let inline internal manyCharsImpl require1 (p1: Parser<char,'u>) (p: Parser<char,'u>) : Parser<string,'u> =
+let
+#if NOINLINE
+#else
+    inline
+#endif
+           internal manyCharsImpl require1 (p1: Parser<char,'u>) (p: Parser<char,'u>) : Parser<string,'u> =
     fun state ->
         let mutable reply = p1 state
         if reply.Status = Ok then
@@ -688,7 +722,12 @@ let inline internal manyCharsImpl require1 (p1: Parser<char,'u>) (p: Parser<char
             if require1 then Reply<_,_>(Error, error, state)
             else Reply<_,_>(Ok, "", error, state)
 
-let inline internal skipManyCharsImpl require1 (p1: Parser<'a,'u>) (p: Parser<'a,'u>) : Parser<unit,'u> =
+let
+#if NOINLINE
+#else
+    inline
+#endif
+           internal skipManyCharsImpl require1 (p1: Parser<'a,'u>) (p: Parser<'a,'u>) : Parser<unit,'u> =
     fun state ->
         let mutable reply = p1 state
         if reply.Status = Ok then
@@ -722,7 +761,12 @@ let skipMany1Chars2 (p1: Parser<'a,'u>) (p: Parser<'a,'u>) = skipManyCharsImpl t
 let skipMany1Chars p = skipMany1Chars2 p p
 
 
-let inline inlineManyCharsTillApply (p: Parser<char,'u>) (endp: Parser<'b,'u>) (f: string -> 'b -> 'c) =
+let
+#if NOINLINE
+#else
+    inline
+#endif
+           inlineManyCharsTillApply (p: Parser<char,'u>) (endp: Parser<'b,'u>) (f: string -> 'b -> 'c) =
     fun state ->
         let mutable state  = state
         let mutable reply2 = endp state
@@ -752,7 +796,12 @@ let inline inlineManyCharsTillApply (p: Parser<char,'u>) (endp: Parser<'b,'u>) (
         else
             Reply<_,_>(Ok, f "" reply2.Result, reply2.Error, reply2.State)
 
-let inline inlineMany1CharsTill2Apply (p1: Parser<char,'u>) (p: Parser<char,'u>) (endp: Parser<'b,'u>) (f: string -> 'b -> 'c) =
+let
+#if NOINLINE
+#else
+    inline
+#endif
+           inlineMany1CharsTill2Apply (p1: Parser<char,'u>) (p: Parser<char,'u>) (endp: Parser<'b,'u>) (f: string -> 'b -> 'c) =
     fun state ->
         let mutable reply1 = p1 state
         if reply1.Status = Ok then
@@ -795,7 +844,12 @@ let skipMany1CharsTill2  (p1: Parser<'a,'u>) (p: Parser<'a,'u>) endp   = p1 >>. 
 let skipMany1CharsTill   p    endp   = skipMany1CharsTill2 p p endp
 
 
-let inline manyStringsImpl require1 (p1: Parser<string,'u>) (p: Parser<string,'u>) : Parser<string,'u> =
+let
+#if NOINLINE
+#else
+    inline
+#endif
+           manyStringsImpl require1 (p1: Parser<string,'u>) (p: Parser<string,'u>) : Parser<string,'u> =
     fun state ->
         let mutable reply = p1 state
         if reply.Status = Ok then
@@ -1203,7 +1257,13 @@ let internal integerNumberLiteralToUInt32 s flags = integerNumberLiteralToUInt S
 let internal integerNumberLiteralToUInt16 s flags = integerNumberLiteralToUInt System.UInt16.MaxValue uint16 s flags
 let internal integerNumberLiteralToUInt8  s flags = integerNumberLiteralToUInt System.Byte.MaxValue   byte   s flags
 
-let inline internal pint flags numberLiteralToInt error overflowMessage =
+
+let
+#if NOINLINE
+#else
+    inline
+#endif
+           internal pint flags numberLiteralToInt error overflowMessage =
     fun state ->
         let reply = numberLiteralE flags error state
         if reply.Status = Ok then

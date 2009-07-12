@@ -568,8 +568,12 @@ let skipArray n (p: Parser<'a,'u>) =
             newReply.Error  <- error
             newReply.Status <- reply.Status
             newReply
-
-let inline private manyFoldApplyImpl require1 fold1 fold applyF getEmpty (p: Parser<'a,'u>) =
+let
+#if NOINLINE
+#else
+    inline
+#endif
+           private manyFoldApplyImpl require1 fold1 fold applyF getEmpty (p: Parser<'a,'u>) =
     fun state ->
         let mutable reply = p state
         if reply.Status = Ok then
@@ -594,7 +598,12 @@ let inline private manyFoldApplyImpl require1 fold1 fold applyF getEmpty (p: Par
         else
             Reply<_,_>(reply.Status, reply.Error, reply.State)
 
-let inline private manyFoldApply2Impl require1 fold1 fold applyF getEmpty (p1: Parser<'a,'u>) (p: Parser<'b,'u>) =
+let
+#if NOINLINE
+#else
+    inline
+#endif
+           private manyFoldApply2Impl require1 fold1 fold applyF getEmpty (p1: Parser<'a,'u>) (p: Parser<'b,'u>) =
     fun state ->
         let reply1 = p1 state
         if reply1.Status = Ok then
@@ -619,22 +628,46 @@ let inline private manyFoldApply2Impl require1 fold1 fold applyF getEmpty (p1: P
         else
             Reply<_,_>(reply1.Status, reply1.Error, reply1.State)
 
-let inline manyFoldApply fold1 fold applyF getEmpty p =
+let
+#if NOINLINE
+#else
+    inline
+#endif
+           manyFoldApply fold1 fold applyF getEmpty p =
     manyFoldApplyImpl false fold1 fold applyF getEmpty p
 
-let inline many1FoldApply fold1 fold applyF p =
+let
+#if NOINLINE
+#else
+    inline
+#endif
+           many1FoldApply fold1 fold applyF p =
     manyFoldApplyImpl true fold1 fold applyF (fun () -> Unchecked.defaultof<_>) p
 
-let inline manyFoldApply2 fold1 fold applyF getEmpty p1 p =
+let
+#if NOINLINE
+#else
+    inline
+#endif
+           manyFoldApply2 fold1 fold applyF getEmpty p1 p =
     manyFoldApply2Impl false fold1 fold applyF getEmpty p1 p
 
-let inline many1FoldApply2 fold1 fold applyF p1 p =
+let
+#if NOINLINE
+#else
+    inline
+#endif
+           many1FoldApply2 fold1 fold applyF p1 p =
     manyFoldApply2Impl true fold1 fold applyF (fun () -> Unchecked.defaultof<_>) p1 p
 
 
 // it's the sepMayEnd case that's difficult to implement (efficiently) without a specialized parser
-
-let inline private sepEndByFoldApplyImpl require1 sepMayEnd fold1 fold applyF getEmpty (p: Parser<'a,'u>) (sep: Parser<'b,'u>) =
+let
+#if NOINLINE
+#else
+    inline
+#endif
+           sepEndByFoldApplyImpl require1 sepMayEnd fold1 fold applyF getEmpty (p: Parser<'a,'u>) (sep: Parser<'b,'u>) =
     fun state ->
         let mutable reply1 = p state
         if reply1.Status = Ok then
@@ -668,21 +701,45 @@ let inline private sepEndByFoldApplyImpl require1 sepMayEnd fold1 fold applyF ge
         else
             Reply<_,_>(reply1.Status, reply1.Error, reply1.State)
 
-
-let inline sepByFoldApply fold1 fold applyF getEmpty p sep =
+let
+#if NOINLINE
+#else
+    inline
+#endif
+           sepByFoldApply fold1 fold applyF getEmpty p sep =
     sepEndByFoldApplyImpl false false fold1 fold applyF getEmpty p sep
 
-let inline sepBy1FoldApply fold1 fold applyF p sep =
+
+let
+#if NOINLINE
+#else
+    inline
+#endif
+           sepBy1FoldApply fold1 fold applyF p sep =
     sepEndByFoldApplyImpl true false fold1 fold applyF (fun () -> Unchecked.defaultof<_>) p sep
 
-let inline sepEndByFoldApply fold1 fold applyF getEmpty p sep =
+let
+#if NOINLINE
+#else
+    inline
+#endif
+           sepEndByFoldApply fold1 fold applyF getEmpty p sep =
     sepEndByFoldApplyImpl false true fold1 fold applyF getEmpty p sep
 
-let inline sepEndBy1FoldApply fold1 fold applyF p sep =
+let
+#if NOINLINE
+#else
+    inline
+#endif
+           sepEndBy1FoldApply fold1 fold applyF p sep =
     sepEndByFoldApplyImpl true true fold1 fold applyF (fun () -> Unchecked.defaultof<_>) p sep
 
-
-let inline manyTillFoldApply fold1 fold applyF getEmpty (p: Parser<'a,'u>) (endp: Parser<'c,'u>) =
+let
+#if NOINLINE
+#else
+    inline
+#endif
+           manyTillFoldApply fold1 fold applyF getEmpty (p: Parser<'a,'u>) (endp: Parser<'c,'u>) =
     fun state ->
         let mutable reply2 = endp state
         if reply2.Status <> Ok then

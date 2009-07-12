@@ -83,16 +83,31 @@ val concatErrorMessages: ErrorMessageList -> ErrorMessageList -> ErrorMessageLis
 
 /// `mergeErrors error1 error2` is an optimized variant of `concatErrorMessages error1 error2`
 /// that avoids the call to concatErrorMessages if `error1` is empty (= `NoErrorMessages`).
-val inline mergeErrors: ErrorMessageList -> ErrorMessageList -> ErrorMessageList
+val
+#if NOINLINE
+#else
+    inline
+#endif
+           mergeErrors: ErrorMessageList -> ErrorMessageList -> ErrorMessageList
 
 /// `mergeErrorsIfNeeded oldState oldError newState newError` is equivalent to
 /// `if newState <> State then newError else mergeErrors oldError newError`.
-val inline mergeErrorsIfNeeded:    State<'u> -> ErrorMessageList
+val
+#if NOINLINE
+#else
+    inline
+#endif
+           mergeErrorsIfNeeded:    State<'u> -> ErrorMessageList
                                 -> State<'u> -> ErrorMessageList -> ErrorMessageList
 
 /// `mergeErrorsIfNeeded3 veryOldState veryOldError oldState oldError newState newError` is equivalent to
 /// `mergeErrorsIfNeeded oldState (mergeErrorsIfNeeded veryOldState veryOldError oldState oldError) newState newError`.
-val inline mergeErrorsIfNeeded3:    State<'u> -> ErrorMessageList
+val
+#if NOINLINE
+#else
+    inline
+#endif
+           mergeErrorsIfNeeded3:    State<'u> -> ErrorMessageList
                                  -> State<'u> -> ErrorMessageList
                                  -> State<'u> -> ErrorMessageList -> ErrorMessageList
 
