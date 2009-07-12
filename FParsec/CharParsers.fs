@@ -599,6 +599,9 @@ let regexL pattern label = regexE pattern (expectedError label)
 // Parsing strings with the help of other parsers
 // ----------------------------------------------
 
+/// StructCharList is only meant for internal use within FParsec.
+/// CAUTION: Its implementation depends on instances only being allocated on the stack
+/// (i.e. on the GC not moving around the instances).
 type internal StructCharList = struct
     val mutable buffer_ui64_0: uint64
     val mutable buffer_ui64_1: uint64
@@ -648,7 +651,9 @@ type internal StructCharList = struct
                 chars.[i] <- NativePtr.get p i
         NativePtr.set p 0 c
 
-    override t.ToString() =
+    // can't use "override t.ToString() =" here, since the F# compiler
+    // (v. 1.9.6.16) boxes structs before calling an object override
+    member t.GetString() =
         let p = t.BufferPtr
         let count = t.count
         if count <= 16 then new string(p, 0, count)
@@ -676,7 +681,7 @@ let inline internal manyCharsImpl require1 (p1: Parser<char,'u>) (p: Parser<char
                 reply <- p state
             let error = if reply.State == state then reply.Error
                         else backtrackError reply.State reply.Error
-            Reply<_,_>(Ok, cl.ToString(), error, state)
+            Reply<_,_>(Ok, cl.GetString(), error, state)
         else
             let error = if reply.State == state then reply.Error
                         else backtrackError reply.State reply.Error
@@ -737,7 +742,7 @@ let inline inlineManyCharsTillApply (p: Parser<char,'u>) (endp: Parser<'b,'u>) (
             if reply2.Status = Ok then
                 let error = if not (referenceEquals reply2.State state) then reply2.Error
                             else mergeErrors reply1.Error reply2.Error
-                Reply<_,_>(Ok, f (cl.ToString()) reply2.Result, error, reply2.State)
+                Reply<_,_>(Ok, f (cl.GetString()) reply2.Result, error, reply2.State)
             elif reply1.Status = Error && reply1.State == state then
                 let error = if reply2.State != state then reply2.Error
                             else mergeErrors reply1.Error reply2.Error
@@ -764,7 +769,7 @@ let inline inlineMany1CharsTill2Apply (p1: Parser<char,'u>) (p: Parser<char,'u>)
             if reply2.Status = Ok then
                 let error = if not (referenceEquals reply2.State state) then reply2.Error
                             else mergeErrors reply1.Error reply2.Error
-                Reply<_,_>(Ok, f (cl.ToString()) reply2.Result, error, reply2.State)
+                Reply<_,_>(Ok, f (cl.GetString()) reply2.Result, error, reply2.State)
             elif reply1.Status = Error && reply1.State == state then
                 let error = if reply2.State != state then reply2.Error
                             else mergeErrors reply1.Error reply2.Error
