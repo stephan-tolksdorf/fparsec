@@ -29,7 +29,7 @@ opp.AddOperator(InfixOp("-", ws, 1, Assoc.Left, fun x y -> x - y))
 opp.AddOperator(InfixOp("*", ws, 2, Assoc.Left, fun x y -> x * y))
 opp.AddOperator(InfixOp("/", ws, 2, Assoc.Left, fun x y -> x / y))
 
-opp.AddOperator(InfixOp("^", ws, 3, Assoc.Left, fun x y -> System.Math.Pow(x, y)))
+opp.AddOperator(InfixOp("^", ws, 3, Assoc.Right, fun x y -> System.Math.Pow(x, y)))
 
 opp.AddOperator(PrefixOp("-", ws, 4, true, fun x -> -x))
 
