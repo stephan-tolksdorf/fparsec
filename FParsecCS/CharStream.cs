@@ -229,7 +229,15 @@ namespace FParsec {
         /// or Int64.MaxValue if the end of stream has not yet been detected.</summary>
         public long EndOfStream { get { return anchor->EndOfStream; } }
 
-        // we don't have a constructor that only takes a string to avoid potential confusion with a filepath constructor
+        // we don't have a public constructor that only takes a string to avoid potential confusion with a filepath constructor
+        internal CharStream(string chars) {
+            Debug.Assert(chars != null);
+            BufferString = chars;
+            ByteBufferIndex = 0; // we recycle ByteBufferIndex for BufferStringIndex
+            BufferHandle = GCHandle.Alloc(chars, GCHandleType.Pinned);
+            char* bufferBegin = (char*)BufferHandle.AddrOfPinnedObject();
+            CharConstructorContinue(bufferBegin, chars.Length, 0);
+        }
 
         public CharStream(string chars, int index, int length) : this(chars, index, length, 0) {}
         public CharStream(string chars, int index, int length, long indexOffset) {

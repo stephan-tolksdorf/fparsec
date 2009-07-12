@@ -64,7 +64,8 @@ let runParser (parser: Parser<'Result,'UserState>) (ustate: 'UserState) (name: s
     applyParser parser state0
 
 let runParserOnString (parser: Parser<'Result,'UserState>) (ustate: 'UserState) (streamName: string) (chars: string) =
-    use stream = new CharStream(chars, 0, chars.Length)
+    if isNull chars then nullArg "chars"
+    use stream = new CharStream(chars)
     let state0 = new State<'UserState>(stream, ustate, streamName)
     applyParser parser state0
 

@@ -28,6 +28,9 @@ let testEncodingDetection() =
     let gb18030 = System.Text.Encoding.GetEncoding(54936) // an encoding we can't detect
 
     let test (e: System.Text.Encoding) =
+        let bs0 = e.GetPreamble()
+        use cs0 = new CharStream(new System.IO.MemoryStream(bs0, false), gb18030);
+        cs0.Encoding.CodePage |> Equal (e.CodePage)
         let bs = Array.append (e.GetPreamble()) (e.GetBytes(s))
         use cs = new CharStream(new System.IO.MemoryStream(bs, false), gb18030);
         cs.Encoding.CodePage |> Equal (e.CodePage)
@@ -66,6 +69,9 @@ let testNonStreamConstructors() =
             iter.Read() |> Equal EOS
 
      let testStringStream() =
+         use stream = new CharStream(s)
+         testStream stream 0 s.Length 0L true
+                  
          use stream = new CharStream(s, 0, s.Length)
          testStream stream 0 s.Length 0L true
          use stream = new CharStream(s, 0, s.Length, 1000L)
