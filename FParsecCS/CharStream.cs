@@ -375,7 +375,8 @@ namespace FParsec {
 
             int bytesInStream = -1;
             if (Stream.CanSeek) {
-                long streamLength = Stream.Length;
+                StreamPosition = stream.Position;
+                long streamLength = Stream.Length - StreamPosition;
                 if (streamLength <= Int32.MaxValue) {
                     bytesInStream = (int) streamLength;
                     if (bytesInStream < byteBufferLength) byteBufferLength = bytesInStream;
@@ -397,7 +398,7 @@ namespace FParsec {
             if (blockSize < 8) blockSize = DefaultBlockSize;
 
             bool allCharsFitIntoOneBlock = false;
-            if (bytesInStream >= 0) {
+            if (bytesInStream >= 0 && bytesInStream/4 <= blockSize) {
                 try {
                     int maxCharCount = Encoding.GetMaxCharCount(bytesInStream); // may throw ArgumentOutOfRangeException
                     if (blockSize >= maxCharCount) {
@@ -479,6 +480,8 @@ namespace FParsec {
             if (anchor == null) return;
             Anchor.Free(anchor);
             anchor = null;
+            ByteBuffer = null;
+            BufferString = null;
             if (Stream != null && !LeaveOpen) {
                 Stream.Close();
                 Stream = null;
