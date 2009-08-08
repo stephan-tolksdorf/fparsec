@@ -463,11 +463,22 @@ let testSkipCharsOrNewlines() =
             let s6 = s0.SkipCharsOrNewlinesWhile((fun c -> true), (fun c -> true), n + 1, n, &str)
             s6 |> ReferenceEqual s0
 
-
+    let testIndexOffset() =
+        use stream = new CharStream("\n___", 0, 4, 100L)
+        let s0 = new State<_>(stream, ())
+        s0.Index     |> Equal 100L
+        s0.LineBegin |> Equal 100L
+        let s1 = s0.SkipNewline()
+        s1.Index     |> Equal 101L
+        s1.Line      |> Equal 2L
+        s1.LineBegin |> Equal 101L
+        s1.Column    |> Equal 1L
+        
     testFastPath()
     testSlowPath()
     testArgumentChecking()
     SkipCharsOrNewlinesWhileMinChars()
+    testIndexOffset()
 
 let testSkipToString() =
     // we already test the main skipping and maxChars logic in testSkipCharsOrNewlines

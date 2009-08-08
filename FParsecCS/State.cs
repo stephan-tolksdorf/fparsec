@@ -37,7 +37,7 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
 
     public State(CharStream stream, TUserState userState, string streamName) {
         Iter = stream.Begin;
-        data = new Data(1, 0, userState, streamName);
+        data = new Data(1, Iter.Anchor->CharIndexOffset, userState, streamName);
     }
 
     public State(CharStream stream, Pos pos, TUserState userState) {
@@ -110,13 +110,13 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
 
     internal State<TUserState> AdvanceWithinBlock(CharStream.Iterator iter, char* lineBegin) {
         return new State<TUserState>(iter, new Data(data.Line + 1,
-                                                    iter.Anchor->CharIndex + CharStream.PositiveDistance(iter.Anchor->BufferBegin, lineBegin),
+                                                    iter.Anchor->CharIndexPlusOffset + CharStream.PositiveDistance(iter.Anchor->BufferBegin, lineBegin),
                                                     data.UserState,
                                                     data.StreamName));
     }
     internal State<TUserState> AdvanceWithinBlock(CharStream.Iterator iter, int nLines, char* lineBegin) {
         return new State<TUserState>(iter, new Data(data.Line + nLines,
-                                                    iter.Anchor->CharIndex + CharStream.PositiveDistance(iter.Anchor->BufferBegin, lineBegin),
+                                                    iter.Anchor->CharIndexPlusOffset + CharStream.PositiveDistance(iter.Anchor->BufferBegin, lineBegin),
                                                     data.UserState,
                                                     data.StreamName));
     }
