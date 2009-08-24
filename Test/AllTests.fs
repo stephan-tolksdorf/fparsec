@@ -3,7 +3,7 @@
 
 let run() =
     printfn "Testing FParsec.CharStream ..."
-    //FParsec.Test.CharStreamTests.run()
+    FParsec.Test.CharStreamTests.run()
     printfn "Testing FParsec.State<_> ..."
     FParsec.Test.StateTests.run()
     printfn "Testing FParsec.Primitives ..."
