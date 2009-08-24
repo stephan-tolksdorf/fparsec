@@ -34,7 +34,9 @@ internal unsafe static T RunParserOnSubstream<T,TUserState,TSubStreamUserState>(
         // the CharStream has only one block, so its safe to
         // construct a new CharStream from a pointer into the original buffer
         char* ptr = s0.Iter.Ptr;
+        if (ptr == null) ptr = anchor->BufferEnd;
         char* end = s1.Iter.Ptr;
+        if (end == null) end = anchor->BufferEnd;
         if (end < ptr) throw new ArgumentException("The position of the second state lies before the position of the first state.");
         int length = CharStream.PositiveDistance(ptr, end);
         CharStream stream = (CharStream)anchor->StreamHandle.Target;
