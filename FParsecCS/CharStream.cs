@@ -243,71 +243,91 @@ namespace FParsec {
             char* bufferBegin = (char*)BufferHandle.AddrOfPinnedObject();
             CharConstructorContinue(bufferBegin, chars.Length, 0);
         }
-
+        /// <summary>Constructs a CharStream from the chars in the string argument between the indices index (inclusive) and index + length (exclusive).</summary>
+        /// <exception cref="ArgumentNullException">chars is null.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">At least one of the following conditions is not satisfied: index ≥ 0, length ≥ 0 and index + length ≤ chars.Length.</exception>
         public CharStream(string chars, int index, int length) : this(chars, index, length, 0) {}
-        public CharStream(string chars, int index, int length, long indexOffset) {
+
+        /// <summary>Constructs a CharStream from the chars in the string argument between the indices index (inclusive) and index + length (exclusive). The first char in the stream is assigned the index streamIndexOffset.</summary>
+        /// <exception cref="ArgumentNullException">chars is null.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">At least one of the following conditions is not satisfied: index ≥ 0, length ≥ 0, index + length ≤ chars.Length and 0 ≤ streamIndexOffset &lt; 2^60.</exception>
+        public CharStream(string chars, int index, int length, long streamIndexOffset) {
             if (chars == null) throw new ArgumentNullException("chars");
             if (index < 0) throw new ArgumentOutOfRangeException("index", "The index is negative.");
             if (length < 0 || length > chars.Length - index) throw new ArgumentOutOfRangeException("length", "The length is out of range.");
-            if (indexOffset < 0 || indexOffset >= (1L << 60)) throw new ArgumentOutOfRangeException("indexOffset", "The index offset must be non-negative and less than 2^60.");
+            if (streamIndexOffset < 0 || streamIndexOffset >= (1L << 60)) throw new ArgumentOutOfRangeException("streamIndexOffset", "The index offset must be non-negative and less than 2^60.");
 
             BufferString = chars;
             ByteBufferIndex = index; // we recycle ByteBufferIndex for BufferStringIndex
             BufferHandle = GCHandle.Alloc(chars, GCHandleType.Pinned);
             char* bufferBegin = (char*)BufferHandle.AddrOfPinnedObject() + index;
 
-            CharConstructorContinue(bufferBegin, length, indexOffset);
+            CharConstructorContinue(bufferBegin, length, streamIndexOffset);
         }
 
-        internal CharStream(string chars, char* pCharsPlusIndex, int index, int length, long indexOffset) {
-            Debug.Assert(index >= 0 && length <= chars.Length - index && pCharsPlusIndex != null && indexOffset >= 0 && indexOffset < (1L << 60));
+        internal CharStream(string chars, char* pCharsPlusIndex, int index, int length, long streamIndexOffset) {
+            Debug.Assert(index >= 0 && length <= chars.Length - index && pCharsPlusIndex != null && streamIndexOffset >= 0 && streamIndexOffset < (1L << 60));
             BufferString = chars;
             ByteBufferIndex = index; // we recycle ByteBufferIndex for BufferStringIndex
-            CharConstructorContinue(pCharsPlusIndex, length, indexOffset);
+            CharConstructorContinue(pCharsPlusIndex, length, streamIndexOffset);
         }
 
+        /// <summary>Constructs a CharStream from the chars in the char array argument between the indices index (inclusive) and index + length (exclusive).</summary>
+        /// <exception cref="ArgumentNullException">chars is null.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">At least one of the following conditions is not satisfied: index ≥ 0, length ≥ 0 and index + length ≤ chars.Length.</exception>
         public CharStream(char[] chars, int index, int length) : this(chars, index, length, 0) { }
-        public CharStream(char[] chars, int index, int length, long indexOffset) {
+
+        /// <summary>Constructs a CharStream from the chars in the char array argument between the indices index (inclusive) and index + length (exclusive). The first char in the stream is assigned the index streamIndexOffset.</summary>
+        /// <exception cref="NullReferenceException">chars is null.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">At least one of the following conditions is not satisfied: index ≥ 0, length ≥ 0, index + length ≤ chars.Length and 0 ≤ streamIndexOffset &lt; 2^60.</exception>
+        public CharStream(char[] chars, int index, int length, long streamIndexOffset) {
             if (chars == null) throw new ArgumentNullException("chars");
             if (index < 0) throw new ArgumentOutOfRangeException("index", "The index is negative.");
             if (length < 0 || length > chars.Length - index) throw new ArgumentOutOfRangeException("length", "The length is out of range.");
-            if (indexOffset < 0 || indexOffset >= (1L << 60)) throw new ArgumentOutOfRangeException("indexOffset", "The index offset must be non-negative and less than 2^60.");
+            if (streamIndexOffset < 0 || streamIndexOffset >= (1L << 60)) throw new ArgumentOutOfRangeException("streamIndexOffset", "The index offset must be non-negative and less than 2^60.");
 
             BufferHandle = GCHandle.Alloc(chars, GCHandleType.Pinned);
             char* bufferBegin = (char*)BufferHandle.AddrOfPinnedObject() + index;
 
-            CharConstructorContinue(bufferBegin, length, indexOffset);
+            CharConstructorContinue(bufferBegin, length, streamIndexOffset);
         }
 
-        public CharStream(char* chars, int length) : this(chars, length, 0) {}
-        public CharStream(char* chars, int length, long indexOffset) {
-            if (chars == null) throw new ArgumentNullException("chars");
+        /// <summary>Constructs a CharStream from the length chars at the pointer address.</summary>
+        /// <exception cref="ArgumentNullException">pchars is null.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">length is negative.</exception>
+        public CharStream(char* pchars, int length) : this(pchars, length, 0) {}
+
+        /// <summary>Constructs a CharStream from the length chars at the pointer address. The first char in the stream is assigned the index streamIndexOffset.</summary>
+        /// <exception cref="ArgumentNullException">pchars is null.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">At least one of the following conditions is not satisfied: length ≥ 0 and 0 ≤ streamIndexOffset &lt; 2^60.</exception>
+        public CharStream(char* pchars, int length, long streamIndexOffset) {
+            if (pchars == null) throw new ArgumentNullException("pchars");
             if (length < 0) throw new ArgumentOutOfRangeException("length", "The length is negative.");
-            if (chars > unchecked(chars + length))
+            if (pchars > unchecked(pchars + length))
                 throw new ArgumentOutOfRangeException("length", "The length is out of range.");
-            if (indexOffset < 0 || indexOffset >= (1L << 60)) throw new ArgumentOutOfRangeException("indexOffset", "The index offset must be non-negative and less than 2^60.");
+            if (streamIndexOffset < 0 || streamIndexOffset >= (1L << 60)) throw new ArgumentOutOfRangeException("streamIndexOffset", "The index offset must be non-negative and less than 2^60.");
 
-            CharConstructorContinue(chars, length, indexOffset);
+            CharConstructorContinue(pchars, length, streamIndexOffset);
         }
 
-        internal CharStream(char* chars, int length, long indexOffset, int dummyArgumentForInternalConstructorWithoutParamterChecking) {
-            CharConstructorContinue(chars, length, indexOffset);
+        internal CharStream(char* pchars, int length, long streamIndexOffset, int dummyArgumentForInternalConstructorWithoutParameterChecking) {
+            CharConstructorContinue(pchars, length, streamIndexOffset);
         }
 
-        private void CharConstructorContinue(char* bufferBegin, int length, long indexOffset) {
-            Debug.Assert(bufferBegin != null && length >= 0 && bufferBegin <= bufferBegin + length && indexOffset >= 0 && indexOffset < (1L << 60));
+        private void CharConstructorContinue(char* bufferBegin, int length, long streamIndexOffset) {
+            Debug.Assert(bufferBegin != null && length >= 0 && bufferBegin <= bufferBegin + length && streamIndexOffset >= 0 && streamIndexOffset < (1L << 60));
             Encoding = Encoding.Unicode;
             BlockSize = length;
             anchor = Anchor.Create(this);
             anchor->BlockSizeMinusOverlap = length;
-            anchor->EndOfStream = indexOffset + length;
+            anchor->EndOfStream = streamIndexOffset + length;
             anchor->BufferBegin = bufferBegin;
             anchor->BufferEnd = bufferBegin + length;
             anchor->Block = 0;
             anchor->LastBlock = 0;
             anchor->CharIndex = 0;
-            anchor->CharIndexPlusOffset = indexOffset;
-            anchor->CharIndexOffset = indexOffset;
+            anchor->CharIndexPlusOffset = streamIndexOffset;
+            anchor->CharIndexOffset = streamIndexOffset;
         }
 
         /// <summary>Constructs a CharStream from a byte Stream.<br/>Equivalent to CharStream(stream, false, encoding, true, defaultBlockSize, defaultBlockSize/3, ((defaultBlockSize/3)*2)/3, defaultByteBufferLength).</summary>
