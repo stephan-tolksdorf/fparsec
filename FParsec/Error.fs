@@ -157,7 +157,7 @@ let printErrorLine (stream: CharStream) (index: int64) (tw: System.IO.TextWriter
         invalidArg "index ""The given index lies beyond the end of the given CharStream."
     let space = columnWidth - indent.Length
     if space > 0 then
-       let leftBound = max (index - int64 space) 0L
+       let leftBound = max (index - int64 space) stream.IndexOffset
        let off = int32 (index - leftBound)
        let s = iter.Advance(-off).Read(2*space)
        let newlineChars = [|'\r'; '\n'; '\u0085'; '\u000C'; '\u2028'; '\u2029'|]

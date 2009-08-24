@@ -229,6 +229,11 @@ namespace FParsec {
         /// or Int64.MaxValue if the end of stream has not yet been detected.</summary>
         public long EndOfStream { get { return anchor->EndOfStream; } }
 
+        /// <summary>The index of the first char in the stream, i.e. Begin.Index.
+        /// This value is determined by the streamIndexOffset argument of some of the CharStream constructors.
+        /// By default this value is 0.</summary>
+        public long IndexOffset { get { return anchor->CharIndexOffset; } }
+
         // we don't have a public constructor that only takes a string to avoid potential confusion with a filepath constructor
         internal CharStream(string chars) {
             Debug.Assert(chars != null);
