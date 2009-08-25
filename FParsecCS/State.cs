@@ -213,7 +213,7 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
     private bool EqualsHelper(State<TUserState> other) {
         Data d1 = data, d2 = other.data;
         return    Iter == other.Iter
-               && Microsoft.FSharp.Core.Operators.op_Equality(d1.UserState, d2.UserState)
+               && Object.Equals(d1.UserState, d2.UserState)
                && d1.Line == d2.Line
                && d1.LineBegin == d2.LineBegin
                && d1.StreamName == d2.StreamName;
