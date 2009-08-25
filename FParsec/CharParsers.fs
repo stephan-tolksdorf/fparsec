@@ -163,9 +163,11 @@ let skipNewline          = fun state -> inlineNewlineReturn () state
 
 let charReturn c result : Parser<'a,'u> =
     if c <> '\r' && c <> '\n' then
+        if c = EOS then invalidArg "c" "The char '\uffff' (EOS) is not a valid argument for the pchar/skipChar/charReturn parser. If you want to check for the end of the stream, consider using the `eof` parser."
         let error = expectedError (quoteChar c)
         fun state ->
-            if state.Iter.Match(c) then Reply<_,_>(result, state.Next)
+            if state.Iter.Read() = c then
+                 Reply<_,_>(result, state.Next)
             else Reply<_,_>(Error, error, state)
     else newlineReturn result
 
