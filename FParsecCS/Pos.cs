@@ -25,11 +25,10 @@ public class Pos : IEquatable<Pos>, IComparable, IComparable<Pos> {
     }
 
     public override bool Equals(object other) {
-        if (!(other is Pos)) return false;
-        return Equals((Pos) other);
+        return Equals(other as Pos);
     }
     public bool Equals(Pos other) {
-        return Index == other.Index && Line == other.Line && Column == other.Column && StreamName == other.StreamName;
+        return (object)other != null && Index == other.Index && Line == other.Line && Column == other.Column && StreamName == other.StreamName;
     }
     public override int GetHashCode() {
         long i = Index ^ Line ^ Column;
@@ -39,6 +38,8 @@ public class Pos : IEquatable<Pos>, IComparable, IComparable<Pos> {
     public static bool operator!=(Pos pos1, Pos pos2) { return !pos1.Equals(pos2); }
 
     public int CompareTo(Pos other) {
+        if ((object)this == (object)other) return 0;
+        if ((object)other == null) return 1;
         int r = StreamName.CompareTo(other.StreamName);
         if (r != 0) return r;
         r = Line.CompareTo(other.Line);
@@ -47,10 +48,11 @@ public class Pos : IEquatable<Pos>, IComparable, IComparable<Pos> {
         if (r != 0) return r;
         return Index.CompareTo(other.Index);
     }
-
-    int IComparable.CompareTo(object other) {
-        if (!(other is Pos)) throw new ArgumentException("Pos.CompareTo: the given object is not a Pos");
-        return CompareTo((Pos) other);
+    int IComparable.CompareTo(object value) {
+        Pos pos = value as Pos;
+        if ((object)pos != null) return CompareTo(pos);
+        if (value == null) return 1;
+        throw new ArgumentException("value", "Object must be of type Pos.");
     }
 }
 

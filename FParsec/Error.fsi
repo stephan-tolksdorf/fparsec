@@ -146,6 +146,10 @@ type ParserError =
                     * ?streamWhereErrorOccurred: CharStream
                     -> unit
 
+    override Equals: obj -> bool
+    override GetHashCode: unit -> int
+    interface System.IComparable
+
 /// Prints the line of text surrounding the given index in the stream and
 /// marks the position of the index with a caret (^) on a second line.
 /// The output is indented with the given string and is restricted to the

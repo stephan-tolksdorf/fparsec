@@ -74,7 +74,6 @@ and [<CompilationRepresentation(CompilationRepresentationFlags.UseNullAsTrueValu
                 | _ -> false
 
         interface System.IComparable with
-            // see http://research.microsoft.com/fsharp/manual/spec2.aspx#_Toc207785725
             member t.CompareTo(value: obj) = // t can't be null (i.e. NoErrorMessages)
                 match value with
                 | null -> 1
@@ -272,6 +271,27 @@ type ParserError(pos: Pos, error: ErrorMessageList) =
                 fprintfn tw "%sUnknown error(s)" ind
         printMessages pos error ind
 
+    override t.Equals(value: obj) =
+        referenceEquals (t :> obj) value
+        ||  match value with
+            | null -> false
+            | :? ParserError as other -> t.Pos = other.Pos && t.Error = other.Error
+            | _ -> false
+
+    override t.GetHashCode() = t.Pos.GetHashCode() ^^^ t.Error.GetHashCode()
+
+    interface System.IComparable with
+        member t.CompareTo(value) =
+            match value with
+            | null -> 1
+            | :? ParserError as other ->
+                if isNotNull t.Pos then
+                    let r = t.Pos.CompareTo(other.Pos)
+                    if r <> 0 then r
+                    else compare error other.Error
+                elif isNull other.Pos then compare error other.Error
+                else -1
+            | _ -> invalidArg "value" "Object must be of type ParserError."
 
 let _raiseInfiniteLoopException (name: string) (state: State<'u>) =
     failwith (concat4 (state.Pos.ToString()) ": The combinator '" name "' was applied to a parser that succeeds without consuming input and without changing the parser state in any other way. (If no exception had been raised, the combinator likely would have entered an infinite loop.)")
