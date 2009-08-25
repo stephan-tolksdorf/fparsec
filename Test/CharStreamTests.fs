@@ -478,7 +478,7 @@ let testStream (stream: CharStream) (refString: string) blockSize blockOverlap m
         with ArgumentOutOfRange -> ()
 
         try getIter(N).Match(null: Regex) |> ignore; Fail()
-        with ArgumentNull -> ()
+        with NullReference -> ()
 
 
     testMatchException()

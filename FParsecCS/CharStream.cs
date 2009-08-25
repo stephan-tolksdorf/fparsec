@@ -1409,17 +1409,17 @@ namespace FParsec {
                 return false;
             }
 
-            /// <summary>Applies the given regular expression to the chars beginning at
-            /// the current index in the stream and returns the resulting Match object.
-            /// ATTENTION: Not supported for CharStreams constructed from char arrays or pointers.</summary>
-            /// <remarks>For performance reasons the given regular expression should be
-            /// specified such that it can only match at the beginning of a string,
-            /// for example by prepending "\A".<br/> For large files the regular expression
-            /// is not applied to a string containing all the remaining chars in the
-            /// stream. The parameter minRegexSpace (specified during the construction
-            /// of the CharStream) determines the minimum number of chars that are
-            /// guaranteed to be visible to the regular expression.</remarks>
-            /// <exception cref="ArgumentNullException">The Regex argument is null.</exception>
+            /// <summary>Applies the given regular expression to stream chars beginning with the char pointed to by the Iterator.
+            /// Returns the resulting Match object.
+            /// IMPORTANT: This method is not supported by CharStreams constructed from char arrays or pointers.</summary>
+            /// <remarks>For performance reasons you should specifiy the regular expression
+            /// such that it can only match at the beginning of a string,
+            /// for example by prepending "\A".<br/>
+            /// For CharStreams constructed from large binary streams the regular expression is not applied
+            /// to a string containing all the remaining chars in the stream. The minRegexSpace parameter
+            /// of the CharStream constructors determines the minimum number of chars that are guaranteed
+            /// to be visible to the regular expression.</remarks>
+            /// <exception cref="NullReferenceException">regex is null.</exception>
             /// <exception cref="NotSupportedException">Two possible reasons: 1) The CharStream was constructed from a char array or char pointer, in which case it does not support regular expression matching.
             /// 2) Seeking of the underlying byte stream is required, but the byte stream does not support seeking or the Encodings's Decoder is not serializable.</exception>
             /// <exception cref="IOException">An I/O error occured.</exception>
@@ -1427,24 +1427,26 @@ namespace FParsec {
             /// <exception cref="DecoderFallbackException">The input stream contains invalid bytes for which the decoder fallback threw this exception.</exception>
             public Match Match(Regex regex) {
                 CharStream stream = this.Stream;
-                if (regex == null) throw new ArgumentNullException("regex");
                 if (stream.BufferString == null) throw new NotSupportedException("CharStreams constructed from char arrays or char pointers do not support regular expression matching.");
-                if (Block == -1) return System.Text.RegularExpressions.Match.Empty;
-                int index = PositiveDistance(Anchor->BufferBegin, Ptr) ;
                 int block = Block;
-                if (index > stream.BlockSize - stream.MinRegexSpace && block < Anchor->LastBlock) {
-                    // BlockOverlap > MinRegexSpace
-                    if (block + 1 == Anchor->Block || stream.ReadBlock(block + 1) != null) {
-                        // index now needs to point to the beginning of the buffer
-                        // (where the overlap with the previous block is)
-                        index -= Anchor->BlockSizeMinusOverlap;
-                    } else {
-                        // block < LastBlock and we failed to read new chars from block + 1,
-                        // so we now definitely need to read the current block
-                        stream.ReadBlock(block);
-                    }
-                } else if (block != Anchor->Block) stream.ReadBlock(block);
-                return regex.Match(stream.BufferString, stream.BufferStringIndex + index, PositiveDistance(Anchor->BufferBegin, Anchor->BufferEnd) - index);
+                if (block >= 0) {
+                    int index = PositiveDistance(Anchor->BufferBegin, Ptr);
+                    if (index > stream.BlockSize - stream.MinRegexSpace && block < Anchor->LastBlock) {
+                        // BlockOverlap > MinRegexSpace
+                        if (block + 1 == Anchor->Block || stream.ReadBlock(block + 1) != null) {
+                            // index now needs to point to the beginning of the buffer
+                            // (where the overlap with the previous block is)
+                            index -= Anchor->BlockSizeMinusOverlap;
+                        } else {
+                            // block < LastBlock and we failed to read new chars from block + 1,
+                            // so we now definitely need to read the current block
+                            stream.ReadBlock(block);
+                        }
+                    } else if (block != Anchor->Block) stream.ReadBlock(block);
+                    return regex.Match(stream.BufferString, stream.BufferStringIndex + index, PositiveDistance(Anchor->BufferBegin, Anchor->BufferEnd) - index);
+                } else {
+                    return regex.Match("");
+                }
             }
 
             /// <summary>Returns the char at the current index in the stream. If the
