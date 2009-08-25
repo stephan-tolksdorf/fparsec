@@ -6,7 +6,7 @@ module internal FParsec.Internals
 // the following functions are defined using inline IL to help fsc generate code the JIT knows better how to optimize
 let inline isNull<'a when 'a : not struct> (x: 'a) = (# "ldnull ceq" x : bool #) // match box x with null -> true  | _ -> false
 let inline isNotNull<'a when 'a : not struct> (x: 'a) = (# "ldnull cgt.un" x : bool #) // match box x with null -> false | _ -> true
-let inline referenceEquals<'a when 'a : not struct> (x: 'a) (y: 'a) = (# "ceq" x y : bool #) // obj.ReferenceEquals(x, y)
+let inline referenceEquals<'a when 'a : not struct> (x: 'a) (y: 'a) = LanguagePrimitives.PhysicalEquality x y
 
 let inline isNullOrEmpty (s: string) = isNull s || s.Length = 0
 
