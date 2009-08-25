@@ -148,8 +148,7 @@ let userStateSatisfies f : Parser<unit,'u> =
 // Parsing single chars
 // --------------------
 
-// needs to be inline because of the value restriction
-let inline internal inlineNewlineReturn result : Parser<_,'u> =
+let newlineReturn result : Parser<_,'u> =
     fun state ->
         let newState = state.SkipNewline()
         if not (referenceEquals state newState) then
@@ -157,9 +156,8 @@ let inline internal inlineNewlineReturn result : Parser<_,'u> =
         else
             Reply<_,_>(Error, expectedNewline, newState)
 
-let newlineReturn result = fun state -> inlineNewlineReturn result state
-let newline              = fun state -> inlineNewlineReturn '\n' state
-let skipNewline          = fun state -> inlineNewlineReturn () state
+let newline<'u>     = newlineReturn<char,'u> '\n'
+let skipNewline<'u> = newlineReturn<unit,'u> ()
 
 let charReturn c result : Parser<'a,'u> =
     if c <> '\r' && c <> '\n' then

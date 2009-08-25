@@ -233,10 +233,10 @@ val tab: Parser<char,'u>
 
 /// Parses a newline ("\n", "\r\n" or "\r"). Returns '\n'.
 /// Is equivalent to `pchar '\n'`.
-val newline: Parser<char,'u>
+val newline<'u> : Parser<char,'u>
 
 /// `skipNewline` is an optimized implementation of `newline |>> ignore`.
-val skipNewline: Parser<unit,'u>
+val skipNewline<'u> : Parser<unit,'u>
 
 /// `newlineReturn x` is an optimized implementation of `newline >>$ x`.
 val newlineReturn: 'a -> Parser<'a,'u>
