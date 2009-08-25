@@ -84,8 +84,8 @@ val compoundError:   string -> State<'u> -> ErrorMessageList -> ErrorMessageList
 /// `concatErrorMessages error1 error2` concatenates the two error message lists `error1` and `error2`.
 val concatErrorMessages: ErrorMessageList -> ErrorMessageList -> ErrorMessageList
 
-/// `mergeErrors error1 error2` is an optimized variant of `concatErrorMessages error1 error2`
-/// that avoids the call to concatErrorMessages if `error1` is empty (= `NoErrorMessages`).
+/// `mergeErrors error1 error2` is an inlined variant of `concatErrorMessages error1 error2`
+/// that avoids the call to `concatErrorMessages` if `error1` is empty (i.e. equals `NoErrorMessages`).
 val
 #if NOINLINE
 #else

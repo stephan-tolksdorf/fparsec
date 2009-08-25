@@ -13,12 +13,12 @@ open Primitives
 // Running parsers on input
 // ========================
 
-/// Values of this type are returned by the runParser functions (not by Parser<_,_> functions).
+/// Values of this type are returned by the runParser functions (not by `Parser<_,_>` functions).
 type ParserResult<'Result,'UserState> =
-     /// Success(result, state, endPos) holds the result and user state returned by a successful parser,
+     /// Success(result, userState, endPos) holds the result and the user state returned by a successful parser,
      /// together with the position where the parser stopped.
      | Success of 'Result * 'UserState * Pos
-     /// Failure(errorAsString, error, state) holds the parser error and the user state returned by a failing parser,
+     /// Failure(errorAsString, error, suserState) holds the parser error and the user state returned by a failing parser,
      /// together with a string representation of the parser error.
      | Failure of string * ParserError * 'UserState
 
@@ -31,7 +31,7 @@ type ParserResult<'Result,'UserState> =
 /// starting with the initial user state `ustate`. The `streamName` is used in error messages
 /// to describe the source of the input (e.g. a file path) and may be empty.
 /// The parser's `Reply` is captured and returned as a `ParserResult` value.
-/// `runParser` *does not* dispose the `CharStream` after use.
+/// This function *does not* dispose the `CharStream` after use.
 val runParser: Parser<'a,'u> -> 'u -> streamName: string -> CharStream -> ParserResult<'a,'u>
 
 /// `runParserOnString p ustate streamName str` runs the parser `p` directly on the content of the string `str`,
@@ -66,8 +66,8 @@ val runParserOnFile: Parser<'a,'u> -> 'u -> path: string -> System.Text.Encoding
 /// (index, column and line count etc.) reflects the position within the original stream.
 /// The parser's `Reply` is captured and returned as a `ParserResult` value.
 ///
-/// Note: If the underlying `CharStream` has more than one block, `runParserOnSubStream` needs to
-/// copy the content of the substream.
+/// If the underlying `CharStream` has more than one block, `runParserOnSubStream` will copy
+/// the content of the substream before applying the parser.
 val runParserOnSubstream: Parser<'a,'u2> -> 'u2
                           -> stateAtFirstChar: State<'u> -> stateAfterLastChar: State<'u>
                           -> ParserResult<'a,'u2>
@@ -82,9 +82,9 @@ val run: Parser<'Result, unit> -> string -> ParserResult<'Result,unit>
 // =======
 
 
-// ------------------------------------------------
-// Reading the position and handling the user state
-// ------------------------------------------------
+// -------------------------------------------------------------
+// Reading the input stream position and handling the user state
+// -------------------------------------------------------------
 
 /// The parser `getPos` returns the current position in the input Stream.
 /// `getPos` is equivalent to `fun state -> Reply<_,_>(state.Pos, state)`.
@@ -161,7 +161,7 @@ val skipAnyOf:  string -> Parser<unit,'u>
 /// `str` contains '\r'; `noneOf str` will never return '\r'.)
 val noneOf:     string -> Parser<char,'u>
 
-/// `skipNoneOf s` is equivalent to `noneOf s |>> ignore`.
+/// `skipNoneOf s` is an optimized implementation of `noneOf s |>> ignore`.
 val skipNoneOf: string -> Parser<unit,'u>
 
 
@@ -186,13 +186,13 @@ val lower: Parser<char,'u>
 /// Returns the parsed char.
 val letter: Parser<char,'u>
 
-/// Parses any one char in the range '0' - '9'. Returns the parsed char.
+/// Parses any char in the range '0' - '9'. Returns the parsed char.
 val digit: Parser<char,'u>
 
-/// Parses any one char in the range '0' - '9', 'a' - 'f' and 'A' - 'F'. Returns the parsed char.
+/// Parses any char in the range '0' - '9', 'a' - 'f' and 'A' - 'F'. Returns the parsed char.
 val hex: Parser<char,'u>
 
-/// Parses any one char in the range '0' - '7'. Returns the parsed char.
+/// Parses any char in the range '0' - '7'. Returns the parsed char.
 val octal: Parser<char,'u>
 
 // predicate functions corresponding to the above parsers
@@ -241,8 +241,8 @@ val skipNewline<'u> : Parser<unit,'u>
 /// `newlineReturn x` is an optimized implementation of `newline >>$ x`.
 val newlineReturn: 'a -> Parser<'a,'u>
 
-/// Parses a unicode newline ("\n", "\r\n", "\r", `"\u0085"`, `"\u000C"`,
-/// `"\u2028"`, or `"\u2029"`). Returns '\n'.
+/// Parses a unicode newline ("\n", "\r\n", "\r", `"\u0085"`, `"\u000C"`, `"\u2028"`, or `"\u2029"`).
+/// Returns '\n'.
 /// In contrast to all other parsers in FParsec except `unicodeWhitespace` this parser
 /// also increments the internal line count for unicode newline characters other than '\n' and '\r'.
 val unicodeNewline: Parser<char,'u>
@@ -276,6 +276,7 @@ val eof: Parser<unit,'u>
 
 /// `pstring str` parses the string `str` and returns `str`.
 /// It is an atomic parser: either it succeeds or it fails without consuming any input.
+/// `str` may not contain newline chars (`'\n'` or `'\r'`).
 val pstring:    string -> Parser<string,'u>
 /// `skipString str` is an optimized implementation of `pstring str |>> ignore`.
 val skipString: string -> Parser<unit,'u>
@@ -284,6 +285,7 @@ val stringReturn: string -> 'a -> Parser<'a,'u>
 
 /// `pstringCI str` parses any string that case-insensitively matches the string `str`.
 /// It returns the *parsed* string.
+/// `str` may not contain newline chars (`'\n'` or `'\r'`).
 val pstringCI:    string -> Parser<string,'u>
 /// `skipStringCI str` is an optimized implementation of `pstringCI str |>> ignore`.
 val skipStringCI: string -> Parser<unit,'u>
@@ -306,20 +308,20 @@ val restOfLine: Parser<string,'u>
 val skipRestOfLine: Parser<unit,'u>
 
 /// Skips over any chars before the end of the line. Stops before the newline ("\n", "\r\n" or "\r")
-/// or at the end of the input stream, if there is no newline.
+/// or at the end of the input stream if there is no newline.
 val skipToEndOfLine: Parser<unit,'u>
 
 /// `skipToString str nMax` skips over all chars before the first occurance of the string `str`.
 /// If more than `nMax` chars come before the first occurance of `str`, the parser *fails after consuming* `nMax` chars.
-/// `skipToString` throws an exception if `nMax` is negative.
 /// Newlines ("\n", "\r\n" or "\r") are counted as single chars.
+/// `skipToString str nMax` throws an `ArgumentOutOfRangeException` if `nMax` is negative.
 val skipToString:        string -> int -> Parser<unit,'u>
 /// `charsTillString str nMax` parses all chars before the first occurance of the string `str`and
 /// then skips over `str`. It returns the parsed chars before the string.
 /// If more than `nMax` chars  come before the first occurance of `str`, the parser *fails after consuming* `nMax` chars.
-/// `charsTillString` throws an exception if `nMax` is negative.
 /// Newlines ("\n", "\r\n" or "\r") are counted as single chars and
 /// in the returned string all newlines are normalized to "\n".
+/// `charsTillString str nMax` throws an `ArgumentOutOfRangeException` if `nMax` is negative.
 val charsTillString:     string -> int -> Parser<string,'u>
 /// `skipCharsTillString str nMax` is an optimized implementation of `charsTillString str nMax |>> ignore`.
 val skipCharsTillString: string -> int -> Parser<unit,'u>
@@ -327,16 +329,16 @@ val skipCharsTillString: string -> int -> Parser<unit,'u>
 /// `skipToStringCI str nMax` skips over all chars before the first case-insensitive occurance of the string `str`.
 /// If more than `nMax` chars come before the first case-insensitive occurance of `str`,
 /// the parser *fails after consuming* `nMax` chars.
-/// `skipToStringCI` throws an exception if `nMax` is negative.
 /// Newlines ("\n", "\r\n" or "\r") are counted as single chars.
+/// `skipToStringCI str nMax` throws an `ArgumentOutOfRangeException` if `nMax` is negative.
 val skipToStringCI:        string -> int -> Parser<unit,'u>
 /// `charsTillStringCI str nMax` parses all chars before the first case-insensitive occurance of the string `str`
 /// and then skips over it. It returns the parsed chars before the string.
 /// If more than `nMax` chars come before the first case-insensitive occurance of `str`,
 /// the parser *fails* after consuming `nMax` chars.
-/// `charsTillStringCI` throws an exception if `nMax` is negative.
 /// Newlines ("\n", "\r\n" or "\r") are counted as single chars and
 /// in the returned string all newlines are normalized to "\n".
+/// `charsTillStringCI str nMax` throws an `ArgumentOutOfRangeException` if `nMax` is negative.
 val charsTillStringCI:     string -> int -> Parser<string,'u>
 /// `skipCharsTillStringCI str nMax` is an optimized implementation of `charsTillStringCI str nMax |>> ignore`.
 val skipCharsTillStringCI: string -> int -> Parser<unit,'u>
@@ -385,11 +387,12 @@ val skipMany1Satisfy2L: (char -> bool) -> (char -> bool) -> string -> Parser<uni
 /// predicate function `f` (i.e. chars for which `f` returns `true`), but not more than `nMax` chars.
 /// It returns the parsed chars as a string. This parser is atomic, i.e. if the first `nMin` chars
 /// do not all satisfy `f`, the parser fails without consuming any input.
-/// `manyMinMaxSatisfy` throws an exception if `nMax` is negative.
 ///
 /// Any newline ("\n", "\r\n" or "\r") is converted to the single char '\n'.
 /// Thus, to accept a newline `f '\n'` must return `true`. `f` will never be called with '\r'
 /// and the string returned by `manyMinMaxSatisfy nMin nMax f` will never contain an '\r'.
+///
+/// `manyMinMaxSatisfy` throws an `ArgumentOutOfRangeException` if `nMax` is negative.
 val manyMinMaxSatisfy:       int -> int -> (char -> bool)                   -> Parser<string,'u>
 /// `manyMinMaxSatisfy2 nMin nMax f1 f` behaves like `manyMinMaxSatisfy nMin nMax f`, except that the first char of the parsed string must satisfy `f1` instead of `f`.
 val manyMinMaxSatisfy2:      int -> int -> (char -> bool) -> (char -> bool) -> Parser<string,'u>
@@ -683,9 +686,9 @@ val puint8: Parser<uint8,'u>
 // Conditional parsing
 // -------------------
 
-/// `followedByChar c` is an optimized implementation of `followedByL (pchar c) ("'" + (c.ToString()) + "'")`.
+/// `followedByChar c` is an optimized implementation of `followedByL (pchar c) ("'" + c.ToString() + "'")`.
 val followedByChar:      char   -> Parser<unit,'u>
-/// `notFollowedByChar c` is an optimized implementation of `notFollowedByL (pchar c) ("'" + (c.ToString()) + "'")`.
+/// `notFollowedByChar c` is an optimized implementation of `notFollowedByL (pchar c) ("'" + c.ToString() + "'")`.
 val notFollowedByChar:   char   -> Parser<unit,'u>
 /// `followedByString str` is an optimized implementation of `followedByL (pstring str) ("'" + str + "'")`.
 val followedByString:    string -> Parser<unit,'u>

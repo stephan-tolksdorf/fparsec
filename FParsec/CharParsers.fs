@@ -124,9 +124,9 @@ let internal unexpectedEndOfFile          = unexpectedError "end of file"
 // Parsers
 // =======
 
-// ------------------------------------------------
-// Reading the position and handling the user state
-// ------------------------------------------------
+// -------------------------------------------------------------
+// Reading the input stream position and handling the user state
+// -------------------------------------------------------------
 
 let getPos : Parser<Pos,'u> =
     fun state -> Reply<_,_>(state.Pos, state)

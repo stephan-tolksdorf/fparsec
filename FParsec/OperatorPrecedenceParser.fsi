@@ -16,16 +16,16 @@ type PrecedenceParserOp<'a,'u> =
      // the operators are parsed as if they were given as "pstring opString >>? whitespaceAfterOpParser"
 
      /// PrefixOp(opString, wsAfterOpParser, precedence, isAssociative, f)
-     /// represents a prefix operator definition for the `OperatorPredenceParser`.
+     /// represents a prefix operator definition for the `OperatorPrecedenceParser`.
      | PrefixOp  of string * Parser<unit,'u> * int * bool * ('a -> 'a)
      /// PostfixOp(opString, wsAfterOpParser, precedence, isAssociative, f)
-     /// represents a postfix operator definition for the `OperatorPredenceParser`.
+     /// represents a postfix operator definition for the `OperatorPrecedenceParser`.
      | PostfixOp of string * Parser<unit,'u> * int * bool * ('a -> 'a)
      /// InfixOp(opString, wsAfterOpParser, precedence, associativity, f)
-     /// represents an infix operator definition for the `OperatorPredenceParser`.
+     /// represents an infix operator definition for the `OperatorPrecedenceParser`.
      | InfixOp   of string * Parser<unit,'u> * int * Assoc * ('a -> 'a -> 'a)
      /// TernaryOp(op1String, wsAfterOp1Parser, op2String, wsAfterOp2Parser, precedence, associativity, f)
-     /// represents a ternary operator definition for the `OperatorPredenceParser`.
+     /// represents a ternary operator definition for the `OperatorPrecedenceParser`.
      | TernaryOp of string * Parser<unit,'u> *
                     string * Parser<unit,'u> * int * Assoc * ('a -> 'a -> 'a -> 'a)
 
@@ -97,10 +97,10 @@ type OperatorPrecedenceParser<'a,'u> =
     /// Note that the term parser is also expected to parse any whitespace after a term.
     member TermParser: Parser<'a, 'u> with get, set
 
-    /// This function is called if the precedence parser encounters two conflicting
-    /// operators.
+    /// This function is called when the precedence parser encounters two conflicting
+    /// operators in the parser input.
     /// If the conflict handler returns `null` or an empty string, the operators are
-    /// parsed as if both were (left-)associative. Otherwise, a parser error with the
+    /// parsed as if both were (left-)associative, otherwise a parser error with the
     /// returned message is generated.
     /// The default handler will always generate an error message.
     member OperatorConflictHandler: (   State<'u> -> PrecedenceParserOp<'a,'u>
