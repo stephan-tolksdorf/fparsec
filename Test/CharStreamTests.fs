@@ -425,7 +425,7 @@ let testStream (stream: CharStream) (refString: string) blockSize blockOverlap m
         with ArgumentOutOfRange -> ()
 
         try iter0.Match(null: Regex) |> ignore; Fail()
-        with ArgumentNull -> ()
+        with NullReference -> ()
 
         let iterN = getIter(N)
 
@@ -520,21 +520,26 @@ let testStream (stream: CharStream) (refString: string) blockSize blockOverlap m
     let testReadException() =
         let iter0 = getIter(0)
 
-        try  iter0.Read(System.Int32.MaxValue) |> ignore; Fail()
+        try
+            let str = iter0.Read(System.Int32.MaxValue)
+            str |> Equal refString
         with OutOfMemory -> ()
         try  iter0.Read(-1) |> ignore; Fail()
         with ArgumentOutOfRange -> ()
         try  iter0.Read(System.Int32.MinValue) |> ignore; Fail()
         with ArgumentOutOfRange -> ()
 
-        try  iter0.Read(System.Int32.MaxValue, false) |> ignore; Fail()
+        try
+            let str = iter0.Read(System.Int32.MaxValue, false)
+            str |> Equal refString
         with OutOfMemory -> ()
         try  iter0.Read(-1, false) |> ignore; Fail()
         with ArgumentOutOfRange -> ()
         try  iter0.Read(System.Int32.MinValue, false) |> ignore; Fail()
         with ArgumentOutOfRange -> ()
 
-        try  iter0.Read(System.Int32.MaxValue, true) |> ignore; Fail()
+        try
+            iter0.Read(System.Int32.MaxValue, true) |> ReferenceEqual ""
         with OutOfMemory -> ()
         try  iter0.Read(-1, true) |> ignore; Fail()
         with ArgumentOutOfRange -> ()

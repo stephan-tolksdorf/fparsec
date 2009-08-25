@@ -863,8 +863,13 @@ namespace FParsec {
             int blockSizeMinusOverlap = BlockSize - BlockOverlap;
             long idx_;
             long block_ = Math.DivRem(index, blockSizeMinusOverlap, out idx_);
-            if (block_ > Int32.MaxValue) throw (new ArgumentOutOfRangeException("index", "The index is too large (>= 2^31*(block size - block overlap)). If you really need this large stream indices, you need to define a larger block size for the CharStream."));
-            int block = (int)block_, idx = (int)idx_;
+            int block = block_ > Int32.MaxValue ? Int32.MaxValue : (int)block_;
+            int idx = (int)idx_;
+            return Seek(block, idx);
+        }
+        private Iterator Seek(int block, int idx) {
+            Anchor* anchor = this.anchor;
+            int blockSizeMinusOverlap = anchor->BlockSizeMinusOverlap;
             if (anchor->Block < block && idx < BlockOverlap) {
                 --block;
                 idx += blockSizeMinusOverlap;
@@ -872,7 +877,7 @@ namespace FParsec {
             int last = Blocks.Count - 1;
             if (block >= last) {
                 int b = last;
-                while (ReadBlock(b) != null && b < block) ++b;
+                while (ReadBlock(b) != null && b < block) ++b; // we will get an OutOfMemoryException before b overflows
                 if (block != anchor->Block || idx >= PositiveDistance(anchor->BufferBegin, anchor->BufferEnd))
                     return new Iterator(){Anchor = anchor, Ptr = null, Block = -1};
             } else ReadBlock(block);
@@ -1495,7 +1500,13 @@ namespace FParsec {
             private string ReadContinue(int length, bool allOrEmpty) {
                 if (length < 0) throw new ArgumentOutOfRangeException("length", "Length is negative.");
                 if (length == 0 || Block == -1) return "";
-
+                if (Anchor->LastBlock != Int32.MaxValue) {
+                    long maxLength = Anchor->EndOfStream - Index;
+                    if (length > maxLength) {
+                        if (allOrEmpty) return "";
+                        length = (int)maxLength;
+                    }
+                }
                 string str = new String('\u0000', length);
                 fixed (char* pStr = str) {
                     int cc = Read(pStr, length);
