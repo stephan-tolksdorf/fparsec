@@ -12,19 +12,22 @@ namespace FParsec {
 
         public static char* Initialize() {
             if (FoldedChars != null) return FoldedChars;
-            // We pin an array on the managed heap instead of using Marshal.AllocHGlobal
-            // because we normally want it to be alive for as long as the AppDomain exists
-            // but not necessarily as long as the process lives.
-            char[] table = CreateFoldedCharsArray();
-            // The table is large enough to be allocated on the large object heap,
-            // so pinning it is a no-op and the GC is not affected.
-            var handle = GCHandle.Alloc(table, GCHandleType.Pinned);
-            char* chars = (char*) handle.AddrOfPinnedObject();
+            lock (oneToOneMappings) {
+                if (FoldedChars != null) return FoldedChars;
+                // We pin an array on the managed heap instead of using Marshal.AllocHGlobal
+                // because we normally want it to be alive for as long as the AppDomain exists
+                // but not necessarily as long as the process lives.
+                char[] table = CreateFoldedCharsArray();
+                // The table is large enough to be allocated on the large object heap,
+                // so pinning it is a no-op and the GC is not affected.
+                var handle = GCHandle.Alloc(table, GCHandleType.Pinned);
+                char* chars = (char*) handle.AddrOfPinnedObject();
 
-            FoldedChars       = chars;
-            FoldedCharsArray  = table;
-            FoldedCharsHandle = handle;
-            return chars;
+                FoldedChars       = chars;
+                FoldedCharsArray  = table;
+                FoldedCharsHandle = handle;
+                return chars;
+            }
         }
 
         // If Free isn't called manually, the table and the handle will be automatically freed when the AppDomain is unloaded.
