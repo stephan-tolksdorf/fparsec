@@ -1683,7 +1683,9 @@ namespace FParsec {
             }
 
             public bool Equals(Iterator other) {
-                return (Ptr != null && Ptr == other.Ptr) || (Anchor == other.Anchor && Index == other.Index);
+                char* ptr = Ptr;
+                return    (ptr == other.Ptr && ptr != null && Block == other.Block)
+                       || (Anchor == other.Anchor && Index == other.Index);
             }
 
             public override int GetHashCode() {
