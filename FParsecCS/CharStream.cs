@@ -1689,7 +1689,7 @@ namespace FParsec {
             }
 
             public override int GetHashCode() {
-                return ((IntPtr) Anchor).GetHashCode() ^ Index.GetHashCode();
+                return Index.GetHashCode();
             }
 
             public static bool operator==(Iterator i1, Iterator i2) { return  i1.Equals(i2); }

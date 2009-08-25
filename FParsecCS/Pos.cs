@@ -31,8 +31,7 @@ public class Pos : IEquatable<Pos>, IComparable, IComparable<Pos> {
         return (object)other != null && Index == other.Index && Line == other.Line && Column == other.Column && StreamName == other.StreamName;
     }
     public override int GetHashCode() {
-        long i = Index ^ Line ^ Column;
-        return StreamName.GetHashCode() ^ ((int) i) ^ (int) (((ulong)i) >> 32);
+        return Index.GetHashCode();
     }
     public static bool operator==(Pos pos1, Pos pos2) { return  pos1.Equals(pos2); }
     public static bool operator!=(Pos pos1, Pos pos2) { return !pos1.Equals(pos2); }

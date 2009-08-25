@@ -219,8 +219,8 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
                && d1.StreamName == d2.StreamName;
     }
 
-    public override int GetHashCode() { // GetHashCode() is not required to return different hash codes for unequal instances
-        return Iter.GetHashCode();      // and any change in the data members usually coincides with an iterator movement
+    public override int GetHashCode() {  // GetHashCode() is not required to return different hash codes for unequal instances
+        return Iter.Index.GetHashCode(); // and any change in the data members usually coincides with an iterator movement
     }
 
     /// <summary>
