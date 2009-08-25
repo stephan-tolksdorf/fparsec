@@ -11,10 +11,6 @@ public class Pos : IEquatable<Pos>, IComparable, IComparable<Pos> {
     public long   Column     { get; private set;}
     public string StreamName { get; private set;}
 
-    public Pos(string streamName) {
-        this.StreamName = streamName; this.Index = 0; this.Line = 1; this.Column = 1;
-    }
-
     public Pos(string streamName, long index, long line, long column) {
         this.StreamName = streamName; this.Index = index; this.Line = line; this.Column = column;
     }
