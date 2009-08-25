@@ -1,0 +1,784 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+ <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+ <title>FParsec.OperatorPrecedenceParser</title>
+ <link rel="stylesheet" type="text/css" media="all" href="../css/style.css" /> 
+ <link rel="stylesheet" type="text/css" media="screen" href="../css/screen-sidebar.css" title="Sidebar" /> 
+ <link rel="alternate stylesheet" type="text/css" media="screen" href="../css/screen-no-sidebar.css" title="No sidebar" /> 
+ <!--[if IE]>
+ <link rel="stylesheet" type="text/css" media="all" href="../css/style-ie.css" /> 
+ <![endif]-->
+ <!--[if IE 6]>
+ <link rel="stylesheet" type="text/css" media="all" href="../css/style-ie6.css" /> 
+ <![endif]-->
+ <link rel="stylesheet" type="text/css" media="print" href="../css/print.css" />
+</head>
+<body>
+ <div id="fixed-layer">
+ <div id="fixed-wrapper">
+ <div id="sidebar">
+  <div id="breadcrumbs-dummy"><span class="breadcrumbs">&nbsp;</span></div>
+  <div id="nav-tree">
+   <table class="nav n1">
+    <tbody class="nav-open n1">
+     <tr class="nav-entry n1 _1">
+      <td class="nav-number n1"></td>
+      <td class="nav-title n1"><a href="../index.html">FParsec Documentation</a></td>
+     </tr>
+     <tr class="nav-sub-entries n1 _1">
+      <td class="nav-sub-entries-number n1"></td>
+      <td class="nav-sub-entries n1">
+       <table class="nav n2">
+        <tbody class="nav-before-open n2">
+         <tr class="nav-entry n2 _1">
+          <td class="nav-number n2"><a href="../tutorial.html"><span class="section-number">1</span><span class="nav-space"></span></a></td>
+          <td class="nav-title n2"><a href="../tutorial.html">Tutorial</a></td>
+         </tr>
+        </tbody>
+        <tbody class="nav-open n2">
+         <tr class="nav-entry n2 _2">
+          <td class="nav-number n2"><a href="index.html"><span class="section-number">2</span><span class="nav-space"></span></a></td>
+          <td class="nav-title n2"><a href="index.html">Reference</a></td>
+         </tr>
+         <tr class="nav-sub-entries n2 _2">
+          <td class="nav-sub-entries-number n2"></td>
+          <td class="nav-sub-entries n2">
+           <table class="nav n3">
+            <tbody class="nav-before-open n3">
+             <tr class="nav-entry n3 _1">
+              <td class="nav-number n3"><a href="parser-overview.html"><span class="section-number">1</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="parser-overview.html">Parser overview</a></td>
+             </tr>
+             <tr class="nav-entry n3 _2">
+              <td class="nav-number n3"><a href="primitives.html"><span class="section-number">2</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="primitives.html">FParsec.Primitives</a></td>
+             </tr>
+             <tr class="nav-entry n3 _3">
+              <td class="nav-number n3"><a href="charparsers.html"><span class="section-number">3</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="charparsers.html">FParsec.CharParsers</a></td>
+             </tr>
+            </tbody>
+            <tbody class="nav-open selected n3">
+             <tr class="nav-entry selected n3 _4">
+              <td class="nav-number selected n3"><a href="#"><span class="section-number">4</span><span class="nav-space"></span></a></td>
+              <td class="nav-title selected n3"><a href="#">FParsec.OperatorPrecedenceParser</a></td>
+             </tr>
+             <tr class="nav-sub-entries selected n3 _4">
+              <td class="nav-sub-entries-number selected n3"></td>
+              <td class="nav-sub-entries selected n3">
+               <table class="nav n4">
+                <tbody class="nav-before-open n4">
+                 <tr class="nav-entry n4 _1">
+                  <td class="nav-number n4"><a href="#interface"><span class="section-number">1</span><span class="nav-space"></span></a></td>
+                  <td class="nav-title n4"><a href="#interface">Interface</a></td>
+                 </tr>
+                 <tr class="nav-entry n4 _2">
+                  <td class="nav-number n4"><a href="#members"><span class="section-number">2</span><span class="nav-space"></span></a></td>
+                  <td class="nav-title n4"><a href="#members">Members</a></td>
+                 </tr>
+                </tbody>
+               </table>
+              </td>
+             </tr>
+            </tbody>
+            <tbody class="nav-after-open n3">
+             <tr class="nav-entry n3 _5">
+              <td class="nav-number n3"><a href="error.html"><span class="section-number">5</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="error.html">FParsec.Error</a></td>
+             </tr>
+             <tr class="nav-entry n3 _6">
+              <td class="nav-number n3"><a href="state.html"><span class="section-number">6</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="state.html">FParsec.State</a></td>
+             </tr>
+             <tr class="nav-entry n3 _7">
+              <td class="nav-number n3"><a href="pos.html"><span class="section-number">7</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="pos.html">FParsec.Pos</a></td>
+             </tr>
+             <tr class="nav-entry n3 _8">
+              <td class="nav-number n3"><a href="charstream.html"><span class="section-number">8</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="charstream.html">FParsec.CharStream</a></td>
+             </tr>
+            </tbody>
+           </table>
+          </td>
+         </tr>
+        </tbody>
+       </table>
+      </td>
+     </tr>
+    </tbody>
+   </table>
+  </div>
+ </div>
+ </div>
+ </div>
+ <div id="wrapper">   
+ <div id="main">
+ <div id="main-content"> 
+ <div id="breadcrumbs">
+  <span class="breadcrumbs">
+   <span id="breadcrumbs-parents"><a href="../index.html">FParsec Documentation</a><span class="breadcrumbs-sep"> > </span><a href="index.html">Reference</a></span><span class="breadcrumbs-sep"> > </span>FParsec.OperatorPrecedenceParser
+  </span>
+ </div>  
+ <div class="section s2">
+  <h1 class="title h2"><span class="section-number">2.4</span> FParsec.OperatorPrecedenceParser</h1>
+  <div class="intro i2">
+   <p class="para _1">
+    This module defines the <code class="fsharp"><a href="#members.OperatorPrecedenceParser"><span
+    class="ci">OperatorPrecedenceParser</span></a></code> class.
+   </p>
+  </div>
+  <div id="interface" class="section s3">
+   <h2 class="title h3"><span class="section-number">2.4.1</span> Interface</h2>
+   <div class="intro i3">
+    <div class="para _1">
+<pre class="code fsharp"><span class="ck">module</span> <span class="ci">FParsec</span><span class="cp">.</span><a href="#members.OperatorPrecedenceParser"><span class="ci">OperatorPrecedenceParser</span></a>
+
+<span class="ck">open</span> <a href="primitives.html"><span class="ci">FParsec</span><span class="cp">.</span><span class="ci">Primitives</span></a>
+
+<span class="ck">type</span> <a id="interface.Assoc:B:" href="#members.Assoc"><span class="interface-member-marker"><span class="ci">Assoc</span></span></a> <span class="cp">=</span> <span class="ci">None</span>    <span class="cp">=</span> <span class="cn">0</span>
+           <span class="cp">|</span> <span class="ci">Left</span>    <span class="cp">=</span> <span class="cn">1</span>
+           <span class="cp">|</span> <span class="ci">Right</span>   <span class="cp">=</span> <span class="cn">2</span>
+
+<span class="cp">[&lt;</span><span class="ci">ReferenceEquality</span><span class="cp">&gt;]</span>
+<span class="ck">type</span> <a id="interface.PrecedenceParserOp:B:" href="#members.PrecedenceParserOp"><span class="interface-member-marker"><span class="ci">PrecedenceParserOp</span></span></a><span class="co">&lt;</span><span class="ctv">'a</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cp">=</span>
+   <span class="clc"><span class="left-delimiter">//</span> Op(opString, whitespaceParser, precedence, associativity, f)</span>
+
+   <span class="cp">|</span> <a id="interface.PrefixOp:B:" href="#members.PrefixOp"><span class="interface-member-marker"><span class="ci">PrefixOp</span></span></a>  <span class="ck">of</span> <span class="ci">string</span> <span class="cp">*</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="co">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cp">*</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">bool</span>  <span class="cp">*</span> <span class="cp">(</span><span class="ctv">'a</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span><span class="cp">)</span>
+   <span class="cp">|</span> <a id="interface.PostfixOp:B:" href="#members.PostfixOp"><span class="interface-member-marker"><span class="ci">PostfixOp</span></span></a> <span class="ck">of</span> <span class="ci">string</span> <span class="cp">*</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="co">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cp">*</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">bool</span>  <span class="cp">*</span> <span class="cp">(</span><span class="ctv">'a</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span><span class="cp">)</span>
+   <span class="cp">|</span> <a id="interface.InfixOp:B:" href="#members.InfixOp"><span class="interface-member-marker"><span class="ci">InfixOp</span></span></a>   <span class="ck">of</span> <span class="ci">string</span> <span class="cp">*</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="co">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cp">*</span> <span class="ci">int</span> <span class="cp">*</span> <a href="#members.Assoc"><span class="ci">Assoc</span></a> <span class="cp">*</span> <span class="cp">(</span><span class="ctv">'a</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span><span class="cp">)</span>
+   <span class="cp">|</span> <a id="interface.TernaryOp:B:" href="#members.TernaryOp"><span class="interface-member-marker"><span class="ci">TernaryOp</span></span></a> <span class="ck">of</span>   <span class="ci">string</span> <span class="cp">*</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="co">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cp">*</span> <span class="ci">string</span> <span class="cp">*</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="co">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+                  <span class="cp">*</span> <span class="ci">int</span> <span class="cp">*</span> <a href="#members.Assoc"><span class="ci">Assoc</span></a> <span class="cp">*</span> <span class="cp">(</span><span class="ctv">'a</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span><span class="cp">)</span>
+
+   <span class="cp">|</span> <a id="interface.PrefixOp:39::B:" href="#members.PrefixOp:39:"><span class="interface-member-marker"><span class="ci">PrefixOp'</span></span></a>  <span class="ck">of</span>   <span class="ci">string</span> <span class="cp">*</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="co">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+                   <span class="cp">*</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">bool</span>  <span class="cp">*</span> <span class="cp">(</span><a href="state.html"><span class="ci">State</span></a><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span><span class="cp">)</span>
+   <span class="cp">|</span> <a id="interface.PostfixOp:39::B:" href="#members.PostfixOp:39:"><span class="interface-member-marker"><span class="ci">PostfixOp'</span></span></a> <span class="ck">of</span>   <span class="ci">string</span> <span class="cp">*</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="co">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+                   <span class="cp">*</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">bool</span>  <span class="cp">*</span> <span class="cp">(</span><a href="state.html"><span class="ci">State</span></a><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span><span class="cp">)</span>
+   <span class="cp">|</span> <a id="interface.InfixOp:39::B:" href="#members.InfixOp:39:"><span class="interface-member-marker"><span class="ci">InfixOp'</span></span></a>   <span class="ck">of</span>   <span class="ci">string</span> <span class="cp">*</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="co">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+                   <span class="cp">*</span> <span class="ci">int</span> <span class="cp">*</span> <a href="#members.Assoc"><span class="ci">Assoc</span></a> <span class="cp">*</span> <span class="cp">(</span><a href="state.html"><span class="ci">State</span></a><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span><span class="cp">)</span>
+   <span class="cp">|</span> <a id="interface.TernaryOp:39::B:" href="#members.TernaryOp:39:"><span class="interface-member-marker"><span class="ci">TernaryOp'</span></span></a> <span class="ck">of</span>   <span class="ci">string</span> <span class="cp">*</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="co">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cp">*</span> <span class="ci">string</span> <span class="cp">*</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="co">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+                   <span class="cp">*</span> <span class="ci">int</span> <span class="cp">*</span> <a href="#members.Assoc"><span class="ci">Assoc</span></a>
+                   <span class="cp">*</span> <span class="cp">(</span><a href="state.html"><span class="ci">State</span></a><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <a href="state.html"><span class="ci">State</span></a><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span><span class="cp">)</span>
+   <span class="ck">with</span>
+       <span class="ck">override</span> <span class="ci">ToString</span><span class="cp">:</span> <span class="ci">unit</span> <span class="cr">-&gt;</span> <span class="ci">string</span>
+
+<span class="ck">type</span> <a id="interface.OperatorPrecedenceParser:B:" href="#members.OperatorPrecedenceParser"><span class="interface-member-marker"><span class="ci">OperatorPrecedenceParser</span></span></a><span class="co">&lt;</span><span class="ctv">'a</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span><span class="cp">=</span>
+    <a id="interface.new:B:" href="#members.new"><span class="interface-member-marker"><span class="ck">new</span></span></a><span class="cp">:</span> <span class="cp">?</span><span class="ci">ops</span><span class="cp">:</span><span class="ci">seq</span><span class="co">&lt;</span><a href="#members.PrecedenceParserOp"><span class="ci">PrecedenceParserOp</span></a><span class="co">&lt;</span><span class="ctv">'a</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ci">OperatorPrecedenceParser</span><span class="co">&lt;</span><span class="ctv">'a</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+
+    <span class="ck">member</span> <a id="interface.ExpressionParser:B:" href="#members.ExpressionParser"><span class="interface-member-marker"><span class="ci">ExpressionParser</span></span></a><span class="cp">:</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="co">&lt;</span><span class="ctv">'a</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+    <span class="ck">member</span> <a id="interface.TermParser:B:" href="#members.TermParser"><span class="interface-member-marker"><span class="ci">TermParser</span></span></a><span class="cp">:</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="co">&lt;</span><span class="ctv">'a</span><span class="cp">,</span> <span class="ctv">'u</span><span class="cp">&gt;</span> <span class="ck">with</span> <span class="ci">get</span><span class="cp">,</span> <span class="ci">set</span>
+
+    <span class="ck">member</span> <a id="interface.OperatorConflictHandler:B:" href="#members.OperatorConflictHandler"><span class="interface-member-marker"><span class="ci">OperatorConflictHandler</span></span></a><span class="cp">:</span> <span class="cp">(</span>   <a href="state.html"><span class="ci">State</span></a><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <a href="#members.PrecedenceParserOp"><span class="ci">PrecedenceParserOp</span></a><span class="co">&lt;</span><span class="ctv">'a</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+                                     <span class="cr">-&gt;</span> <a href="state.html"><span class="ci">State</span></a><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <a href="#members.PrecedenceParserOp"><span class="ci">PrecedenceParserOp</span></a><span class="co">&lt;</span><span class="ctv">'a</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+                                     <span class="cr">-&gt;</span> <span class="ci">string</span><span class="cp">)</span> <span class="ck">with</span> <span class="ci">get</span><span class="cp">,</span> <span class="ci">set</span>
+
+    <span class="ck">member</span> <a id="interface.AddOperator:B:" href="#members.AddOperator"><span class="interface-member-marker"><span class="ci">AddOperator</span></span></a><span class="cp">:</span>  <a href="#members.PrecedenceParserOp"><span class="ci">PrecedenceParserOp</span></a><span class="co">&lt;</span><span class="ctv">'a</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ci">unit</span>
+    <span class="ck">member</span> <a id="interface.AddOperators:B:" href="#members.AddOperators"><span class="interface-member-marker"><span class="ci">AddOperators</span></span></a><span class="cp">:</span> <span class="ci">seq</span><span class="co">&lt;</span><a href="#members.PrecedenceParserOp"><span class="ci">PrecedenceParserOp</span></a><span class="co">&lt;</span><span class="ctv">'a</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ci">unit</span>
+
+    <span class="ck">member</span> <a id="interface.RemoveOperator:B:" href="#members.RemoveOperator"><span class="interface-member-marker"><span class="ci">RemoveOperator</span></span></a><span class="cp">:</span>  <a href="#members.PrecedenceParserOp"><span class="ci">PrecedenceParserOp</span></a><span class="co">&lt;</span><span class="ctv">'a</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ci">bool</span>
+    <span class="ck">member</span> <a id="interface.RemoveInfixOp:B:" href="#members.RemoveInfixOp"><span class="interface-member-marker"><span class="ci">RemoveInfixOp</span></span></a><span class="cp">:</span>   <span class="ci">string</span> <span class="cr">-&gt;</span> <span class="ci">bool</span>
+    <span class="ck">member</span> <a id="interface.RemovePrefixOp:B:" href="#members.RemovePrefixOp"><span class="interface-member-marker"><span class="ci">RemovePrefixOp</span></span></a><span class="cp">:</span>  <span class="ci">string</span> <span class="cr">-&gt;</span> <span class="ci">bool</span>
+    <span class="ck">member</span> <a id="interface.RemovePostfixOp:B:" href="#members.RemovePostfixOp"><span class="interface-member-marker"><span class="ci">RemovePostfixOp</span></span></a><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <span class="ci">bool</span>
+    <span class="ck">member</span> <a id="interface.RemoveTernaryOp:B:" href="#members.RemoveTernaryOp"><span class="interface-member-marker"><span class="ci">RemoveTernaryOp</span></span></a><span class="cp">:</span> <span class="ci">string</span> <span class="cp">*</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <span class="ci">bool</span>
+
+    <span class="ck">member</span> <a id="interface.Operators:B:" href="#members.Operators"><span class="interface-member-marker"><span class="ci">Operators</span></span></a><span class="cp">:</span> <span class="ci">seq</span><span class="co">&lt;</span><a href="#members.PrecedenceParserOp"><span class="ci">PrecedenceParserOp</span></a><span class="co">&lt;</span><span class="ctv">'a</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span><span class="cp">&gt;</span>
+</pre>
+    </div>
+   </div>
+  </div>
+  <div id="members" class="section s3">
+   <h2 class="title h3"><span class="section-number">2.4.2</span> Members</h2>
+   <div class="intro i3">
+    <div class="para _1">
+     <div class="interface-members">
+      <div class="interface-member _1" id="members.Assoc">
+       <div class="interface-member-code">
+        <a class="interface-member-backlink" href="#interface.Assoc:B:">⇧</a>
+<pre class="code fsharp"><span class="ck">type</span> <span class="interface-member-marker"><span class="ci">Assoc</span></span></pre>
+       </div>
+       <div class="interface-member-description">
+        <p class="para _1">Represents the associativity of infix operators.</p>
+        <div class="para _2">
+<pre class="code fsharp"><span class="ck">type</span> <span class="ci">Assoc</span>  <span class="cp">=</span> <span class="ci">None</span>  <span class="cp">=</span> <span class="cn">0</span>
+            <span class="cp">|</span> <span class="ci">Left</span>  <span class="cp">=</span> <span class="cn">1</span>
+            <span class="cp">|</span> <span class="ci">Right</span> <span class="cp">=</span> <span class="cn">2</span>
+</pre>
+        </div>
+       </div>
+      </div>
+      <div class="interface-member _2" id="members.PrecedenceParserOp">
+       <div class="interface-member-code">
+        <a class="interface-member-backlink" href="#interface.PrecedenceParserOp:B:">⇧</a>
+<pre class="code fsharp"><span class="ck">type</span> <span class="interface-member-marker"><span class="ci">PrecedenceParserOp</span></span><span class="co">&lt;</span><span class="ctv">'a</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span></pre>
+       </div>
+       <div class="interface-member-description">
+        <p class="para _1">
+         This union type represents an operator definition for an <code class="fsharp"><a href="#members.OperatorPrecedenceParser"><span
+         class="ci">OperatorPrecedenceParser</span></a></code> (OPP).
+        </p>
+        <div class="para _2">
+<pre class="code fsharp"><span class="cp">[&lt;</span><span class="ci">ReferenceEquality</span><span class="cp">&gt;]</span>
+<span class="ck">type</span> <span class="ci">PrecenceParserOp</span><span class="co">&lt;</span><span class="ctv">'a</span><span class="cp">,</span> <span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cp">=</span>
+   <span class="clc"><span class="left-delimiter">//</span> Op(opString, whitespaceParser, precedence, associativity, f)</span>
+
+   <span class="cp">|</span> <a href="#members.PrefixOp"><span class="ci">PrefixOp</span></a>  <span class="ck">of</span> <span class="ci">string</span> <span class="cp">*</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="co">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cp">*</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">bool</span>  <span class="cp">*</span> <span class="cp">(</span><span class="ctv">'a</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span><span class="cp">)</span>
+   <span class="cp">|</span> <a href="#members.PostfixOp"><span class="ci">PostfixOp</span></a> <span class="ck">of</span> <span class="ci">string</span> <span class="cp">*</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="co">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cp">*</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">bool</span>  <span class="cp">*</span> <span class="cp">(</span><span class="ctv">'a</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span><span class="cp">)</span>
+   <span class="cp">|</span> <a href="#members.InfixOp"><span class="ci">InfixOp</span></a>   <span class="ck">of</span> <span class="ci">string</span> <span class="cp">*</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="co">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cp">*</span> <span class="ci">int</span> <span class="cp">*</span> <a href="#members.Assoc"><span class="ci">Assoc</span></a> <span class="cp">*</span> <span class="cp">(</span><span class="ctv">'a</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span><span class="cp">)</span>
+   <span class="cp">|</span> <a href="#members.TernaryOp"><span class="ci">TernaryOp</span></a> <span class="ck">of</span>   <span class="ci">string</span> <span class="cp">*</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="co">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cp">*</span> <span class="ci">string</span> <span class="cp">*</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="co">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+                  <span class="cp">*</span> <span class="ci">int</span> <span class="cp">*</span> <a href="#members.Assoc"><span class="ci">Assoc</span></a> <span class="cp">*</span> <span class="cp">(</span><span class="ctv">'a</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span><span class="cp">)</span>
+
+   <span class="cp">|</span> <a href="#members.PrefixOp:39:"><span class="ci">PrefixOp'</span></a>  <span class="ck">of</span>   <span class="ci">string</span> <span class="cp">*</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="co">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cp">*</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">bool</span>
+                   <span class="cp">*</span> <span class="cp">(</span><a href="state.html"><span class="ci">State</span></a><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span><span class="cp">)</span>
+   <span class="cp">|</span> <a href="#members.PostfixOp:39:"><span class="ci">PostfixOp'</span></a> <span class="ck">of</span>   <span class="ci">string</span> <span class="cp">*</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="co">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cp">*</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">bool</span>
+                   <span class="cp">*</span> <span class="cp">(</span><a href="state.html"><span class="ci">State</span></a><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span><span class="cp">)</span>
+   <span class="cp">|</span> <a href="#members.InfixOp:39:"><span class="ci">InfixOp'</span></a>   <span class="ck">of</span>   <span class="ci">string</span> <span class="cp">*</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="co">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cp">*</span> <span class="ci">int</span> <span class="cp">*</span> <a href="#members.Assoc"><span class="ci">Assoc</span></a>
+                   <span class="cp">*</span> <span class="cp">(</span><a href="state.html"><span class="ci">State</span></a><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span><span class="cp">)</span>
+   <span class="cp">|</span> <a href="#members.TernaryOp:39:"><span class="ci">TernaryOp'</span></a> <span class="ck">of</span>   <span class="ci">string</span> <span class="cp">*</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="co">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cp">*</span> <span class="ci">string</span> <span class="cp">*</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="co">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+                   <span class="cp">*</span> <span class="ci">int</span> <span class="cp">*</span> <a href="#members.Assoc"><span class="ci">Assoc</span></a>
+                   <span class="cp">*</span> <span class="cp">(</span><a href="state.html"><span class="ci">State</span></a><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <a href="state.html"><span class="ci">State</span></a><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span><span class="cp">)</span>
+   <span class="ck">with</span>
+      <span class="ck">override</span> <span class="ci">ToString</span><span class="cp">:</span> <span class="ci">unit</span> <span class="cr">-&gt;</span> <span class="ci">string</span>
+</pre>
+        </div>
+        <p class="para _3">
+         Four types of operators are supported: infix (e.g. &#x201C;1 + 1&#x201D;), prefix (e.g. &#x201C;‒1&#x201D;), postfix (e.g.
+         &#x201C;1++&#x201D;) and C‐style ternary operators (e.g. &#x201C;x &gt; 0 ? 1 : 2&#x201D;).
+        </p>
+        <p class="para _4">
+         Each operator is defined by an operator string, a trailing whitespace parser, a precedence level, an associativity value and a function that
+         is applied after the expression is parsed. Ternary operators require a string and associated whitespace parser for each of the two operator
+         parts.
+        </p>
+        <p class="para _5">
+         While infix operators can be left‐, right‐ and non‐associative (see the <code class="fsharp"><a href="#members.Assoc"><span
+         class="ci">Assoc</span></a></code> type), prefix and postfix operators can only be associative (<code class="fsharp"><span
+         class="cb">true</span></code>) or non‐associative (<code class="fsharp"><span class="cb">false</span></code>). See below for details on <a
+         href="#members.precedence-associativity">how precedence and associativity influence the operator precedence parser</a>.
+        </p>
+        <p class="para _6">
+         After an OPP instance parsed a sub‐expression it will call the function given as the last operator argument to map the term(s) belonging to
+         the operator to a new term. Often this function will be used to construct AST nodes or to directly transform terminal values.
+        </p>
+        <p class="para _7">
+         The only difference between the constructors with and without the trailing ' is the signature of their function arguments. The functions of
+         the '‐constructors are called with an additional parameter: the parser state as captured immediately before the operator string was parsed.
+         This is for example useful if you want to annotate your AST nodes with the position of the operators in the input.
+        </p>
+        <p class="para _8">
+         The string and the whitespace parser determine the textual representation of an operator. If the OPP encounters the operator string in the
+         input, it will apply the whitespace parser directly after the operator string. If the whitespace parser succeeds, the operator will be
+         accepted. If the whitespace parser fails after consuming input, the OPP will itself fail with this error. If the whitespace parser fails
+         without consuming input, the OPP will backtrack to before the operator string and will not try to parse any other operator at this location.
+         This behaviour can be exploited to conditionally accept an operator depending on the input following the operator string. For example, the
+         whitespace parser definition in <code class="fsharp"><a href="#members.PrefixOp"><span class="ci">PrefixOp</span></a><span
+         class="cp">(</span><span class="cs"><span class="left-delimiter">"</span>not<span class="right-delimiter">"</span></span><span
+         class="cp">,</span> <a href="primitives.html#members.notFollowedBy"><span class="ci">notFollowedBy</span></a> <a
+         href="charparsers.html#members.letter"><span class="ci">letter</span></a> <a href="primitives.html#members.:62::62::.:"><span
+         class="co">&gt;&gt;.</span></a> <a href="charparsers.html#members.spaces"><span class="ci">spaces</span></a><span class="cp">,</span> <span
+         class="cn">1</span><span class="cp">,</span> <span class="cb">true</span><span class="cp">,</span> <span class="ck">fun</span> <span
+         class="ci">x</span> <span class="cr">-&gt;</span> <span class="ci">not</span> <span class="ci">x</span><span class="cp">)</span></code> will
+         ensure that the <code class="fsharp"><span class="cs"><span class="left-delimiter">"</span>not<span
+         class="right-delimiter">"</span></span></code> in <code class="fsharp"><span class="cs"><span
+         class="left-delimiter">"</span>notAnOperator<span class="right-delimiter">"</span></span></code> can not be parsed as an operator.
+        </p>
+        <p class="para _9">
+         You can configure an OPP instance to support a prefix operator with the same string as the (first) string of an infix, postfix or ternary
+         operator. However, no two prefix operators and no two infix, postfix or ternary operators can have the same (first) string. The second string
+         of a ternary operator can not be used for any other operator at the same time.
+        </p>
+        <p class="para _0">
+         Note that the OPP will parse operators greedily. For example, if you define an operator with the string <code class="fsharp"><span
+         class="cs"><span class="left-delimiter">"</span>-<span class="right-delimiter">"</span></span></code> and one with the string <code
+         class="fsharp"><span class="cs"><span class="left-delimiter">"</span>--<span class="right-delimiter">"</span></span></code> then <code
+         class="fsharp"><span class="co">--</span></code> in the input will always be parsed as a <code class="fsharp"><span
+         class="co">--</span></code> operator never as two successive <code class="fsharp"><span class="co">-</span></code> operators, irrespective of
+         the types of the involved operators.
+        </p>
+        <div class="para _1">
+         <p>
+          <code class="fsharp"><span class="ci">PrecenceParserOp</span><span class="co">&lt;</span><span class="ctv">'a</span><span
+          class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span></code> has the following union cases:
+         </p>
+         <div class="interface-members">
+          <div class="interface-member _1" id="members.PrefixOp">
+           <div class="interface-member-code">
+            <a class="interface-member-backlink" href="#interface.PrefixOp:B:">⇧</a>
+<pre class="code fsharp"><span class="cp">|</span> <span class="interface-member-marker"><span class="ci">PrefixOp</span></span> <span class="ck">of</span> <span class="ci">string</span> <span class="cp">*</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="co">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cp">*</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">bool</span> <span class="cp">*</span> <span class="cp">(</span><span class="ctv">'a</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span><span class="cp">)</span>
+</pre>
+           </div>
+           <div class="interface-member-description">
+            <p class="para _1">
+             <code class="fsharp"><span class="ci">PrefixOp</span><span class="cp">(</span><span class="ci">opStr</span><span
+             class="cp">,</span> <span class="ci">wsAfterOpParser</span><span class="cp">,</span> <span class="ci">prec</span><span
+             class="cp">,</span> <span class="ci">isAssoc</span><span class="cp">,</span> <span class="ci">f</span><span class="cp">)</span></code>
+             represents a prefix operator definition for an <code class="fsharp"><a href="#members.OperatorPrecedenceParser"><span
+             class="ci">OperatorPrecedenceParser</span></a></code>.
+            </p>
+           </div>
+          </div>
+          <div class="interface-member _2" id="members.PostfixOp">
+           <div class="interface-member-code">
+            <a class="interface-member-backlink" href="#interface.PostfixOp:B:">⇧</a>
+<pre class="code fsharp"><span class="cp">|</span> <span class="interface-member-marker"><span class="ci">PostfixOp</span></span> <span class="ck">of</span> <span class="ci">string</span> <span class="cp">*</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="co">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cp">*</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">bool</span> <span class="cp">*</span> <span class="cp">(</span><span class="ctv">'a</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span><span class="cp">)</span>
+</pre>
+           </div>
+           <div class="interface-member-description">
+            <p class="para _1">
+             <code class="fsharp"><span class="ci">PostfixOp</span><span class="cp">(</span><span class="ci">opStr</span><span
+             class="cp">,</span> <span class="ci">wsAfterOpParser</span><span class="cp">,</span> <span class="ci">prec</span><span
+             class="cp">,</span> <span class="ci">isAssoc</span><span class="cp">,</span> <span class="ci">f</span><span class="cp">)</span></code>
+             represents a postfix operator definition for an <code class="fsharp"><a href="#members.OperatorPrecedenceParser"><span
+             class="ci">OperatorPrecedenceParser</span></a></code>.
+            </p>
+           </div>
+          </div>
+          <div class="interface-member _3" id="members.InfixOp">
+           <div class="interface-member-code">
+            <a class="interface-member-backlink" href="#interface.InfixOp:B:">⇧</a>
+<pre class="code fsharp"><span class="cp">|</span> <span class="interface-member-marker"><span class="ci">InfixOp</span></span> <span class="ck">of</span> <span class="ci">string</span> <span class="cp">*</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="co">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cp">*</span> <span class="ci">int</span> <span class="cp">*</span> <a href="#members.Assoc"><span class="ci">Assoc</span></a> <span class="cp">*</span> <span class="cp">(</span><span class="ctv">'a</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span><span class="cp">)</span>
+</pre>
+           </div>
+           <div class="interface-member-description">
+            <p class="para _1">
+             <code class="fsharp"><span class="ci">InfixOp</span><span class="cp">(</span><span class="ci">opStr</span><span class="cp">,</span> <span
+             class="ci">wsAfterOpParser</span><span class="cp">,</span> <span class="ci">prec</span><span class="cp">,</span> <span
+             class="ci">assoc</span><span class="cp">,</span> <span class="ci">f</span><span class="cp">)</span></code> represents an infix operator
+             definition for an <code class="fsharp"><a href="#members.OperatorPrecedenceParser"><span
+             class="ci">OperatorPrecedenceParser</span></a></code>.
+            </p>
+           </div>
+          </div>
+          <div class="interface-member _4" id="members.TernaryOp">
+           <div class="interface-member-code">
+            <a class="interface-member-backlink" href="#interface.TernaryOp:B:">⇧</a>
+<pre class="code fsharp"><span class="cp">|</span> <span class="interface-member-marker"><span class="ci">TernaryOp</span></span> <span class="ck">of</span>   <span class="ci">string</span> <span class="cp">*</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="co">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cp">*</span> <span class="ci">string</span> <span class="cp">*</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="co">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+               <span class="cp">*</span> <span class="ci">int</span> <span class="cp">*</span> <a href="#members.Assoc"><span class="ci">Assoc</span></a> <span class="cp">*</span> <span class="cp">(</span><span class="ctv">'a</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span><span class="cp">)</span>
+</pre>
+           </div>
+           <div class="interface-member-description">
+            <p class="para _1">
+             <code class="fsharp"><span class="ci">TernaryOp</span><span class="cp">(</span><span class="ci">op1Str</span><span
+             class="cp">,</span> <span class="ci">wsAfterOp1Parser</span><span class="cp">,</span> <span class="ci">op2Str</span><span
+             class="cp">,</span> <span class="ci">wsAfterOp2Parser</span><span class="cp">,</span> <span class="ci">prec</span><span
+             class="cp">,</span> <span class="ci">assoc</span><span class="cp">,</span> <span class="ci">f</span><span class="cp">)</span></code>
+             represents a ternary operator definition for an <code class="fsharp"><a href="#members.OperatorPrecedenceParser"><span
+             class="ci">OperatorPrecedenceParser</span></a></code>.
+            </p>
+           </div>
+          </div>
+          <div class="interface-member _5" id="members.PrefixOp:39:">
+           <div class="interface-member-code">
+            <a class="interface-member-backlink" href="#interface.PrefixOp:39::B:">⇧</a>
+<pre class="code fsharp"><span class="cp">|</span> <span class="interface-member-marker"><span class="ci">PrefixOp'</span></span> <span class="ck">of</span>   <span class="ci">string</span> <span class="cp">*</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="co">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+               <span class="cp">*</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">bool</span>  <span class="cp">*</span> <span class="cp">(</span><a href="state.html"><span class="ci">State</span></a><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span><span class="cp">)</span>
+</pre>
+           </div>
+           <div class="interface-member-description">
+            <p class="para _1">
+             <code class="fsharp"><span class="ci">PrefixOp'</span><span class="cp">(</span><span class="ci">opStr</span><span
+             class="cp">,</span> <span class="ci">wsAfterOpParser</span><span class="cp">,</span> <span class="ci">prec</span><span
+             class="cp">,</span> <span class="ci">isAssoc</span><span class="cp">,</span> <span class="ci">f</span><span class="cp">)</span></code>
+             represents a prefix operator definition for an <code class="fsharp"><a href="#members.OperatorPrecedenceParser"><span
+             class="ci">OperatorPrecedenceParser</span></a></code>. The state passed as an argument to the function is captured immediately before the
+             operator string is parsed and contains the position of the operator.
+            </p>
+           </div>
+          </div>
+          <div class="interface-member _6" id="members.PostfixOp:39:">
+           <div class="interface-member-code">
+            <a class="interface-member-backlink" href="#interface.PostfixOp:39::B:">⇧</a>
+<pre class="code fsharp"><span class="cp">|</span> <span class="interface-member-marker"><span class="ci">PostfixOp'</span></span> <span class="ck">of</span>   <span class="ci">string</span> <span class="cp">*</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="co">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+                <span class="cp">*</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">bool</span>  <span class="cp">*</span> <span class="cp">(</span><a href="state.html"><span class="ci">State</span></a><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span><span class="cp">)</span>
+</pre>
+           </div>
+           <div class="interface-member-description">
+            <p class="para _1">
+             <code class="fsharp"><span class="ci">PostfixOp'</span><span class="cp">(</span><span class="ci">opStr</span><span
+             class="cp">,</span> <span class="ci">wsAfterOpParser</span><span class="cp">,</span> <span class="ci">prec</span><span
+             class="cp">,</span> <span class="ci">isAssoc</span><span class="cp">,</span> <span class="ci">f</span><span class="cp">)</span></code>
+             represents a postfix operator definition for an <code class="fsharp"><a href="#members.OperatorPrecedenceParser"><span
+             class="ci">OperatorPrecedenceParser</span></a></code>. The state passed as an argument to the function is captured immediately before the
+             operator string is parsed and contains the position of the operator.
+            </p>
+           </div>
+          </div>
+          <div class="interface-member _7" id="members.InfixOp:39:">
+           <div class="interface-member-code">
+            <a class="interface-member-backlink" href="#interface.InfixOp:39::B:">⇧</a>
+<pre class="code fsharp"><span class="cp">|</span> <span class="interface-member-marker"><span class="ci">InfixOp'</span></span> <span class="ck">of</span>   <span class="ci">string</span> <span class="cp">*</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="co">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+              <span class="cp">*</span> <span class="ci">int</span> <span class="cp">*</span> <a href="#members.Assoc"><span class="ci">Assoc</span></a> <span class="cp">*</span> <span class="cp">(</span><a href="state.html"><span class="ci">State</span></a><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span><span class="cp">)</span>
+</pre>
+           </div>
+           <div class="interface-member-description">
+            <p class="para _1">
+             <code class="fsharp"><span class="ci">InfixOp'</span><span class="cp">(</span><span class="ci">opStr</span><span
+             class="cp">,</span> <span class="ci">wsAfterOpParser</span><span class="cp">,</span> <span class="ci">prec</span><span
+             class="cp">,</span> <span class="ci">assoc</span><span class="cp">,</span> <span class="ci">f</span><span class="cp">)</span></code>
+             represents an infix operator definition for an <code class="fsharp"><a href="#members.OperatorPrecedenceParser"><span
+             class="ci">OperatorPrecedenceParser</span></a></code>. The state passed as an argument to the function is captured immediately before the
+             operator string is parsed and contains the position of the operator.
+            </p>
+           </div>
+          </div>
+          <div class="interface-member _8" id="members.TernaryOp:39:">
+           <div class="interface-member-code">
+            <a class="interface-member-backlink" href="#interface.TernaryOp:39::B:">⇧</a>
+<pre class="code fsharp"><span class="cp">|</span> <span class="interface-member-marker"><span class="ci">TernaryOp'</span></span> <span class="ck">of</span>   <span class="ci">string</span> <span class="cp">*</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="co">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cp">*</span> <span class="ci">string</span> <span class="cp">*</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="co">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+                <span class="cp">*</span> <span class="ci">int</span> <span class="cp">*</span> <a href="#members.Assoc"><span class="ci">Assoc</span></a>
+                <span class="cp">*</span> <span class="cp">(</span><a href="state.html"><span class="ci">State</span></a><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <a href="state.html"><span class="ci">State</span></a><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span><span class="cp">)</span>
+</pre>
+           </div>
+           <div class="interface-member-description">
+            <p class="para _1">
+             <code class="fsharp"><span class="ci">TernaryOp'</span><span class="cp">(</span><span class="ci">op1Str</span><span
+             class="cp">,</span> <span class="ci">wsAfterOp1Parser</span><span class="cp">,</span> <span class="ci">op2Str</span><span
+             class="cp">,</span> <span class="ci">wsAfterOp2Parser</span><span class="cp">,</span> <span class="ci">prec</span><span
+             class="cp">,</span> <span class="ci">assoc</span><span class="cp">,</span> <span class="ci">f</span><span class="cp">)</span></code>
+             represents a ternary operator definition for an <code class="fsharp"><a href="#members.OperatorPrecedenceParser"><span
+             class="ci">OperatorPrecedenceParser</span></a></code>. The states passed as arguments to the function are captured immediately before the
+             first and second operator strings are parsed and contain the positions of the operators.
+            </p>
+           </div>
+          </div>
+         </div>
+        </div>
+       </div>
+      </div>
+      <div class="interface-member _3" id="members.OperatorPrecedenceParser">
+       <div class="interface-member-code">
+        <a class="interface-member-backlink" href="#interface.OperatorPrecedenceParser:B:">⇧</a>
+<pre class="code fsharp"><span class="ck">type</span> <span class="interface-member-marker"><span class="ci">OperatorPrecedenceParser</span></span><span class="co">&lt;</span><span class="ctv">'a</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span></pre>
+       </div>
+       <div class="interface-member-description">
+        <p class="para _1">
+         The <code class="fsharp"><span class="ci">OperatorPrecedenceParser</span></code> class (OPP) represents a dynamically configurable parser for
+         parsing expression grammars involving infix (e.g. <code class="fsharp"><span class="cn">1</span> <span class="co">+</span> <span
+         class="cn">1</span></code>), prefix (e.g. <code class="fsharp"><span class="co">-</span><span class="cn">1</span></code>), postfix (e.g.
+         <code class="fsharp"><span class="cn">1</span><span class="co">++</span></code>) and C‐style ternary operators (e.g. <code
+         class="fsharp"><span class="ci">x</span> <span class="co">&gt;</span> <span class="cn">0</span> <span class="cp">?</span> <span
+         class="cn">1</span> <span class="cp">:</span> <span class="cn">2</span></code>).
+        </p>
+        <div class="para _2">
+<pre class="code fsharp"><span class="ck">type</span> <span class="ci">OperatorPrecedenceParser</span><span class="co">&lt;</span><span class="ctv">'a</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cp">=</span>
+  <span class="ck">new</span><span class="cp">:</span> <span class="cp">?</span><span class="ci">ops</span><span class="cp">:</span><span class="ci">seq</span><span class="co">&lt;</span><a href="#members.PrecedenceParserOp"><span class="ci">PrecedenceParserOp</span></a><span class="co">&lt;</span><span class="ctv">'a</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ci">OperatorPrecedenceParser</span><span class="co">&lt;</span><span class="ctv">'a</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+
+  <span class="ck">member</span> <a href="#members.ExpressionParser"><span class="ci">ExpressionParser</span></a><span class="cp">:</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="co">&lt;</span><span class="ctv">'a</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+  <span class="ck">member</span> <a href="#members.TermParser"><span class="ci">TermParser</span></a><span class="cp">:</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="co">&lt;</span><span class="ctv">'a</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="ck">with</span> <span class="ci">get</span><span class="cp">,</span> <span class="ci">set</span>
+
+  <span class="ck">member</span> <a href="#members.AddOperator"><span class="ci">AddOperator</span></a><span class="cp">:</span>  <a href="#members.PrecedenceParserOp"><span class="ci">PrecedenceParserOp</span></a><span class="co">&lt;</span><span class="ctv">'a</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ci">unit</span>
+  <span class="ck">member</span> <a href="#members.AddOperators"><span class="ci">AddOperators</span></a><span class="cp">:</span> <span class="ci">seq</span><span class="co">&lt;</span><a href="#members.PrecedenceParserOp"><span class="ci">PrecedenceParserOp</span></a><span class="co">&lt;</span><span class="ctv">'a</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ci">unit</span>
+
+  <span class="ck">member</span> <a href="#members.RemoveOperator"><span class="ci">RemoveOperator</span></a><span class="cp">:</span>  <a href="#members.PrecedenceParserOp"><span class="ci">PrecedenceParserOp</span></a><span class="co">&lt;</span><span class="ctv">'a</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ci">bool</span>
+  <span class="ck">member</span> <a href="#members.RemoveInfixOp"><span class="ci">RemoveInfixOp</span></a><span class="cp">:</span>   <span class="ci">string</span> <span class="cr">-&gt;</span> <span class="ci">bool</span>
+  <span class="ck">member</span> <a href="#members.RemovePrefixOp"><span class="ci">RemovePrefixOp</span></a><span class="cp">:</span>  <span class="ci">string</span> <span class="cr">-&gt;</span> <span class="ci">bool</span>
+  <span class="ck">member</span> <a href="#members.RemovePostfixOp"><span class="ci">RemovePostfixOp</span></a><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <span class="ci">bool</span>
+  <span class="ck">member</span> <a href="#members.RemoveTernaryOp"><span class="ci">RemoveTernaryOp</span></a><span class="cp">:</span> <span class="ci">string</span><span class="cp">*</span><span class="ci">string</span> <span class="cr">-&gt;</span> <span class="ci">bool</span>
+
+  <span class="ck">member</span> <a href="#members.Operators"><span class="ci">Operators</span></a><span class="cp">:</span> <span class="ci">seq</span><span class="co">&lt;</span><a href="#members.PrecedenceParserOp"><span class="ci">PrecedenceParserOp</span></a><span class="co">&lt;</span><span class="ctv">'a</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span><span class="cp">&gt;</span>
+
+  <span class="ck">member</span> <a href="#members.OperatorConflictHandler"><span class="ci">OperatorConflictHandler</span></a><span class="cp">:</span> <span class="cp">(</span>   <a href="state.html"><span class="ci">State</span></a><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <a href="#members.PrecedenceParserOp"><span class="ci">PrecedenceParserOp</span></a><span class="co">&lt;</span><span class="ctv">'a</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+                                   <span class="cr">-&gt;</span> <a href="state.html"><span class="ci">State</span></a><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <a href="#members.PrecedenceParserOp"><span class="ci">PrecedenceParserOp</span></a><span class="co">&lt;</span><span class="ctv">'a</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+                                   <span class="cr">-&gt;</span> <span class="ci">string</span><span class="cp">)</span> <span class="ck">with</span> <span class="ci">get</span><span class="cp">,</span> <span class="ci">set</span>
+</pre>
+        </div>
+        <p class="para _3">
+         You can configure an OPP instance by adding and removing operator definitions in the form of <code class="fsharp"><a
+         href="#members.PrecedenceParserOp"><span class="ci">PrecedenceParserOp</span></a></code> values. If you add an operator that conflicts with a
+         previous operator definition, <code class="fsharp"><a href="#members.AddOperator"><span class="ci">AddOperator</span></a></code> will raise
+         an <code class="fsharp"><a href="http://msdn.microsoft.com/en-us/library/system.argumentexception.aspx"><span
+         class="ci">ArgumentException</span></a></code>. The <code class="fsharp"><a href="#members.Operators"><span
+         class="ci">Operators</span></a></code> property returns a snapshot of the currently defined set of operators. The <code class="fsharp"><a
+         href="#members.RemoveInfixOp"><span class="ci">RemoveInfixOp</span></a></code>, <code class="fsharp"><a href="#members.RemovePrefixOp"><span
+         class="ci">RemovePrefixOp</span></a></code>, etc. members remove operator definitions based only on their text representation. All <code
+         class="fsharp"><span class="ci">Remove</span><span class="co">...</span></code> members return <code class="fsharp"><span
+         class="cb">false</span></code> if no matching operator was previously defined, otherwise <code class="fsharp"><span
+         class="cb">true</span></code>.
+        </p>
+        <p class="para _4">
+         The actual expression parser of the OPP is exposed through the <code class="fsharp"><strong><a href="#members.ExpressionParser"><span
+         class="ci">ExpressionParser</span></a></strong></code> property. The <code class="fsharp"><a href="#members.ExpressionParser"><span
+         class="ci">ExpressionParser</span></a></code> value is a constant closure that forwards all work to an internal instance method. This ensures
+         that the behaviour of the expression parser always reflects the latest configuration of the OPP instance. You can safely call the <code
+         class="fsharp"><a href="#members.ExpressionParser"><span class="ci">ExpressionParser</span></a></code> concurrently from multiple threads, as
+         long as the configuration of the OPP instance is not changed at the same time.
+        </p>
+        <p class="para _5">
+         Before you can call the <code class="fsharp"><a href="#members.ExpressionParser"><span class="ci">ExpressionParser</span></a></code> you
+         first need to set the <code class="fsharp"><strong><a href="#members.TermParser"><span class="ci">TermParser</span></a></strong></code>. The
+         OPP instance uses the <code class="fsharp"><a href="#members.TermParser"><span class="ci">TermParser</span></a></code> to parse the terms in
+         between the operators. Often the <code class="fsharp"><a href="#members.TermParser"><span class="ci">TermParser</span></a></code> will not
+         just parse terminal values but will also recursively call the <code class="fsharp"><a href="#members.ExpressionParser"><span
+         class="ci">ExpressionParser</span></a></code>, for example to parse an expression between parentheses. Note that the <code class="fsharp"><a
+         href="#members.TermParser"><span class="ci">TermParser</span></a></code> also needs to consume any trailing whitespace.
+        </p>
+        <div class="para _6">
+         <p>This example shows how to define a parser for very simple arithmetic expressions:</p>
+<pre class="code fsharp"><span class="ck">open</span> <a href="primitives.html"><span class="ci">FParsec</span><span class="cp">.</span><span class="ci">Primitives</span></a>
+<span class="ck">open</span> <span class="ci">FParsec</span><span class="cp">.</span><span class="ci">CharParser</span>
+
+<span class="ck">let</span> <span class="ci">ws</span> <span class="cp">=</span> <a href="charparsers.html#members.spaces"><span class="ci">spaces</span></a>
+<span class="ck">let</span> <span class="ci">ch</span> <span class="ci">c</span> <span class="cp">=</span> <a href="charparsers.html#members.skipChar"><span class="ci">skipChar</span></a> <span class="ci">c</span> <a href="primitives.html#members.:62::62::.:"><span class="co">&gt;&gt;.</span></a> <span class="ci">ws</span>
+
+<span class="ck">let</span> <span class="ci">opp</span> <span class="cp">=</span> <span class="ck">new</span> <span class="ci">OperatorPrecedenceParser</span><span class="co">&lt;</span><span class="ci">_</span><span class="cp">,</span><span class="ci">_</span><span class="cp">&gt;</span><span class="cp">()</span>
+<span class="ck">let</span> <span class="ci">expr</span> <span class="cp">=</span> <span class="ci">opp</span><span class="cp">.</span><a href="#members.ExpressionParser"><span class="ci">ExpressionParser</span></a>
+<span class="ck">let</span> <span class="ci">term</span> <span class="cp">=</span> <span class="cp">(</span><a href="charparsers.html#members.pfloat"><span class="ci">pfloat</span></a> <a href="primitives.html#members.:.::62::62:"><span class="co">.&gt;&gt;</span></a> <span class="ci">ws</span><span class="cp">)</span> <a href="primitives.html#members.:60::124::62:"><span class="co">&lt;|&gt;</span></a> <a href="primitives.html#members.between"><span class="ci">between</span></a> <span class="cp">(</span><span class="ci">ch</span> <span class="cc"><span class="left-delimiter">'</span>(<span class="right-delimiter">'</span></span><span class="cp">)</span> <span class="cp">(</span><span class="ci">ch</span> <span class="cc"><span class="left-delimiter">'</span>)<span class="right-delimiter">'</span></span><span class="cp">)</span> <span class="ci">expr</span>
+<span class="ci">opp</span><span class="cp">.</span><a href="#members.TermParser"><span class="ci">TermParser</span></a> <span class="co">&lt;-</span> <span class="ci">term</span>
+
+<span class="ci">opp</span><span class="cp">.</span><a href="#members.AddOperator"><span class="ci">AddOperator</span></a><span class="cp">(</span><a href="#members.InfixOp"><span class="ci">InfixOp</span></a><span class="cp">(</span><span class="cs"><span class="left-delimiter">"</span>+<span class="right-delimiter">"</span></span><span class="cp">,</span> <span class="ci">ws</span><span class="cp">,</span> <span class="cn">1</span><span class="cp">,</span> <a href="#members.Assoc"><span class="ci">Assoc</span></a><span class="cp">.</span><span class="ci">Left</span><span class="cp">,</span> <span class="ck">fun</span> <span class="ci">x</span> <span class="ci">y</span> <span class="cr">-&gt;</span> <span class="ci">x</span> <span class="co">+</span> <span class="ci">y</span><span class="cp">)</span><span class="cp">)</span>
+<span class="ci">opp</span><span class="cp">.</span><a href="#members.AddOperator"><span class="ci">AddOperator</span></a><span class="cp">(</span><a href="#members.InfixOp"><span class="ci">InfixOp</span></a><span class="cp">(</span><span class="cs"><span class="left-delimiter">"</span>*<span class="right-delimiter">"</span></span><span class="cp">,</span> <span class="ci">ws</span><span class="cp">,</span> <span class="cn">2</span><span class="cp">,</span> <a href="#members.Assoc"><span class="ci">Assoc</span></a><span class="cp">.</span><span class="ci">Left</span><span class="cp">,</span> <span class="ck">fun</span> <span class="ci">x</span> <span class="ci">y</span> <span class="cr">-&gt;</span> <span class="ci">x</span> <span class="co">*</span> <span class="ci">y</span><span class="cp">)</span><span class="cp">)</span>
+</pre>
+<pre class="code fsharp"><span class="cp">&gt;</span> <a href="charparsers.html#members.run"><span class="ci">run</span></a> <span class="ci">expr</span> <span class="cs"><span class="left-delimiter">"</span>1 + 2*(3 + 4)<span class="right-delimiter">"</span></span><span class="cp">;;</span>
+<span class="ck">val</span> <span class="ci">it</span> <span class="cp">:</span> <a href="charparsers.html#members.ParserResult"><span class="ci">ParserResult</span></a><span class="co">&lt;</span><span class="ci">float</span><span class="cp">,</span><span class="ci">unit</span><span class="cp">&gt;</span> <span class="cp">=</span> <a href="charparsers.html#members.Success"><span class="ci">Success</span></a><span class="cp">:</span> <span class="cn">15.0</span>
+</pre>
+        </div>
+        <p class="para _7">
+         <a id="members.precedence-associativity"></a>The following points explain <em>how expressions are parsed depending on precedence and
+         associativity</em> of the involved operators:
+        </p>
+        <div class="para _8">
+         <ul class="l1">
+          <li class="_1">
+           Operators with higher precedence bind tighter. For example, if the prefix operator &#x201C;~&#x201D; has a lower precedence than the infix
+           operator &#x201C;&amp;&#x201D; then &#x201C;~x&amp;y&#x201D; will be parsed as &#x201C;~(x&amp;y)&#x201D;.
+          </li>
+         </ul>
+        </div>
+        <div class="para _9">
+         <ul class="l1">
+          <li class="_1">
+           Ternary operators are treated as special infix operators. The middle expression (e.g. &#x201C;expr2&#x201D; in &#x201C;expr1 ? expr2 :
+           expr3&#x201D;) is parsed as a &#x201C;fresh&#x201D; expression that is not influenced by the precedence of the surrounding operators.
+          </li>
+         </ul>
+        </div>
+        <div class="para _0">
+         <ul class="l1">
+          <li class="_1">
+           <p>Operators with identical precedence are parsed as follows:</p>
+<pre class="code other">Here o1,   o2   are two infix operators,
+     pre1, pre2 are two prefix operators,
+     po1,  po2  are two postfix operators
+and all operators have identical precedence.
+
+x o1 pre1 y  ==&gt;  x o1 (pre1 y)
+x o1 y po1   ==&gt;  x o1 (y po1)
+x o1 y o2 z  ==&gt;  (x o1 y) o2 z  if o1 and o2 are left-associative
+x o1 y o2 z  ==&gt;  x o1 (y o2 z)  if o1 and o2 are right-associative
+pre1 x po1   ==&gt;  (pre1 x) po1   if pre1 or po1  is associative
+pre1 pre2 x  ==&gt;  pre1 (pre2 x)  if pre1 or pre2 is associative
+x po1 po2    ==&gt;  (x po1) po2    if po1  or po2  is associative
+  </pre>
+          </li>
+         </ul>
+        </div>
+        <div class="para _1">
+         <ul class="multi-para l1">
+          <li class="_1">
+           <p class="para _1">
+            If the parser encounters conflicting operators, e.g. if a right‐associative infix operators follows a left‐associative operator of the
+            same precedence level, the <code class="fsharp"><a href="#members.OperatorConflictHandler"><span
+            class="ci">OperatorConflictHandler</span></a></code> is called. The arguments passed to the handler are the conflicting operators together
+            with the parser states as captured immediately before the operators were parsed. If the conflict handler returns null or an empty string,
+            the operators are parsed as if both were (left‐)associative, otherwise a parser error with the returned string is generated. The default
+            handler always generates an error.
+           </p>
+           <div class="para _2">
+            <p>
+             In the following situations the <code class="fsharp"><a href="#members.OperatorConflictHandler"><span
+             class="ci">OperatorConflictHandler</span></a></code> will be called and the expression will only be parsed as indicated if the handler
+             returns an empty error message:
+            </p>
+<pre class="code other">[Same notation as above, all operators have identical precedence.]
+
+x o1 y o2 z  ==&gt;  (x o1 y) o2 z  if o1 and o2 have different associativity
+                                 or o1 and o2 are non-associative
+pre1 pre2 x  ==&gt;  pre1 (pre2 y)  if pre1 and pre2 are non-associative
+pre1 x po1   ==&gt;  (pre1 y) po1   if pre1 and po1  are non-associative
+x po1 po2    ==&gt;  (y po1) po2    if po1  and po2  are non-associative
+</pre>
+           </div>
+          </li>
+         </ul>
+        </div>
+        <div class="para _2">
+         <div class="interface-members">
+          <div class="interface-member _1" id="members.new">
+           <div class="interface-member-code">
+            <a class="interface-member-backlink" href="#interface.new:B:">⇧</a>
+<pre class="code fsharp"><span class="interface-member-marker"><span class="ck">new</span></span><span class="cp">:</span> <span class="cp">?</span><span class="ci">ops</span><span class="cp">:</span><span class="ci">seq</span><span class="co">&lt;</span><a href="#members.PrecedenceParserOp"><span class="ci">PrecedenceParserOp</span></a><span class="co">&lt;</span><span class="ctv">'a</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ci">OperatorPrecedenceParser</span><span class="co">&lt;</span><span class="ctv">'a</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+</pre>
+           </div>
+           <div class="interface-member-description">
+            <p class="para _1">
+             Constructs an <code class="fsharp"><span class="ci">OperatorPrecedenceParser</span></code> instance and optionally adds the given
+             operators.
+            </p>
+           </div>
+          </div>
+          <div class="interface-member _2" id="members.ExpressionParser">
+           <div class="interface-member-code">
+            <a class="interface-member-backlink" href="#interface.ExpressionParser:B:">⇧</a>
+<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">ExpressionParser</span></span><span class="cp">:</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="co">&lt;</span><span class="ctv">'a</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+</pre>
+           </div>
+           <div class="interface-member-description">
+            <p class="para _1">
+             The expression parser. This is a constant closure that forwards all work to an internal instance method, so that the expression parser
+             always reflects the latest configuration of the <code class="fsharp"><span class="ci">OperatorPrecedenceParser</span></code> instance.
+             The parser can be safely called from different threads as long as the <code class="fsharp"><span
+             class="ci">OperatorPrecedenceParser</span></code> instance is not mutated at the same time.
+            </p>
+           </div>
+          </div>
+          <div class="interface-member _3" id="members.TermParser">
+           <div class="interface-member-code">
+            <a class="interface-member-backlink" href="#interface.TermParser:B:">⇧</a>
+<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">TermParser</span></span><span class="cp">:</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="co">&lt;</span><span class="ctv">'a</span><span class="cp">,</span> <span class="ctv">'u</span><span class="cp">&gt;</span> <span class="ck">with</span> <span class="ci">get</span><span class="cp">,</span> <span class="ci">set</span>
+</pre>
+           </div>
+           <div class="interface-member-description">
+            <p class="para _1">
+             This parser is called to parse the terms in between the operators. There is no default, so you must set this parser before you can call
+             the <code class="fsharp"><a href="#members.ExpressionParser"><span class="ci">ExpressionParser</span></a></code>. Note that the term
+             parser is also expected to parse any whitespace after a term.
+            </p>
+           </div>
+          </div>
+          <div class="interface-member _4" id="members.OperatorConflictHandler">
+           <div class="interface-member-code">
+            <a class="interface-member-backlink" href="#interface.OperatorConflictHandler:B:">⇧</a>
+<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">OperatorConflictHandler</span></span><span class="cp">:</span> <span class="cp">(</span>   <a href="state.html"><span class="ci">State</span></a><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <a href="#members.PrecedenceParserOp"><span class="ci">PrecedenceParserOp</span></a><span class="co">&lt;</span><span class="ctv">'a</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+                                 <span class="cr">-&gt;</span> <a href="state.html"><span class="ci">State</span></a><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <a href="#members.PrecedenceParserOp"><span class="ci">PrecedenceParserOp</span></a><span class="co">&lt;</span><span class="ctv">'a</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+                                 <span class="cr">-&gt;</span> <span class="ci">string</span><span class="cp">)</span> <span class="ck">with</span> <span class="ci">get</span><span class="cp">,</span> <span class="ci">set</span>
+</pre>
+           </div>
+           <div class="interface-member-description">
+            <p class="para _1">This function is called when the precedence parser encounters two conflicting operators in the parser input.</p>
+            <p class="para _2">
+             If the conflict handler returns <code class="fsharp"><span class="cnu">null</span></code> or an empty string, the operators are parsed as
+             if both were (left‐)associative, otherwise a parser error with the returned message is generated. The default handler will always
+             generate an error message.
+            </p>
+           </div>
+          </div>
+          <div class="interface-member _5" id="members.AddOperator">
+           <div class="interface-member-code">
+            <a class="interface-member-backlink" href="#interface.AddOperator:B:">⇧</a>
+<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">AddOperator</span></span><span class="cp">:</span> <a href="#members.PrecedenceParserOp"><span class="ci">PrecedenceParserOp</span></a><span class="co">&lt;</span><span class="ctv">'a</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ci">unit</span>
+</pre>
+           </div>
+           <div class="interface-member-description">
+            <p class="para _1">
+             Adds an operator to the grammar. Raises an <code class="fsharp"><a
+             href="http://msdn.microsoft.com/en-us/library/system.argumentexception.aspx"><span class="ci">ArgumentException</span></a></code> if the
+             operator definition conflicts with a previous definition or contains empty strings or a non‐positive precedence.
+            </p>
+           </div>
+          </div>
+          <div class="interface-member _6" id="members.AddOperators">
+           <div class="interface-member-code">
+            <a class="interface-member-backlink" href="#interface.AddOperators:B:">⇧</a>
+<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">AddOperators</span></span><span class="cp">:</span> <span class="ci">seq</span><span class="co">&lt;</span><a href="#members.PrecedenceParserOp"><span class="ci">PrecedenceParserOp</span></a><span class="co">&lt;</span><span class="ctv">'a</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ci">unit</span>
+</pre>
+           </div>
+           <div class="interface-member-description">
+            <p class="para _1">
+             Calls <code class="fsharp"><a href="#members.AddOperator"><span class="ci">AddOperator</span></a></code> with each operator in the given
+             sequence.
+            </p>
+           </div>
+          </div>
+          <div class="interface-member _7" id="members.RemoveOperator">
+           <div class="interface-member-code">
+            <a class="interface-member-backlink" href="#interface.RemoveOperator:B:">⇧</a>
+<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">RemoveOperator</span></span><span class="cp">:</span> <a href="#members.PrecedenceParserOp"><span class="ci">PrecedenceParserOp</span></a><span class="co">&lt;</span><span class="ctv">'a</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ci">bool</span>
+</pre>
+           </div>
+           <div class="interface-member-description">
+            <p class="para _1">
+             Removes the given operator from the grammar. Returns <code class="fsharp"><span class="cb">false</span></code> if the operator was not
+             previously registered, otherwise <code class="fsharp"><span class="cb">true</span></code>.
+            </p>
+           </div>
+          </div>
+          <div class="interface-member _8" id="members.RemoveInfixOp">
+           <div class="interface-member-code">
+            <a class="interface-member-backlink" href="#interface.RemoveInfixOp:B:">⇧</a>
+<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">RemoveInfixOp</span></span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <span class="ci">bool</span>
+</pre>
+           </div>
+           <div class="interface-member-description">
+            <p class="para _1">
+             Removes the infix operator with the given string from the grammar. Returns <code class="fsharp"><span class="cb">false</span></code> if
+             no infix operator with that string was previously registered, otherwise <code class="fsharp"><span class="cb">true</span></code>.
+            </p>
+           </div>
+          </div>
+          <div class="interface-member _9" id="members.RemovePrefixOp">
+           <div class="interface-member-code">
+            <a class="interface-member-backlink" href="#interface.RemovePrefixOp:B:">⇧</a>
+<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">RemovePrefixOp</span></span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <span class="ci">bool</span>
+</pre>
+           </div>
+           <div class="interface-member-description">
+            <p class="para _1">
+             Removes the prefix operator with the given string from the grammar. Returns <code class="fsharp"><span class="cb">false</span></code> if
+             no prefix operator with that string was previously registered, otherwise <code class="fsharp"><span class="cb">true</span></code>.
+            </p>
+           </div>
+          </div>
+          <div class="interface-member _0" id="members.RemovePostfixOp">
+           <div class="interface-member-code">
+            <a class="interface-member-backlink" href="#interface.RemovePostfixOp:B:">⇧</a>
+<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">RemovePostfixOp</span></span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <span class="ci">bool</span>
+</pre>
+           </div>
+           <div class="interface-member-description">
+            <p class="para _1">
+             Removes the postfix operator with the given string from the grammar. Returns <code class="fsharp"><span class="cb">false</span></code> if
+             no postfix operator with that string was previously registered, otherwise <code class="fsharp"><span class="cb">true</span></code>.
+            </p>
+           </div>
+          </div>
+          <div class="interface-member _1" id="members.RemoveTernaryOp">
+           <div class="interface-member-code">
+            <a class="interface-member-backlink" href="#interface.RemoveTernaryOp:B:">⇧</a>
+<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">RemoveTernaryOp</span></span><span class="cp">:</span> <span class="ci">string</span> <span class="cp">*</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <span class="ci">bool</span>
+</pre>
+           </div>
+           <div class="interface-member-description">
+            <p class="para _1">
+             Removes the ternary operator with the given strings from the grammar. Returns <code class="fsharp"><span class="cb">false</span></code>
+             if no ternary operator with these strings was previously registered, otherwise <code class="fsharp"><span class="cb">true</span></code>.
+            </p>
+           </div>
+          </div>
+          <div class="interface-member _2" id="members.Operators">
+           <div class="interface-member-code">
+            <a class="interface-member-backlink" href="#interface.Operators:B:">⇧</a>
+<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">Operators</span></span><span class="cp">:</span> <span class="ci">seq</span><span class="co">&lt;</span><a href="#members.PrecedenceParserOp"><span class="ci">PrecedenceParserOp</span></a><span class="co">&lt;</span><span class="ctv">'a</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span><span class="cp">&gt;</span>
+</pre>
+           </div>
+           <div class="interface-member-description">
+            <p class="para _1">
+             Returns a sequence with a snapshot of the operators currently registered with the <code class="fsharp"><span
+             class="ci">OperatorPrecedenceParser</span></code>.
+            </p>
+           </div>
+          </div>
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div>
+  </div>
+ </div>
+ </div>
+ </div>   
+ </div>
+</body>
+</html>
+

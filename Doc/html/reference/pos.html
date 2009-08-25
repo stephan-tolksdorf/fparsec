@@ -1,0 +1,135 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+ <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+ <title>FParsec.Pos</title>
+ <link rel="stylesheet" type="text/css" media="all" href="../css/style.css" /> 
+ <link rel="stylesheet" type="text/css" media="screen" href="../css/screen-sidebar.css" title="Sidebar" /> 
+ <link rel="alternate stylesheet" type="text/css" media="screen" href="../css/screen-no-sidebar.css" title="No sidebar" /> 
+ <!--[if IE]>
+ <link rel="stylesheet" type="text/css" media="all" href="../css/style-ie.css" /> 
+ <![endif]-->
+ <!--[if IE 6]>
+ <link rel="stylesheet" type="text/css" media="all" href="../css/style-ie6.css" /> 
+ <![endif]-->
+ <link rel="stylesheet" type="text/css" media="print" href="../css/print.css" />
+</head>
+<body>
+ <div id="fixed-layer">
+ <div id="fixed-wrapper">
+ <div id="sidebar">
+  <div id="breadcrumbs-dummy"><span class="breadcrumbs">&nbsp;</span></div>
+  <div id="nav-tree">
+   <table class="nav n1">
+    <tbody class="nav-open n1">
+     <tr class="nav-entry n1 _1">
+      <td class="nav-number n1"></td>
+      <td class="nav-title n1"><a href="../index.html">FParsec Documentation</a></td>
+     </tr>
+     <tr class="nav-sub-entries n1 _1">
+      <td class="nav-sub-entries-number n1"></td>
+      <td class="nav-sub-entries n1">
+       <table class="nav n2">
+        <tbody class="nav-before-open n2">
+         <tr class="nav-entry n2 _1">
+          <td class="nav-number n2"><a href="../tutorial.html"><span class="section-number">1</span><span class="nav-space"></span></a></td>
+          <td class="nav-title n2"><a href="../tutorial.html">Tutorial</a></td>
+         </tr>
+        </tbody>
+        <tbody class="nav-open n2">
+         <tr class="nav-entry n2 _2">
+          <td class="nav-number n2"><a href="index.html"><span class="section-number">2</span><span class="nav-space"></span></a></td>
+          <td class="nav-title n2"><a href="index.html">Reference</a></td>
+         </tr>
+         <tr class="nav-sub-entries n2 _2">
+          <td class="nav-sub-entries-number n2"></td>
+          <td class="nav-sub-entries n2">
+           <table class="nav n3">
+            <tbody class="nav-before-open n3">
+             <tr class="nav-entry n3 _1">
+              <td class="nav-number n3"><a href="parser-overview.html"><span class="section-number">1</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="parser-overview.html">Parser overview</a></td>
+             </tr>
+             <tr class="nav-entry n3 _2">
+              <td class="nav-number n3"><a href="primitives.html"><span class="section-number">2</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="primitives.html">FParsec.Primitives</a></td>
+             </tr>
+             <tr class="nav-entry n3 _3">
+              <td class="nav-number n3"><a href="charparsers.html"><span class="section-number">3</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="charparsers.html">FParsec.CharParsers</a></td>
+             </tr>
+             <tr class="nav-entry n3 _4">
+              <td class="nav-number n3">
+               <a href="operatorprecedenceparser.html"><span class="section-number">4</span><span class="nav-space"></span></a>
+              </td>
+              <td class="nav-title n3"><a href="operatorprecedenceparser.html">FParsec.OperatorPrecedenceParser</a></td>
+             </tr>
+             <tr class="nav-entry n3 _5">
+              <td class="nav-number n3"><a href="error.html"><span class="section-number">5</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="error.html">FParsec.Error</a></td>
+             </tr>
+             <tr class="nav-entry n3 _6">
+              <td class="nav-number n3"><a href="state.html"><span class="section-number">6</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="state.html">FParsec.State</a></td>
+             </tr>
+            </tbody>
+            <tbody class="nav-open selected n3">
+             <tr class="nav-entry selected n3 _7">
+              <td class="nav-number selected n3"><a href="#"><span class="section-number">7</span><span class="nav-space"></span></a></td>
+              <td class="nav-title selected n3"><a href="#">FParsec.Pos</a></td>
+             </tr>
+            </tbody>
+            <tbody class="nav-after-open n3">
+             <tr class="nav-entry n3 _8">
+              <td class="nav-number n3"><a href="charstream.html"><span class="section-number">8</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="charstream.html">FParsec.CharStream</a></td>
+             </tr>
+            </tbody>
+           </table>
+          </td>
+         </tr>
+        </tbody>
+       </table>
+      </td>
+     </tr>
+    </tbody>
+   </table>
+  </div>
+ </div>
+ </div>
+ </div>
+ <div id="wrapper">   
+ <div id="main">
+ <div id="main-content"> 
+ <div id="breadcrumbs">
+  <span class="breadcrumbs">
+   <span id="breadcrumbs-parents"><a href="../index.html">FParsec Documentation</a><span class="breadcrumbs-sep"> > </span><a href="index.html">Reference</a></span><span class="breadcrumbs-sep"> > </span>FParsec.Pos
+  </span>
+ </div>  
+ <div class="section s2">
+  <h1 class="title h2"><span class="section-number">2.7</span> FParsec.Pos</h1>
+  <div class="intro i2">
+   <div class="para _1">
+<pre class="code fsharp"><span class="ck">type</span> <span class="ci">Pos</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cp">=</span>
+  <span class="ck">new</span><span class="cp">:</span> <span class="ci">streamName</span><span class="cp">:</span> <span class="ci">string</span> <span class="co">*</span> <span class="ci">index</span><span class="cp">:</span> <span class="ci">int64</span> <span class="co">*</span> <span class="ci">line</span><span class="cp">:</span> <span class="ci">int64</span> <span class="co">*</span> <span class="ci">column</span><span class="cp">:</span> <span class="ci">int64</span> <span class="cr">-&gt;</span> <span class="ci">Pos</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+
+  <span class="ck">member</span> <span class="ci">StreamName</span><span class="cp">:</span> <span class="ci">string</span>
+  <span class="ck">member</span> <span class="ci">Index</span><span class="cp">:</span> <span class="ci">int64</span>
+  <span class="ck">member</span> <span class="ci">Line</span><span class="cp">:</span> <span class="ci">int64</span>
+  <span class="ck">member</span> <span class="ci">Column</span><span class="cp">:</span> <span class="ci">int64</span>
+
+  <span class="ck">override</span> <span class="ci">ToString</span><span class="cp">:</span> <span class="ci">unit</span> <span class="cr">-&gt;</span> <span class="ci">string</span>
+
+  <span class="ck">interface</span> <a href="http://msdn.microsoft.com/en-us/library/ms131187.aspx"><span class="ci">System</span><span class="cp">.</span><span class="ci">IEquatable</span></a><span class="co">&lt;</span><span class="ci">Pos</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span><span class="cp">&gt;</span>
+  <span class="ck">interface</span> <span class="ci">System</span><span class="cp">.</span><span class="ci">IComparable</span><span class="co">&lt;</span><span class="ci">Pos</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span><span class="cp">&gt;</span>
+  <span class="ck">interface</span> <span class="ci">System</span><span class="cp">.</span><span class="ci">IComparable</span>
+</pre>
+   </div>
+  </div>
+ </div>
+ </div>
+ </div>   
+ </div>
+</body>
+</html>
+

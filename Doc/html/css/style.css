@@ -1,0 +1,379 @@
+/* reset */
+
+html, body, div, span, h1, h2, h3, h4, h5, h6, p,
+pre, a, code, em, strong, img, dl, dt, dd, ol, ul, li,
+table, caption, thead, tbody, tfoot, th, tr, td {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-family: inherit;
+    font-size: 100%;
+    font-weight: inherit;
+    font-style: inherit;
+    vertical-align: baseline;
+    text-align:left;
+    text-decoration: none;
+}
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+/* layout */
+
+#fixed-layer {
+    display: none;
+}
+
+#wrapper {
+    max-width: 47.5em;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+pre {
+    overflow:auto;
+}
+
+.interface-member-code pre {
+    overflow: visible;
+    white-space: pre-wrap;       /* css-3 */
+    white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+    white-space: -pre-wrap;      /* Opera 4-6 */
+    white-space: -o-pre-wrap;    /* Opera 7 */
+    word-wrap: break-word;       /* Internet Explorer 5.5+ */
+}
+
+/* typography */
+
+body {
+    font-family: "Cambria", "Georgia", "Palatino", "Palatino Linotype", "Times", "Times New Roman", serif;
+    font-size: 87.5%; /* 14px */
+    line-height: 1.429em;
+}
+
+pre, code, tt {
+   font-family: Consolas, "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Lucida Sans Typewriter", "Courier New", "Courier"; /* can't put monospace in there because otherwise WebKit browsers would change the default size */
+   font-size: 0.9286em; /* 13px */
+   font-size-adjust: 0.461; /* at the same font size Consolas and Courier New have a considerably smaller x-height than the other fonts*/
+   line-height: 1.25em;
+}
+
+.title .section-number {
+    /* Georgia's old-style figures don't look good in section numbers like 1.2.3.4 */
+    font-family:  "Cambria", /* "Georgia", */ "Palatino", "Palatino Linotype", "Times", "Times New Roman", serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: normal; /* for IE */
+}
+
+h1  {
+    font-size: 1.7143em;
+    line-height: 1em;
+    margin-top: 0.75em;
+    margin-bottom: 0.5833em;
+}
+
+h2, h3 {
+    font-size: 1.5em;
+    line-height: 1em;
+    margin-top: 1em;
+    margin-bottom: 0.6666em;
+}
+
+.toc-title {
+    font-size: 1.5em;
+    line-height: 1em;
+    margin-top: 1em;
+    margin-bottom: 0.3333em;
+}
+
+.local-toc ol {
+    list-style-type:none;
+    padding-left: 0;
+}
+
+.para {
+    margin-bottom: 1em;
+}
+
+ul, ol {
+    padding-left: 2em;
+}
+
+ul { list-style-type: disc; }
+ol { list-style-type: decimal; }
+
+dl {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+dt {
+    margin-top: 1em;
+    font-style: italic;
+}
+
+dd {
+    padding-left: 2em;
+}
+
+.fn-title {
+    font-weight: bold;
+    margin-top: 1em;
+    margin-bottom: 0.5em;
+}
+
+th.fn {
+    padding-right: 1em;
+}
+
+th.fn, td.fn {
+    padding-bottom: 1em;
+}
+
+em, .italic {
+    font-style: italic;
+}
+
+strong, .bold  {
+    font-weight: bold;
+}
+
+.small {
+    font-size: 0.9em;
+}
+
+/* design */
+
+#breadcrumbs,
+#breadcrumbs-dummy {
+    padding-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+
+
+a, a code {
+   color: #003399;
+}
+
+a:hover {
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+}
+
+a:target,
+.interface-member:target > .interface-member-code .interface-member-marker,
+.table:target > table > caption .table-title {
+    background-color: #dddddd;
+}
+
+.admonition {
+    border-top: 1px solid #999999;
+    border-bottom: 1px solid #999999;
+    padding-top: 0.2em;
+    padding-bottom: 0.3em;
+    margin-bottom: 1em;
+}
+
+.admonition-title {
+    font-weight: bold;
+    font-style: italic;
+}
+
+.admonition p {
+    margin-top: 1em;
+    margin-bottom: 0em;
+}
+
+.admonition p._1 {
+    margin-top: 0em;
+}
+
+code {
+    white-space: pre;
+    margin-left: 1px;
+    margin-right: 1px;
+    background-color: #f8f8f8;
+}
+
+.code {
+   background-color : #f8f8f8;
+   margin-top: 3px;
+   margin-bottom: 3px;
+   padding: 2px;
+   border-top: 1px solid #dcdcdc;
+   border-bottom: 1px solid #dcdcdc;
+}
+
+code a, .code a {
+    color: #000000;
+    text-decoration: none;
+    border-bottom: 1px dashed #c8c8c8;
+}
+
+code a:hover, .code a:hover {
+    text-decoration: none;
+    border-bottom-style: solid;
+}
+
+/*
+.cb: boolean literal
+.cbc: block comment
+.cc: char literal
+.ce: escaped char
+.cei: escaped identifier
+.ci: identifier
+.cin: invalid
+.ck: keyword
+.clc: line comment
+.cn: number literal
+.cnu: null literal
+.co: operator
+.col: other literal
+.cp: punctuation
+.cpr: preprocessor
+.cr: right arrow
+.cre: reserved
+.cs: string literal
+.ctv: type variable
+*/
+
+span.ck /* keyword */ /*, span.cb, span.cnu */ {
+   color: #0048a0;
+}
+
+span.cr /* right arrow */ {
+    color: #0048a0;
+}
+
+span.cc /* char literal */, span.cs /* string literal */ {
+   color: #940c00;
+}
+
+span.ce /* escaped char */ {
+    color: #d0532c;
+}
+
+span.clc /* line comment*/, span.cbc /* block comment */ {
+    color: #007e1e;
+}
+
+/* interface reference */
+
+.interface-member {
+    margin-bottom: 2em;
+}
+
+.interface-member-code {
+    margin-bottom: 0.5em;
+}
+
+.interface-member-backlink {
+    float: right;
+    color: #000000;
+    font-family: "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans", "DejaVu Sans", sans-serif;
+    text-decoration: none;
+    font-size: 16px;
+}
+
+.interface-member-backlink:hover {
+    border-bottom: 0;
+}
+
+.interface-member-description {
+    padding-left: 2.075em;
+}
+
+.interface-member-marker {
+    font-weight: bold;
+}
+
+/* parser overview tables */
+
+.api-table {
+    margin-top: 2em;
+}
+
+.api-table table {
+    width: 100%;
+    border-top: 1px solid #000000;
+    border-bottom: 1px solid #000000;
+}
+
+.api-table thead th {
+    font-size: 1.1em;
+    font-weight: bold;
+    border-top: 1px solid #000000;
+    border-bottom: 1px solid #000000;
+}
+
+.api-table .table-caption-prefix {
+    font-style: normal;
+    margin-right: 0.2em;
+    font-weight: bold;
+}
+
+.api-table caption {
+    font-style: italic;
+    padding-bottom: 0.3em;
+}
+
+.api-table td, .api-table th {
+    padding-top: 0.3em;
+    padding-bottom: 0.2em;
+}
+
+.api-table tbody td {
+    border-top: 1px solid #dddddd;
+}
+
+.api-table td._1 {
+    padding-right: 1em;
+}
+
+#parsing-single-chars td._1 {
+    width: 35%;
+}
+
+#parsing-strings-directly td._1 {
+    width: 38.5%;
+}
+
+#parsing-strings-with-the-help-of-other-parsers td._1 {
+    width: 36%;
+}
+
+#parsing-whitespace td._1 {
+    width: 35%;
+}
+
+#chaining-and-piping-parsers td._1 {
+    width: 27%;
+}
+
+#parsing-sequences td._1 {
+    width: 25%;
+}
+
+#parsing-sequences td._2 {
+    width: 22%;
+}
+
+#parsing-alternatives-and-recovering-from-errors td._1 {
+    width: 23%;
+}
+
+#conditional-parsing-and-looking-ahead td._1 {
+    width: 44%;
+}
+
+#customizing-error-messages td._1 {
+    width: 28%;
+}
+
+#user-state-handling td._1 {
+    width: 24%;
+}
