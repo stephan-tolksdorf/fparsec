@@ -147,7 +147,7 @@ public sealed unsafe class CharSet {
                 prevChar = c;
                 int off = c - tableMin;
                 int idx = off >> log2WordSize;
-                if ((uint)idx < (uint)table.Length) {
+                if (unchecked((uint)idx) < (uint)table.Length) {
                     table[idx] |= 1 << off; // we don't need to mask off because C#'s operator<< does that for us
                 } else {
                     pCharsNotInTable[n++] = c;
@@ -160,7 +160,7 @@ public sealed unsafe class CharSet {
     public bool Contains(char c) {
         int off = c - tableMin;
         int idx = off >> log2WordSize;
-        if ((uint)idx < (uint)table.Length) {
+        if (unchecked((uint)idx) < (uint)table.Length) {
             return ((table[idx] >> off) & 1) != 0; // we don't need to mask off because C#'s operator>> does that for us
         }
         if (charsNotInTable == null) return false;
@@ -209,7 +209,7 @@ public static unsafe string DoubleToHexString(double x) {
         }
         int lastNonNull = i;
         for (int j = 0; j < maxFractNibbles; ++j) {
-            int h = ((int) (s >> ((maxFractNibbles - 1 - j) << 2))) & 0xf;
+            int h = unchecked((int) (s >> ((maxFractNibbles - 1 - j) << 2))) & 0xf;
             if (h != 0) lastNonNull = i;
             str[i++] = "0123456789abcdef"[h];
         }
@@ -436,7 +436,7 @@ public static unsafe double DoubleFromHexString(string str) {
                 } while (++exp < minExp);
                 if (xn <= 2) return sign == 0 ? 0.0 : -0.0; // underflow
             }
-            int r = (int)(((uint)xn) & 0x7u); // (lsb, bit below lsb, logical OR of all bits below the bit below lsb)
+            int r = unchecked((int)xn) & 0x7; // (lsb, bit below lsb, logical OR of all bits below the bit below lsb)
             xn >>= 2; // truncate to maxBits
             if (r >= 6 || r == 3) {
                 xn++;

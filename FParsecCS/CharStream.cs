@@ -993,7 +993,11 @@ namespace FParsec {
                 if (Block == Anchor->Block && (n >= 0 ? n <   PositiveDistance(Ptr, Anchor->BufferEnd)
                                                       : n >= -PositiveDistance(Anchor->BufferBegin, Ptr)))
                 {
-                    char* newPtr = Ptr + (int)n;
+                    int nn = (int)n;
+                    char* newPtr = unchecked (Ptr + nn); // we need unchecked here because C# always uses
+                                                         // unsigned arithmetic for pointer calculations and
+                                                         // otherwise would report an overflow for any negative n
+                                                         // if overflow checking is activated
                     return new Iterator() {Anchor = Anchor, Ptr = newPtr, Block = Block};
                 }
                 return Stream.Seek(Index + n);
@@ -1073,7 +1077,7 @@ namespace FParsec {
             /// <exception cref="IOException">An I/O error occured.</exception>
             public char _Decrement() {
                 Anchor* anchor = Anchor;
-                char* newPtr = this.Ptr - 1;
+                char* newPtr = unchecked (this.Ptr - 1);
                 if (Block == anchor->Block && newPtr >= anchor->BufferBegin) {
                     this.Ptr = newPtr;
                     return *newPtr;
@@ -1270,7 +1274,7 @@ namespace FParsec {
             public bool Match(char* pStr, int length) {
                 char* ptr = Ptr;
                 Anchor* anchor = Anchor;      // the unsigned comparison will correctly handle negative length values
-                if (Block == anchor->Block && (uint)length <= (uint)PositiveDistance(ptr, anchor->BufferEnd)) {
+                if (Block == anchor->Block && unchecked((uint)length) <= (uint)PositiveDistance(ptr, anchor->BufferEnd)) {
                     #if UNALIGNED_READS
                         int len = length & 0x7ffffffe;
                         for (int i = 0; i < len; i += 2) {
@@ -1476,8 +1480,8 @@ namespace FParsec {
             /// <exception cref="ArgumentException">The input stream contains invalid bytes and the encoding was constructed with the throwOnInvalidBytes option.</exception>
             /// <exception cref="DecoderFallbackException">The input stream contains invalid bytes for which the decoder fallback threw this exception.</exception>
             public string Read(int length) {
-                Anchor* anchor = Anchor; // we don't include the empty case here, so that for length = 0 the interned string constant "" is returned
-                if (Block == anchor->Block && (uint)length < (uint)PositiveDistance(Ptr, anchor->BufferEnd))
+                Anchor* anchor = Anchor;
+                if (Block == anchor->Block && unchecked((uint)length) <= (uint)PositiveDistance(Ptr, anchor->BufferEnd))
                     return new String(Ptr, 0, length);
                 return ReadContinue(length, false);
             }
@@ -1494,7 +1498,7 @@ namespace FParsec {
             /// <exception cref="DecoderFallbackException">The input stream contains invalid bytes for which the decoder fallback threw this exception.</exception>
             public string Read(int length, bool allOrEmpty) {
                 Anchor* anchor = Anchor;
-                if (Block == anchor->Block && (uint)length < (uint)PositiveDistance(Ptr, anchor->BufferEnd))
+                if (Block == anchor->Block && unchecked((uint)length) <= (uint)PositiveDistance(Ptr, anchor->BufferEnd))
                     return new String(Ptr, 0, length);
                 return ReadContinue(length, allOrEmpty);
             }
@@ -1552,10 +1556,10 @@ namespace FParsec {
             public int Read(char* dest, int length) {
                 Anchor* anchor = Anchor;
                 char* ptr = Ptr;
-                if (Block == anchor->Block && (uint)length <= (uint)PositiveDistance(ptr, anchor->BufferEnd)) {
+                if (Block == anchor->Block && unchecked((uint)length) <= (uint)PositiveDistance(ptr, anchor->BufferEnd)) {
                     #if UNALIGNED_READS
                         int len = length;
-                        if ((((int)dest) & 2) != 0) { // align dest
+                        if ((unchecked((int)dest) & 2) != 0) { // align dest
                             *dest = *ptr;
                             ++dest; ++ptr; --len;
                         }
@@ -1616,7 +1620,7 @@ namespace FParsec {
                     length -= len;
 
                     #if UNALIGNED_READS
-                        if ((((int)dest) & 2) != 0) { // align dest
+                        if ((unchecked((int)dest) & 2) != 0) { // align dest
                             *dest = *ptr;
                             ++dest; ++ptr; --len;
                         }
@@ -1821,7 +1825,7 @@ namespace FParsec {
                 #if UNALIGNED_READS
                     if (src != end) {
                         int len = PositiveDistance(src, end);
-                        if ((((int)dst) & 2) != 0) { // align dest
+                        if ((unchecked((int)dst) & 2) != 0) { // align dest
                             *dst = *src;
                             ++src; ++dst; --len;
                         }
