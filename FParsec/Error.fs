@@ -9,8 +9,6 @@ open FParsec.Internals
 
 #nowarn "61" // "The containing type can use 'null' as a representation value for its nullary union case. This member will be compiled as a static member."
 
-let invalidPos = Pos("invalid position", -1L, -1L, -1L)
-
 [<DebuggerDisplay("{GetDebuggerDisplay(),nq}")>]
 type ErrorMessage =
      | Expected       of string

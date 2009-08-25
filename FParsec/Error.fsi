@@ -3,8 +3,6 @@
 
 module FParsec.Error
 
-val invalidPos : Pos
-
 #nowarn "61" // "The containing type can use 'null' as a representation value for its nullary union case. This member will be compiled as a static member."
 
 type ErrorMessage =
