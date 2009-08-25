@@ -559,9 +559,7 @@ namespace FParsec {
             if (preamble.Length > 0 && count >= preamble.Length) {
                 int i = 0;
                 while (buffer[i] == preamble[i]) {
-                    if (++i == preamble.Length) {
-                        return preamble.Length;
-                    }
+                    if (++i == preamble.Length) return preamble.Length;
                 }
             }
             return 0;
@@ -614,12 +612,12 @@ namespace FParsec {
                 int bufferCount = 0;
                 bool flush;
                 do {
-                    int nRemainingBytesInByteBuffer = FillByteBuffer();
-                    flush = nRemainingBytesInByteBuffer == 0;
+                    int nBytesInByteBuffer = FillByteBuffer();
+                    flush = nBytesInByteBuffer == 0;
                     try {
-                        bufferCount += Decoder.GetChars(byteBuffer + ByteBufferIndex, nRemainingBytesInByteBuffer,
+                        bufferCount += Decoder.GetChars(byteBuffer + ByteBufferIndex, nBytesInByteBuffer,
                                                         buffer + bufferCount, maxCount - bufferCount, flush);
-                        ByteBufferIndex += nRemainingBytesInByteBuffer;
+                        ByteBufferIndex += nBytesInByteBuffer; // GetChars consumed all bytes in the byte buffer
                     } catch (DecoderFallbackException e) {
                         e.Data.Add("Stream.Position", ByteIndex + e.Index);
                         throw;
@@ -646,7 +644,7 @@ namespace FParsec {
                         Decoder.Convert(byteBuffer + ByteBufferIndex, nBytesInByteBuffer,
                                         buffer, maxCount, flush,
                                         out bytesUsed, out charsUsed, out completed);
-                        ByteBufferIndex += bytesUsed;
+                        ByteBufferIndex += bytesUsed; // GetChars consumed bytesUsed bytes from the byte buffer
                         buffer += charsUsed;
                         maxCount -= charsUsed;
                         if (flush && completed) return buffer;
@@ -859,7 +857,7 @@ namespace FParsec {
             if (index >= anchor->EndOfStream) return new Iterator() {Anchor = anchor, Ptr = null, Block = -1};
             index -= anchor->CharIndexOffset;
             if (index < 0) throw (new ArgumentOutOfRangeException("index", "The index is negative (or less than the char index offset specified at construction time)."));
-            int blockSizeMinusOverlap = BlockSize - BlockOverlap;
+            int blockSizeMinusOverlap = anchor->BlockSizeMinusOverlap;
             long idx_;
             long block_ = Math.DivRem(index, blockSizeMinusOverlap, out idx_);
             int block = block_ > Int32.MaxValue ? Int32.MaxValue : (int)block_;
@@ -1534,7 +1532,6 @@ namespace FParsec {
             /// <exception cref="ArgumentException">The input stream contains invalid bytes and the encoding was constructed with the throwOnInvalidBytes option.</exception>
             /// <exception cref="DecoderFallbackException">The input stream contains invalid bytes for which the decoder fallback threw this exception.</exception>
             public int Read(char[] dest, int destIndex, int length) {
-                //Debug.Assert(dest != null, "char array argument is null");
                 if (destIndex < 0)
                     throw new ArgumentOutOfRangeException("destIndex", "DestIndex is negative.");
                 if (length > dest.Length - destIndex)
@@ -1672,7 +1669,7 @@ namespace FParsec {
             /// <exception cref="DecoderFallbackException">The input stream contains invalid bytes for which the decoder fallback threw this exception.</exception>
             public string ReadUntil(Iterator iterToCharAfterLastInString) {
                 if (Anchor != iterToCharAfterLastInString.Anchor)
-                    throw new ArgumentOutOfRangeException("iterToCharAfterLastInString", "The iterator argument belongs to a different CharStream.");
+                    throw new ArgumentOutOfRangeException("iterToCharAfterLastInString", "The Iterator argument belongs to a different CharStream.");
                 int block = Block;
                 char* ptr = Ptr;
                 char* end = iterToCharAfterLastInString.Ptr;
@@ -1683,11 +1680,12 @@ namespace FParsec {
                 return ReadUntilContinue(iterToCharAfterLastInString);
             }
             private string ReadUntilContinue(Iterator iterToCharAfterLastInString) {
-                long index1 = Index;
-                long index2 = iterToCharAfterLastInString.Index;
+                ulong index1 = (ulong)Index;
+                ulong index2 = (ulong)iterToCharAfterLastInString.Index;
                 if (index2 <= index1) return "";
-                int length = (int) Math.Min(index2 - index1, (long) System.Int32.MaxValue);
+                ulong length_ = index2 - index1;
                 // length >= Int32.MaxValue will trigger an exception anyway (because the string is too large)
+                int length = length_ > (uint)System.Int32.MaxValue ? System.Int32.MaxValue : (int)length_;
                 string str = new String('\u0000', length);
                 fixed (char* pStr = str) ReadContinue(pStr, length);
                 return str;

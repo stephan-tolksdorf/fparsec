@@ -90,6 +90,7 @@ val run: Parser<'Result, unit> -> string -> ParserResult<'Result,unit>
 /// `getPos` is equivalent to `fun state -> Reply<_,_>(state.Pos, state)`.
 val getPos: Parser<Pos,'u>
 
+
 /// The parser `getUserState` returns the current user state.
 /// `getUserState` is equivalent to `fun state -> Reply<_,_>(state.UserState, state)`.
 val getUserState: Parser<'u,'u>

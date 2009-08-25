@@ -231,7 +231,7 @@ type ParserError(pos: Pos, error: ErrorMessageList) =
                 | Expected s   -> expectedA.Add(s)
                 | Unexpected s -> unexpectedA.Add(s)
                 | Message s    -> messageA.Add(s)
-                | OtherError obj    -> otherCount <- otherCount + 1
+                | OtherError obj -> otherCount <- otherCount + 1
                 | CompoundError (s, pos2, msgs2) ->
                     if not (System.String.IsNullOrEmpty(s)) then expectedA.Add(s)
                     compoundA.Add((s, pos2, msgs2))

@@ -60,11 +60,12 @@ internal unsafe static T RunParserOnSubstream<T,TUserState,TSubStreamUserState>(
             return parser.Invoke(state);
         }
     } else {
-        long index1 = s0.Iter.Index;
-        long index2 = s1.Iter.Index;
+        ulong index1 = (ulong)s0.Iter.Index;
+        ulong index2 = (ulong)s1.Iter.Index;
         if (index2 < index1) throw new ArgumentException("The position of the second state lies before the position of the first state.");
-        int length = (int) Math.Min(index2 - index1, (long) System.Int32.MaxValue);
+        ulong length_ = index2 - index1;
         // length >= Int32.MaxValue will trigger an exception anyway (because the string is too large)
+        int length = length_ > (uint)System.Int32.MaxValue ? System.Int32.MaxValue : (int)length_;
         string subString = new String('\u0000', length);
         fixed (char* pSubString = subString) {
             s0.Iter.Read(pSubString, length);
@@ -264,7 +265,7 @@ public static unsafe string SingleToHexString(float x) {
             s <<= 4 - (maxBits - 1)%4;
         }
         for (int j = 0; j < maxFractNibbles; ++j) {
-            int h = ((int) (s >> ((maxFractNibbles - 1 - j) << 2))) & 0xf;
+            int h = (int)(s >> ((maxFractNibbles - 1 - j) << 2)) & 0xf;
             if (h != 0) lastNonNull = i;
             str[i++] = "0123456789abcdef"[h];
         }
@@ -280,7 +281,7 @@ public static unsafe string SingleToHexString(float x) {
         i += li;
         do {
             int r = e%10; e = e/10;
-            str[--i] = (char) (48 + r);
+            str[--i] = (char)(48 + r);
         } while (e > 0);
         i += li;
         return new String(str, 0, i);
@@ -350,7 +351,7 @@ public static unsafe double DoubleFromHexString(string str) {
                     if (pastDot) exp -= 4 - nBits;
                 } else if (nBits <= maxBits2 - 4) {
                     xn <<= 4;
-                    xn |= (uint) h;
+                    xn |= (uint)h;
                     nBits += 4;
                 } else if (nBits < maxBits2) {
                     int nRemBits = maxBits2 - nBits;
@@ -358,7 +359,7 @@ public static unsafe double DoubleFromHexString(string str) {
                     int surplusBits = h & (0xf >> nRemBits);
                     surplusBits = (0xfffe >> surplusBits) & 1; // == surplusBits != 0 ? 1 : 0
                     xn <<= nRemBits;
-                    xn |= (uint) ((h >> nSurplusBits) | (surplusBits));
+                    xn |= (uint)((h >> nSurplusBits) | (surplusBits));
                     nBits += 4;
                 } else {
                     xn |= (uint)((0xfffe >> h) & 1); // (0xfffe >> h) & 1 == h != 0 ? 1 : 0
@@ -609,7 +610,7 @@ public static unsafe float SingleFromHexString(string str) {
                 } while (++exp < minExp);
                 if (xn <= 2) return sign == 0 ? 0.0f : -0.0f; // underflow
             }
-            int r = (int)(((uint)xn) & 0x7u); // (lsb, bit below lsb, logical OR of all bits below the bit below lsb)
+            int r = xn & 0x7; // (lsb, bit below lsb, logical OR of all bits below the bit below lsb)
             xn >>= 2; // truncate to maxBits
             if (r >= 6 || r == 3) {
                 xn++;

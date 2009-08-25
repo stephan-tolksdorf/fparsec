@@ -491,20 +491,20 @@ let testNumberParsers() =
                  ||| NLO.AllowOctal
                  ||| NLO.AllowInfinity
                  ||| NLO.AllowNaN
-     
+
 
         numberLiteral all "nl" |> RError "|" 0 (expectedError "nl")
         numberLiteral all "nl" |> ROk "0|"     (NumberLiteral("0", NLF.IsDecimal ||| NLF.HasIntegerPart, EOS, EOS, EOS, EOS))
         numberLiteral all "nl" |> ROk "+0|"    (NumberLiteral("+0", NLF.HasPlusSign ||| NLF.IsDecimal ||| NLF.HasIntegerPart, EOS, EOS, EOS, EOS))
         numberLiteral all "nl" |> ROk "-0|"    (NumberLiteral("-0", NLF.HasMinusSign ||| NLF.IsDecimal ||| NLF.HasIntegerPart, EOS, EOS, EOS, EOS))
-        
+
         numberLiteral all "nl" |> ROk "0u|"    (NumberLiteral("0", NLF.IsDecimal ||| NLF.HasIntegerPart ||| ((enum) 1), 'u', EOS, EOS, EOS))
         numberLiteral all "nl" |> ROk "0az|"   (NumberLiteral("0", NLF.IsDecimal ||| NLF.HasIntegerPart ||| ((enum) 2), 'a', 'z', EOS, EOS))
         numberLiteral all "nl" |> ROk "0uAZ|"  (NumberLiteral("0", NLF.IsDecimal ||| NLF.HasIntegerPart ||| ((enum) 3), 'u', 'A', 'Z', EOS))
         numberLiteral all "nl" |> ROk "0ulLF|" (NumberLiteral("0", NLF.IsDecimal ||| NLF.HasIntegerPart ||| ((enum) 4), 'u', 'l', 'L', 'F'))
-        
+
         let all2 = all ||| NLO.IncludeSuffixCharsInString
-        
+
         numberLiteral all2 "nl" |> ROk "0u|"    (NumberLiteral("0u", NLF.IsDecimal ||| NLF.HasIntegerPart ||| ((enum) 1), 'u', EOS, EOS, EOS))
         numberLiteral all2 "nl" |> ROk "0az|"   (NumberLiteral("0az", NLF.IsDecimal ||| NLF.HasIntegerPart ||| ((enum) 2), 'a', 'z', EOS, EOS))
         numberLiteral all2 "nl" |> ROk "0uAZ|"  (NumberLiteral("0uAZ", NLF.IsDecimal ||| NLF.HasIntegerPart ||| ((enum) 3), 'u', 'A', 'Z', EOS))

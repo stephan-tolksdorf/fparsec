@@ -71,7 +71,7 @@ let testNonStreamConstructors() =
      let testStringStream() =
          use stream = new CharStream(s)
          testStream stream 0 s.Length 0L true
-                  
+
          use stream = new CharStream(s, 0, s.Length)
          testStream stream 0 s.Length 0L true
          use stream = new CharStream(s, 0, s.Length, 1000L)
@@ -138,7 +138,7 @@ let testNonStreamConstructors() =
          try new CharStream(NativePtr.of_nativeint 0n, 10) |> ignore; Fail()
          with ArgumentNull -> ()
          try new CharStream(cp, -1) |> ignore; Fail()
-         with ArgumentOutOfRange -> ()         
+         with ArgumentOutOfRange -> ()
          try new CharStream(cp, 10, -1L) |> ignore; Fail()
          with ArgumentOutOfRange -> ()
          try new CharStream(cp, 10, (1L <<< 60)) |> ignore; Fail()
@@ -585,21 +585,21 @@ let testStream (stream: CharStream) (refString: string) blockSize blockOverlap m
 
         let iterN = getIter(N)
 
-        try  iterN.Read(System.Int32.MaxValue) |> Equal ""
+        try  iterN.Read(System.Int32.MaxValue) |> ReferenceEqual ""
         with OutOfMemory -> ()
         try  iterN.Read(-1) |> ignore; Fail()
         with ArgumentOutOfRange -> ()
         try  iterN.Read(System.Int32.MinValue) |> ignore; Fail()
         with ArgumentOutOfRange -> ()
 
-        try  iterN.Read(System.Int32.MaxValue, false) |> Equal ""
+        try  iterN.Read(System.Int32.MaxValue, false) |> ReferenceEqual ""
         with OutOfMemory -> ()
         try  iterN.Read(-1, false) |> ignore; Fail()
         with ArgumentOutOfRange -> ()
         try  iterN.Read(System.Int32.MinValue, false) |> ignore; Fail()
         with ArgumentOutOfRange -> ()
 
-        try  iterN.Read(System.Int32.MaxValue, true) |> Equal ""
+        try  iterN.Read(System.Int32.MaxValue, true) |> ReferenceEqual ""
         with OutOfMemory -> ()
         try  iterN.Read(-1, true) |> ignore; Fail()
         with ArgumentOutOfRange -> ()

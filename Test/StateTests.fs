@@ -473,7 +473,7 @@ let testSkipCharsOrNewlines() =
         s1.Line      |> Equal 2L
         s1.LineBegin |> Equal 101L
         s1.Column    |> Equal 1L
-        
+
     testFastPath()
     testSlowPath()
     testArgumentChecking()
