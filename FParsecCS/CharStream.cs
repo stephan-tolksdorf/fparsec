@@ -330,7 +330,32 @@ namespace FParsec {
             anchor->CharIndexOffset = streamIndexOffset;
         }
 
-        /// <summary>Constructs a CharStream from a byte Stream.<br/>Equivalent to CharStream(stream, false, encoding, true, defaultBlockSize, defaultBlockSize/3, ((defaultBlockSize/3)*2)/3, defaultByteBufferLength).</summary>
+        /// <summary>Constructs a CharStream from the file at the given path.<br/>Is equivalent to CharStream(new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.SequentialScan), false, encoding, true, defaultBlockSize, defaultBlockSize/3, ((defaultBlockSize/3)*2)/3, defaultByteBufferLength).</summary>
+        public CharStream(string path, Encoding encoding)
+               : this(path, encoding, true,
+                      DefaultBlockSize, DefaultBlockSize/3, ((DefaultBlockSize/3)*2)/3, DefaultByteBufferLength) { }
+
+        /// <summary>Constructs a CharStream from the file at the given path.<br/>Is equivalent to CharStream(new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.SequentialScan), false, encoding, detectEncodingFromByteOrderMarks, defaultBlockSize, defaultBlockSize/3, ((defaultBlockSize/3)*2)/3, defaultByteBufferLength).</summary>
+        public CharStream(string path, Encoding encoding, bool detectEncodingFromByteOrderMarks)
+               : this(path, encoding, detectEncodingFromByteOrderMarks,
+                      DefaultBlockSize, DefaultBlockSize/3, ((DefaultBlockSize/3)*2)/3, DefaultByteBufferLength) { }
+
+        /// <summary>Constructs a CharStream from the file at the given path.<br/>Is equivalent to CharStream(new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.SequentialScan), false, encoding, detectEncodingFromByteOrderMarks, blockSize, blockOverlap, minRegexSpace, byteBufferLength).</summary>
+        public CharStream(string path, Encoding encoding, bool detectEncodingFromByteOrderMarks,
+                          int blockSize, int blockOverlap, int minRegexSpace, int byteBufferLength)
+        {
+            if (encoding == null) throw new ArgumentNullException("encoding");
+            Stream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.SequentialScan);
+            try {
+               StreamConstructorContinue(stream, false, encoding, detectEncodingFromByteOrderMarks,
+                                         blockSize, blockOverlap, minRegexSpace, byteBufferLength);
+            } catch {
+                stream.Dispose();
+                throw;
+            }
+        }
+
+        /// <summary>Constructs a CharStream from a byte Stream.<br/>Is equivalent to CharStream(stream, false, encoding, true, defaultBlockSize, defaultBlockSize/3, ((defaultBlockSize/3)*2)/3, defaultByteBufferLength).</summary>
         public CharStream(Stream stream, Encoding encoding)
                : this(stream,
                       false, encoding, true,
@@ -348,25 +373,6 @@ namespace FParsec {
                       leaveOpen, encoding, detectEncodingFromByteOrderMarks,
                       DefaultBlockSize, DefaultBlockSize/3, ((DefaultBlockSize/3)*2)/3, DefaultByteBufferLength) { }
 
-        /// <summary>Constructs a CharStream from the file at the given path.<br/>Equivalent to CharStream(new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.SequentialScan), false, encoding, true, defaultBlockSize, defaultBlockSize/3, ((defaultBlockSize/3)*2)/3, defaultByteBufferLength).</summary>
-        public CharStream(string path, Encoding encoding)
-               : this(new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.SequentialScan),
-                      false, encoding, true,
-                      DefaultBlockSize, DefaultBlockSize/3, ((DefaultBlockSize/3)*2)/3, DefaultByteBufferLength) { }
-
-        /// <summary>Constructs a CharStream from the file at the given path.<br/>Equivalent to CharStream(new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.SequentialScan), false, encoding, detectEncodingFromByteOrderMarks, defaultBlockSize, defaultBlockSize/3, ((defaultBlockSize/3)*2)/3, defaultByteBufferLength).</summary>
-        public CharStream(string path, Encoding encoding, bool detectEncodingFromByteOrderMarks)
-               : this(new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.SequentialScan),
-                      false, encoding, detectEncodingFromByteOrderMarks,
-                      DefaultBlockSize, DefaultBlockSize/3, ((DefaultBlockSize/3)*2)/3, DefaultByteBufferLength) { }
-
-        /// <summary>Constructs a CharStream from the file at the given path.<br/>Equivalent to CharStream(new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.SequentialScan), false, encoding, detectEncodingFromByteOrderMarks, blockSize, blockOverlap, minRegexSpace, byteBufferLength).</summary>
-        public CharStream(string path, Encoding encoding, bool detectEncodingFromByteOrderMarks,
-                          int blockSize, int blockOverlap, int minRegexSpace, int byteBufferLength)
-               : this(new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.SequentialScan),
-                      false, encoding, detectEncodingFromByteOrderMarks,
-                      blockSize, blockOverlap, minRegexSpace, byteBufferLength) { }
-
         /// <summary>Constructs a CharStream from a byte Stream.</summary>
         /// <param name="stream">The byte stream providing the input.</param>
         /// <param name="leaveOpen">Indicates whether the byte Stream should be left open when the CharStream is disposed.</param>
@@ -376,22 +382,22 @@ namespace FParsec {
         /// <param name="blockOverlap">The number of chars at the end of a block that are preserved when reading the next block into the char buffer. It must be smaller than blockSize/2 and larger than encoding.GetMaxCharCount(1). The default is blockSize/3.</param>
         /// <param name="minRegexSpace">The number of chars that are guaranteed to be visible to a regular expression when it is matched at a certain position in the stream (if there are still enough chars in the stream). Must be smaller than or equal to blockOverlap. The default is 2/3 of blockOverlap.</param>
         /// <param name="byteBufferLength">The size of the byte buffer used for decoding purposes. The default is 2^12 = 4KB.</param>
-        /// <exception cref="ArgumentException">The stream does not support reading. If leaveOpen is false, the stream is closed before the exception is thrown.</exception>
-        /// <exception cref="ArgumentNullException">stream or encoding is null. If encoding is null and stream is not null and leaveOpen is false, then stream is closed before the exception is thrown.</exception>
         public CharStream(Stream stream, bool leaveOpen,
                           Encoding encoding, bool detectEncodingFromByteOrderMarks,
                           int blockSize, int blockOverlap, int minRegexSpace, int byteBufferLength)
         {
             if (stream == null) throw new ArgumentNullException("stream");
-            if (!stream.CanRead) {
-                if (!leaveOpen) stream.Close();
-                throw new ArgumentException("stream is not readable");
-            }
-            if (encoding == null) {
-                if (!leaveOpen) stream.Close();
-                throw new ArgumentNullException("encoding");
-            }
+            if (!stream.CanRead) throw new ArgumentException("stream is not readable");
+            if (encoding == null) throw new ArgumentNullException("encoding");
+            StreamConstructorContinue(stream, leaveOpen,
+                                      encoding, detectEncodingFromByteOrderMarks,
+                                      blockSize, blockOverlap, minRegexSpace, byteBufferLength);
+        }
 
+        private void StreamConstructorContinue(Stream stream, bool leaveOpen,
+                                               Encoding encoding, bool detectEncodingFromByteOrderMarks,
+                                               int blockSize, int blockOverlap, int minRegexSpace, int byteBufferLength)
+        {
             Stream = stream;
             LeaveOpen = leaveOpen;
 
@@ -403,13 +409,15 @@ namespace FParsec {
                 StreamPosition = stream.Position;
                 long streamLength = Stream.Length - StreamPosition;
                 if (streamLength <= Int32.MaxValue) {
-                    bytesInStream = (int) streamLength;
+                    bytesInStream = (int)streamLength;
                     if (bytesInStream < byteBufferLength) byteBufferLength = bytesInStream;
                 }
+            } else {
+                StreamPosition = 0;
             }
 
             ByteBuffer = new byte[byteBufferLength];
-            ClearAndRefillByteBuffer(0);
+            ClearAndRefillByteBuffer(0); // sets ByteBufferIndex and ByteBufferCount
             if (ByteBufferCount < byteBufferLength) bytesInStream = ByteBufferCount;
 
             int preambleLength = DetectPreamble(ByteBuffer, ByteBufferCount, ref encoding, detectEncodingFromByteOrderMarks);
@@ -435,9 +443,11 @@ namespace FParsec {
             if (allCharsFitIntoOneBlock) {
                 blockOverlap  = 0;
                 minRegexSpace = 0;
+                MaxCharCountForOneByte = -1;
+                SerializableDecoderMembers = null;
             } else {
-                SerializableDecoderMembers = GetSerializableDecoderMemberInfo(Decoder);
                 MaxCharCountForOneByte = Math.Max(1, Encoding.GetMaxCharCount(1));
+                SerializableDecoderMembers = GetSerializableDecoderMemberInfo(Decoder);
                 if (blockSize < 3*MaxCharCountForOneByte) blockSize = 3*MaxCharCountForOneByte;
                 // MaxCharCountForOneByte == the maximum number of overhang chars
                 if(    Math.Min(blockOverlap, blockSize - 2*blockOverlap) < MaxCharCountForOneByte
@@ -449,55 +459,43 @@ namespace FParsec {
             BlockOverlap  = blockOverlap;
             MinRegexSpace = minRegexSpace;
 
-            BufferString = new String('\u0000', BlockSize);
-            BufferHandle = GCHandle.Alloc(BufferString, GCHandleType.Pinned);
-            char* bufferBegin = (char*)BufferHandle.AddrOfPinnedObject();
+            try {
+                BufferString = new String('\u0000', BlockSize);
+                BufferHandle = GCHandle.Alloc(BufferString, GCHandleType.Pinned);
+                char* bufferBegin = (char*)BufferHandle.AddrOfPinnedObject();
 
-            anchor = Anchor.Create(this);
-            anchor->BlockSizeMinusOverlap = blockSize - blockOverlap;
-            anchor->BufferBegin = bufferBegin;
-
-            if (allCharsFitIntoOneBlock) {
-                int bufferCount = 0;
-                if (ByteBufferCount > 0) {
-                    try {
-                        bufferCount = ReadAllRemainingCharsFromStream(bufferBegin, BlockSize);
-                    } catch {
-                        if (!leaveOpen) stream.Close();
-                        Anchor.Free(anchor);
-                        BufferHandle.Free();
-                        throw;
-                    }
-                }
-                anchor->Block = 0;
-                anchor->LastBlock = 0;
-                anchor->CharIndex = 0;
-                anchor->CharIndexOffset = 0;
-                anchor->CharIndexPlusOffset = 0;
-                anchor->BufferEnd = bufferBegin + bufferCount;
-                anchor->EndOfStream = bufferCount;
-                ByteBuffer = null; // we don't need the byte buffer anymore
-                if (!leaveOpen) stream.Close();
-                Stream = null;
-            } else {
-                anchor->Block = -2; // special value recognized by ReadBlock
-                anchor->LastBlock = int.MaxValue;
-                anchor->CharIndex = 0;
-                anchor->CharIndexOffset = 0;
-                anchor->CharIndexPlusOffset = 0;
-                anchor->BufferEnd = bufferBegin;
-                anchor->EndOfStream = long.MaxValue;
-                Blocks = new List<BlockInfo>();
-                // the first block has no overlap with a previous block
-                Blocks.Add(new BlockInfo(ByteBufferIndex, ByteBufferIndex, 0, EOS, null, new DecoderState(), null, new DecoderState()));
-                try {
-                    ReadBlock(0);
-                } catch {
-                    BufferHandle.Free();
-                    Anchor.Free(anchor);
+                anchor = Anchor.Create(this);
+                anchor->BlockSizeMinusOverlap = blockSize - blockOverlap;
+                anchor->BufferBegin = bufferBegin;
+                if (allCharsFitIntoOneBlock) {
+                    int bufferCount = ByteBufferCount == 0 ? 0 : ReadAllRemainingCharsFromStream(bufferBegin, BlockSize);
+                    anchor->Block = 0;
+                    anchor->LastBlock = 0;
+                    anchor->CharIndex = 0;
+                    anchor->CharIndexOffset = 0;
+                    anchor->CharIndexPlusOffset = 0;
+                    anchor->BufferEnd = bufferBegin + bufferCount;
+                    anchor->EndOfStream = bufferCount;
+                    ByteBuffer = null; // we don't need the byte buffer anymore
                     if (!leaveOpen) stream.Close();
-                    throw;
+                    Stream = null;
+                } else {
+                    anchor->Block = -2; // special value recognized by ReadBlock
+                    anchor->LastBlock = Int32.MaxValue;
+                    anchor->CharIndex = 0;
+                    anchor->CharIndexOffset = 0;
+                    anchor->CharIndexPlusOffset = 0;
+                    anchor->BufferEnd = bufferBegin;
+                    anchor->EndOfStream = Int64.MaxValue;
+                    Blocks = new List<BlockInfo>();
+                    // the first block has no overlap with a previous block
+                    Blocks.Add(new BlockInfo(ByteBufferIndex, ByteBufferIndex, 0, EOS, null, new DecoderState(), null, new DecoderState()));
+                    ReadBlock(0);
                 }
+            } catch {
+                if (anchor != null) Anchor.Free(anchor);
+                if (BufferHandle.IsAllocated) BufferHandle.Free();
+                throw;
             }
         }
 
@@ -505,13 +503,14 @@ namespace FParsec {
             if (anchor == null) return;
             Anchor.Free(anchor);
             anchor = null;
+            Blocks = null;
             ByteBuffer = null;
             BufferString = null;
+            if (BufferHandle.IsAllocated) BufferHandle.Free();
             if (Stream != null && !LeaveOpen) {
                 Stream.Close();
                 Stream = null;
             }
-            if (BufferHandle.IsAllocated) BufferHandle.Free();
         }
 
         /// <summary>Detects the presence of an encoding preamble. If detectEncoding is false,
