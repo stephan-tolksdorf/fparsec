@@ -95,7 +95,10 @@ let testNonStreamConstructors() =
          with ArgumentOutOfRange -> ()
          try new CharStream(s, 0, 10, (1L <<< 60)) |> ignore; Fail()
          with ArgumentOutOfRange -> ()
+     testStringStream()
 
+ #if LOW_TRUST
+ #else
      let testCharArrayStream() =
          use stream = new CharStream(cs, 0, s.Length)
          testStream stream 0 s.Length 0L false
@@ -120,6 +123,7 @@ let testNonStreamConstructors() =
          with ArgumentOutOfRange -> ()
          try new CharStream(cs, 0, 10, (1L <<< 60)) |> ignore; Fail()
          with ArgumentOutOfRange -> ()
+     testCharArrayStream()
 
      let testCharPointerStream() =
          let handle = System.Runtime.InteropServices.GCHandle.Alloc(cs, System.Runtime.InteropServices.GCHandleType.Pinned)
@@ -144,11 +148,8 @@ let testNonStreamConstructors() =
          try new CharStream(cp, 10, (1L <<< 60)) |> ignore; Fail()
          with ArgumentOutOfRange -> ()
          handle.Free()
-
-     testStringStream()
-     testCharArrayStream()
      testCharPointerStream()
-
+    #endif
 
 /// Tries to systematically test all code branches in CharStream.Iterator methods.
 let testStream (stream: CharStream) (refString: string) blockSize blockOverlap minRegexSpace =
@@ -303,6 +304,8 @@ let testStream (stream: CharStream) (refString: string) blockSize blockOverlap m
     let regex = new Regex(".*", RegexOptions.Singleline)
 
     let testMatch i n =
+    #if LOW_TRUST
+    #else
         let matchCaseFoldedArray (iter: CharStream.Iterator) (cs: char[]) i n =
             if n > 0 then
                 let handle = System.Runtime.InteropServices.GCHandle.Alloc(cs, System.Runtime.InteropServices.GCHandleType.Pinned)
@@ -312,6 +315,7 @@ let testStream (stream: CharStream) (refString: string) blockSize blockOverlap m
             else
                 let mutable c = '$'
                 iter.MatchCaseFolded(&&c, 0)
+    #endif
 
         let test (str: string) (result: bool) =
             let n = str.Length
@@ -322,8 +326,16 @@ let testStream (stream: CharStream) (refString: string) blockSize blockOverlap m
             getIter(i).Match(str) |> Equal result
             getIter(i).Match(str, 0, n) |> Equal result
             getIter(i).Match(strA, 0, n) |> Equal result
+            if n > 1 then
+                let restIsEqual = getIter(i + n - 1).Match(str.[n - 1]) // str only differs in first or last char
+                getIter(i + 1).Match(str, 1, n - 1)  |> Equal restIsEqual
+                getIter(i + 1).Match(strA, 1, n - 1) |> Equal restIsEqual
+
             getIter(i).MatchCaseFolded(cfStr) |> Equal result
+        #if LOW_TRUST
+        #else
             matchCaseFoldedArray (getIter(i)) cfStrA 0 n |> Equal result
+        #endif
 
         if n = 0 then
             test "" true
@@ -408,7 +420,8 @@ let testStream (stream: CharStream) (refString: string) blockSize blockOverlap m
         with ArgumentOutOfRange -> ()
         try  iter0.Match(a, System.Int32.MinValue, System.Int32.MaxValue) |> ignore; Fail()
         with ArgumentOutOfRange -> ()
-
+    #if LOW_TRUST
+    #else
         let mutable c = '$'
         try  iter0.Match(NativePtr.of_nativeint 0n, 1) |> ignore; Fail()
         with NullReference -> ()
@@ -423,6 +436,7 @@ let testStream (stream: CharStream) (refString: string) blockSize blockOverlap m
         with ArgumentOutOfRange -> ()
         try  iter0.MatchCaseFolded(&&c, System.Int32.MinValue) |> ignore; Fail()
         with ArgumentOutOfRange -> ()
+    #endif
 
         try iter0.Match(null: Regex) |> ignore; Fail()
         with NullReference -> ()
@@ -467,6 +481,8 @@ let testStream (stream: CharStream) (refString: string) blockSize blockOverlap m
         try  iterN.Match(a, System.Int32.MinValue, System.Int32.MaxValue) |> ignore; Fail()
         with ArgumentOutOfRange -> ()
 
+    #if LOW_TRUST
+    #else
         try  iterN.Match(&&c, -1) |> ignore; Fail()
         with ArgumentOutOfRange -> ()
         try  iterN.Match(&&c, System.Int32.MinValue) |> ignore; Fail()
@@ -476,6 +492,7 @@ let testStream (stream: CharStream) (refString: string) blockSize blockOverlap m
         with ArgumentOutOfRange -> ()
         try  iterN.MatchCaseFolded(&&c, System.Int32.MinValue) |> ignore; Fail()
         with ArgumentOutOfRange -> ()
+    #endif
 
         try getIter(N).Match(null: Regex) |> ignore; Fail()
         with NullReference -> ()
@@ -569,6 +586,8 @@ let testStream (stream: CharStream) (refString: string) blockSize blockOverlap m
         try  iter0.Read(a, System.Int32.MinValue, System.Int32.MaxValue) |> ignore; Fail()
         with ArgumentOutOfRange -> ()
 
+    #if LOW_TRUST
+    #else
         let mutable c = '_'
         try  iter0.Read(NativePtr.of_nativeint 0n, 1) |> ignore; Fail()
         with NullReference -> ()
@@ -576,6 +595,7 @@ let testStream (stream: CharStream) (refString: string) blockSize blockOverlap m
         with ArgumentOutOfRange -> ()
         try  iter0.Read(&&c, System.Int32.MinValue) |> ignore; Fail()
         with ArgumentOutOfRange -> ()
+    #endif
 
         iter0.Next.ReadUntil(iter0) |> ReferenceEqual ""
 
@@ -629,6 +649,8 @@ let testStream (stream: CharStream) (refString: string) blockSize blockOverlap m
         try  iterN.Read(a, System.Int32.MinValue, System.Int32.MaxValue) |> ignore; Fail()
         with ArgumentOutOfRange -> ()
 
+    #if LOW_TRUST
+    #else
         let mutable c = '_'
         try  iterN.Read(NativePtr.of_nativeint 0n, 1) |> Equal 0
         with NullReference -> ()
@@ -636,6 +658,7 @@ let testStream (stream: CharStream) (refString: string) blockSize blockOverlap m
         with ArgumentOutOfRange -> ()
         try  iterN.Read(&&c, System.Int32.MinValue) |> ignore; Fail()
         with ArgumentOutOfRange -> ()
+    #endif
 
     testReadException()
 
@@ -736,8 +759,11 @@ let xTest() =
                 let bytes = encoding.GetBytes(chars)
                 encoding, bytes, chars
 
-
+    #if LOW_TRUST
+        use stringStream = new CharStream(new string(chars), 0, chars.Length)
+    #else
         use stringStream = new CharStream(chars, 0, chars.Length)
+    #endif
 
         let blockSize = 16 + rand.Next(maxBlockSize - 16)
         let maxCharsForOneByte = encoding.GetMaxCharCount(1)
@@ -746,7 +772,11 @@ let xTest() =
         let blockSizeMinusOverlap = blockSize - blockOverlap
         use charStream  = new CharStream(new System.IO.MemoryStream(bytes), false,
                                          encoding, true,
-                                         blockSize, blockOverlap, 0, byteBufferLength)
+                                     #if LOW_TRUST
+                                     #else
+                                         blockSize, blockOverlap, 0,
+                                     #endif
+                                         byteBufferLength)
 
         if j%10 = 1 then
             let mutable csIter = charStream.Begin
@@ -898,21 +928,32 @@ let run() =
     testEncodingDetection()
     testNonStreamConstructors()
 
-    let refString = "1234567890ABCDEF"
-    use stringStream = new CharStream(refString, 0, refString.Length)
-    testStream stringStream refString refString.Length 0 0
+    let testStreams() =
+        let refString = "1234567890ABCDEF"
+        use stringStream = new CharStream(refString, 0, refString.Length)
+        testStream stringStream refString refString.Length 0 0
 
-    let be = new System.Text.UTF32Encoding(true, true)
-    let bs = Array.append (be.GetPreamble()) (be.GetBytes(refString))
-    use fileStream = new CharStream(new System.IO.MemoryStream(bs, false), false, System.Text.Encoding.Unicode, true, 8, 3, 3, 16);
-    testStream fileStream refString 8 3 3
+        let be = new System.Text.UTF32Encoding(true, true)
+        let bs = Array.append (be.GetPreamble()) (be.GetBytes(refString))
 
-    use emptyFileStream = new CharStream(new System.IO.MemoryStream(be.GetPreamble(), false), false, System.Text.Encoding.Unicode, true, 8, 3, 3, 16);
-    emptyFileStream.Begin.Read(10) |> Equal ""
+        let newCharStream byteStream = new CharStream(byteStream, false,
+                                                      System.Text.Encoding.Unicode, true,
+                                                                                         #if LOW_TRUST
+                                                                                         #else
+                                                                                             8, 3, 3,
+                                                                                         #endif
+                                                                                             16);
 
-    use emptyFileStream2 = new CharStream(new System.IO.MemoryStream([||], false), false, System.Text.Encoding.Unicode, true, 8, 3, 3, 16);
-    emptyFileStream2.Begin.Read(10) |> Equal ""
+        use fileStream = newCharStream (new System.IO.MemoryStream(bs, false))
+        testStream fileStream refString 8 3 3
 
+        use emptyFileStream = newCharStream (new System.IO.MemoryStream(be.GetPreamble(), false))
+        emptyFileStream.Begin.Read(10) |> Equal ""
+
+        use emptyFileStream2 = newCharStream (new System.IO.MemoryStream([||], false))
+        emptyFileStream2.Begin.Read(10) |> Equal ""
+
+    testStreams()
     xTest()
     testNormalizeNewlines()
     testFoldCase()

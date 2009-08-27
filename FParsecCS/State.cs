@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Stephan Tolksdorf 2007-2009
 // License: Simplified BSD License. See accompanying documentation.
 
+#if !LOW_TRUST
+
 using System;
 using System.Diagnostics;
 
@@ -1540,3 +1542,5 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
 } // class state
 
 }
+
+#endif // !LOW_TRUST

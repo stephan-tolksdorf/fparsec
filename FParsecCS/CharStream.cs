@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Stephan Tolksdorf 2007-2009
 // License: Simplified BSD License. See accompanying documentation.
 
+#if !LOW_TRUST
+
 using System;
 using System.IO;
 using System.Collections.Generic;
@@ -420,7 +422,7 @@ namespace FParsec {
             ClearAndRefillByteBuffer(0); // sets ByteBufferIndex and ByteBufferCount
             if (ByteBufferCount < byteBufferLength) bytesInStream = ByteBufferCount;
 
-            int preambleLength = DetectPreamble(ByteBuffer, ByteBufferCount, ref encoding, detectEncodingFromByteOrderMarks);
+            int preambleLength = Helper.DetectPreamble(ByteBuffer, ByteBufferCount, ref encoding, detectEncodingFromByteOrderMarks);
             ByteBufferIndex += preambleLength;
             bytesInStream -= preambleLength;
 
@@ -511,58 +513,6 @@ namespace FParsec {
                 Stream.Close();
                 Stream = null;
             }
-        }
-
-        /// <summary>Detects the presence of an encoding preamble. If detectEncoding is false,
-        /// this function only searches for the preamble of the given default encoding, otherwise also
-        /// for any of the standard unicode byte order marks (UTF-8, UTF-16 LE/BE, UTF-32 LE/BE).
-        /// If an encoding different from the given default encoding is detected, the new encoding
-        /// is assigned to the encoding reference. If a preamble is detected, the number of bytes
-        /// in the preamble is returned, otherwise 0.
-        /// </summary>
-        private static int DetectPreamble(byte[] buffer, int count, ref Encoding encoding, bool detectEncoding) {
-            Debug.Assert(count >= 0);
-            if (detectEncoding && count >= 2) {
-                switch (buffer[0]) {
-                case 0xEF:
-                    if (buffer[1] == 0xBB && count > 2 && buffer[2] == 0xBF) {
-                        if (encoding.CodePage != 65001) encoding = Encoding.UTF8;
-                        return 3;
-                    }
-                break;
-                case 0xFE:
-                    if (buffer[1] == 0xFF) {
-                        if (encoding.CodePage != 1201) encoding = Encoding.BigEndianUnicode;
-                        return 2;
-                    }
-                break;
-                case 0xFF:
-                    if (buffer[1] == 0xFE) {
-                        if (count >= 4 && buffer[2] == 0x00 && buffer[3] == 0x00) {
-                            if (encoding.CodePage != 12000) encoding = Encoding.UTF32; // UTF32 little endian
-                            return 4;
-                        } else {
-                            if (encoding.CodePage != 1200) encoding = Encoding.Unicode; // UTF16 little endian
-                            return 2;
-                        }
-                    }
-                break;
-                case 0x00:
-                    if (buffer[1] == 0x00 && count >= 4 && buffer[2] == 0xFE && buffer[3] == 0xFF) {
-                        if (encoding.CodePage != 12001) encoding = new UTF32Encoding(true, true); // UTF32 big endian
-                        return 4;
-                    }
-                break;
-                }
-            }
-            byte[] preamble = encoding.GetPreamble();
-            if (preamble.Length > 0 && count >= preamble.Length) {
-                int i = 0;
-                while (buffer[i] == preamble[i]) {
-                    if (++i == preamble.Length) return preamble.Length;
-                }
-            }
-            return 0;
         }
 
         /// <summary>an optimized version of end - begin, which assumes that 2^31 > end - begin >= 0. </summary>
@@ -1922,3 +1872,5 @@ namespace FParsec {
         }
     }
 }
+
+#endif // !LOW_TRUST

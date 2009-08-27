@@ -5,9 +5,17 @@ open System.Reflection
 [<assembly: AssemblyTitle("FParsec.dll")>]
 [<assembly: AssemblyDescription("FParsec.dll")>]
 #if DEBUG
-    [<assembly: AssemblyConfiguration("Debug Build")>]
+    #if LOW_TRUST
+        [<assembly: AssemblyConfiguration("Debug Build (--define:LOW_TRUST)")>]
+    #else
+        [<assembly: AssemblyConfiguration("Debug Build")>]
+    #endif
 #else
-    [<assembly: AssemblyConfiguration("Release Build")>]
+    #if LOW_TRUST
+        [<assembly: AssemblyConfiguration("Release Build (--define:LOW_TRUST)")>]
+    #else
+        [<assembly: AssemblyConfiguration("Release Build")>]
+    #endif
 #endif
 [<assembly: AssemblyProduct("FParsec")>]
 [<assembly: AssemblyCopyright("Copyright \169 Stephan Tolksdorf 2007-2009")>]

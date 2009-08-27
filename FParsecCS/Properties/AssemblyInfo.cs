@@ -4,13 +4,17 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyTitle("FParsecCS.dll")]
 [assembly: AssemblyDescription("FParsecCS.dll")]
 #if DEBUG
-    #if UNALIGNED_READS
+    #if LOW_TRUST
+        [assembly: AssemblyConfiguration("Debug Build (/define:LOW_TRUST)")]
+    #elif UNALIGNED_READS
         [assembly: AssemblyConfiguration("Debug Build (/define:UNALIGNED_READS)")]
     #else
         [assembly: AssemblyConfiguration("Debug Build")]
     #endif
 #else
-    #if UNALIGNED_READS
+    #if LOW_TRUST
+        [assembly: AssemblyConfiguration("Release Build (/define:LOW_TRUST)")]
+    #elif UNALIGNED_READS
         [assembly: AssemblyConfiguration("Release Build (/define:UNALIGNED_READS)")]
     #else
         [assembly: AssemblyConfiguration("Release Build")]

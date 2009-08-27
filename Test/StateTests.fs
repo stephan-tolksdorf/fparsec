@@ -14,8 +14,12 @@ let EOS = CharStream.Iterator.EndOfStreamChar
 let createTestStreamCharStream (content: char[]) =
     let e = System.Text.Encoding.Unicode
     let bs = e.GetBytes(content)
-    new CharStream(new System.IO.MemoryStream(bs, false), false, System.Text.Encoding.Unicode, false, 8, 3, 3, 16)
-
+    new CharStream(new System.IO.MemoryStream(bs, false), false, System.Text.Encoding.Unicode, false,
+                                                                                                     #if LOW_TRUST
+                                                                                                     #else
+                                                                                                         8, 3, 3,
+                                                                                                     #endif
+                                                                                                         16)
 
 let testSkipWhitespace() =
     // check fast path
@@ -49,9 +53,11 @@ let testSkipWhitespace() =
 
     let testFastPath() =
         let cs = Array.create 10 '_'
+    #if LOW_TRUST
+    #else
         use stream = new CharStream(cs, 0, cs.Length)
-
         let s0 = new State<unit>(stream, ())
+    #endif
         for c0 in testChars do
             cs.[0] <- c0
             for c1 in testChars do
@@ -66,13 +72,20 @@ let testSkipWhitespace() =
                                 cs.[5] <- c5
                                 for c6 in testChars do
                                     cs.[6] <- c6
+                                #if LOW_TRUST
+                                    let stream = new CharStream(new string(cs))
+                                    let s0 = new State<unit>(stream, ())
+                                #endif
                                     checkSkipWhitespace cs 0 s0
 
         // check end of block/stream handling
+    #if LOW_TRUST
+    #else
         let s6 = s0.Advance(6)
         let s7 = s0.Advance(7)
         let s8 = s0.Advance(8)
         let s9 = s0.Advance(9)
+    #endif
         for c6 in testChars do
             cs.[6] <- c6
             for c7 in testChars do
@@ -81,11 +94,23 @@ let testSkipWhitespace() =
                     cs.[8] <- c8
                     for c9 in testChars do
                         cs.[9] <- c9
+                    #if LOW_TRUST
+                        let stream = new CharStream(new string(cs))
+                        let s0 = new State<unit>(stream, ())
+                        let s6 = s0.Advance(6)
+                        let s7 = s0.Advance(7)
+                        let s8 = s0.Advance(8)
+                        let s9 = s0.Advance(9)
+                    #endif
                         checkSkipWhitespace cs 6 s6
                         checkSkipWhitespace cs 7 s7
                         checkSkipWhitespace cs 8 s8
                         checkSkipWhitespace cs 9 s9
 
+    #if LOW_TRUST
+        let stream = new CharStream(new string(cs))
+        let s0 = new State<unit>(stream, ())
+    #endif
         let s10 = s0.Advance(10)
         s10.SkipWhitespace() |> ReferenceEqual s10
 
@@ -163,9 +188,11 @@ let testSkipRestOfLine() =
 
     let testFastPath() =
         let cs = Array.create 7 '_'
+    #if LOW_TRUST
+    #else
         use stream = new CharStream(cs, 0, cs.Length)
-
         let s0 = new State<unit>(stream, ())
+    #endif
         for c0 in testChars do
             cs.[0] <- c0
             for c1 in testChars do
@@ -176,22 +203,41 @@ let testSkipRestOfLine() =
                         cs.[3] <- c3
                         for c4 in testChars do
                             cs.[4] <- c4
+                        #if LOW_TRUST
+                            use stream = new CharStream(new string(cs))
+                            let s0 = new State<unit>(stream, ())
+                        #endif
                             checkSkipRestOfLine cs 0 s0
 
+
         // check end of block/stream handling
+    #if LOW_TRUST
+    #else
         let s4 = s0.Advance(4)
         let s5 = s0.Advance(5)
         let s6 = s0.Advance(6)
+    #endif
         for c4 in testChars do
             cs.[4] <- c4
             for c5 in testChars do
                 cs.[5] <- c5
                 for c6 in testChars do
                     cs.[6] <- c6
+                #if LOW_TRUST
+                    use stream = new CharStream(new string(cs))
+                    let s0 = new State<unit>(stream, ())
+                    let s4 = s0.Advance(4)
+                    let s5 = s0.Advance(5)
+                    let s6 = s0.Advance(6)
+                #endif
                     checkSkipRestOfLine cs 4 s4
                     checkSkipRestOfLine cs 5 s5
                     checkSkipRestOfLine cs 6 s6
 
+    #if LOW_TRUST
+        use stream = new CharStream(new string(cs))
+        let s0 = new State<unit>(stream, ())
+    #endif
         let s7 = s0.Advance(7)
         checkSkipRestOfLine cs 7 s7
 
@@ -340,9 +386,11 @@ let testSkipCharsOrNewlines() =
 
     let testFastPath() =
         let cs = Array.create 10 '_'
+    #if LOW_TRUST
+    #else
         use stream = new CharStream(cs, 0, cs.Length)
-
         let s0 = new State<unit>(stream, ())
+    #endif
         for c0 in testChars do
             cs.[0] <- c0
             for c1 in testChars do
@@ -357,13 +405,20 @@ let testSkipCharsOrNewlines() =
                                 cs.[5] <- c5
                                 for c6 in testChars do
                                     cs.[6] <- c6
+                                #if LOW_TRUST
+                                    use stream = new CharStream(new string(cs))
+                                    let s0 = new State<unit>(stream, ())
+                                #endif
                                     check s0 cs 0 7
 
         // check end of block/stream handling
+    #if LOW_TRUST
+    #else
         let s6 = s0.Advance(6)
         let s7 = s0.Advance(7)
         let s8 = s0.Advance(8)
         let s9 = s0.Advance(9)
+    #endif
         for c6 in testChars do
             cs.[6] <- c6
             for c7 in testChars do
@@ -372,10 +427,22 @@ let testSkipCharsOrNewlines() =
                     cs.[8] <- c8
                     for c9 in testChars do
                         cs.[9] <- c9
+                    #if LOW_TRUST
+                        use stream = new CharStream(new string(cs))
+                        let s0 = new State<unit>(stream, ())
+                        let s6 = s0.Advance(6)
+                        let s7 = s0.Advance(7)
+                        let s8 = s0.Advance(8)
+                        let s9 = s0.Advance(9)
+                    #endif
                         check s6 cs 6 5
                         check s7 cs 7 4
                         check s8 cs 8 3
                         check s9 cs 9 2
+    #if LOW_TRUST
+        use stream = new CharStream(new string(cs))
+        let s0 = new State<unit>(stream, ())
+    #endif
         let s10 = s0.Advance(10)
         check s10 cs 10 1
 
@@ -581,6 +648,8 @@ let testHelperParseSubstream() =
         pos.Index |> Equal 5L
     | Failure(msg, _, _) -> Fail()
 
+#if LOW_TRUST
+#else
     use stream = new CharStream("1234567".ToCharArray(), 1, 6)
     let s0 = (new State<_>(stream, ())).Advance(2)
     let s1 = s0.Advance(3)
@@ -589,6 +658,7 @@ let testHelperParseSubstream() =
         result |> Equal "456"
         pos.Index |> Equal 5L
     | Failure(msg, _, _) -> Fail()
+#endif
 
     use stream = createTestStreamCharStream ("1234567890".ToCharArray()) // multi-block CharStream (blockSize = 8, blockOverlap = 3)
     let s0 = (new State<_>(stream, ())).Advance(2)

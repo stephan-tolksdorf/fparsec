@@ -3,11 +3,64 @@
 
 using System;
 using System.Diagnostics;
+using System.Text;
 using System.Runtime.InteropServices;
 
 namespace FParsec {
 
 public sealed class Helper {
+
+/// <summary>Detects the presence of an encoding preamble in the first count bytes of the byte buffer.
+/// If detectEncoding is false, this function only searches for the preamble of the given default encoding,
+/// otherwise also for any of the standard unicode byte order marks (UTF-8, UTF-16 LE/BE, UTF-32 LE/BE).
+/// If an encoding different from the given default encoding is detected, the new encoding
+/// is assigned to the encoding reference and the number of bytes in the detected preamble
+/// is returned. Otherwise 0 is returned.
+/// </summary>
+internal static int DetectPreamble(byte[] buffer, int count, ref Encoding encoding, bool detectEncoding) {
+    Debug.Assert(count >= 0);
+    if (detectEncoding && count >= 2) {
+        switch (buffer[0]) {
+        case 0xEF:
+            if (buffer[1] == 0xBB && count > 2 && buffer[2] == 0xBF) {
+                if (encoding.CodePage != 65001) encoding = Encoding.UTF8;
+                return 3;
+            }
+        break;
+        case 0xFE:
+            if (buffer[1] == 0xFF) {
+                if (encoding.CodePage != 1201) encoding = Encoding.BigEndianUnicode;
+                return 2;
+            }
+        break;
+        case 0xFF:
+            if (buffer[1] == 0xFE) {
+                if (count >= 4 && buffer[2] == 0x00 && buffer[3] == 0x00) {
+                    if (encoding.CodePage != 12000) encoding = Encoding.UTF32; // UTF-32 little endian
+                    return 4;
+                } else {
+                    if (encoding.CodePage != 1200) encoding = Encoding.Unicode; // UTF-16 little endian
+                    return 2;
+                }
+            }
+        break;
+        case 0x00:
+            if (buffer[1] == 0x00 && count >= 4 && buffer[2] == 0xFE && buffer[3] == 0xFF) {
+                if (encoding.CodePage != 12001) encoding = new UTF32Encoding(true, true); // UTF-32 big endian
+                return 4;
+            }
+        break;
+        }
+    }
+    byte[] preamble = encoding.GetPreamble();
+    if (preamble.Length > 0 && count >= preamble.Length) {
+        int i = 0;
+        while (buffer[i] == preamble[i]) {
+            if (++i == preamble.Length) return preamble.Length;
+        }
+    }
+    return 0;
+}
 
 internal static bool ContainsNewlineChar(string str) {
     foreach (char c in str) {
@@ -19,6 +72,29 @@ ReturnTrue:
     return true;
 }
 
+#if LOW_TRUST
+internal static T RunParserOnSubstream<T,TUserState,TSubStreamUserState>(
+                             Microsoft.FSharp.Core.FastFunc<State<TSubStreamUserState>,T> parser,
+                             TSubStreamUserState userState,
+                             State<TUserState> stateBeforeSubStream, State<TUserState> stateAfterSubStream)
+{
+    CharStream stream = stateBeforeSubStream.Iter.Stream;
+    if (stream != stateAfterSubStream.Iter.Stream)
+        throw new ArgumentException("The states are associated with different CharStreams.");
+
+    int idx0 = stateBeforeSubStream.Iter.Idx;
+    int idx1 = stateAfterSubStream.Iter.Idx;
+    if (idx0 < 0) idx0 = stream.IndexEnd;
+    if (idx1 < 0) idx1 = stream.IndexEnd;
+    if (idx0 > idx1)
+        throw new ArgumentException("The position of the second state lies before the position of the first state.");
+    var subStream = new CharStream(stream.String, idx0, idx1 - idx0, idx0 - stream.IndexBegin);
+    var data0 = stateBeforeSubStream.data;
+    var data = new State<TSubStreamUserState>.Data(data0.Line, data0.LineBegin, userState, data0.StreamName);
+    var state = new State<TSubStreamUserState>(subStream.Begin, data);
+    return parser.Invoke(state);
+}
+#else
 internal unsafe static T RunParserOnSubstream<T,TUserState,TSubStreamUserState>(
                              Microsoft.FSharp.Core.FastFunc<State<TSubStreamUserState>,T> parser,
                              TSubStreamUserState userState,
@@ -76,8 +152,12 @@ internal unsafe static T RunParserOnSubstream<T,TUserState,TSubStreamUserState>(
         }
     }
 }
+#endif
 
-public sealed unsafe class CharSet {
+#if !LOW_TRUST
+    unsafe
+#endif
+public sealed class CharSet {
     private const int wordSize = 32;
     private const int log2WordSize = 5;
 
@@ -88,10 +168,10 @@ public sealed unsafe class CharSet {
     private string charsNotInTable; // We use a string here instead of a char[] because the JIT
                                     // produces better code for loops involving strings.
 
-    public unsafe CharSet(string chars) : this(chars, 32) {}
+    public CharSet(string chars) : this(chars, 32) {}
     // because of mandatory bounds checking, we wouldn't get any advantage from a fixed size table
 
-    public unsafe CharSet(string chars, int maxTableSize) {
+    public CharSet(string chars, int maxTableSize) {
         if (chars.Length == 0) {
             tableMin = min = 0x10000;
             max = -1;
@@ -138,8 +218,13 @@ public sealed unsafe class CharSet {
                         ? (tableMax - tableMin + 1)/wordSize + ((tableMax - tableMin + 1)%wordSize != 0 ? 1 : 0)
                         : maxTableSize;
         table = new int[tableSize];
+
+    #if LOW_TRUST
+        var notInTable = nCharsNotInTable > 0 ? new char[nCharsNotInTable] : null;
+    #else
         charsNotInTable = nCharsNotInTable > 0 ? new string('\u0000', nCharsNotInTable) : null;
-        fixed (char* pCharsNotInTable = charsNotInTable) {
+        fixed (char* notInTable = charsNotInTable) {
+    #endif
             prevChar = chars[0] != 'x' ? 'x' : 'y';
             int n = 0;
             for (int i = 0; i < chars.Length; ++i) {
@@ -151,11 +236,15 @@ public sealed unsafe class CharSet {
                 if (unchecked((uint)idx) < (uint)table.Length) {
                     table[idx] |= 1 << off; // we don't need to mask off because C#'s operator<< does that for us
                 } else {
-                    pCharsNotInTable[n++] = c;
+                    notInTable[n++] = c;
                 }
             }
             Debug.Assert(n == nCharsNotInTable);
+    #if !LOW_TRUST
         }
+    #else
+       if (nCharsNotInTable > 0) charsNotInTable = new string(notInTable);
+    #endif
     }
 
     public bool Contains(char c) {
@@ -181,7 +270,10 @@ public sealed unsafe class CharSet {
 #pragma warning disable 0429 // unreachable expression code
 #pragma warning disable 0162 // unreachable code
 
-public static unsafe string DoubleToHexString(double x) {
+#if !LOW_TRUST
+    unsafe
+#endif
+public static string DoubleToHexString(double x) {
     const int expBits = 11;  // bits for biased exponent
     const int maxBits = 53;  // significant bits (including implicit bit)
     const int maxChars = 24; // "-0x1.fffffffffffffp-1022"
@@ -193,7 +285,11 @@ public static unsafe string DoubleToHexString(double x) {
     const int maxFractNibbles = (maxBits - 1)/4 + (((maxBits - 1)%4) == 0 ? 0 : 1);
     const ulong mask  = (1UL << (maxBits - 1)) - 1; // mask for lower (maxBits - 1) bits
 
+#if LOW_TRUST
+    ulong xn = unchecked((ulong)BitConverter.DoubleToInt64Bits(x));
+#else
     ulong xn  = *((ulong*)(&x)); // reinterpret double as ulong
+#endif
     int sign = (int)(xn >> (maxBits - 1 + expBits));
     int e = (int)((xn >> (maxBits - 1)) & maxBiasedExp); // the biased exponent
     ulong s  = xn & mask; // the significand (without the implicit bit)
@@ -236,7 +332,10 @@ public static unsafe string DoubleToHexString(double x) {
     }
 }
 
-public static unsafe string SingleToHexString(float x) {
+#if !LOW_TRUST
+    unsafe
+#endif
+public static string SingleToHexString(float x) {
     const int expBits = 8;   // bits for biased exponent
     const int maxBits = 24;  // significant bits (including implicit bit)
     const int maxChars = 16; // "-0x1.fffffep-126"
@@ -248,7 +347,11 @@ public static unsafe string SingleToHexString(float x) {
     const int maxFractNibbles = (maxBits - 1)/4 + (((maxBits - 1)%4) == 0 ? 0 : 1);
     const uint mask = (1U << (maxBits - 1)) - 1; // mask for lower (maxBits - 1) bits
 
+#if LOW_TRUST
+    uint xn = BitConverter.ToUInt32(BitConverter.GetBytes(x), 0);
+#else
     uint xn = *((uint*)(&x)); // reinterpret float as ulong
+#endif
     int sign = (int)(xn >> (maxBits - 1 + expBits));
     int e = (int)((xn >> (maxBits - 1)) & maxBiasedExp); // the biased exponent
     uint s = xn & mask; // the significand (without the implicit bit)
@@ -294,7 +397,10 @@ public static unsafe string SingleToHexString(float x) {
 #pragma warning restore 0429
 #pragma warning restore 0162
 
-public static unsafe double DoubleFromHexString(string str) {
+#if !LOW_TRUST
+    unsafe
+#endif
+public static double DoubleFromHexString(string str) {
     const int expBits = 11;    // bits for exponent
     const int maxBits = 53;    // significant bits (including implicit bit)
 
@@ -317,7 +423,11 @@ public static unsafe double DoubleFromHexString(string str) {
                     // (the least significant bit) is the logical OR of the (maxBits + 2)th and all following input bits
     int nBits = -1; // number of bits in xn, not counting leading zeros
     int exp = 0;    // the base-2 exponent
+#if LOW_TRUST
+    var s = str;
+#else
     fixed (char* s = str) {
+#endif
         int i = 0;
         // sign
         if (s[0] == '+') i = 1;
@@ -419,7 +529,9 @@ public static unsafe double DoubleFromHexString(string str) {
                 goto InvalidFormat;
             }
         } // for
+#if !LOW_TRUST
     } // fixed
+#endif
     if (nBits == 0) return sign == 0 ? 0.0 : -0.0;
     if (exp <= maxExp) {
         if (exp >= minExp && nBits <= maxBits) {
@@ -452,8 +564,12 @@ public static unsafe double DoubleFromHexString(string str) {
             exp -= isSubnormal;
         }
         exp -= minExp - 1; // add bias
-        xn = (((ulong) sign) << ((maxBits - 1) + expBits)) | (((ulong) exp) << (maxBits - 1)) | xn;
+        xn = (((ulong)sign) << ((maxBits - 1) + expBits)) | (((ulong)exp) << (maxBits - 1)) | xn;
+    #if LOW_TRUST
+        return BitConverter.Int64BitsToDouble(unchecked((long)xn));
+    #else
         return *((double*)(&xn));
+    #endif
     }
 
 Overflow:
@@ -467,7 +583,10 @@ InvalidFormat:
     throw new System.FormatException(errmsg);
 }
 
-public static unsafe float SingleFromHexString(string str) {
+#if !LOW_TRUST
+    unsafe
+#endif
+public static float SingleFromHexString(string str) {
     const int expBits = 8;  // bits for exponent
     const int maxBits = 24; // significant bits (including implicit bit)
 
@@ -490,7 +609,11 @@ public static unsafe float SingleFromHexString(string str) {
                     // (the least significant bit) is the logical OR of the (maxBits + 2)th and all following input bits
     int nBits = -1; // number of bits in xn, not counting leading zeros
     int exp = 0;    // the base-2 exponent
+#if LOW_TRUST
+    var s = str;
+#else
     fixed (char* s = str) {
+#endif
         int i = 0;
         // sign
         if (s[0] == '+') i = 1;
@@ -592,7 +715,9 @@ public static unsafe float SingleFromHexString(string str) {
                 goto InvalidFormat;
             }
         } // for
+#if !LOW_TRUST
     } // fixed
+#endif
     if (nBits == 0) return sign == 0 ? 0.0f : -0.0f;
     if (exp <= maxExp) {
         if (exp >= minExp && nBits <= maxBits) {
@@ -626,7 +751,11 @@ public static unsafe float SingleFromHexString(string str) {
         }
         exp -= minExp - 1; // add bias
         xn = (sign << ((maxBits - 1) + expBits)) | (exp << (maxBits - 1)) | xn;
+    #if LOW_TRUST
+        return BitConverter.ToSingle(BitConverter.GetBytes(xn), 0);
+    #else
         return *((float*)(&xn));
+    #endif
     }
 
 Overflow:

@@ -9,7 +9,10 @@ open System.Diagnostics
 open System.Text
 open System.Text.RegularExpressions
 
+#if LOW_TRUST
+#else
 open Microsoft.FSharp.NativeInterop
+#endif
 
 open FParsec.Internals
 open FParsec.Error
@@ -65,22 +68,42 @@ let runParser (parser: Parser<'Result,'UserState>) (ustate: 'UserState) (name: s
 
 let runParserOnString (parser: Parser<'Result,'UserState>) (ustate: 'UserState) (streamName: string) (chars: string) =
     if isNull chars then nullArg "chars"
-    use stream = new CharStream(chars)
+#if LOW_TRUST
+    let
+#else
+    use
+#endif
+        stream = new CharStream(chars)
     let state0 = new State<'UserState>(stream, ustate, streamName)
     applyParser parser state0
 
 let runParserOnSubstring (parser: Parser<'Result,'UserState>) (ustate: 'UserState) (streamName: string) (chars: string) (index: int) length =
-    use stream = new CharStream(chars, index, length)
+#if LOW_TRUST
+    let
+#else
+    use
+#endif
+        stream = new CharStream(chars, index, length)
     let state0 = new State<'UserState>(stream, ustate, streamName)
     applyParser parser state0
 
 let runParserOnStream (parser: Parser<'Result,'UserState>) (ustate: 'UserState) (streamName: string) (byteStream: System.IO.Stream) (encoding: System.Text.Encoding) =
-    use stream = new CharStream(byteStream, encoding)
+#if LOW_TRUST
+    let
+#else
+    use
+#endif
+        stream = new CharStream(byteStream, encoding)
     let state0 = new State<'UserState>(stream, ustate, streamName)
     applyParser parser state0
 
 let runParserOnFile (parser: Parser<'Result,'UserState>) (ustate: 'UserState) (path: string) (encoding: System.Text.Encoding) =
-    use stream = new CharStream(path, encoding)
+#if LOW_TRUST
+    let
+#else
+    use
+#endif
+        stream = new CharStream(path, encoding)
     let state0 = new State<'UserState>(stream, ustate, path)
     applyParser parser state0
 
@@ -629,6 +652,38 @@ let regexL pattern label = regexE pattern (expectedError label)
 // Parsing strings with the help of other parsers
 // ----------------------------------------------
 
+#if LOW_TRUST
+/// StructCharList is only meant for internal use within FParsec.
+type internal StructCharList = struct    
+    val mutable chars: char[]
+    val mutable count: int
+
+    member inline t.AppendFirst(c) = 
+        t.chars <- Array.zeroCreate 16
+        t.chars.[0] <- c
+        t.count <- 1
+
+    member inline t.Append(c) =
+        let i = t.count
+        let chars = t.chars
+        if i < chars.Length then
+            chars.[i] <- c
+            t.count <- i + 1
+        else
+            t._AppendContinue(c)
+    
+    member t._AppendContinue(c) =
+        let count = t.count        
+        let newChars = Array.zeroCreate (2*count)
+        System.Buffer.BlockCopy(t.chars, 0, newChars, 0, count*sizeof<char>)
+        newChars.[count] <- c        
+        t.chars <- newChars
+        t.count <- count + 1
+    
+    member t.GetString() =
+        new string(t.chars, 0, t.count)        
+end
+#else
 /// StructCharList is only meant for internal use within FParsec.
 /// CAUTION: Its implementation depends on instances only being allocated on the stack
 /// (i.e. on the GC not moving around the instances).
@@ -693,7 +748,7 @@ type internal StructCharList = struct
                 chars.[i] <- NativePtr.get p (i &&& 0xf)
             new string(chars, 0, count)
 end
-
+#endif // LOW_TRUST
 
 let
 #if NOINLINE
