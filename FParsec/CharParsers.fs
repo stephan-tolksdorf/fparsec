@@ -31,11 +31,11 @@ let EOS = CharStream.Iterator.EndOfStreamChar
 let foldCase = CharStream.FoldCase
 let normalizeNewlines = CharStream.NormalizeNewlines
 
-let floatToHexString d = Helper.DoubleToHexString(d)
-let floatOfHexString s = Helper.DoubleFromHexString(s)
+let floatToHexString d = HexFloat.DoubleToHexString(d)
+let floatOfHexString s = HexFloat.DoubleFromHexString(s)
 
-let float32ToHexString d = Helper.SingleToHexString(d)
-let float32OfHexString s = Helper.SingleFromHexString(s)
+let float32ToHexString d = HexFloat.SingleToHexString(d)
+let float32OfHexString s = HexFloat.SingleFromHexString(s)
 
 // ========================
 // Running parsers on input

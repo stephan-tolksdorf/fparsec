@@ -43,11 +43,14 @@
   <ItemGroup>
     <Reference Include="FSharp.Core, Version=1.9.6.16, Culture=neutral, PublicKeyToken=a19089b1c74d0809, processorArchitecture=MSIL" />
     <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CaseFoldTable.cs" />
     <Compile Include="CharStream.cs" />
     <Compile Include="CharStreamLT.cs" />
+    <Compile Include="HexFloat.cs" />
     <Compile Include="Pos.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Helper.cs" />
