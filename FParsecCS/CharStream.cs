@@ -16,9 +16,7 @@ using System.Runtime.InteropServices;
 
 namespace FParsec {
     /// <summary>Provides access to the char content of a binary Stream (or a String) through
-    /// an iterator-based interface that is especially well suited for parser applications.
-    /// </summary>
-    // see the FParsec documentation for further remarks
+    /// an iterator-based interface that is especially well suited for parser applications.</summary>
     public unsafe sealed class CharStream : IDisposable {
 
         // In order to facilitate efficient backtracking we divide the stream into overlapping
@@ -181,11 +179,9 @@ namespace FParsec {
         private long StreamPosition;
         private bool LeaveOpen;
 
-        /// <summary>
-        /// The Encoding that is used for decoding the underlying byte stream, or
+        /// <summary>The Encoding that is used for decoding the underlying byte stream, or
         /// System.Text.UnicodeEncoding in case the stream was directly constructed
-        /// from a string.
-        /// </summary>
+        /// from a string.</summary>
         public  Encoding Encoding { get; private set; }
         private int MaxCharCountForOneByte;
         private Decoder Decoder;
@@ -786,10 +782,8 @@ namespace FParsec {
         // do not directly provide an iterator to the end of the stream in order to
         // ensure that such iterators only exists once the end's position has been detected
 
-        /// <summary>
-        /// Returns an iterator pointing to the given index in the stream,
-        /// or to the end of the stream if the indexed position lies beyond the last char in the stream.
-        /// </summary>
+        /// <summary>Returns an iterator pointing to the given index in the stream,
+        /// or to the end of the stream if the indexed position lies beyond the last char in the stream.</summary>
         /// <exception cref="ArgumentOutOfRangeException">The index is less than 0 (or less than the index offset specified when the CharStream was constructed).</exception>
         /// <exception cref="NotSupportedException">Accessing the char with the given index requires seeking in the underlying byte stream, but the byte stream does not support seeking or the Encoding's Decoder is not serializable.</exception>
         /// <exception cref="IOException">An I/O error occured.</exception>
@@ -904,7 +898,7 @@ namespace FParsec {
                 return Stream.Seek(Index + 1);
             } }
 
-            /// <summary>Returns an Iterator that is advanced by n chars. The Iterator can't
+            /// <summary>Returns an Iterator that is advanced by numberOfChars chars. The Iterator can't
             /// move past the end of the stream, i.e. any position beyond the last char
             /// in the stream is interpreted as precisely one char beyond the last char.</summary>
             /// <exception cref="ArgumentOutOfRangeException">The new index is negative (or less than the index offset specified when the CharStream was constructed).</exception>
@@ -912,21 +906,21 @@ namespace FParsec {
             /// <exception cref="IOException">An I/O error occured.</exception>
             /// <exception cref="ArgumentException">The input stream contains invalid bytes and the encoding was constructed with the throwOnInvalidBytes option.</exception>
             /// <exception cref="DecoderFallbackException">The input stream contains invalid bytes for which the decoder fallback threw this exception.</exception>
-            public Iterator Advance(int n) {
+            public Iterator Advance(int numberOfChars) {
                 Anchor* anchor = Anchor;
                 char* ptr = this.Ptr;
-                char* newPtr = unchecked (ptr + n);
+                char* newPtr = unchecked (ptr + numberOfChars);
                 // note that the second case in the following ternary condition must not include newPtr == ptr,
                 // so that ptr + Int32.MinValue == ptr on 32-bit platforms is correctly handled
-                if (Block == anchor->Block && n >= 0 ? newPtr >= ptr && newPtr <  anchor->BufferEnd
-                                                     : newPtr <  ptr && newPtr >= anchor->BufferBegin)
+                if (Block == anchor->Block && numberOfChars >= 0 ? newPtr >= ptr && newPtr <  anchor->BufferEnd
+                                                                 : newPtr <  ptr && newPtr >= anchor->BufferBegin)
                     return new Iterator() {Anchor = anchor, Ptr = newPtr, Block = Block};
 
-                return Stream.Seek(Index + n);
+                return Stream.Seek(Index + numberOfChars);
 
             }
 
-            /// <summary>Returns an Iterator that is advanced by n chars. The Iterator can't
+            /// <summary>Returns an Iterator that is advanced by numberOfChars chars. The Iterator can't
             /// move past the end of the stream, i.e. any position beyond the last char
             /// in the stream is interpreted as precisely one char beyond the last char.</summary>
             /// <exception cref="ArgumentOutOfRangeException">The new index is negative (or less than the index offset specified when the CharStream was constructed).</exception>
@@ -935,37 +929,38 @@ namespace FParsec {
             /// <exception cref="ArgumentException">The input stream contains invalid bytes and the encoding was constructed with the throwOnInvalidBytes option.</exception>
             /// <exception cref="DecoderFallbackException">The input stream contains invalid bytes for which the decoder fallback threw this exception.</exception>
             /// <exception cref="OutOfMemoryException">Can not allocate enough memory for the internal data structure.</exception>
-            public Iterator Advance(long n) {
-                if (Block == Anchor->Block && (n >= 0 ? n <   PositiveDistance(Ptr, Anchor->BufferEnd)
-                                                      : n >= -PositiveDistance(Anchor->BufferBegin, Ptr)))
+            public Iterator Advance(long numberOfChars) {
+                if (Block == Anchor->Block
+                    && (numberOfChars >= 0 ? numberOfChars <   PositiveDistance(Ptr, Anchor->BufferEnd)
+                                           : numberOfChars >= -PositiveDistance(Anchor->BufferBegin, Ptr)))
                 {
-                    int nn = (int)n;
+                    int nn = (int)numberOfChars;
                     char* newPtr = unchecked (Ptr + nn); // we need unchecked here because C# always uses
                                                          // unsigned arithmetic for pointer calculations and
-                                                         // otherwise would report an overflow for any negative n
+                                                         // otherwise would report an overflow for any negative numberOfChars
                                                          // if overflow checking is activated
                     return new Iterator() {Anchor = Anchor, Ptr = newPtr, Block = Block};
                 }
-                return Stream.Seek(Index + n);
+                return Stream.Seek(Index + numberOfChars);
             }
 
-            /// <summary>Returns an Iterator that is advanced by n chars. The Iterator can't
+            /// <summary>Returns an Iterator that is advanced by numberOfChars chars. The Iterator can't
             /// move past the end of the stream, i.e. any position beyond the last char
             /// in the stream is interpreted as precisely one char beyond the last char.</summary>
             /// <exception cref="NotSupportedException">Seeking of the underlying byte stream is required, but the byte stream does not support seeking or the Encodings's Decoder is not serializable.</exception>
             /// <exception cref="IOException">An I/O error occured.</exception>
             /// <exception cref="ArgumentException">The input stream contains invalid bytes and the encoding was constructed with the throwOnInvalidBytes option.</exception>
             /// <exception cref="DecoderFallbackException">The input stream contains invalid bytes for which the decoder fallback threw this exception.</exception>
-            public Iterator Advance(uint n) {
+            public Iterator Advance(uint numberOfChars) {
                 Anchor* anchor = Anchor;
                 char* ptr = this.Ptr;
                 int block = Block;
-                if (block == anchor->Block && n < (uint)PositiveDistance(ptr, anchor->BufferEnd)) {
-                    char* newPtr = ptr + n;
+                if (block == anchor->Block && numberOfChars < (uint)PositiveDistance(ptr, anchor->BufferEnd)) {
+                    char* newPtr = ptr + numberOfChars;
                     return new Iterator() {Anchor = Anchor, Ptr = newPtr, Block = Block};
                 }
 
-                return Stream.Seek(Index + n);
+                return Stream.Seek(Index + numberOfChars);
             }
 
             // The following methods with a leading underscore don't belong into the
@@ -975,8 +970,7 @@ namespace FParsec {
             // methods are declared public.
 
             /// <summary>Advances the Iterator *in-place* by 1 char and returns the char on the new position.
-            ///`c = iter.Increment()` is equivalent to `iter = iter.Next; c = iter.Read()`.
-            /// </summary>
+            ///`c = iter.Increment()` is equivalent to `iter = iter.Next; c = iter.Read()`.</summary>
             /// <exception cref="NotSupportedException">Seeking of the underlying byte stream is required, but the byte stream does not support seeking or the Encodings's Decoder is not serializable.</exception>
             /// <exception cref="IOException">An I/O error occured.</exception>
             /// <exception cref="ArgumentException">The input stream contains invalid bytes and the encoding was constructed with the throwOnInvalidBytes option.</exception>
@@ -995,28 +989,26 @@ namespace FParsec {
                 return Read();
             }
 
-            /// <summary>Advances the Iterator *in-place* by n chars and returns the char on the new position.
-            /// `c = iter.Increment(n)` is an optimized implementation of `iter = iter.Advance(n); c = iter.Read()`.
-            /// </summary>
+            /// <summary>Advances the Iterator *in-place* by numberOfChars chars and returns the char on the new position.
+            /// `c = iter.Increment(numberOfChars)` is an optimized implementation of `iter = iter.Advance(numberOfChars); c = iter.Read()`.</summary>
             /// <exception cref="NotSupportedException">Seeking of the underlying byte stream is required, but the byte stream does not support seeking or the Encodings's Decoder is not serializable.</exception>
             /// <exception cref="IOException">An I/O error occured.</exception>
             /// <exception cref="ArgumentException">The input stream contains invalid bytes and the encoding was constructed with the throwOnInvalidBytes option.</exception>
             /// <exception cref="DecoderFallbackException">The input stream contains invalid bytes for which the decoder fallback threw this exception.</exception>
-            public char _Increment(uint n) {
+            public char _Increment(uint numberOfChars) {
                 Anchor* anchor = Anchor;
                 char* ptr = this.Ptr;
-                if (Block == anchor->Block && n < (uint)PositiveDistance(ptr, anchor->BufferEnd)) {
-                    char* newPtr = ptr + n;
+                if (Block == anchor->Block && numberOfChars < (uint)PositiveDistance(ptr, anchor->BufferEnd)) {
+                    char* newPtr = ptr + numberOfChars;
                     this.Ptr = newPtr;
                     return *newPtr;
                 }
-                this = Advance(n);
+                this = Advance(numberOfChars);
                 return Read();
             }
 
             /// <summary>Advances the Iterator *in-place* by -1 char and returns the char on the new position.
-            /// `c = iter.Decrement()` is an optimized implementation of `iter = iter.Advance(-1); c = iter.Read()`.
-            /// </summary>
+            /// `c = iter.Decrement()` is an optimized implementation of `iter = iter.Advance(-1); c = iter.Read()`.</summary>
             /// <exception cref="ArgumentOutOfRangeException">The new index is less than 0 (or less than the index offset specified when the CharStream was constructed).</exception>
             /// <exception cref="NotSupportedException">Seeking of the underlying byte stream is required, but the byte stream does not support seeking or the Encodings's Decoder is not serializable.</exception>
             /// <exception cref="IOException">An I/O error occured.</exception>
@@ -1029,24 +1021,24 @@ namespace FParsec {
                 }
                 return DecrementContinue(1u);
             }
-            /// <summary>Advances the Iterator *in-place* by -n chars and returns the char on the new position.
-            /// `c = iter.Decrement()` is an optimized implementation of `iter = iter.Advance(-n); c = iter.Read()`.
-            /// </summary>
+
+            /// <summary>Advances the Iterator *in-place* by -numberOfChars chars and returns the char on the new position.
+            /// `c = iter.Decrement()` is an optimized implementation of `iter = iter.Advance(-numberOfChars); c = iter.Read()`.</summary>
             /// <exception cref="ArgumentOutOfRangeException">The new index is less than 0 (or less than the index offset specified when the CharStream was constructed).</exception>
             /// <exception cref="NotSupportedException">Seeking of the underlying byte stream is required, but the byte stream does not support seeking or the Encodings's Decoder is not serializable.</exception>
             /// <exception cref="IOException">An I/O error occured.</exception>
-            public char _Decrement(uint n) {
+            public char _Decrement(uint numberOfChars) {
                 Anchor* anchor = Anchor;
                 char* ptr = this.Ptr;
-                if (Block == anchor->Block && n <= (uint)PositiveDistance(anchor->BufferBegin, ptr)) {
-                    char* newPtr = ptr - n;
+                if (Block == anchor->Block && numberOfChars <= (uint)PositiveDistance(anchor->BufferBegin, ptr)) {
+                    char* newPtr = ptr - numberOfChars;
                     this.Ptr = newPtr;
                     return *newPtr;
                 }
-                return DecrementContinue(n);
+                return DecrementContinue(numberOfChars);
             }
-            private char DecrementContinue(uint n) {
-               this = Stream.Seek(Index - n);
+            private char DecrementContinue(uint numberOfChars) {
+               this = Stream.Seek(Index - numberOfChars);
                return Read();
             }
 
@@ -1062,43 +1054,43 @@ namespace FParsec {
                 return PeekContinue(1u);
             }
 
-            /// <summary>Is an optimized implementation of Advance(n).Read(),
-            /// except that the EndOfStreamChar ('\uFFFF') is returned if Index + n &lt; 0 (instead of an exception being thrown).</summary>
+            /// <summary>Is an optimized implementation of Advance(numberOfChars).Read(),
+            /// except that the EndOfStreamChar ('\uFFFF') is returned if Index + numberOfChars &lt; 0 (instead of an exception being thrown).</summary>
             /// <exception cref="NotSupportedException">Seeking of the underlying byte stream is required, but the byte stream does not support seeking or the Encodings's Decoder is not serializable.</exception>
             /// <exception cref="IOException">An I/O error occured.</exception>
             /// <exception cref="ArgumentException">The input stream contains invalid bytes and the encoding was constructed with the throwOnInvalidBytes option.</exception>
             /// <exception cref="DecoderFallbackException">The input stream contains invalid bytes for which the decoder fallback threw this exception.</exception>
-            public char Peek(int n) {
-                char* ptrN = unchecked (Ptr + n);
+            public char Peek(int numberOfChars) {
+                char* ptrN = unchecked (Ptr + numberOfChars);
                 if (Block == Anchor->Block) {
-                    if (n < 0) {
+                    if (numberOfChars < 0) {
                         if (ptrN >= Anchor->BufferBegin && ptrN <  Ptr) return *ptrN;
                     } else {
                         if (ptrN <  Anchor->BufferEnd   && ptrN >= Ptr) return *ptrN;
                     }
                 }
-                return PeekContinue(n);
+                return PeekContinue(numberOfChars);
             }
-            private char PeekContinue(int n) {
-                long newIndex = Index + n;
+            private char PeekContinue(int numberOfChars) {
+                long newIndex = Index + numberOfChars;
                 return newIndex >= Anchor->CharIndexOffset ? Stream.Seek(newIndex).Read() : EOS;
             }
 
-            /// <summary>Is an optimized implementation of Advance(n).Read().</summary>
+            /// <summary>Is an optimized implementation of Advance(numberOfChars).Read().</summary>
             /// <exception cref="NotSupportedException">Seeking of the underlying byte stream is required, but the byte stream does not support seeking or the Encodings's Decoder is not serializable.</exception>
             /// <exception cref="IOException">An I/O error occured.</exception>
             /// <exception cref="ArgumentException">The input stream contains invalid bytes and the encoding was constructed with the throwOnInvalidBytes option.</exception>
             /// <exception cref="DecoderFallbackException">The input stream contains invalid bytes for which the decoder fallback threw this exception.</exception>
-            public char Peek(uint n) {
+            public char Peek(uint numberOfChars) {
                 Anchor* anchor = Anchor;
                 char* ptr = this.Ptr;
-                if (Block == anchor->Block && n < (uint)PositiveDistance(ptr, anchor->BufferEnd))
-                    return *(ptr + n);
-                return PeekContinue(n);
+                if (Block == anchor->Block && numberOfChars < (uint)PositiveDistance(ptr, anchor->BufferEnd))
+                    return *(ptr + numberOfChars);
+                return PeekContinue(numberOfChars);
             }
-            private char PeekContinue(uint n) {
+            private char PeekContinue(uint numberOfChars) {
                 if (Block == -1) return EOS;
-                return Stream.Seek(Index + n).Read();
+                return Stream.Seek(Index + numberOfChars).Read();
             }
 
             /// <summary>Returns true if and only if the char argument matches the char pointed to by the Iterator.
@@ -1179,7 +1171,7 @@ namespace FParsec {
             /// strIndex + length (exclusive) match the chars in the stream beginning with the char pointed to by the Iterator.
             /// If the chars do not match or if there are not enough chars remaining in the stream, false is returned.
             /// If length is 0, true is returned.</summary>
-            /// <exception cref="ArgumentOutOfRangeException">strIndex is negative or not smaller than str.Length, or length is negative or out of range.</exception>
+            /// <exception cref="ArgumentOutOfRangeException">strIndex is negative, length is negative or strIndex + length > str.Length.</exception>
             /// <exception cref="NullReferenceException">str is null.</exception>
             /// <exception cref="NotSupportedException">Seeking of the underlying byte stream is required, but the byte stream does not support seeking or the Encodings's Decoder is not serializable.</exception>
             /// <exception cref="IOException">An I/O error occured.</exception>
@@ -1197,7 +1189,7 @@ namespace FParsec {
             /// charsIndex + length (exclusive) match the chars in the stream beginning with the char pointed to by the Iterator.
             /// If the chars do not match or if there are not enough chars remaining in the stream, false is returned.
             /// If length is 0, true is returned.</summary>
-            /// <exception cref="ArgumentOutOfRangeException">charsIndex is negative or not smaller than chars.Length, or length is negative or out of range.</exception>
+            /// <exception cref="ArgumentOutOfRangeException">charsIndex is negative, length is negative or charsIndex + length > chars.Length.</exception>
             /// <exception cref="NullReferenceException">chars is null.</exception>
             /// <exception cref="NotSupportedException">Seeking of the underlying byte stream is required, but the byte stream does not support seeking or the Encodings's Decoder is not serializable.</exception>
             /// <exception cref="IOException">An I/O error occured.</exception>
@@ -1405,8 +1397,7 @@ namespace FParsec {
             }
 
             /// <summary>Returns the stream char pointed to by the Iterator,
-            /// or the EndOfStreamChar ('\uFFFF') if the Iterator has reached the end of the stream.
-            /// </summary>
+            /// or the EndOfStreamChar ('\uFFFF') if the Iterator has reached the end of the stream.</summary>
             /// <exception cref="NotSupportedException">Seeking of the underlying byte stream is required, but the byte stream does not support seeking or the Encodings's Decoder is not serializable.</exception>
             /// <exception cref="IOException">An I/O error occured.</exception>
             public char Read() {
@@ -1607,8 +1598,7 @@ namespace FParsec {
 
             /// <summary>Returns a string with all the chars in the stream between the position of this Iterator (inclusive)
             /// and the position of the Iterator in the argument (exclusive).
-            /// If the Iterator argument does not point to a position after the position of this Iterator, the returned string is empty.
-            /// </summary>
+            /// If the Iterator argument does not point to a position after the position of this Iterator, the returned string is empty.</summary>
             /// <exception cref="ArgumentOutOfRangeException">iterToCharAfterLastInString belongs to a different CharStream.</exception>
             /// <exception cref="OutOfMemoryException">There is not enough memory for the string or the requested string is too large.</exception>
             /// <exception cref="NotSupportedException">Seeking of the underlying byte stream is required, but the byte stream does not support seeking or the Encodings's Decoder is not serializable.</exception>
@@ -1661,8 +1651,7 @@ namespace FParsec {
         /// <summary>Returns a case-folded copy of the string argument. All chars are mapped
         /// using the (non-Turkic) 1-to-1 case folding mappings (v. 5.1) for Unicode code
         /// points in the Basic Multilingual Plane, i.e. code points below 0x10000.
-        /// If the argument is null, null is returned.
-        /// </summary>
+        /// If the argument is null, null is returned.</summary>
         static public string FoldCase(string str) {
             char* cftable = CaseFoldTable.FoldedChars;
             if (cftable == null) cftable = CaseFoldTable.Initialize();
@@ -1694,8 +1683,7 @@ namespace FParsec {
 
 
         /// <summary>Returns the given string with all occurrences of "\r\n" and "\r" replaced
-        /// by "\n". If the argument is null, null is returned.
-        /// </summary>
+        /// by "\n". If the argument is null, null is returned.</summary>
         static public string NormalizeNewlines(string str) {
             int length;
             if (str == null || (length = str.Length) == 0) return str;
@@ -1716,7 +1704,7 @@ namespace FParsec {
             }
         }
         static internal string CopyWithNormalizedNewlines(char* src, int length, int nCRLF, int nCR) {
-            Debug.Assert(length > 0 && (nCRLF > 0 || nCR > 0));
+            Debug.Assert(length > 0 && nCRLF >= 0 && nCR >= 0 && (nCRLF | nCR) != 0);
             string newString = new String('\n', length - nCRLF);
             fixed (char* dst_ = newString) {
                 char* dst = dst_;

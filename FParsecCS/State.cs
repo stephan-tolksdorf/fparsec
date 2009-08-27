@@ -185,10 +185,8 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
     }
 
     public State<TUserState> WithUserState(TUserState userState) {
-        return new State<TUserState>(Iter, new Data(data.Line,
-                                                    data.LineBegin,
-                                                    userState,
-                                                    data.StreamName));
+        var newData = new Data(data.Line, data.LineBegin, userState, data.StreamName);
+        return new State<TUserState>(Iter, newData);
     }
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -1539,7 +1537,7 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
         } else return this;
     }
 
-} // class state
+} // class State
 
 }
 
