@@ -373,7 +373,7 @@ namespace FParsec {
 
         /// <summary>Constructs a CharStream from a byte Stream.</summary>
         /// <param name="stream">The byte stream providing the input.</param>
-        /// <param name="leaveOpen">Indicates whether the byte Stream should be left open when the CharStream is disposed.</param>
+        /// <param name="leaveOpen">Indicates whether the byte Stream should be left open when the CharStream has finished reading it.</param>
         /// <param name="encoding">The (default) Encoding used for decoding the byte Stream into chars.</param>
         /// <param name="detectEncodingFromByteOrderMarks">Indicates whether the constructor should detect the encoding from a unicode byte-order mark at the beginning of the stream. An encoding detected from a byte-order mark overrides the default encoding.</param>
         /// <param name="blockSize">The number of chars per block. The default is 3×2^16 ≈ 200k.</param>

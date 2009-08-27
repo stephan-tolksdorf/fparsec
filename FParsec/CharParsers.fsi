@@ -178,11 +178,11 @@ val asciiLetter: Parser<char,'u>
 /// Returns the parsed char.
 val upper: Parser<char,'u>
 
-/// Parses any unicode lowercase letter (as identified by `System.Char.IsLower`).
+/// Parses any unicode lowercase letter char identified by `System.Char.IsLower`.
 /// Returns the parsed char.
 val lower: Parser<char,'u>
 
-/// Parses any unicode letter char identified by `System.Char.IsUpper`.
+/// Parses any unicode letter char identified by `System.Char.IsLetter`.
 /// Returns the parsed char.
 val letter: Parser<char,'u>
 
