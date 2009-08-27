@@ -121,7 +121,9 @@ internal unsafe static T RunParserOnSubstream<T,TUserState,TSubStreamUserState>(
                                ? new CharStream(buffer, ptr, CharStream.PositiveDistance(anchor->BufferBegin, ptr) + stream.BufferStringIndex, length, s0.Index)
                                : new CharStream(ptr, length, s0.Index, 0))
         {
-            var state = new State<TSubStreamUserState>(subStream, s0.Pos, userState);
+            var data0 = stateBeforeSubStream.data;
+            var data = new State<TSubStreamUserState>.Data(data0.Line, data0.LineBegin, userState, data0.StreamName);
+            var state = new State<TSubStreamUserState>(subStream.Begin, data);
             return parser.Invoke(state);
         }
     } else if (s0.Iter.Block == s1.Iter.Block && anchor->Block == s1.Iter.Block) {
@@ -132,7 +134,9 @@ internal unsafe static T RunParserOnSubstream<T,TUserState,TSubStreamUserState>(
         string subString = new String(ptr, 0, length);
         fixed (char* pSubString = subString)
         using (var subStream = new CharStream(subString, pSubString, 0, length, s0.Index)) {
-            var state = new State<TSubStreamUserState>(subStream, s0.Pos, userState);
+            var data0 = stateBeforeSubStream.data;
+            var data = new State<TSubStreamUserState>.Data(data0.Line, data0.LineBegin, userState, data0.StreamName);
+            var state = new State<TSubStreamUserState>(subStream.Begin, data);
             return parser.Invoke(state);
         }
     } else {
@@ -146,7 +150,9 @@ internal unsafe static T RunParserOnSubstream<T,TUserState,TSubStreamUserState>(
         fixed (char* pSubString = subString) {
             s0.Iter.Read(pSubString, length);
             using (var subStream = new CharStream(subString, pSubString, 0, length, s0.Index)) {
-                var state = new State<TSubStreamUserState>(subStream, s0.Pos, userState);
+                var data0 = stateBeforeSubStream.data;
+                var data = new State<TSubStreamUserState>.Data(data0.Line, data0.LineBegin, userState, data0.StreamName);
+                var state = new State<TSubStreamUserState>(subStream.Begin, data);
                 return parser.Invoke(state);
             }
         }

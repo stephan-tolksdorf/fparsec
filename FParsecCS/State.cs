@@ -11,7 +11,7 @@ namespace FParsec {
 public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
     // splitting up the state into a fast changing part, the iterator, and a
     // a slowly changing part, the data member, improves performance
-    private sealed class Data {
+    internal sealed class Data {
         public long       Line;
         public long       LineBegin;
         public TUserState UserState;
@@ -27,9 +27,9 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
 
     public CharStream.Iterator Iter;
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    private Data data;
+    internal Data data;
 
-    private State(CharStream.Iterator iter, Data data) {
+    internal State(CharStream.Iterator iter, Data data) {
         this.Iter = iter;
         this.data = data;
     }
