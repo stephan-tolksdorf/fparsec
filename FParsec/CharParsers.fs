@@ -8,6 +8,7 @@ module CharParsers
 open System.Diagnostics
 open System.Text
 open System.Text.RegularExpressions
+open System.Runtime.CompilerServices
 
 #if LOW_TRUST
 #else
@@ -320,30 +321,28 @@ let skipNoneOf (chars: string) =
 
 let inline isAsciiUpper c  = c >= 'A' && c <= 'Z'
 let inline isAsciiLower c  = c >= 'a' && c <= 'z'
-let inline isAsciiLetter (c: char) = let c2 = int c ||| int ' '
-                                     c2 >= int 'a' && c2 <= int 'z'
+let inline isAsciiLetter (c: char) = let cc = int c ||| int ' '
+                                     cc >= int 'a' && cc <= int 'z'
 
-let inline isUpper c  =
-    if c >= 'A' then
-       c <= 'Z' || (c > '\u007F' && System.Char.IsUpper(c))
-    else false
+let inline isUpper c =
+    c >= 'A' && (c <= 'Z' || (c > '\u007F' && System.Char.IsUpper(c)))
 
-let inline isLower c  =
-    if c >= 'a' then
-       c <= 'z' || (c > '\u007F' && System.Char.IsLower(c))
-    else false
+let inline isLower c =
+    c >= 'a' && (c <= 'z' || (c > '\u007F' && System.Char.IsLower(c)))
 
 let inline isLetter c =
     if c <= '\u007F' then
-         let c2 = int c ||| int ' '
-         c2 >= int 'a' && c2 <= int 'z'
+         let cc = int c ||| int ' '
+         cc >= int 'a' && cc <= int 'z'
     else System.Char.IsLetter(c)
 
-let inline isDigit c  = c <= '9' && c >= '0'
+let inline isDigit c = c <= '9' && c >= '0'
 
 let inline isHex c    =
     if   c <= '9' then c >= '0'
-    else c <= 'f' && (c >= 'a' || (c >= 'A' && c <= 'F'))
+    else
+        let cc = int c ||| int ' '
+        cc <= int 'f' && cc >= int 'a'
 
 let inline isOctal c  = c <= '7' && c >= '0'
 
@@ -1028,7 +1027,7 @@ type NumberLiteralResultFlags =
 
 type internal NLF = NumberLiteralResultFlags
 
-type NumberLiteral(string, info, suffixChar1, suffixChar2, suffixChar3, suffixChar4) = struct
+type NumberLiteral(string, info, suffixChar1, suffixChar2, suffixChar3, suffixChar4) =
     member t.String = string
 
     member t.SuffixLength = int (info &&& NLF.SuffixLengthMask)
@@ -1051,8 +1050,20 @@ type NumberLiteral(string, info, suffixChar1, suffixChar2, suffixChar3, suffixCh
     member t.IsOctal        = int (info &&& NLF.IsOctal) <> 0
     member t.IsNaN          = int (info &&& NLF.IsNaN) <> 0
     member t.IsInfinity     = int (info &&& NLF.IsInfinity) <> 0
-end
 
+    override t.Equals(other: obj) =
+        match other with
+        | :? NumberLiteral as other ->
+               t.String = other.String
+            && t.Info = other.Info
+            && t.SuffixChar1 = other.SuffixChar1
+            && t.SuffixChar2 = other.SuffixChar2
+            && t.SuffixChar3 = other.SuffixChar3
+            && t.SuffixChar4 = other.SuffixChar4
+        | _ -> false
+
+    override t.GetHashCode() =
+        if isNotNull string then string.GetHashCode() else 0
 
 let numberLiteralE (opt: NumberLiteralOptions) (errorInCaseNoLiteralFound: ErrorMessageList) (state: State<'u>) =
     let mutable iter = state.Iter
@@ -1060,96 +1071,43 @@ let numberLiteralE (opt: NumberLiteralOptions) (errorInCaseNoLiteralFound: Error
     let mutable error = NoErrorMessages
     let mutable flags = NLF.None
 
-    if c = '-' && int (opt &&& NLO.AllowMinusSign) <> 0 then
+    if c = '-' && (opt &&& NLO.AllowMinusSign) <> NLO.None then
         flags <- NLF.HasMinusSign
         c <- iter._Increment()
-    elif c = '+' && int (opt &&& NLO.AllowPlusSign) <> 0 then
+    elif c = '+' && (opt &&& NLO.AllowPlusSign) <> NLO.None then
         flags <- NLF.HasPlusSign
         c <- iter._Increment()
 
     let allowStartingPoint = NLO.AllowFraction ||| NLO.AllowFractionWOIntegerPart // for starting point both flags are required
 
-    if isDigit c || (c = '.' && (opt &&& allowStartingPoint = allowStartingPoint)) then
-        if    int (opt &&& (NLO.AllowBinary ||| NLO.AllowOctal ||| NLO.AllowHexadecimal)) <> 0
-           && c = '0'
+    if isDigit c || (c = '.' && (opt &&& allowStartingPoint) = allowStartingPoint) then
+        let mutable c1  = '\u0000'
+        if    c <> '0'
+           || (c1 <- iter._Increment();
+                  c1 <= '9'
+               || (opt &&& (NLO.AllowBinary ||| NLO.AllowOctal ||| NLO.AllowHexadecimal)) = NLO.None
+               || ((int c1 ||| int ' ') = int 'e'))
         then
-            match iter.Peek() with
-            | 'b' | 'B' ->
-                if int (opt &&& NLO.AllowBinary) <> 0 then
-                    flags <- flags ||| NLF.IsBinary
-                    c <- iter._Increment(2u)
-                    if c = '0' || c = '1' then
-                        flags <- flags ||| NLF.HasIntegerPart
-                        c <- iter._Increment()
-                    else
-                        error <- expectedBinaryDigit
-                    while c = '0' || c = '1' do
-                        c <- iter._Increment()
-            | 'o' | 'O' ->
-                if int (opt &&& NLO.AllowOctal) <> 0 then
-                    flags <- flags ||| NLF.IsOctal
-                    c <- iter._Increment(2u)
-                    if isOctal c then
-                        flags <- flags ||| NLF.HasIntegerPart
-                        c <- iter._Increment()
-                    else
-                        error <- expectedOctalDigit
-                    while isOctal c do
-                        c <- iter._Increment()
-            | 'x' | 'X' ->
-                if int (opt &&& NLO.AllowHexadecimal) <> 0 then
-                    flags <- flags ||| NLF.IsHexadecimal
-                    c <- iter._Increment(2u)
-                    if isHex c then
-                        flags <- flags ||| NLF.HasIntegerPart
-                        c <- iter._Increment()
-                    elif int (opt &&& NLO.AllowFractionWOIntegerPart) = 0 then
-                        // integer part required
-                        error <- expectedHexadecimalDigit
-                    while isHex c do
-                        c <- iter._Increment()
-                    if c = '.' && isNull error && int (opt &&& NLO.AllowFraction) <> 0 then
-                        flags <- flags ||| NLF.HasFraction
-                        c <- iter._Increment()
-                        if isHex c then
-                            c <- iter._Increment()
-                        elif int (flags &&& NLF.HasIntegerPart) = 0 then
-                            // at least one digit before or after the . is required
-                            error <- expectedHexadecimalDigit
-                        while isHex c do
-                            c <- iter._Increment()
-                    elif int (flags &&& NLF.HasIntegerPart) = 0 then
-                        // we neither have an integer part nor a fraction
-                        error <- expectedHexadecimalDigit
-                    if (c = 'p' || c = 'P') && isNull error && int (opt &&& NLO.AllowExponent) <> 0  then
-                        flags <- flags ||| NLF.HasExponent
-                        c <- iter._Increment()
-                        if c = '-' || c = '+' then
-                            c <- iter._Increment()
-                        if not (isDigit c) then
-                            error <- expectedDecimalDigit
-                        while isDigit c do
-                            c <- iter._Increment()
-            | _ -> ()
-
-        if int (flags &&& (NLF.IsBinary ||| NLF.IsOctal ||| NLF.IsHexadecimal)) = 0 then
             flags <- flags ||| NLF.IsDecimal
             if c <> '.' then
                 flags <- flags ||| NLF.HasIntegerPart
-                c <- iter._Increment()
+                if c <> '0' then
+                    c <- iter._Increment()
+                else
+                    c <- c1
                 while isDigit c do
                     c <- iter._Increment()
-            if c = '.' && int (opt &&& NLO.AllowFraction) <> 0 then
+            if c = '.' && (opt &&& NLO.AllowFraction) <> NLO.None then
                 flags <- flags ||| NLF.HasFraction
                 c <- iter._Increment()
                 if isDigit c then
                     c <- iter._Increment()
-                elif int (flags &&& NLF.HasIntegerPart) = 0 then
+                elif (flags &&& NLF.HasIntegerPart) = NLF.None then
                     // at least one digit before or after the . is required
                     error <- expectedDecimalDigit
                 while isDigit c do
                     c <- iter._Increment()
-            if (c = 'e' || c = 'E') && isNull error && int (opt &&& NLO.AllowExponent) <> 0 then
+            if (int c ||| int ' ') = int 'e' && isNull error && (opt &&& NLO.AllowExponent) <> NLO.None then
                 flags <- flags ||| NLF.HasExponent
                 c <- iter._Increment()
                 if c = '-' || c = '+' then
@@ -1158,14 +1116,72 @@ let numberLiteralE (opt: NumberLiteralOptions) (errorInCaseNoLiteralFound: Error
                     error <- expectedDecimalDigit
                 while isDigit c do
                     c <- iter._Increment()
+        else
+            match int c1 ||| int ' ' with
+            | 0x78 (* 'x' *) when (opt &&& NLO.AllowHexadecimal) <> NLO.None ->
+                flags <- flags ||| NLF.IsHexadecimal
+                c <- iter._Increment()
+                if isHex c then
+                    flags <- flags ||| NLF.HasIntegerPart
+                    c <- iter._Increment()
+                elif (opt &&& NLO.AllowFractionWOIntegerPart) = NLO.None then
+                    // integer part required
+                    error <- expectedHexadecimalDigit
+                while isHex c do
+                    c <- iter._Increment()
+                if c = '.' && isNull error && (opt &&& NLO.AllowFraction) <> NLO.None then
+                    flags <- flags ||| NLF.HasFraction
+                    c <- iter._Increment()
+                    if isHex c then
+                        c <- iter._Increment()
+                    elif (flags &&& NLF.HasIntegerPart) = NLF.None then
+                        // at least one digit before or after the . is required
+                        error <- expectedHexadecimalDigit
+                    while isHex c do
+                        c <- iter._Increment()
+                elif (flags &&& NLF.HasIntegerPart) = NLF.None then
+                    // we neither have an integer part nor a fraction
+                    error <- expectedHexadecimalDigit
+                if (int c ||| int ' ') = int 'p' && isNull error && (opt &&& NLO.AllowExponent) <> NLO.None then
+                    flags <- flags ||| NLF.HasExponent
+                    c <- iter._Increment()
+                    if c = '-' || c = '+' then
+                        c <- iter._Increment()
+                    if not (isDigit c) then
+                        error <- expectedDecimalDigit
+                    while isDigit c do
+                        c <- iter._Increment()
+            | 0x6f (* 'o' *) when (opt &&& NLO.AllowOctal) <> NLO.None ->
+                flags <- flags ||| NLF.IsOctal
+                c <- iter._Increment()
+                if isOctal c then
+                    flags <- flags ||| NLF.HasIntegerPart
+                    c <- iter._Increment()
+                else
+                    error <- expectedOctalDigit
+                while isOctal c do
+                    c <- iter._Increment()
+            | 0x62 (* 'b' *) when (opt &&& NLO.AllowBinary) <> NLO.None ->
+                flags <- flags ||| NLF.IsBinary
+                c <- iter._Increment()
+                if c = '0' || c = '1' then
+                    flags <- flags ||| NLF.HasIntegerPart
+                    c <- iter._Increment()
+                else
+                    error <- expectedBinaryDigit
+                while c = '0' || c = '1' do
+                    c <- iter._Increment()
+            | _ ->
+                flags <- flags ||| (NLF.IsDecimal ||| NLF.HasIntegerPart)
+                c <- c1
 
         if isNull error then
-            if int (opt &&& NLO.AllowSuffix) = 0  || not (isAsciiLetter c) then
+            if (opt &&& NLO.AllowSuffix) = NLO.None  || not (isAsciiLetter c) then
                 let str = state.Iter.ReadUntil(iter)
                 let newState = state.AdvanceTo(iter)
                 Reply<_,_>(NumberLiteral(str, flags, EOS, EOS, EOS, EOS), newState)
             else
-                let mutable str = if int (opt &&& NLO.IncludeSuffixCharsInString) <> 0 then null
+                let mutable str = if (opt &&& NLO.IncludeSuffixCharsInString) <> NLO.None then null
                                   else state.Iter.ReadUntil(iter)
                 let mutable nSuffix = 1
                 let mutable s1 = c
@@ -1186,47 +1202,33 @@ let numberLiteralE (opt: NumberLiteralOptions) (errorInCaseNoLiteralFound: Error
                             s4 <- c
                             c <- iter._Increment()
                 flags <- flags ||| (enum) nSuffix
-                if int (opt &&& NLO.IncludeSuffixCharsInString) <> 0 then
+                if (opt &&& NLO.IncludeSuffixCharsInString) <> NLO.None then
                     str <- state.Iter.ReadUntil(iter)
                 let newState = state.AdvanceTo(iter)
                 Reply<_,_>(NumberLiteral(str, flags, s1, s2, s3, s4), newState)
         else
             Reply<_,_>(Error, error, state.AdvanceTo(iter))
     else
-        if int (opt &&& (NLO.AllowInfinity ||| NLO.AllowNaN)) <> 0 then
-            if c = 'i' || c = 'I' then
-                if int (opt &&& NLO.AllowInfinity) <> 0 then
-                    c <- iter.Peek(1u)
-                    if c = 'n' || c = 'N' then
-                        c <- iter.Peek(2u)
-                        if c = 'f' || c = 'F' then
-                            flags <- flags ||| NLF.IsInfinity
-                            c <- iter._Increment(3u)
-                            if c = 'i' || c = 'I' then
-                                c <- iter.Peek(1u)
-                                if c = 'n' || c = 'N' then
-                                    c <- iter.Peek(2u)
-                                    if c = 'i' || c = 'I' then
-                                        c <- iter.Peek(3u)
-                                        if c = 't' || c = 'T' then
-                                            c <- iter.Peek(4u)
-                                            if c = 'y' || c = 'Y' then
-                                                iter._Increment(5u) |> ignore
-
-            elif (c = 'n' || c = 'N') && int (opt &&& NLO.AllowNaN) <> 0 then
-                c <- iter.Peek(1u)
-                if c = 'a' || c = 'A' then
-                    c <- iter.Peek(2u)
-                    if c = 'n' || c = 'N' then
-                        flags <- flags ||| NLF.IsNaN
-                        iter._Increment(3u) |> ignore
-
-        if int (flags &&& (NLF.IsInfinity ||| NLF.IsNaN)) <> 0 then
-            let str = state.Iter.ReadUntil(iter)
-            let newState = state.AdvanceTo(iter)
-            Reply<_,_>(NumberLiteral(str, flags, EOS, EOS, EOS, EOS), newState)
-        else
-            Reply<_,_>(Error, errorInCaseNoLiteralFound, state)
+       let cc = int c ||| int ' '
+       if
+           if cc = int 'i' then
+                 (opt &&& NLO.AllowInfinity) <> NLO.None
+              && iter.MatchCaseFolded("inf") && (flags <- flags ||| NLF.IsInfinity
+                                                 iter._Increment(3u) |> ignore
+                                                 if iter.MatchCaseFolded("inity") then iter._Increment(5u) |> ignore
+                                                 true)
+           elif  cc = int 'n' then
+                 (opt &&& NLO.AllowNaN) <> NLO.None
+              && iter.MatchCaseFolded("nan") && (flags <- flags ||| NLF.IsNaN
+                                                 iter._Increment(3u) |> ignore
+                                                 true)
+           else false
+       then
+           let str = state.Iter.ReadUntil(iter)
+           let newState = state.AdvanceTo(iter)
+           Reply(NumberLiteral(str, flags, EOS, EOS, EOS, EOS), newState)
+       else
+           Reply(Error, errorInCaseNoLiteralFound, state)
 
 
 let pfloat : Parser<float,'u> =
@@ -1254,96 +1256,270 @@ let pfloat : Parser<float,'u> =
 
 let numberLiteral opt label = numberLiteralE opt (expectedError label)
 
-let internal raiseIntegerLiteralOutOfRange() =
-    raise (System.OverflowException("integer number is either too large or too small"))
+let internal parseUInt64 (c0: char) (iter: CharStream.Iterator byref) (status: ReplyStatus byref) (error: ErrorMessageList byref) =
+    Debug.Assert(isDigit c0 && (status = Ok))
 
-// Does no argument checking and skips any sign.
-let internal integerNumberLiteralToUInt64 (s: string) (flags: NLF) =
-    let mutable start =
-        if int (flags &&& (NLF.HasMinusSign ||| NLF.HasPlusSign)) <> 0 then 1 else 0 // skip sign
-    if int (flags &&& NLF.IsDecimal) = 0 then
-        start <- start + 2 // skip base prefix
-    while start < s.Length && s.[start] = '0' do
-        start <- start + 1 // skip initial zeros
+    // we rely on the compiler eliminating inactive branches
+    let opt = NumberLiteralOptions.DefaultUnsignedInteger
+    let limit10  = 1844674407370955160UL //(System.UInt64.MaxValue - 9UL)/10UL
+    let maxDiv10 = 1844674407370955161UL //System.UInt64.MaxValue/10UL
+    let maxMod10 = 5u //System.UInt64.MaxValue%10UL
+
+    let limit16  = 1152921504606846975UL //(System.UInt64.MaxValue - 15UL)/16UL
+    let maxDiv16 = 1152921504606846975UL //System.UInt64.MaxValue/16UL
+    let maxMod16 = 15u //System.UInt64.MaxValue%16UL
+
+    let limit8  = 2305843009213693951UL  //(System.UInt64.MaxValue - 7UL)/8UL
+    let maxDiv8 = 2305843009213693951UL //System.UInt64.MaxValue/8UL
+    let maxMod8 = 7u //System.UInt64.MaxValue%8UL
+
+    let limit2  = 9223372036854775807UL //(System.UInt64.MaxValue - 1UL)/2UL
+    let maxDiv2 = 9223372036854775807UL //System.UInt64.MaxValue/2UL
+    let maxMod2 = 1u //System.UInt64.MaxValue%2UL
 
     let mutable n = 0UL
-    match flags &&& NLF.BaseMask with
-    | NLF.IsDecimal ->
-        let nDigits = s.Length - start
-        if nDigits > 20 || (nDigits = 20 && System.String.CompareOrdinal(s, start, "18446744073709551615", 0, 20) > 0) then
-            raiseIntegerLiteralOutOfRange()
-        for i = start to s.Length - 1 do
-            let d = int s.[i] - int '0'
-            n <- n*10UL + uint64 d
-    | NLF.IsHexadecimal ->
-        if s.Length - start > 16 then
-            raiseIntegerLiteralOutOfRange()
-        for i = start to s.Length - 1 do
-            let c = int s.[i]
-            let h = (c &&& 15) + (c >>> 6)*9 // converts hex char to int
-            n <- (n <<< 4) + uint64 h
-    | NLF.IsOctal ->
-        let nOctal = s.Length - start
-        if nOctal > 22 || nOctal = 22 && s.[start] > '1' then
-            raiseIntegerLiteralOutOfRange()
-        for i = start to s.Length - 1 do
-            let o = int s.[i] - int '0'
-            n <- (n <<< 3) + uint64 o
-    | _ (* NLF.IsBinary *) ->
-        if s.Length - start > 64 then
-            raiseIntegerLiteralOutOfRange()
-        for i = start to s.Length - 1 do
-            let b = int s.[i] - int '0'
-            n <- (n <<< 1) + uint64 b
+    let mutable c = c0
+    let c1 = iter._Increment()
+
+    if    (opt &&& (NLO.AllowBinary ||| NLO.AllowOctal ||| NLO.AllowHexadecimal)) = NLO.None
+       || c <> '0' || c1 <= '9'
+    then
+        n <- uint64 (uint32 c - uint32 '0')
+        c <- c1
+        while c >= '0' && c <= '9' do
+            let nc = uint32 c - uint32 '0'
+            if n <= limit10 || (maxMod10 < 9u && n = maxDiv10 && nc <= maxMod10) then
+                n <- 10UL*n + uint64 nc
+                c <- iter._Increment()
+            else
+                status <- FatalError
+                c <- '!' // break
+
+    else
+        let cc1 = uint32 c1 ||| uint32 ' '
+        if (opt &&& NLO.AllowHexadecimal) <> NLO.None && cc1 = uint32 'x' then
+            c <- iter._Increment()
+            let mutable nc = uint32 0
+            if  (let cc = uint32 c ||| uint32 ' '
+                 if c <= '9' then nc <- uint32 c - uint32 '0'; c >= '0'
+                 else cc <= uint32 'f' && (nc <- cc - 0x57u; cc >= uint32 'a')) // 0x57u = uint32 'a' - 10u
+            then
+                n <- uint64 nc
+                c <- iter._Increment()
+                while
+                    (let cc = uint32 c ||| uint32 ' '
+                     if c <= '9' then nc <- uint32 c - uint32 '0'; c >= '0'
+                     else cc <= uint32 'f' && (nc <- cc - 0x57u; cc >= uint32 'a'))
+                  do
+                    if n <= limit16 || (maxMod16 < 15u && n = maxDiv16 && nc <= maxMod16) then
+                        n <- 16UL*n + uint64 nc
+                        c <- iter._Increment()
+                    else
+                        status <- FatalError
+                        c <- '!' // break
+            else
+                status <- Error
+                error <- expectedHexadecimalDigit
+
+        elif (opt &&& NLO.AllowOctal) <> NLO.None && cc1 = uint32 'o' then
+            c <- iter._Increment()
+            let mutable nc = uint32 c - uint32 '0'
+            if nc = (nc &&& 7u) then
+                n <- uint64 nc
+                c <- iter._Increment()
+                nc <- uint32 c - uint32 '0'
+                while nc = (nc &&& 7u) do
+                    if n <= limit8 || (maxMod8 < 7u && n = maxDiv8 && nc <= maxMod8) then
+                        n <- 8UL*n + uint64 nc
+                        c <- iter._Increment()
+                        nc <- uint32 c - uint32 '0'
+                    else
+                        status <- FatalError
+                        nc <- 11u // break
+            else
+                status <- Error
+                error <- expectedOctalDigit
+
+        elif (opt &&& NLO.AllowBinary) <> NLO.None && cc1 = uint32 'b' then
+            c <- iter._Increment()
+            let mutable nc = uint32 c - uint32 '0'
+            if nc = (nc &&& 1u) then
+                n <- uint64 nc
+                c <- iter._Increment()
+                nc <- uint32 c - uint32 '0'
+                while nc = (nc &&& 1u) do
+                    if n <= limit2 || (maxMod2 = 0u && n = maxDiv2 && nc = 0u) then
+                        n <- 2UL*n + uint64 nc
+                        c <- iter._Increment()
+                        nc <- uint32 c - uint32 '0'
+                    else
+                        status <- FatalError
+                        nc <- 11u // break
+            else
+                status <- Error
+                error <- expectedBinaryDigit
+        // else c = 0 && not (isDigit c1)
     n
 
-let inline internal integerNumberLiteralToInt maxInt convert s flags =
-    let u = integerNumberLiteralToUInt64 s flags
-    if int (flags &&& NLF.HasMinusSign) = 0 then
-        if u > uint64 maxInt then raiseIntegerLiteralOutOfRange()
-        convert u
+let internal parseUInt32 (c0: char) (iter: CharStream.Iterator byref) (status: ReplyStatus byref) (error: ErrorMessageList byref) =
+    Debug.Assert(isDigit c0 && (status = Ok))
+
+    // we rely on the compiler eliminating inactive branches
+    let opt = NumberLiteralOptions.DefaultUnsignedInteger
+    let limit10  = 429496728u  //(System.UInt32.MaxValue - 9u)/10u
+    let maxDiv10 = 429496729u //System.UInt32.MaxValue/10u
+    let maxMod10 = 5u //System.UInt32.MaxValue%10u
+
+    let limit16  = 268435455u  //(System.UInt32.MaxValue - 15u)/16u
+    let maxDiv16 = 268435455u //System.UInt32.MaxValue/16u
+    let maxMod16 = 15u //System.UInt32.MaxValue%16u
+
+    let limit8  = 536870911u  //(System.UInt32.MaxValue - 7u)/8u
+    let maxDiv8 = 536870911u //System.UInt32.MaxValue/8u
+    let maxMod8 = 7u //System.UInt32.MaxValue%8u
+
+    let limit2  = 2147483647u //(System.UInt32.MaxValue - 1u)/2u
+    let maxDiv2 = 2147483647u //System.UInt32.MaxValue/2u
+    let maxMod2 = 1u //System.UInt32.MaxValue%2u
+
+    let mutable n = 0u
+    let mutable c = c0
+    let c1 = iter._Increment()
+
+    if    (opt &&& (NLO.AllowBinary ||| NLO.AllowOctal ||| NLO.AllowHexadecimal)) = NLO.None
+       || c <> '0' || c1 <= '9'
+    then
+        n <- uint32 c - uint32 '0'
+        c <- c1
+        while c >= '0' && c <= '9' do
+            let nc = uint32 c - uint32 '0'
+            if n <= limit10 || (maxMod10 < 9u && n = maxDiv10 && nc <= maxMod10) then
+                n <- 10u*n + nc
+                c <- iter._Increment()
+            else
+                status <- FatalError
+                c <- '!' // break
+
     else
-        if u > uint64 maxInt + 1UL then raiseIntegerLiteralOutOfRange()
-        -(convert u)
+        let cc1 = uint32 c1 ||| uint32 ' '
+        if (opt &&& NLO.AllowHexadecimal) <> NLO.None && cc1 = uint32 'x' then
+            c <- iter._Increment()
+            let mutable nc = uint32 0
+            if  (let cc = uint32 c ||| uint32 ' '
+                 if c <= '9' then nc <- uint32 c - uint32 '0'; c >= '0'
+                 else cc <= uint32 'f' && (nc <- cc - 0x57u; cc >= uint32 'a')) // 0x57u = uint32 'a' - 10u
+            then
+                n <- uint32 nc
+                c <- iter._Increment()
+                while
+                    (let cc = uint32 c ||| uint32 ' '
+                     if c <= '9' then nc <- uint32 c - uint32 '0'; c >= '0'
+                     else cc <= uint32 'f' && (nc <- cc - 0x57u; cc >= uint32 'a'))
+                  do
+                    if n <= limit16 || (maxMod16 < 15u && n = maxDiv16 && nc <= maxMod16) then
+                        n <- 16u*n + nc
+                        c <- iter._Increment()
+                    else
+                        status <- FatalError
+                        c <- '!' // break
+            else
+                status <- Error
+                error <- expectedHexadecimalDigit
 
-let inline internal integerNumberLiteralToUInt maxUInt convert s flags =
-    let u = integerNumberLiteralToUInt64 s flags
-    if u > uint64 maxUInt then raiseIntegerLiteralOutOfRange()
-    convert u
+        elif (opt &&& NLO.AllowOctal) <> NLO.None && cc1 = uint32 'o' then
+            c <- iter._Increment()
+            let mutable nc = uint32 c - uint32 '0'
+            if nc = (nc &&& 7u) then
+                n <- uint32 nc
+                c <- iter._Increment()
+                nc <- uint32 c - uint32 '0'
+                while nc = (nc &&& 7u) do
+                    if n <= limit8 || (maxMod8 < 7u && n = maxDiv8 && nc <= maxMod8) then
+                        n <- 8u*n + nc
+                        c <- iter._Increment()
+                        nc <- uint32 c - uint32 '0'
+                    else
+                        status <- FatalError
+                        nc <- 11u // break
+            else
+                status <- Error
+                error <- expectedOctalDigit
 
-let internal integerNumberLiteralToInt64  s flags = integerNumberLiteralToInt System.Int64.MaxValue int64 s flags
-let internal integerNumberLiteralToInt32  s flags = integerNumberLiteralToInt System.Int32.MaxValue int32 s flags
-let internal integerNumberLiteralToInt16  s flags = integerNumberLiteralToInt System.Int16.MaxValue int16 s flags
-let internal integerNumberLiteralToInt8   s flags = integerNumberLiteralToInt System.SByte.MaxValue sbyte s flags
+        elif (opt &&& NLO.AllowBinary) <> NLO.None && cc1 = uint32 'b' then
+            c <- iter._Increment()
+            let mutable nc = uint32 c - uint32 '0'
+            if nc = (nc &&& 1u) then
+                n <- uint32 nc
+                c <- iter._Increment()
+                nc <- uint32 c - uint32 '0'
+                while nc = (nc &&& 1u) do
+                    if n <= limit2 || (maxMod2 = 0u && n = maxDiv2 && nc = 0u) then
+                        n <- 2u*n + nc
+                        c <- iter._Increment()
+                        nc <- uint32 c - uint32 '0'
+                    else
+                        status <- FatalError
+                        nc <- 11u // break
+            else
+                status <- Error
+                error <- expectedBinaryDigit
+        // else c = 0 && not (isDigit c1)
+    n
 
-let internal integerNumberLiteralToUInt32 s flags = integerNumberLiteralToUInt System.UInt32.MaxValue uint32 s flags
-let internal integerNumberLiteralToUInt16 s flags = integerNumberLiteralToUInt System.UInt16.MaxValue uint16 s flags
-let internal integerNumberLiteralToUInt8  s flags = integerNumberLiteralToUInt System.Byte.MaxValue   byte   s flags
+[<MethodImplAttribute(MethodImplOptions.NoInlining)>]
+let internal overflowError message =
+    if isNotNull message then messageError message // isNotNull prevents fsc from inlining the function
+    else NoErrorMessages
 
+let inline internal pint (opt: NumberLiteralOptions) (max: 'uint) (uint64_: 'uint -> uint64) (uint: int -> 'uint) (uint_: uint32 -> 'uint) (uint__: uint64 -> 'uint) (int: 'uint -> 'int) (minus1: 'int) (errorInCaseNoLiteralFound: ErrorMessageList) (overflowMessage: string) (state: State<'u>) =
+    // we rely on the compiler eliminating inactive branches after inlining
 
-let
-#if NOINLINE
-#else
-    inline
-#endif
-           internal pint flags numberLiteralToInt error overflowMessage =
-    fun state ->
-        let reply = numberLiteralE flags error state
-        if reply.Status = Ok then
-            try Reply<_,_>(numberLiteralToInt reply.Result.String reply.Result.Info, reply.State)
-            with :? System.OverflowException ->
-                Reply<_,_>(FatalError, messageError overflowMessage, state)
-        else Reply<_,_>(reply.Status, reply.Error, reply.State)
+    let minusIsAllowed = (opt &&& NLO.AllowMinusSign) <> NLO.None
 
-let pint64 = fun state -> pint NLO.DefaultInteger integerNumberLiteralToInt64 expectedInt64 "This number is outside the allowable range for 64-bit signed integers." state
-let pint32 = fun state -> pint NLO.DefaultInteger integerNumberLiteralToInt32 expectedInt32 "This number is outside the allowable range for 32-bit signed integers." state
-let pint16 = fun state -> pint NLO.DefaultInteger integerNumberLiteralToInt16 expectedInt16 "This number is outside the allowable range for 16-bit signed integers." state
-let pint8  = fun state -> pint NLO.DefaultInteger integerNumberLiteralToInt8  expectedInt8  "This number is outside the allowable range for 8-bit signed integers." state
+    let mutable iter = state.Iter
+    let mutable c = iter.Read()
 
-let puint64 = fun state -> pint NLO.DefaultUnsignedInteger integerNumberLiteralToUInt64 expectedUInt64 "This number is outside the allowable range for 64-bit unsigned integers." state
-let puint32 = fun state -> pint NLO.DefaultUnsignedInteger integerNumberLiteralToUInt32 expectedUInt32 "This number is outside the allowable range for 32-bit unsigned integers." state
-let puint16 = fun state -> pint NLO.DefaultUnsignedInteger integerNumberLiteralToUInt16 expectedUInt16 "This number is outside the allowable range for 16-bit unsigned integers." state
-let puint8  = fun state -> pint NLO.DefaultUnsignedInteger integerNumberLiteralToUInt8  expectedUInt8  "This number is outside the allowable range for 8-bit unsigned integers." state
+    let mutable plusMinus1 = int (uint 1)
+    if minusIsAllowed && c = '-' then
+        plusMinus1 <- minus1
+        c <- iter._Increment()
+    elif (opt &&& NLO.AllowPlusSign) <> NLO.None && c = '+' then
+        c <- iter._Increment()
+
+    let mutable status = Ok
+    let mutable error = NoErrorMessages
+    let mutable result = Unchecked.defaultof<_>
+    let mutable newState = state
+    if c >= '0' && c <= '9' then
+        let n = if uint64_ max <= uint64 System.UInt32.MaxValue then
+                    uint_  (parseUInt32 c (&iter) (&status) (&error))
+                else
+                    uint__ (parseUInt64 c (&iter) (&status) (&error))
+        let isUInt32Or64 = uint64_ max = uint64 System.UInt32.MaxValue || uint64_ max = System.UInt64.MaxValue
+        if status = Ok && (isUInt32Or64 || (n <= max || (minusIsAllowed && plusMinus1 = minus1 && n = max + uint 1))) then
+            result <- if minusIsAllowed then plusMinus1 * int n else int n
+            newState <- state.AdvanceTo(iter)
+        elif status = Error then
+            newState <- state.AdvanceTo(iter)
+        else
+            status <- FatalError
+            error  <- overflowError overflowMessage
+    else
+        status <- Error
+        error  <- errorInCaseNoLiteralFound
+    Reply(status, result, error, newState)
+
+let pint64 state = pint NumberLiteralOptions.DefaultInteger (uint64 System.Int64.MaxValue)            uint64 uint64 uint64 uint64 int64 -1L expectedInt64 "This number is outside the allowable range for 64-bit signed integers." state
+let pint32 state = pint NumberLiteralOptions.DefaultInteger (uint32 System.Int32.MaxValue)            uint64 uint32 uint32 uint32 int32 -1  expectedInt32 "This number is outside the allowable range for 32-bit signed integers." state
+                                                           // fsc's optimizer seems to have problems with literals of small int types
+let pint16 state = pint NumberLiteralOptions.DefaultInteger ((*uint32 System.Int16.MaxValue*)0x7fffu) uint64 uint32 uint32 uint32 int16 -1s expectedInt16 "This number is outside the allowable range for 16-bit signed integers." state
+let pint8  state = pint NumberLiteralOptions.DefaultInteger ((*uint32 System.SByte.MaxValue*)0x7fu)   uint64 uint32 uint32 uint32 sbyte -1y expectedInt8  "This number is outside the allowable range for 8-bit signed integers." state
+
+let puint64 state = pint NumberLiteralOptions.DefaultUnsignedInteger System.UInt64.MaxValue uint64 uint64 uint64 uint64 uint64 1UL expectedUInt64 "This number is outside the allowable range for 64-bit unsigned integers." state
+let puint32 state = pint NumberLiteralOptions.DefaultUnsignedInteger System.UInt32.MaxValue uint64 uint32 uint32 uint32 uint32 1u  expectedUInt32 "This number is outside the allowable range for 32-bit unsigned integers." state
+let puint16 state = pint NumberLiteralOptions.DefaultUnsignedInteger 0xffffu                uint64 uint32 uint32 uint32 uint16 1us expectedUInt16 "This number is outside the allowable range for 16-bit unsigned integers." state
+let puint8  state = pint NumberLiteralOptions.DefaultUnsignedInteger 0xffu                  uint64 uint32 uint32 uint32 byte   1uy expectedUInt8  "This number is outside the allowable range for 8-bit unsigned integers." state
+
 
 
 // -------------------

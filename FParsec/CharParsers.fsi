@@ -548,7 +548,7 @@ type NumberLiteralOptions =
 /// except if the `NumberLiteralOptions` passed to the `numberLiteral` parser have the
 /// `IncludeSuffixCharsInString` flag set.
 /// Any parsed suffix chars are always available through the `SuffixChar1` - `4` members.
-type NumberLiteral = struct
+type NumberLiteral =
     new: string:string * info:NumberLiteralResultFlags
          * suffixChar0: char * suffixChar1: char * suffixChar2: char * suffixChar3: char -> NumberLiteral
 
@@ -579,7 +579,10 @@ type NumberLiteral = struct
     member IsOctal: bool
     member IsNaN: bool
     member IsInfinity: bool
-end
+    
+    override Equals: obj -> bool
+    override GetHashCode: unit -> int
+
 and /// Encodes various bits of information about a parsed number literal.
     [<System.Flags>]
     NumberLiteralResultFlags =

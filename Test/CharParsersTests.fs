@@ -640,6 +640,11 @@ let testNumberParsers() =
 
         puint64 |> RError "" 0 expectedE
         puint64 |> RError "+1" 0 expectedE
+        puint64 |> RError "-1" 0 expectedE
+        puint64 |> RFatalError "18446744073709551620" 0 overflowE
+        puint64 |> RFatalError "18446744073709551619" 0 overflowE
+        puint64 |> RFatalError "18446744073709551618" 0 overflowE
+        puint64 |> RFatalError "18446744073709551617" 0 overflowE
         puint64 |> RFatalError "18446744073709551616" 0 overflowE
         puint64 |> RFatalError "0000018446744073709551616" 0 overflowE
         puint64 |> RFatalError "111111111111111111111" 0 overflowE
@@ -648,40 +653,57 @@ let testNumberParsers() =
         puint64 |> ROk "000|" 0UL
         puint64 |> ROk "12345678901234567890|" 12345678901234567890UL
         puint64 |> ROk "18446744073709551615|" System.UInt64.MaxValue
-        puint64 |> ROk "18446744073709551614|" (System.UInt64.MaxValue - 1UL)
+        puint64 |> ROk "018446744073709551614|" (System.UInt64.MaxValue - 1UL)
+        puint64 |> ROk "018446744073709551613|" (System.UInt64.MaxValue - 2UL)
+        puint64 |> ROk "018446744073709551612|" (System.UInt64.MaxValue - 3UL)
+        puint64 |> ROk "018446744073709551611|" (System.UInt64.MaxValue - 4UL)
+        puint64 |> ROk "018446744073709551610|" (System.UInt64.MaxValue - 5UL)
+        puint64 |> ROk "018446744073709551609|" (System.UInt64.MaxValue - 6UL)
         puint64 |> ROk "0000018446744073709551615|" System.UInt64.MaxValue
 
         puint64 |> RError "0x"  2 (expectedError "hexadecimal digit")
         puint64 |> RError "+0x1" 0 expectedE
         puint64 |> RFatalError "0x10000000000000000" 0 overflowE
         puint64 |> RFatalError "0x11111111111111111" 0 overflowE
-        puint64 |> RFatalError "0xfffffffffffffffff" 0 overflowE
+        puint64 |> RFatalError "0Xfffffffffffffffff" 0 overflowE
 
         puint64 |> ROk "0x0|" 0UL
         puint64 |> ROk "0x000|" 0UL
         puint64 |> ROk "0x1234567890abcdef|" 0x1234567890abcdefUL
         puint64 |> ROk "0X1234567890ABCDEF|" 0x1234567890abcdefUL
         puint64 |> ROk "0xffffffffffffffff|" System.UInt64.MaxValue
+        puint64 |> ROk "0xfffffffffffffffe|" (System.UInt64.MaxValue - 1UL)
+        puint64 |> ROk "0xfffffffffffffff1|" (System.UInt64.MaxValue - 14UL)
+        puint64 |> ROk "0xfffffffffffffff0|" (System.UInt64.MaxValue - 15UL)
+        puint64 |> ROk "0xffffffffffffffef|" (System.UInt64.MaxValue - 16UL)
         puint64 |> ROk "0x00000ffffffffffffffff|" System.UInt64.MaxValue
 
+        puint64 |> RFatalError "0o2000000000000000000001" 0 overflowE
         puint64 |> RFatalError "0o2000000000000000000000" 0 overflowE
         puint64 |> RFatalError "0o7777777777777777777777" 0 overflowE
-        puint64 |> RFatalError "0o77777777777777777777777" 0 overflowE
+        puint64 |> RFatalError "0O77777777777777777777777" 0 overflowE
 
         puint64 |> ROk "0o0|" 0UL
         puint64 |> ROk "0o000|" 0UL
         puint64 |> ROk "0o1234567123456701234567|" 0o1234567123456701234567UL
         puint64 |> ROk "0o1777777777777777777777|" System.UInt64.MaxValue
         puint64 |> ROk "0o1777777777777777777776|" (System.UInt64.MaxValue - 1UL)
-        puint64 |> ROk "0o000001777777777777777777777|" System.UInt64.MaxValue
+        puint64 |> ROk "0o1777777777777777777771|" (System.UInt64.MaxValue - 6UL)
+        puint64 |> ROk "0o1777777777777777777770|" (System.UInt64.MaxValue - 7UL)
+        puint64 |> ROk "0o1777777777777777777767|" (System.UInt64.MaxValue - 8UL)
+        puint64 |> ROk "0O000001777777777777777777777|" System.UInt64.MaxValue
 
+        puint64 |> RFatalError "0b10000000000000000000000000000000000000000000000000000000000000001" 0 overflowE
         puint64 |> RFatalError "0b10000000000000000000000000000000000000000000000000000000000000000" 0 overflowE
         puint64 |> RFatalError "0b11111111111111111111111111111111111111111111111111111111111111111" 0 overflowE
 
         puint64 |> ROk "0b0|" 0UL
         puint64 |> ROk "0b000|" 0UL
         puint64 |> ROk "0b1111111111111111111111111111111111111111111111111111111111111111|" System.UInt64.MaxValue
-        puint64 |> ROk "0b000001111111111111111111111111111111111111111111111111111111111111111|" System.UInt64.MaxValue
+        puint64 |> ROk "0b1111111111111111111111111111111111111111111111111111111111111110|" (System.UInt64.MaxValue - 1UL)
+        puint64 |> ROk "0b1111111111111111111111111111111111111111111111111111111111111101|" (System.UInt64.MaxValue - 2UL)
+        puint64 |> ROk "0b1111111111111111111111111111111111111111111111111111111111111100|" (System.UInt64.MaxValue - 3UL)
+        puint64 |> ROk "0B000001111111111111111111111111111111111111111111111111111111111111111|" System.UInt64.MaxValue
 
     testPuint64()
 
@@ -707,7 +729,7 @@ let testNumberParsers() =
         pint64 |> RFatalError "0xffffffffffffffff" 0 overflowE
         pint64 |> RFatalError "+0x000ffffffffffffffff" 0 overflowE
         pint64 |> RFatalError "-0xffffffffffffffff" 0 overflowE
-        pint64 |> RFatalError "-0x0ffffffffffffffff" 0 overflowE
+        pint64 |> RFatalError "-0X0ffffffffffffffff" 0 overflowE
 
         pint64 |> RFatalError "0x8000000000000000" 0 overflowE
         pint64 |> RFatalError "+0x0008000000000000000" 0 overflowE
@@ -719,25 +741,25 @@ let testNumberParsers() =
         pint64 |> ROk "-0x8000000000000000|" System.Int64.MinValue
         pint64 |> ROk "-0x008000000000000000|" System.Int64.MinValue
 
-        pint64 |> RFatalError "0o1777777777777777777776" 0 overflowE
-        pint64 |> RFatalError "+0o1777777777777777777776" 0 overflowE
-        pint64 |> RFatalError "-0o1777777777777777777776" 0 overflowE
-        pint64 |> RFatalError "-0o0001777777777777777777776" 0 overflowE
+        pint64 |> RFatalError "0o2000000000000000000000" 0 overflowE
+        pint64 |> RFatalError "+0o002000000000000000000000" 0 overflowE
+        pint64 |> RFatalError "-0o0002000000000000000000000" 0 overflowE
 
+        pint64 |> RFatalError "0o1000000000000000000000" 0 overflowE
         pint64 |> RFatalError "0o1000000000000000000000" 0 overflowE
         pint64 |> RFatalError "+0o001000000000000000000000" 0 overflowE
         pint64 |> RFatalError "-0o1000000000000000000001" 0 overflowE
-        pint64 |> RFatalError "-0o001000000000000000000001" 0 overflowE
+        pint64 |> RFatalError "-0O001000000000000000000001" 0 overflowE
 
         pint64 |> ROk "0o777777777777777777777|" System.Int64.MaxValue
         pint64 |> ROk "+0o00777777777777777777777|" System.Int64.MaxValue
         pint64 |> ROk "-0o1000000000000000000000|" System.Int64.MinValue
-        pint64 |> ROk "-0o001000000000000000000000|" System.Int64.MinValue
+        pint64 |> ROk "-0O001000000000000000000000|" System.Int64.MinValue
 
-        pint64 |> RFatalError "+0b0001111111111111111111111111111111111111111111111111111111111111111" 0 overflowE
-        pint64 |> RFatalError "-0b01111111111111111111111111111111111111111111111111111111111111111" 0 overflowE
+        pint64 |> RFatalError "+0b00011111111111111111111111111111111111111111111111111111111111111111" 0 overflowE
+        pint64 |> RFatalError "-0b011111111111111111111111111111111111111111111111111111111111111111" 0 overflowE
 
-        pint64 |> RFatalError "+0b1000000000000000000000000000000000000000000000000000000000000000" 0 overflowE
+        pint64 |> RFatalError "+0B1000000000000000000000000000000000000000000000000000000000000000" 0 overflowE
         pint64 |> RFatalError "0b0001000000000000000000000000000000000000000000000000000000000000000" 0 overflowE
         pint64 |> RFatalError "-0b0001000000000000000000000000000000000000000000000000000000000000001" 0 overflowE
         pint64 |> RFatalError "-0b1000000000000000000000000000000000000000000000000000000000000001" 0 overflowE
@@ -745,9 +767,147 @@ let testNumberParsers() =
         pint64 |> ROk "0b111111111111111111111111111111111111111111111111111111111111111|" System.Int64.MaxValue
         pint64 |> ROk "+0b00111111111111111111111111111111111111111111111111111111111111111|" System.Int64.MaxValue
         pint64 |> ROk "-0b1000000000000000000000000000000000000000000000000000000000000000|"System.Int64.MinValue
-        pint64 |> ROk "-0b0001000000000000000000000000000000000000000000000000000000000000000|" System.Int64.MinValue
+        pint64 |> ROk "-0B0001000000000000000000000000000000000000000000000000000000000000000|" System.Int64.MinValue
 
     testPint64()
+
+    let testPuint32() =
+        let expectedE = expectedError "integer number (32-bit, unsigned)"
+        let overflowE = messageError "This number is outside the allowable range for 32-bit unsigned integers."
+
+        puint32 |> RError "" 0 expectedE
+        puint32 |> RError "+1" 0 expectedE
+        puint32 |> RError "-1" 0 expectedE
+
+        puint32 |> RFatalError "4294967300" 0 overflowE
+        puint32 |> RFatalError "4294967299" 0 overflowE
+        puint32 |> RFatalError "4294967298" 0 overflowE
+        puint32 |> RFatalError "4294967297" 0 overflowE
+        puint32 |> RFatalError "4294967296" 0 overflowE
+        puint32 |> RFatalError "000004294967296" 0 overflowE
+        puint32 |> RFatalError "11111111111" 0 overflowE
+
+        puint32 |> ROk "0|" 0u
+        puint32 |> ROk "000|" 0u
+        puint32 |> ROk "1234567890|" 1234567890u
+        puint32 |> ROk "4294967295|" System.UInt32.MaxValue
+        puint32 |> ROk "4294967294|" (System.UInt32.MaxValue - 1u)
+        puint32 |> ROk "4294967293|" (System.UInt32.MaxValue - 2u)
+        puint32 |> ROk "4294967292|" (System.UInt32.MaxValue - 3u)
+        puint32 |> ROk "4294967291|" (System.UInt32.MaxValue - 4u)
+        puint32 |> ROk "4294967290|" (System.UInt32.MaxValue - 5u)
+        puint32 |> ROk "4294967289|" (System.UInt32.MaxValue - 6u)
+        puint32 |> ROk "000004294967295|" System.UInt32.MaxValue
+
+        puint32 |> RError "0x"  2 (expectedError "hexadecimal digit")
+        puint32 |> RError "+0x1" 0 expectedE
+        puint32 |> RFatalError "0x100000001" 0 overflowE
+        puint32 |> RFatalError "0x100000000" 0 overflowE
+        puint32 |> RFatalError "0x111111111" 0 overflowE
+        puint32 |> RFatalError "0Xfffffffff" 0 overflowE
+
+        puint32 |> ROk "0x0|" 0u
+        puint32 |> ROk "0x000|" 0u
+        puint32 |> ROk "0x1234abcd|" 0x1234abcdu
+        puint32 |> ROk "0X1234ABCD|" 0x1234abcdu
+        puint32 |> ROk "0xffffffff|" System.UInt32.MaxValue
+        puint32 |> ROk "0xfffffffe|" (System.UInt32.MaxValue - 1u)
+        puint32 |> ROk "0xfffffff1|" (System.UInt32.MaxValue - 14u)
+        puint32 |> ROk "0xfffffff0|" (System.UInt32.MaxValue - 15u)
+        puint32 |> ROk "0xffffffef|" (System.UInt32.MaxValue - 16u)
+        puint32 |> ROk "0x00000ffffffff|" System.UInt32.MaxValue
+
+        puint32 |> RFatalError "0o40000000001" 0 overflowE
+        puint32 |> RFatalError "0o40000000000" 0 overflowE
+        puint32 |> RFatalError "0o777777777777" 0 overflowE
+        puint32 |> RFatalError "0O7777777777777" 0 overflowE
+
+        puint32 |> ROk "0o0|" 0u
+        puint32 |> ROk "0o000|" 0u
+        puint32 |> ROk "0o12345670123|" 0o12345670123u
+        puint32 |> ROk "0o37777777777|" System.UInt32.MaxValue
+        puint32 |> ROk "0o37777777776|" (System.UInt32.MaxValue - 1u)
+        puint32 |> ROk "0o37777777771|" (System.UInt32.MaxValue - 6u)
+        puint32 |> ROk "0o37777777770|" (System.UInt32.MaxValue - 7u)
+        puint32 |> ROk "0o37777777767|" (System.UInt32.MaxValue - 8u)
+        puint32 |> ROk "0O0000037777777777|" System.UInt32.MaxValue
+
+        puint32 |> RFatalError "0b100000000000000000000000000000001" 0 overflowE
+        puint32 |> RFatalError "0b100000000000000000000000000000000" 0 overflowE
+        puint32 |> RFatalError "0B111111111111111111111111111111111" 0 overflowE
+
+        puint32 |> ROk "0b0|" 0u
+        puint32 |> ROk "0b000|" 0u
+        puint32 |> ROk "0b11111111111111111111111111111111|" System.UInt32.MaxValue
+        puint32 |> ROk "0b11111111111111111111111111111110|" (System.UInt32.MaxValue - 1u)
+        puint32 |> ROk "0b11111111111111111111111111111101|" (System.UInt32.MaxValue - 2u)
+        puint32 |> ROk "0b11111111111111111111111111111100|" (System.UInt32.MaxValue - 3u)
+        puint32 |> ROk "0B0000011111111111111111111111111111111|" System.UInt32.MaxValue
+
+    testPuint32()
+
+    let testPint32() =
+        let expectedE = expectedError "integer number (32-bit, signed)"
+        let overflowE = messageError "This number is outside the allowable range for 32-bit signed integers."
+
+        pint32 |> RFatalError "4294967295" 0 overflowE
+        pint32 |> RFatalError "+4294967295" 0 overflowE
+        pint32 |> RFatalError "-4294967295" 0 overflowE
+        pint32 |> RFatalError "-004294967295" 0 overflowE
+
+        pint32 |> RFatalError "2147483648" 0 overflowE
+        pint32 |> RFatalError "+0002147483648" 0 overflowE
+        pint32 |> RFatalError "-2147483649" 0 overflowE
+        pint32 |> RFatalError "-02147483649" 0 overflowE
+
+        pint32 |> ROk "2147483647|" System.Int32.MaxValue
+        pint32 |> ROk "+000002147483647|" System.Int32.MaxValue
+        pint32 |> ROk "-2147483648|" System.Int32.MinValue
+        pint32 |> ROk "-002147483648|" System.Int32.MinValue
+
+        pint32 |> RFatalError "0xffffffffffffffff" 0 overflowE
+        pint32 |> RFatalError "+0x000ffffffffffffffff" 0 overflowE
+        pint32 |> RFatalError "-0xffffffffffffffff" 0 overflowE
+        pint32 |> RFatalError "-0X0ffffffffffffffff" 0 overflowE
+
+        pint32 |> RFatalError "0x80000000" 0 overflowE
+        pint32 |> RFatalError "+0x00080000000" 0 overflowE
+        pint32 |> RFatalError "-0x80000001" 0 overflowE
+        pint32 |> RFatalError "-0x00080000001" 0 overflowE
+
+        pint32 |> ROk "0x7fffffff|" System.Int32.MaxValue
+        pint32 |> ROk "+0x000007fffffff|" System.Int32.MaxValue
+        pint32 |> ROk "-0x80000000|" System.Int32.MinValue
+        pint32 |> ROk "-0x0080000000|" System.Int32.MinValue
+
+        pint32 |> RFatalError "0o40000000000" 0 overflowE
+        pint32 |> RFatalError "+0o0040000000000" 0 overflowE
+        pint32 |> RFatalError "-0o00040000000000" 0 overflowE
+
+        pint32 |> RFatalError "0o20000000000" 0 overflowE
+        pint32 |> RFatalError "+0o0020000000000" 0 overflowE
+        pint32 |> RFatalError "-0o20000000001" 0 overflowE
+        pint32 |> RFatalError "-0O0020000000001" 0 overflowE
+
+        pint32 |> ROk "0o17777777777|" System.Int32.MaxValue
+        pint32 |> ROk "+0o0017777777777|" System.Int32.MaxValue
+        pint32 |> ROk "-0o20000000000|" System.Int32.MinValue
+        pint32 |> ROk "-0O0020000000000|" System.Int32.MinValue
+
+        pint32 |> RFatalError "+0b000111111111111111111111111111111111" 0 overflowE
+        pint32 |> RFatalError  "-0b0111111111111111111111111111111111" 0 overflowE
+
+        pint32 |> RFatalError "+0B1000000000000000000000000000000000000000000000000000000000000000" 0 overflowE
+        pint32 |> RFatalError "0b0001000000000000000000000000000000000000000000000000000000000000000" 0 overflowE
+        pint32 |> RFatalError "-0b0001000000000000000000000000000000000000000000000000000000000000001" 0 overflowE
+        pint32 |> RFatalError "-0b1000000000000000000000000000000000000000000000000000000000000001" 0 overflowE
+
+        pint32 |> ROk "0b1111111111111111111111111111111|" System.Int32.MaxValue
+        pint32 |> ROk "+0b001111111111111111111111111111111|" System.Int32.MaxValue
+        pint32 |> ROk "-0b10000000000000000000000000000000|"System.Int32.MinValue
+        pint32 |> ROk "-0B00010000000000000000000000000000000|" System.Int32.MinValue
+
+    testPint32()
 
     let testPintOther() =
        let overflowInt32  = messageError "This number is outside the allowable range for 32-bit signed integers."
