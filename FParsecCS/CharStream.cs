@@ -876,9 +876,10 @@ namespace FParsec {
                     // this is safe, as there can only be an end-of-stream iterator
                     // once the end of stream has been detected
                     return Anchor->EndOfStream;
+                } else {
+                    long charIndexPlusOffset = anchor->CharIndexOffset + Math.BigMul(block, anchor->BlockSizeMinusOverlap);
+                    return (uint)PositiveDistance(anchor->BufferBegin, Ptr) + charIndexPlusOffset;
                 }
-                long charIndex = anchor->CharIndexOffset + Math.BigMul(block, anchor->BlockSizeMinusOverlap);
-                return (uint)PositiveDistance(anchor->BufferBegin, Ptr) + charIndex;
             } }
 
             /// <summary>Returns an Iterator pointing to the next char in the stream. If the Iterator already

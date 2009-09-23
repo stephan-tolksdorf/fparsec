@@ -214,6 +214,7 @@ public sealed class CharStream : IDisposable {
     /// <summary>The iterator type for CharStreams.</summary>
     public struct Iterator : IEquatable<Iterator>  {
         public CharStream Stream { get; internal set; }
+        /// The index in Stream.String, or Int32.MinValue if the Iterator has reached the end of the stream
         internal int Idx;
 
         /// <summary>Indicates whether the Iterator has reached the end of the stream,

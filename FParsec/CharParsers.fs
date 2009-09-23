@@ -653,11 +653,11 @@ let regexL pattern label = regexE pattern (expectedError label)
 
 #if LOW_TRUST
 /// StructCharList is only meant for internal use within FParsec.
-type internal StructCharList = struct    
+type internal StructCharList = struct
     val mutable chars: char[]
     val mutable count: int
 
-    member inline t.AppendFirst(c) = 
+    member inline t.AppendFirst(c) =
         t.chars <- Array.zeroCreate 16
         t.chars.[0] <- c
         t.count <- 1
@@ -670,17 +670,17 @@ type internal StructCharList = struct
             t.count <- i + 1
         else
             t._AppendContinue(c)
-    
+
     member t._AppendContinue(c) =
-        let count = t.count        
+        let count = t.count
         let newChars = Array.zeroCreate (2*count)
         System.Buffer.BlockCopy(t.chars, 0, newChars, 0, count*sizeof<char>)
-        newChars.[count] <- c        
+        newChars.[count] <- c
         t.chars <- newChars
         t.count <- count + 1
-    
+
     member t.GetString() =
-        new string(t.chars, 0, t.count)        
+        new string(t.chars, 0, t.count)
 end
 #else
 /// StructCharList is only meant for internal use within FParsec.
