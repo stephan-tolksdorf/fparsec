@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Stephan Tolksdorf 2008-2009
+// License: Simplified BSD License. See accompanying documentation.
+
+using System;
 
 namespace FParsec {
 
