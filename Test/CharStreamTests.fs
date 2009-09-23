@@ -508,6 +508,10 @@ let testStream (stream: CharStream) (refString: string) blockSize blockOverlap m
             let str = refString.Substring(i, min n (N - i))
             getIter(i).Read() |> Equal str.[0]
             getIter(i).Read(n)|> Equal str
+            if n = 2 then
+                let chars = getIter(i).Read2()
+                chars.Char0 |> Equal str.[0]
+                chars.Char1 |> Equal (if str.Length = 2 then str.[1] else EOS)
 
             let endIter = getIter(i).Advance(n)
             getIter(i).ReadUntil(endIter) |> Equal str

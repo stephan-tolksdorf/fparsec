@@ -540,6 +540,34 @@ public sealed class CharStream : IDisposable {
             else return EOS;
         }
 
+        public struct TwoChars {
+            private uint chars;
+
+            internal TwoChars(uint chars) {
+                this.chars = chars;
+            }
+            public TwoChars(char char0, char char1) {
+                this.chars = ((uint)char1 << 16) | (uint)char0;
+            }
+
+            public char Char0 { get { return unchecked((char)chars); } }
+            public char Char1 { get { return (char)(chars >> 16); } }
+        }
+
+        /// <summary>Is an optimized implementation of new TwoChars(Read(), Next.Read()).</summary>
+        public TwoChars Read2() {
+            int idx = Idx + 1;
+            var stream = Stream;
+            if (unchecked((uint)idx) < (uint)stream.IndexEnd) {
+                var s = stream.String;
+                return new TwoChars(s[idx - 1], s[idx]);
+            } else if (idx == stream.IndexEnd) {
+                return new TwoChars(stream.String[idx - 1], EOS);
+            } else {
+                return new TwoChars(EOS, EOS);
+            }
+        }
+
         /// <summary>Returns a string with the length stream chars beginning with the char pointed to by the Iterator.
         /// If less than length chars are remaining in the stream, only the remaining chars are returned.</summary>
         /// <exception cref="ArgumentOutOfRangeException">length is negative.</exception>

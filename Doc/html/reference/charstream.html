@@ -1012,6 +1012,13 @@
 
     <span class="ck">member</span> <a id="Iterator.interface.Read:B:" href="#Iterator.members.Read"><span class="interface-member-marker"><span class="ci">Read</span></span></a><span class="cp">:</span> <span class="ci">unit</span> <span class="cr">-&gt;</span> <span class="ci">char</span>
     <span class="ck">static</span> <span class="ck">val</span> <a id="Iterator.interface.EndOfStreamChar:B:" href="#Iterator.members.EndOfStreamChar"><span class="interface-member-marker"><span class="ci">EndOfStreamChar</span></span></a><span class="cp">:</span> <span class="ci">char</span>
+    
+    <span class="ck">type</span> <a id="Iterator.interface.TwoChars"></a><span class="ci">TwoChars</span> <span class="cp">=</span> <span class="ck">struct</span>
+        <span class="ck">new</span><span class="cp">:</span> <span class="ci">char</span><span class="cp">*</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">TwoChars</span>
+        <span class="ck">val</span> <span class="ci">Char0</span><span class="cp">:</span> <span class="ci">char</span>
+        <span class="ck">val</span> <span class="ci">Char1</span><span class="cp">:</span> <span class="ci">char</span>
+    <span class="ck">end</span>
+    <span class="ck">member</span> <a id="Iterator.interface.Read2:B:" href="#Iterator.members.Read2"><span class="interface-member-marker"><span class="ci">Read2</span></span></a><span class="cp">:</span> <span class="ci">unit</span> <span class="cr">-&gt;</span> <a href="#Iterator.interface.TwoChars"><span class="ci">TwoChars</span></a>
 
     <span class="ck">member</span> <a id="Iterator.interface.Read_int:B:" href="#Iterator.members.Read_int"><span class="interface-member-marker"><span class="ci">Read</span></span></a><span class="cp">:</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">string</span>
     <span class="ck">member</span> <a id="Iterator.interface.Read_int_bool:B:" href="#Iterator.members.Read_int_bool"><span class="interface-member-marker"><span class="ci">Read</span></span></a><span class="cp">:</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">allOrEmpty</span><span class="cp">:</span> <span class="ci">bool</span> <span class="cr">-&gt;</span> <span class="ci">string</span>
@@ -1362,7 +1369,24 @@
          </p>
         </div>
        </div>
-       <div class="interface-member _8" id="Iterator.members.Read_int">
+       <div class="interface-member _8" id="Iterator.members.Read2">
+        <div class="interface-member-code">
+         <a class="interface-member-backlink" href="#Iterator.interface.Read2:B:">⇧</a>
+<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">Read2</span></span><span class="cp">:</span> <span class="ci">unit</span> <span class="cr">-&gt;</span> <a href="#Iterator.interface.TwoChars"><span class="ci">TwoChars</span></a>
+</pre>
+        </div>
+        <div class="interface-member-description">
+         <p class="para _1">
+          <code class="fsharp"><span class="ci">Read2</span><span class="cp">()</span></code> is an optimized implementation of <code
+          class="fsharp"><a href="#Iterator.interface.TwoChars"><span class="ci">TwoChars</span></a><span class="cp">(</span><a
+          href="#Iterator.members.Read"><span class="ci">Read</span></a><span class="cp">()</span><span class="cp">,</span> <a
+          href="#Iterator.members.Next"><span class="ci">Next</span></a><span class="cp">.</span><a href="#Iterator.members.Read"><span
+          class="ci">Read</span></a><span class="cp">()</span><span class="cp">)</span></code>.
+         </p>
+         <p class="para _2">This method may throw any of the <a href="#exceptions">I/O related exceptions</a> detailed above.</p>
+        </div>
+       </div>
+       <div class="interface-member _9" id="Iterator.members.Read_int">
         <div class="interface-member-code">
          <a class="interface-member-backlink" href="#Iterator.interface.Read_int:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">Read</span></span><span class="cp">:</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">string</span>
@@ -1375,7 +1399,7 @@
          </p>
         </div>
        </div>
-       <div class="interface-member _9" id="Iterator.members.Read_int_bool">
+       <div class="interface-member _0" id="Iterator.members.Read_int_bool">
         <div class="interface-member-code">
          <a class="interface-member-backlink" href="#Iterator.interface.Read_int_bool:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">Read</span></span><span class="cp">:</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">allOrEmpty</span><span class="cp">:</span> <span class="ci">bool</span> <span class="cr">-&gt;</span> <span class="ci">string</span>
@@ -1414,7 +1438,7 @@
          </p>
         </div>
        </div>
-       <div class="interface-member _0" id="Iterator.members.Read_char-array">
+       <div class="interface-member _1" id="Iterator.members.Read_char-array">
         <div class="interface-member-code">
          <a class="interface-member-backlink" href="#Iterator.interface.Read_char-array:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">Read</span></span><span class="cp">:</span> <span class="ci">dest</span><span class="cp">:</span> <span class="ci">char</span><span class="cp">[]</span> <span class="co">*</span> <span class="ci">destIndex</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">int</span>
@@ -1439,7 +1463,7 @@
          </p>
         </div>
        </div>
-       <div class="interface-member _1" id="Iterator.members.Read_char-pointer">
+       <div class="interface-member _2" id="Iterator.members.Read_char-pointer">
         <div class="interface-member-code">
          <a class="interface-member-backlink" href="#Iterator.interface.Read_char-pointer:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">Read</span></span><span class="cp">:</span> <span class="ci">dest</span><span class="cp">:</span> <span class="ci">NativePtr</span><span class="co">&lt;</span><span class="ci">char</span><span class="cp">&gt;</span> <span class="co">*</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">int</span>
@@ -1460,7 +1484,7 @@
          </p>
         </div>
        </div>
-       <div class="interface-member _2" id="Iterator.members.ReadUntil">
+       <div class="interface-member _3" id="Iterator.members.ReadUntil">
         <div class="interface-member-code">
          <a class="interface-member-backlink" href="#Iterator.interface.ReadUntil:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">ReadUntil</span></span><span class="cp">:</span> <span class="ci">iterToCharAfterLastInString</span><span class="cp">:</span> <span class="ci">Iterator</span> <span class="cr">-&gt;</span> <span class="ci">string</span>
@@ -1482,7 +1506,7 @@
          </p>
         </div>
        </div>
-       <div class="interface-member _3" id="Iterator.members.Peek">
+       <div class="interface-member _4" id="Iterator.members.Peek">
         <div class="interface-member-code">
          <a class="interface-member-backlink" href="#Iterator.interface.Peek:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">Peek</span></span><span class="cp">:</span> <span class="ci">unit</span> <span class="cr">-&gt;</span> <span class="ci">char</span>
@@ -1496,7 +1520,7 @@
          </p>
         </div>
        </div>
-       <div class="interface-member _4" id="Iterator.members.Peek_int">
+       <div class="interface-member _5" id="Iterator.members.Peek_int">
         <div class="interface-member-code">
          <a class="interface-member-backlink" href="#Iterator.interface.Peek_int:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">Peek</span></span><span class="cp">:</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">char</span>
@@ -1514,7 +1538,7 @@
          </p>
         </div>
        </div>
-       <div class="interface-member _5" id="Iterator.members.Peek_uint">
+       <div class="interface-member _6" id="Iterator.members.Peek_uint">
         <div class="interface-member-code">
          <a class="interface-member-backlink" href="#Iterator.interface.Peek_uint:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">Peek</span></span><span class="cp">:</span> <span class="ci">uint</span> <span class="cr">-&gt;</span> <span class="ci">char</span>
@@ -1529,7 +1553,7 @@
          </p>
         </div>
        </div>
-       <div class="interface-member _6" id="Iterator.members._Increment">
+       <div class="interface-member _7" id="Iterator.members._Increment">
         <div class="interface-member-code">
          <a class="interface-member-backlink" href="#Iterator.interface._Increment:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">_Increment</span></span><span class="cp">:</span> <span class="ci">unit</span> <span class="cr">-&gt;</span> <span class="ci">char</span>
@@ -1549,7 +1573,7 @@
          </p>
         </div>
        </div>
-       <div class="interface-member _7" id="Iterator.members._Increment_uint">
+       <div class="interface-member _8" id="Iterator.members._Increment_uint">
         <div class="interface-member-code">
          <a class="interface-member-backlink" href="#Iterator.interface._Increment_uint:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">_Increment</span></span><span class="cp">:</span> <span class="ci">uint</span> <span class="cr">-&gt;</span> <span class="ci">char</span>
@@ -1571,7 +1595,7 @@
          </p>
         </div>
        </div>
-       <div class="interface-member _8" id="Iterator.members._Decrement">
+       <div class="interface-member _9" id="Iterator.members._Decrement">
         <div class="interface-member-code">
          <a class="interface-member-backlink" href="#Iterator.interface._Decrement:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">_Decrement</span></span><span class="cp">:</span> <span class="ci">unit</span> <span class="cr">-&gt;</span> <span class="ci">char</span>
@@ -1593,7 +1617,7 @@
          </p>
         </div>
        </div>
-       <div class="interface-member _9" id="Iterator.members._Decrement_uint">
+       <div class="interface-member _0" id="Iterator.members._Decrement_uint">
         <div class="interface-member-code">
          <a class="interface-member-backlink" href="#Iterator.interface._Decrement_uint:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">_Decrement</span></span><span class="cp">:</span> <span class="ci">uint</span> <span class="cr">-&gt;</span> <span class="ci">char</span>

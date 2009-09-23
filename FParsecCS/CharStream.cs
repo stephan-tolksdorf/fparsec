@@ -1417,6 +1417,49 @@ namespace FParsec {
                 return *Ptr;
             }
 
+            public struct TwoChars {
+                private uint chars;
+
+                internal TwoChars(uint chars) {
+                    this.chars = chars;
+                }
+                public TwoChars(char char0, char char1) {
+                    this.chars = ((uint)char1 << 16) | (uint)char0;
+                }
+
+                public char Char0 { get { return unchecked((char)chars); } }
+                public char Char1 { get { return (char)(chars >> 16); } }
+            }
+
+            /// <summary>Is an optimized implementation of new TwoChars(Read(), Next.Read()).</summary>
+            /// <exception cref="NotSupportedException">Seeking of the underlying byte stream is required, but the byte stream does not support seeking or the Encodings's Decoder is not serializable.</exception>
+            /// <exception cref="IOException">An I/O error occured.</exception>
+            /// <exception cref="ArgumentException">The input stream contains invalid bytes and the encoding was constructed with the throwOnInvalidBytes option.</exception>
+            /// <exception cref="DecoderFallbackException">The input stream contains invalid bytes for which the decoder fallback threw this exception.</exception>
+            public TwoChars Read2() {
+                Anchor* anchor = Anchor;
+                char* ptr = this.Ptr;
+                if (Block == anchor->Block && ptr + 1 < anchor->BufferEnd) {
+                    #if UNALIGNED_READS
+                        if (BitConverter.IsLittleEndian) {
+                            return new TwoChars(*((uint*)(ptr)));
+                        } else {
+                            return new TwoChars(ptr[0], ptr[1]);
+                        }
+                    #else
+                        return new TwoChars(ptr[0], ptr[1]);
+                    #endif
+                }
+                return Read2Continue();
+            }
+            [MethodImplAttribute(MethodImplOptions.NoInlining)]
+            private TwoChars Read2Continue() {
+                if (Block == -1)
+                    return new TwoChars(EOS, EOS);
+                else
+                    return new TwoChars(Read(), Peek());
+            }
+
             /// <summary>Returns a string with the length stream chars beginning with the char pointed to by the Iterator.
             /// If less than length chars are remaining in the stream, only the remaining chars are returned.</summary>
             /// <exception cref="ArgumentOutOfRangeException">length is negative.</exception>
