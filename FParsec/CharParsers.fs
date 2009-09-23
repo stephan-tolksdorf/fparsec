@@ -153,16 +153,16 @@ let internal unexpectedEndOfFile          = unexpectedError "end of file"
 // -------------------------------------------------------------
 
 let getPos : Parser<Pos,'u> =
-    fun state -> Reply<_,_>(state.Pos, state)
+    fun state -> Reply(state.Pos, state)
 
 let getUserState : Parser<'u,'u> =
-    fun state -> Reply<_,_>(state.UserState, state)
+    fun state -> Reply(state.UserState, state)
 
 let setUserState (newUserState: 'u) : Parser<unit,'u> =
-    fun state -> Reply<_,_>((), state.WithUserState(newUserState))
+    fun state -> Reply((), state.WithUserState(newUserState))
 
 let updateUserState (f: 'u -> 'u) : Parser<unit,'u> =
-    fun state -> Reply<_,_>((), state.WithUserState(f state.UserState))
+    fun state -> Reply((), state.WithUserState(f state.UserState))
 
 let userStateSatisfies f : Parser<unit,'u> =
     fun state ->
@@ -176,9 +176,9 @@ let newlineReturn result : Parser<_,'u> =
     fun state ->
         let newState = state.SkipNewline()
         if not (referenceEquals state newState) then
-            Reply<_,_>(result, newState)
+            Reply(result, newState)
         else
-            Reply<_,_>(Error, expectedNewline, newState)
+            Reply(Error, expectedNewline, newState)
 
 let newline<'u>     = newlineReturn<char,'u> '\n'
 let skipNewline<'u> = newlineReturn<unit,'u> ()
@@ -189,8 +189,8 @@ let charReturn c result : Parser<'a,'u> =
         let error = expectedError (quoteChar c)
         fun state ->
             if state.Iter.Read() = c then
-                 Reply<_,_>(result, state.Next)
-            else Reply<_,_>(Error, error, state)
+                 Reply(result, state.Next)
+            else Reply(Error, error, state)
     else newlineReturn result
 
 let pchar    c = charReturn c c
@@ -206,21 +206,21 @@ let anyChar : Parser<char,'u> =
     fun state ->
         let c  = state.Iter.Read()
         if isCertainlyNoNLOrEOS c then
-            Reply<_,_>(c, state.Next)
+            Reply(c, state.Next)
         elif c = '\r' || c = '\n' then
-            Reply<_,_>('\n', state.SkipNewline())
+            Reply('\n', state.SkipNewline())
         elif c <> EOS then
-            Reply<_,_>(c, state.Next)
+            Reply(c, state.Next)
         else
-            Reply<_,_>(Error, expectedAnyChar, state)
+            Reply(Error, expectedAnyChar, state)
 
 let skipAnyChar : Parser<unit,'u> =
     fun state ->
         let newState = state.SkipCharOrNewline()
         if not (referenceEquals state newState) then
-            Reply<_,_>((), newState)
+            Reply((), newState)
         else
-            Reply<_,_>(Error, expectedAnyChar, newState)
+            Reply(Error, expectedAnyChar, newState)
 
 
 // doesn't check for newlines or EOS
@@ -232,8 +232,8 @@ let
            internal fastInlineSatisfyE f error : Parser<char,'u> =
     fun state ->
         let c = state.Iter.Read()
-        if f c then Reply<_,_>(c, state.Next)
-        else Reply<_,_>(Error, error, state)
+        if f c then Reply(c, state.Next)
+        else Reply(Error, error, state)
 
 let
 #if NOINLINE
@@ -243,8 +243,8 @@ let
            internal fastInlineSkipSatisfyE f error : Parser<unit,'u> =
     fun state ->
         let c = state.Iter.Read()
-        if f c then Reply<_,_>((), state.Next)
-        else Reply<_,_>(Error, error, state)
+        if f c then Reply((), state.Next)
+        else Reply(Error, error, state)
 
 let
 #if NOINLINE
@@ -255,13 +255,13 @@ let
     fun state ->
         let c = state.Iter.Read()
         if isCertainlyNoNLOrEOS c then
-            if f c then Reply<_,_>(c, state.Next)
-            else Reply<_,_>(Error, error, state)
+            if f c then Reply(c, state.Next)
+            else Reply(Error, error, state)
         elif c = '\r' || c = '\n' then
-            if f '\n' then Reply<_,_>('\n', state.SkipNewline())
-            else Reply<_,_>(Error, error, state)
-        elif c <> EOS && f c then Reply<_,_>(c, state.Next)
-        else Reply<_,_>(Error, error, state)
+            if f '\n' then Reply('\n', state.SkipNewline())
+            else Reply(Error, error, state)
+        elif c <> EOS && f c then Reply(c, state.Next)
+        else Reply(Error, error, state)
 
 let
 #if NOINLINE
@@ -272,13 +272,13 @@ let
     fun state ->
         let c = state.Iter.Read()
         if isCertainlyNoNLOrEOS c then
-            if f c then Reply<_,_>((), state.Next)
-            else Reply<_,_>(Error, error, state)
+            if f c then Reply((), state.Next)
+            else Reply(Error, error, state)
         elif c = '\r' || c = '\n' then
-            if f '\n' then Reply<_,_>((), state.SkipNewline())
-            else Reply<_,_>(Error, error, state)
-        elif c <> EOS && f c then Reply<_,_>((), state.Next)
-        else Reply<_,_>(Error, error, state)
+            if f '\n' then Reply((), state.SkipNewline())
+            else Reply(Error, error, state)
+        elif c <> EOS && f c then Reply((), state.Next)
+        else Reply(Error, error, state)
 
 let internal satisfyE f error     = inlineSatisfyE f error
 let internal skipSatisfyE f error = inlineSkipSatisfyE f error
@@ -366,55 +366,55 @@ let unicodeNewline : Parser<_,'u> =
         let c  = state.Iter.Read()
         if c < '\u0085' then
             if c = '\r' || c = '\n' then
-                Reply<_,_>('\n', state.SkipNewline())
+                Reply('\n', state.SkipNewline())
             elif c <> '\u000C' then
-                Reply<_,_>(Error, expectedNewline, state)
+                Reply(Error, expectedNewline, state)
             else // c = '\u000C'
-                Reply<_,_>('\n', state.Advance(1, 1, 0))
+                Reply('\n', state.Advance(1, 1, 0))
         elif c <= '\u2029' && (c >= '\u2028' || c = '\u0085') then
-            Reply<_,_>('\n', state.Advance(1, 1, 0))
+            Reply('\n', state.Advance(1, 1, 0))
         else
-            Reply<_,_>(Error, expectedNewline, state)
+            Reply(Error, expectedNewline, state)
 
 let whitespace : Parser<char,'u> =
     fun state ->
         let c = state.Iter.Read()
         if c <= ' ' then
             match c with
-            | ' '  | '\t' -> Reply<_,_>(c, state.Next)
-            | '\r' | '\n' -> Reply<_,_>('\n', state.SkipNewline())
-            | _           -> Reply<_,_>(Error, expectedWhitespace, state)
-        else Reply<_,_>(Error, expectedWhitespace, state)
+            | ' '  | '\t' -> Reply(c, state.Next)
+            | '\r' | '\n' -> Reply('\n', state.SkipNewline())
+            | _           -> Reply(Error, expectedWhitespace, state)
+        else Reply(Error, expectedWhitespace, state)
 
 let unicodeWhitespace : Parser<char,'u> =
     fun state ->
         let c  = state.Iter.Read()
-        if c = ' ' then Reply<_,_>(c, state.Next)
+        if c = ' ' then Reply(c, state.Next)
         elif System.Char.IsWhiteSpace(c) then
             match c with
             | '\r' | '\n' ->
-               Reply<_,_>('\n', state.SkipNewline())
+               Reply('\n', state.SkipNewline())
             | '\u000C' | '\u0085' | '\u2028' | '\u2029' ->
-               Reply<_,_>('\n', state.Advance(1, 1, 0))
+               Reply('\n', state.Advance(1, 1, 0))
             | _ ->
-               Reply<_,_>(c, state.Next)
-        else Reply<_,_>(Error, expectedWhitespace, state)
+               Reply(c, state.Next)
+        else Reply(Error, expectedWhitespace, state)
 
 
 let spaces : Parser<unit,'u> =
     fun state ->
-        Reply<_,_>((), state.SkipWhitespace())
+        Reply((), state.SkipWhitespace())
 
 let spaces1 : Parser<unit,'u> =
     fun state ->
         let newState = state.SkipWhitespace()
-        if not (referenceEquals newState state) then Reply<_,_>((), newState)
-        else Reply<_,_>(Error, expectedWhitespace, newState)
+        if not (referenceEquals newState state) then Reply((), newState)
+        else Reply(Error, expectedWhitespace, newState)
 
 let eof : Parser<unit,'u>=
     fun state ->
-        if state.Iter.IsEndOfStream then Reply<_,_>((), state)
-        else Reply<_,_>(Error, expectedEndOfFile, state)
+        if state.Iter.IsEndOfStream then Reply((), state)
+        else Reply(Error, expectedEndOfFile, state)
 
 
 // ------------------------
@@ -429,8 +429,8 @@ let stringReturn s result : Parser<'a,'u> =
     checkStringContainsNoNewlineChar s "pstring/skipString/stringReturn"
     let error = expectedError (quoteString s)
     fun state ->
-        if state.Iter.Match(s) then Reply<_,_>(result, state.Advance(s.Length))
-        else Reply<_,_>(Error, error, state)
+        if state.Iter.Match(s) then Reply(result, state.Advance(s.Length))
+        else Reply(Error, error, state)
 let pstring s    = stringReturn s s
 let skipString s = stringReturn s ()
 
@@ -441,8 +441,8 @@ let pstringCI s : Parser<string,'u> =
     let cfs = foldCase s
     fun state ->
         if state.Iter.MatchCaseFolded(cfs) then
-             Reply<_,_>(state.Iter.Read(s.Length), state.Advance(s.Length))
-        else Reply<_,_>(Error, error, state)
+             Reply(state.Iter.Read(s.Length), state.Advance(s.Length))
+        else Reply(Error, error, state)
 
 let stringCIReturn s result : Parser<'a,'u> =
     checkStringContainsNoNewlineChar s "skipStringCI/stringCIReturn"
@@ -450,8 +450,8 @@ let stringCIReturn s result : Parser<'a,'u> =
     let cfs = foldCase s
     fun state ->
         if state.Iter.MatchCaseFolded(cfs) then
-             Reply<_,_>(result, state.Advance(s.Length))
-        else Reply<_,_>(Error, error, state)
+             Reply(result, state.Advance(s.Length))
+        else Reply(Error, error, state)
 
 let skipStringCI s = stringCIReturn s ()
 
@@ -461,30 +461,30 @@ let anyString n : Parser<string,'u> =
     fun state ->
         let mutable str = null
         let newState = state.SkipCharsOrNewlines(n, &str)
-        if str.Length = n then Reply<_,_>(str, newState)
-        else Reply<_,_>(Error, error, state)
+        if str.Length = n then Reply(str, newState)
+        else Reply(Error, error, state)
 
 let skipAnyString n : Parser<unit,'u> =
     let error = expectedError (concat3 "any sequence of " (string n) " chars")
     fun state ->
         let mutable nSkipped = 0
         let newState = state.SkipCharsOrNewlines(n, &nSkipped)
-        if n = nSkipped then Reply<_,_>((), newState)
-        else Reply<_,_>(Error, error, state)
+        if n = nSkipped then Reply((), newState)
+        else Reply(Error, error, state)
 
 let restOfLine : Parser<_,_> =
     fun state ->
         let mutable str = null
         let newState = state.SkipRestOfLine(true, &str)
-        Reply<_,_>(str, newState)
+        Reply(str, newState)
 
 let skipRestOfLine : Parser<_,_> =
     fun state ->
-         Reply<_,_>((), state.SkipRestOfLine(true))
+         Reply((), state.SkipRestOfLine(true))
 
 let skipToEndOfLine : Parser<_,_> =
     fun state ->
-        Reply<_,_>((), state.SkipRestOfLine(false))
+        Reply((), state.SkipRestOfLine(false))
 
 
 let skipToString (s: string) maxChars : Parser<unit,'u> =
@@ -494,8 +494,8 @@ let skipToString (s: string) maxChars : Parser<unit,'u> =
     fun state ->
         let mutable foundString = false
         let state2 = state.SkipToString(s, maxChars, &foundString)
-        if foundString then Reply<_,_>((), state2)
-        else Reply<_,_>(Error, error, state2)
+        if foundString then Reply((), state2)
+        else Reply(Error, error, state2)
 
 let skipToStringCI (s: string) maxChars : Parser<unit,'u> =
     checkStringContainsNoNewlineChar s "skipToStringCI"
@@ -505,8 +505,8 @@ let skipToStringCI (s: string) maxChars : Parser<unit,'u> =
     fun state ->
         let mutable foundString = false
         let state2 = state.SkipToStringCI(cfs, maxChars, &foundString)
-        if foundString then Reply<_,_>((), state2)
-        else Reply<_,_>(Error, error, state2)
+        if foundString then Reply((), state2)
+        else Reply(Error, error, state2)
 
 let charsTillString (s: string) maxChars : Parser<string,'u> =
     checkStringContainsNoNewlineChar s "charsTillString"
@@ -515,8 +515,8 @@ let charsTillString (s: string) maxChars : Parser<string,'u> =
     fun state ->
         let mutable charsBeforeString = null
         let state2 = state.SkipToString(s, maxChars, &charsBeforeString)
-        if isNotNull charsBeforeString then Reply<_,_>(charsBeforeString, state2.Advance(s.Length))
-        else Reply<_,_>(Error, error, state2)
+        if isNotNull charsBeforeString then Reply(charsBeforeString, state2.Advance(s.Length))
+        else Reply(Error, error, state2)
 
 let charsTillStringCI (s: string) maxChars : Parser<string,'u> =
     checkStringContainsNoNewlineChar s "charsTillStringCI"
@@ -526,8 +526,8 @@ let charsTillStringCI (s: string) maxChars : Parser<string,'u> =
     fun state ->
         let mutable charsBeforeString = null
         let state2 = state.SkipToStringCI(cfs, maxChars, &charsBeforeString)
-        if isNotNull charsBeforeString then Reply<_,_>(charsBeforeString, state2.Advance(s.Length))
-        else Reply<_,_>(Error, error, state2)
+        if isNotNull charsBeforeString then Reply(charsBeforeString, state2.Advance(s.Length))
+        else Reply(Error, error, state2)
 
 let skipCharsTillString (s: string) maxChars : Parser<unit,'u> =
     checkStringContainsNoNewlineChar s "skipCharsTillString"
@@ -536,8 +536,8 @@ let skipCharsTillString (s: string) maxChars : Parser<unit,'u> =
     fun state ->
         let mutable foundString = false
         let state2 = state.SkipToString(s, maxChars, &foundString)
-        if foundString then Reply<_,_>((), state2.Advance(s.Length))
-        else Reply<_,_>(Error, error, state2)
+        if foundString then Reply((), state2.Advance(s.Length))
+        else Reply(Error, error, state2)
 
 let skipCharsTillStringCI (s: string) maxChars : Parser<unit,'u> =
     checkStringContainsNoNewlineChar s "skipCharsTillStringCI"
@@ -547,8 +547,8 @@ let skipCharsTillStringCI (s: string) maxChars : Parser<unit,'u> =
     fun state ->
         let mutable foundString = false
         let state2 = state.SkipToStringCI(cfs, maxChars, &foundString)
-        if foundString then Reply<_,_>((), state2.Advance(s.Length))
-        else Reply<_,_>(Error, error, state2)
+        if foundString then Reply((), state2.Advance(s.Length))
+        else Reply(Error, error, state2)
 
 let
 #if NOINLINE
@@ -559,8 +559,8 @@ let
     fun state ->
         let mutable str = null
         let newState = state.SkipCharsOrNewlinesWhile(f1, f, &str)
-        if not require1 || not (referenceEquals newState state) then Reply<_,_>(str, newState)
-        else Reply<_,_>(Error, error, newState)
+        if not require1 || not (referenceEquals newState state) then Reply(str, newState)
+        else Reply(Error, error, newState)
 
 let
 #if NOINLINE
@@ -570,8 +570,8 @@ let
            internal skipManySatisfyImpl require1 f1 f error : Parser<unit,'u> =
     fun state ->
         let newState = state.SkipCharsOrNewlinesWhile(f1, f)
-        if not require1 || not (referenceEquals newState state) then Reply<_,_>((), newState)
-        else Reply<_,_>(Error, error, newState)
+        if not require1 || not (referenceEquals newState state) then Reply((), newState)
+        else Reply(Error, error, newState)
 
 let manySatisfy2   f1 f       = manySatisfyImpl false f1 f NoErrorMessages
 let many1Satisfy2  f1 f       = manySatisfyImpl true  f1 f NoErrorMessages
@@ -596,26 +596,26 @@ let internal manyMinMaxSatisfy2E minChars maxChars f1 f error : Parser<string,'u
         fun state ->
             let mutable str = null
             let newState = state.SkipCharsOrNewlinesWhile(f1, f, minChars, maxChars, &str)
-            if not (referenceEquals newState state) then Reply<_,_>(str, newState)
-            else Reply<_,_>(Error, error, newState)
+            if not (referenceEquals newState state) then Reply(str, newState)
+            else Reply(Error, error, newState)
     else
         fun state ->
             let mutable str = null
             let newState = state.SkipCharsOrNewlinesWhile(f1, f, 0, maxChars, &str)
-            Reply<_,_>(str, newState)
+            Reply(str, newState)
 
 let internal skipManyMinMaxSatisfy2E minChars maxChars f1 f error : Parser<unit,'u> =
     if maxChars < 0 then raise (System.ArgumentOutOfRangeException("maxChars", "maxChars is negative."))
     if minChars > 0 then
         fun state ->
             let newState = state.SkipCharsOrNewlinesWhile(f1, f, minChars, maxChars)
-            if not (referenceEquals newState state) then Reply<_,_>((), newState)
-            else Reply<_,_>(Error, error, newState)
+            if not (referenceEquals newState state) then Reply((), newState)
+            else Reply(Error, error, newState)
     else
         fun state ->
             let mutable str = null
             let newState = state.SkipCharsOrNewlinesWhile(f1, f, 0, maxChars)
-            Reply<_,_>((), newState)
+            Reply((), newState)
 
 let manyMinMaxSatisfy   minChars maxChars    f       = manyMinMaxSatisfy2E minChars maxChars f  f NoErrorMessages
 let manyMinMaxSatisfyL  minChars maxChars    f label = manyMinMaxSatisfy2E minChars maxChars f  f (expectedError label)
@@ -635,14 +635,14 @@ let internal regexE pattern error : Parser<string,'u> =
         let m = state.Iter.Match(regex)
         if m.Success then
             let s = m.Value
-            if not (containsNewlineChar s) then Reply<_,_>(s, if s.Length > 0 then state.Advance(s.Length) else state)
+            if not (containsNewlineChar s) then Reply(s, if s.Length > 0 then state.Advance(s.Length) else state)
             else
                 let s2 = normalizeNewlines s
                 let mutable nSkippedChars = 0
                 let newState = state.SkipCharsOrNewlines(s2.Length, &nSkippedChars)
-                if nSkippedChars = s2.Length then Reply<_,_>(s2, newState)
-                else Reply<_,_>(FatalError, messageError "Internal error in the regex parser. Please report this error to fparsec@quanttec.com.", newState)
-        else Reply<_,_>(Error, error, state)
+                if nSkippedChars = s2.Length then Reply(s2, newState)
+                else Reply(FatalError, messageError "Internal error in the regex parser. Please report this error to fparsec@quanttec.com.", newState)
+        else Reply(Error, error, state)
 
 let regex  pattern       = regexE pattern (expectedError ("string matching the regex " + quoteString pattern))
 let regexL pattern label = regexE pattern (expectedError label)
@@ -770,12 +770,12 @@ let
                 reply <- p state
             let error = if reply.State == state then reply.Error
                         else backtrackError reply.State reply.Error
-            Reply<_,_>(Ok, cl.GetString(), error, state)
+            Reply(Ok, cl.GetString(), error, state)
         else
             let error = if reply.State == state then reply.Error
                         else backtrackError reply.State reply.Error
-            if require1 then Reply<_,_>(Error, error, state)
-            else Reply<_,_>(Ok, "", error, state)
+            if require1 then Reply(Error, error, state)
+            else Reply(Ok, "", error, state)
 
 let
 #if NOINLINE
@@ -795,12 +795,12 @@ let
                 reply <- p state
             let error = if reply.State == state then reply.Error
                         else backtrackError reply.State reply.Error
-            Reply<_,_>(Ok, (), error, state)
+            Reply(Ok, (), error, state)
          else
             let error = if reply.State == state then reply.Error
                         else backtrackError reply.State reply.Error
-            if require1 then Reply<_,_>(Error, error, state)
-            else Reply<_,_>(Ok, (), error, state)
+            if require1 then Reply(Error, error, state)
+            else Reply(Ok, (), error, state)
 
 
 let manyChars2 p1 p = manyCharsImpl false p1 p
@@ -841,15 +841,15 @@ let
             if reply2.Status = Ok then
                 let error = if not (referenceEquals reply2.State state) then reply2.Error
                             else mergeErrors reply1.Error reply2.Error
-                Reply<_,_>(Ok, f (cl.GetString()) reply2.Result, error, reply2.State)
+                Reply(Ok, f (cl.GetString()) reply2.Result, error, reply2.State)
             elif reply1.Status = Error && reply1.State == state then
                 let error = if reply2.State != state then reply2.Error
                             else mergeErrors reply1.Error reply2.Error
-                Reply<_,_>(reply2.Status, error, reply2.State)
+                Reply(reply2.Status, error, reply2.State)
             else
-                Reply<_,_>(reply1.Status, reply1.Error, reply1.State)
+                Reply(reply1.Status, reply1.Error, reply1.State)
         else
-            Reply<_,_>(Ok, f "" reply2.Result, reply2.Error, reply2.State)
+            Reply(Ok, f "" reply2.Result, reply2.Error, reply2.State)
 
 let
 #if NOINLINE
@@ -873,15 +873,15 @@ let
             if reply2.Status = Ok then
                 let error = if not (referenceEquals reply2.State state) then reply2.Error
                             else mergeErrors reply1.Error reply2.Error
-                Reply<_,_>(Ok, f (cl.GetString()) reply2.Result, error, reply2.State)
+                Reply(Ok, f (cl.GetString()) reply2.Result, error, reply2.State)
             elif reply1.Status = Error && reply1.State == state then
                 let error = if reply2.State != state then reply2.Error
                             else mergeErrors reply1.Error reply2.Error
-                Reply<_,_>(reply2.Status, error, reply2.State)
+                Reply(reply2.Status, error, reply2.State)
             else
-                Reply<_,_>(reply1.Status, reply1.Error, reply1.State)
+                Reply(reply1.Status, reply1.Error, reply1.State)
         else
-            Reply<_,_>(reply1.Status, reply1.Error, reply1.State)
+            Reply(reply1.Status, reply1.Error, reply1.State)
 
 
 let manyCharsTill      p endp   = inlineManyCharsTillApply p endp (fun str _ -> str)
@@ -969,7 +969,7 @@ let skipped (p: Parser<unit,'u>) : Parser<string,'u> =
     fun state ->
         let reply = p state
         let result = if reply.Status = Ok then state.ReadUntil(reply.State)  else ""
-        Reply<_,_>(reply.Status, result, reply.Error, reply.State)
+        Reply(reply.Status, result, reply.Error, reply.State)
 
 let withSkippedString (f: string -> 'a -> 'b) (p: Parser<'a,'u>) : Parser<'b,'u> =
     let optF = OptimizedClosures.FastFunc2<_,_,_>.Adapt(f)
@@ -978,7 +978,7 @@ let withSkippedString (f: string -> 'a -> 'b) (p: Parser<'a,'u>) : Parser<'b,'u>
         let result = if reply.Status = Ok then
                          optF.Invoke(state.ReadUntil(reply.State), reply.Result)
                      else Unchecked.defaultof<_>
-        Reply<_,_>(reply.Status, result, reply.Error, reply.State)
+        Reply(reply.Status, result, reply.Error, reply.State)
 
 
 // ---------------
@@ -1179,7 +1179,7 @@ let numberLiteralE (opt: NumberLiteralOptions) (errorInCaseNoLiteralFound: Error
             if (opt &&& NLO.AllowSuffix) = NLO.None  || not (isAsciiLetter c) then
                 let str = state.Iter.ReadUntil(iter)
                 let newState = state.AdvanceTo(iter)
-                Reply<_,_>(NumberLiteral(str, flags, EOS, EOS, EOS, EOS), newState)
+                Reply(NumberLiteral(str, flags, EOS, EOS, EOS, EOS), newState)
             else
                 let mutable str = if (opt &&& NLO.IncludeSuffixCharsInString) <> NLO.None then null
                                   else state.Iter.ReadUntil(iter)
@@ -1205,9 +1205,9 @@ let numberLiteralE (opt: NumberLiteralOptions) (errorInCaseNoLiteralFound: Error
                 if (opt &&& NLO.IncludeSuffixCharsInString) <> NLO.None then
                     str <- state.Iter.ReadUntil(iter)
                 let newState = state.AdvanceTo(iter)
-                Reply<_,_>(NumberLiteral(str, flags, s1, s2, s3, s4), newState)
+                Reply(NumberLiteral(str, flags, s1, s2, s3, s4), newState)
         else
-            Reply<_,_>(Error, error, state.AdvanceTo(iter))
+            Reply(Error, error, state.AdvanceTo(iter))
     else
        let cc = int c ||| int ' '
        if
@@ -1246,13 +1246,13 @@ let pfloat : Parser<float,'u> =
                             if nl.HasMinusSign then System.Double.NegativeInfinity else System.Double.PositiveInfinity
                         else
                             System.Double.NaN
-                Reply<_,_>(d, reply.State)
+                Reply(d, reply.State)
             with e ->
                 let msg = if   (e :? System.OverflowException) then "This number is outside the allowable range for double precision floating-pointer numbers."
                           elif (e :? System.FormatException) then "The floating-point number has an invalid format (this error is unexpected, please report this error message to fparsec@quanttec.com)."
                           else rethrow()
-                Reply<_,_>(FatalError, messageError msg, state)
-        else Reply<_,_>(reply.Status, reply.Error, reply.State)
+                Reply(FatalError, messageError msg, state)
+        else Reply(reply.Status, reply.Error, reply.State)
 
 let numberLiteral opt label = numberLiteralE opt (expectedError label)
 
@@ -1530,41 +1530,41 @@ let followedByChar c : Parser<unit,'u> =
     if c <> '\r' && c <> '\n' then
         let error = expectedError (quoteChar c)
         fun state ->
-            if state.Iter.Match(c) then Reply<_,_>((), state)
-            else Reply<_,_>(Error, error, state)
+            if state.Iter.Match(c) then Reply((), state)
+            else Reply(Error, error, state)
     else
         let error = expectedNewline
         fun state ->
             let c = state.Iter.Read()
-            if c = '\r' || c = '\n' then Reply<_,_>((), state)
-            else Reply<_,_>(Error, error, state)
+            if c = '\r' || c = '\n' then Reply((), state)
+            else Reply(Error, error, state)
 
 let notFollowedByChar c : Parser<unit,'u> =
     if c <> '\r' && c <> '\n' then
         let error = unexpectedError (quoteChar c)
         fun state ->
-            if not (state.Iter.Match(c)) then Reply<_,_>((), state)
-            else Reply<_,_>(Error, error, state)
+            if not (state.Iter.Match(c)) then Reply((), state)
+            else Reply(Error, error, state)
     else
         let error = unexpectedNewline
         fun state ->
             let c = state.Iter.Read()
-            if c <> '\r' && c <> '\n' then  Reply<_,_>((), state)
-            else Reply<_,_>(Error, error, state)
+            if c <> '\r' && c <> '\n' then  Reply((), state)
+            else Reply(Error, error, state)
 
 let followedByString s : Parser<unit,'u> =
     checkStringContainsNoNewlineChar s "followedByString"
     let error = expectedError (quoteString s)
     fun state ->
-        if state.Iter.Match(s) then Reply<_,_>((), state)
-        else Reply<_,_>(Error, error, state)
+        if state.Iter.Match(s) then Reply((), state)
+        else Reply(Error, error, state)
 
 let notFollowedByString s : Parser<unit,'u> =
     checkStringContainsNoNewlineChar s "notFollowedByString"
     let error = unexpectedError (quoteString s)
     fun state ->
-        if not (state.Iter.Match(s)) then Reply<_,_>((), state)
-        else Reply<_,_>(Error, error, state)
+        if not (state.Iter.Match(s)) then Reply((), state)
+        else Reply(Error, error, state)
 
 let inline charSatisfies c f =
     if isCertainlyNoNLOrEOS c then

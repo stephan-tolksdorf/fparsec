@@ -310,11 +310,11 @@ let testMany() =
 
     // no Ok parser that doesn't consume input or that returns an error message
     let charTestParsers r e : Parser<'a, int>[] = [| // we rely on the order of these parsers
-        fun s -> Reply<_,_>(Ok, r, NoErrorMessages, s.WithUserState(s.UserState + 1))
-        fun s -> Reply<_,_>(Error, e, s);
-        fun s -> Reply<_,_>(Error, e, s.WithUserState(s.UserState + 1));
-        fun s -> Reply<_,_>(FatalError, e, s);
-        fun s -> Reply<_,_>(FatalError, e, s.WithUserState(s.UserState + 1));
+        fun s -> Reply(Ok, r, NoErrorMessages, s.WithUserState(s.UserState + 1))
+        fun s -> Reply(Error, e, s);
+        fun s -> Reply(Error, e, s.WithUserState(s.UserState + 1));
+        fun s -> Reply(FatalError, e, s);
+        fun s -> Reply(FatalError, e, s.WithUserState(s.UserState + 1));
     |]
 
     let ps1  = charTestParsers '1' (expectedError "1")

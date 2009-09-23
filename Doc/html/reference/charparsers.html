@@ -665,7 +665,6 @@
         <p class="para _2">
          <code class="fsharp"><span class="ci">getPos</span></code> is defined as <code class="fsharp"><span class="ck">fun</span> <span
          class="ci">state</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Reply"><span class="ci">Reply</span></a><span
-         class="co">&lt;</span><span class="ci">_</span><span class="cp">,</span><span class="ci">_</span><span class="cp">&gt;</span><span
          class="cp">(</span><span class="ci">state</span><span class="cp">.</span><a href="state.html#members.Pos"><span
          class="ci">Pos</span></a><span class="cp">,</span> <span class="ci">state</span><span class="cp">)</span></code>.
         </p>
@@ -682,7 +681,6 @@
         <p class="para _2">
          <code class="fsharp"><span class="ci">getUserState</span></code> is defined as <code class="fsharp"><span class="ck">fun</span> <span
          class="ci">state</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Reply"><span class="ci">Reply</span></a><span
-         class="co">&lt;</span><span class="ci">_</span><span class="cp">,</span><span class="ci">_</span><span class="cp">&gt;</span><span
          class="cp">(</span><span class="ci">state</span><span class="cp">.</span><a href="state.html#members.UserState"><span
          class="ci">UserState</span></a><span class="cp">,</span> <span class="ci">state</span><span class="cp">)</span></code>.
         </p>
@@ -702,8 +700,7 @@
         <p class="para _2">
          <code class="fsharp"><span class="ci">setUserState</span> <span class="ci">u</span></code> is defined as <code class="fsharp"><span
          class="ck">fun</span> <span class="ci">state</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Reply"><span
-         class="ci">Reply</span></a><span class="co">&lt;</span><span class="ci">_</span><span class="cp">,</span><span class="ci">_</span><span
-         class="cp">&gt;</span><span class="cp">(</span><span class="cp">()</span><span class="cp">,</span> <span class="ci">state</span><span
+         class="ci">Reply</span></a><span class="cp">(</span><span class="cp">()</span><span class="cp">,</span> <span class="ci">state</span><span
          class="cp">.</span><a href="state.html#members.WithUserState"><span class="ci">WithUserState</span></a><span class="cp">(</span><span
          class="ci">u</span><span class="cp">)</span><span class="cp">)</span></code>.
         </p>
@@ -719,8 +716,7 @@
         <p class="para _1">
          <code class="fsharp"><span class="ci">updateUserState</span> <span class="ci">f</span></code> is defined as <code class="fsharp"><span
          class="ck">fun</span> <span class="ci">state</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Reply"><span
-         class="ci">Reply</span></a><span class="co">&lt;</span><span class="ci">_</span><span class="cp">,</span><span class="ci">_</span><span
-         class="cp">&gt;</span><span class="cp">(</span><span class="cp">()</span><span class="cp">,</span> <span class="ci">state</span><span
+         class="ci">Reply</span></a><span class="cp">(</span><span class="cp">()</span><span class="cp">,</span> <span class="ci">state</span><span
          class="cp">.</span><a href="state.html#members.WithUserState"><span class="ci">WithUserState</span></a><span class="cp">(</span><span
          class="ci">f</span> <span class="ci">state</span><span class="cp">.</span><a href="state.html#members.UserState"><span
          class="ci">UserState</span></a><span class="cp">)</span><span class="cp">)</span></code>.
@@ -3088,16 +3084,16 @@ stopped due to error
                                          <span class="ci">Float</span> <span class="cp">(</span><a href="#members.floatOfHexString"><span class="ci">floatOfHexString</span></a> <span class="ci">nl</span><span class="cp">.</span><span class="ci">String</span><span class="cp">)</span>
                                      <span class="ck">else</span>
                                          <span class="ci">Float</span> <span class="cp">(</span><span class="ci">float</span> <span class="ci">nl</span><span class="cp">.</span><span class="ci">String</span><span class="cp">)</span>
-                    <a href="primitives.html#members.Reply"><span class="ci">Reply</span></a><span class="co">&lt;</span><span class="ci">_</span><span class="cp">,</span><span class="ci">_</span><span class="cp">&gt;</span><span class="cp">(</span><span class="ci">result</span><span class="cp">,</span> <span class="ci">reply</span><span class="cp">.</span><span class="ci">State</span><span class="cp">)</span>
+                    <a href="primitives.html#members.Reply"><span class="ci">Reply</span></a><span class="cp">(</span><span class="ci">result</span><span class="cp">,</span> <span class="ci">reply</span><span class="cp">.</span><span class="ci">State</span><span class="cp">)</span>
                 <span class="ck">with</span>
                 <span class="cp">|</span> <span class="cp">:?</span> <span class="ci">System</span><span class="cp">.</span><span class="ci">OverflowException</span> <span class="cr">-&gt;</span>
                     <span class="ck">let</span> <span class="ci">msg</span> <span class="cp">=</span> <span class="cs"><span class="left-delimiter">"</span>the number is either too large or too small<span class="right-delimiter">"</span></span>
-                    <a href="primitives.html#members.Reply"><span class="ci">Reply</span></a><span class="co">&lt;</span><span class="ci">_</span><span class="cp">,</span><span class="ci">_</span><span class="cp">&gt;</span><span class="cp">(</span><a href="primitives.html#members.FatalError"><span class="ci">FatalError</span></a><span class="cp">,</span> <a href="error.html#members.messageError"><span class="ci">messageError</span></a> <span class="ci">msg</span><span class="cp">,</span> <span class="ci">state</span><span class="cp">)</span>
+                    <a href="primitives.html#members.Reply"><span class="ci">Reply</span></a><span class="cp">(</span><a href="primitives.html#members.FatalError"><span class="ci">FatalError</span></a><span class="cp">,</span> <a href="error.html#members.messageError"><span class="ci">messageError</span></a> <span class="ci">msg</span><span class="cp">,</span> <span class="ci">state</span><span class="cp">)</span>
             <span class="ck">else</span>
-                <a href="primitives.html#members.Reply"><span class="ci">Reply</span></a><span class="co">&lt;</span><span class="ci">_</span><span class="cp">,</span><span class="ci">_</span><span class="cp">&gt;</span><span class="cp">(</span><a href="primitives.html#members.Error"><span class="ci">Error</span></a><span class="cp">,</span> <a href="error.html#members.messageError"><span class="ci">messageError</span></a> <span class="cs"><span class="left-delimiter">"</span>invalid number suffix<span class="right-delimiter">"</span></span><span class="cp">,</span>
-                           <span class="ci">reply</span><span class="cp">.</span><span class="ci">State</span><span class="cp">.</span><a href="charstream.html#Iterator.members.Advance"><span class="ci">Advance</span></a><span class="cp">(</span><span class="co">-</span><span class="ci">nl</span><span class="cp">.</span><span class="ci">SuffixLength</span><span class="cp">)</span><span class="cp">)</span>
+                <a href="primitives.html#members.Reply"><span class="ci">Reply</span></a><span class="cp">(</span><a href="primitives.html#members.Error"><span class="ci">Error</span></a><span class="cp">,</span> <a href="error.html#members.messageError"><span class="ci">messageError</span></a> <span class="cs"><span class="left-delimiter">"</span>invalid number suffix<span class="right-delimiter">"</span></span><span class="cp">,</span>
+                      <span class="ci">reply</span><span class="cp">.</span><span class="ci">State</span><span class="cp">.</span><a href="charstream.html#Iterator.members.Advance"><span class="ci">Advance</span></a><span class="cp">(</span><span class="co">-</span><span class="ci">nl</span><span class="cp">.</span><span class="ci">SuffixLength</span><span class="cp">)</span><span class="cp">)</span>
         <span class="ck">else</span> <span class="clc"><span class="left-delimiter">//</span> reconstruct error reply</span>
-            <a href="primitives.html#members.Reply"><span class="ci">Reply</span></a><span class="co">&lt;</span><span class="ci">_</span><span class="cp">,</span><span class="ci">_</span><span class="cp">&gt;</span><span class="cp">(</span><span class="ci">reply</span><span class="cp">.</span><span class="ci">Status</span><span class="cp">,</span> <span class="ci">reply</span><span class="cp">.</span><span class="ci">Error</span><span class="cp">,</span> <span class="ci">reply</span><span class="cp">.</span><span class="ci">State</span><span class="cp">)</span>
+            <a href="primitives.html#members.Reply"><span class="ci">Reply</span></a><span class="cp">(</span><span class="ci">reply</span><span class="cp">.</span><span class="ci">Status</span><span class="cp">,</span> <span class="ci">reply</span><span class="cp">.</span><span class="ci">Error</span><span class="cp">,</span> <span class="ci">reply</span><span class="cp">.</span><span class="ci">State</span><span class="cp">)</span>
 </pre>
          <p>Some test runs:</p>
 <pre class="code other">&gt; run pnumber "123";;

@@ -348,12 +348,12 @@ type OperatorPrecedenceParser<'a,'u> private () =
                         mergeErrors reply.Error error
            // or the 2nd half of the ternary operator
            let error2 = expectedError (quoteString op.Ternary2ndString)
-           reply <- Reply<_,_>(Error, mergeErrors error1 error2, reply.State)
+           reply <- Reply(Error, mergeErrors error1 error2, reply.State)
            false
 
     member t.ParseExpression(prevState: State<'u>, prevOp: Operator<'a,'u>, reply: byref<Reply<'a,'u>>) : OpLookahead<'a,'u> =
         let conflictErrorReply currState currError msg =
-            Reply<_,_>(Error, mergeErrors currError (messageError msg), currState)
+            Reply(Error, mergeErrors currError (messageError msg), currState)
 
         let mutable currState = reply.State  // state before beginning of currOp
         let mutable currError = reply.Error
@@ -387,7 +387,7 @@ type OperatorPrecedenceParser<'a,'u> private () =
         else
             // unexpected non-prefix operator
             let error = unexpectedError (currOp.ToString())
-            reply <- Reply<_,_>(Error, mergeErrors currError error, currState)
+            reply <- Reply(Error, mergeErrors currError error, currState)
 
         // parse infix and postfix operators
         let mutable doContinue = true

@@ -71,8 +71,8 @@ type Parser<'a, 'u> = State<'u> -> Reply<'a,'u>
 // The `PrimitiveTests.Reference` module contains simple (but sometimes naive)
 // reference implementations of most of the functions below.
 
-let preturn x = fun state -> Reply<_,_>(x, state)
-let pzero : Parser<'a,'u> = fun state -> Reply<_,_>(Error, NoErrorMessages, state)
+let preturn x = fun state -> Reply(x, state)
+let pzero : Parser<'a,'u> = fun state -> Reply(Error, NoErrorMessages, state)
 
 
 // ---------------------------
@@ -91,7 +91,7 @@ let (>>=) (p: Parser<'a,'u>) (f: 'a -> Parser<'b,'u>) =
                     reply2.Error <- concatErrorMessages reply1.Error reply2.Error
                 reply2
             else
-                Reply<_,_>(reply1.Status, reply1.Error, reply1.State)
+                Reply(reply1.Status, reply1.Error, reply1.State)
     | _ ->
         fun state ->
             let reply1 = p state
@@ -102,12 +102,12 @@ let (>>=) (p: Parser<'a,'u>) (f: 'a -> Parser<'b,'u>) =
                     reply2.Error <- concatErrorMessages reply1.Error reply2.Error
                 reply2
             else
-                Reply<_,_>(reply1.Status, reply1.Error, reply1.State)
+                Reply(reply1.Status, reply1.Error, reply1.State)
 
 let (>>$) (p: Parser<'a,'u>) x =
     fun state ->
         let reply = p state
-        Reply<_,_>(reply.Status, x, reply.Error, reply.State)
+        Reply(reply.Status, x, reply.Error, reply.State)
 
 let (>>.) (p: Parser<'a,'u>) (q: Parser<'b,'u>) =
     fun state ->
@@ -118,7 +118,7 @@ let (>>.) (p: Parser<'a,'u>) (q: Parser<'b,'u>) =
                 reply2.Error <- concatErrorMessages reply1.Error reply2.Error
             reply2
         else
-            Reply<_,_>(reply1.Status, reply1.Error, reply1.State)
+            Reply(reply1.Status, reply1.Error, reply1.State)
 
 let (.>>) (p: Parser<'a,'u>) (q: Parser<'b,'u>) =
     fun state ->
@@ -145,15 +145,15 @@ let between (popen: Parser<_,'u>) (pclose: Parser<_,'u>) (p: Parser<_,'u>) =
                 reply2.Error <- error
             reply2
         else
-            Reply<_,_>(reply1.Status, reply1.Error, reply1.State)
+            Reply(reply1.Status, reply1.Error, reply1.State)
 
 let (|>>) (p: Parser<'a,'u>) f =
     fun state ->
         let reply = p state
-        Reply<_,_>(reply.Status,
-                   (if reply.Status = Ok then f reply.Result else Unchecked.defaultof<_>),
-                   reply.Error,
-                   reply.State)
+        Reply(reply.Status,
+              (if reply.Status = Ok then f reply.Result else Unchecked.defaultof<_>),
+              reply.Error,
+              reply.State)
 
 let pipe2 (p1: Parser<'a,'u>) (p2: Parser<'b,'u>) f =
     let optF = OptimizedClosures.FastFunc2.Adapt(f)
@@ -164,9 +164,9 @@ let pipe2 (p1: Parser<'a,'u>) (p2: Parser<'b,'u>) f =
             let reply2 = p2 reply1.State
             error <- mergeErrorsIfNeeded reply1.State error reply2.State reply2.Error
             if reply2.Status = Ok then
-                 Reply<_,_>(Ok, optF.Invoke(reply1.Result, reply2.Result), error, reply2.State)
-            else Reply<_,_>(reply2.Status, error, reply2.State)
-        else Reply<_,_>(reply1.Status, reply1.Error, reply1.State)
+                 Reply(Ok, optF.Invoke(reply1.Result, reply2.Result), error, reply2.State)
+            else Reply(reply2.Status, error, reply2.State)
+        else Reply(reply1.Status, reply1.Error, reply1.State)
 
 let pipe3 (p1: Parser<'a,'u>) (p2: Parser<'b,'u>) (p3: Parser<'c,'u>) f =
     let optF = OptimizedClosures.FastFunc3.Adapt(f)
@@ -180,10 +180,10 @@ let pipe3 (p1: Parser<'a,'u>) (p2: Parser<'b,'u>) (p3: Parser<'c,'u>) f =
                 let reply3 = p3 reply2.State
                 error <- mergeErrorsIfNeeded reply2.State error reply3.State reply3.Error
                 if reply3.Status = Ok then
-                     Reply<_,_>(Ok, optF.Invoke(reply1.Result, reply2.Result, reply3.Result), error, reply3.State)
-                else Reply<_,_>(reply3.Status, error, reply3.State)
-            else Reply<_,_>(reply2.Status, error, reply2.State)
-        else Reply<_,_>(reply1.Status, error, reply1.State)
+                     Reply(Ok, optF.Invoke(reply1.Result, reply2.Result, reply3.Result), error, reply3.State)
+                else Reply(reply3.Status, error, reply3.State)
+            else Reply(reply2.Status, error, reply2.State)
+        else Reply(reply1.Status, error, reply1.State)
 
 let pipe4 (p1: Parser<'a,'u>) (p2: Parser<'b,'u>) (p3: Parser<'c,'u>) (p4: Parser<'d,'u>) f =
     let optF = OptimizedClosures.FastFunc4.Adapt(f)
@@ -200,11 +200,11 @@ let pipe4 (p1: Parser<'a,'u>) (p2: Parser<'b,'u>) (p3: Parser<'c,'u>) (p4: Parse
                     let reply4 = p4 reply3.State
                     error <- mergeErrorsIfNeeded reply3.State error reply4.State reply4.Error
                     if reply4.Status = Ok then
-                         Reply<_,_>(Ok, optF.Invoke(reply1.Result, reply2.Result, reply3.Result, reply4.Result), error, reply4.State)
-                    else Reply<_,_>(reply4.Status, error, reply4.State)
-                else Reply<_,_>(reply3.Status, error, reply3.State)
-            else Reply<_,_>(reply2.Status, error, reply2.State)
-        else Reply<_,_>(reply1.Status, error, reply1.State)
+                         Reply(Ok, optF.Invoke(reply1.Result, reply2.Result, reply3.Result, reply4.Result), error, reply4.State)
+                    else Reply(reply4.Status, error, reply4.State)
+                else Reply(reply3.Status, error, reply3.State)
+            else Reply(reply2.Status, error, reply2.State)
+        else Reply(reply1.Status, error, reply1.State)
 
 let pipe5 (p1: Parser<'a,'u>) (p2: Parser<'b,'u>) (p3: Parser<'c,'u>) (p4: Parser<'d,'u>) (p5: Parser<'e,'u>) f =
     let optF = OptimizedClosures.FastFunc5.Adapt(f)
@@ -224,12 +224,12 @@ let pipe5 (p1: Parser<'a,'u>) (p2: Parser<'b,'u>) (p3: Parser<'c,'u>) (p4: Parse
                         let reply5 = p5 reply4.State
                         error <- mergeErrorsIfNeeded reply4.State error reply5.State reply5.Error
                         if reply5.Status = Ok then
-                             Reply<_,_>(Ok, optF.Invoke(reply1.Result, reply2.Result, reply3.Result, reply4.Result, reply5.Result), error, reply5.State)
-                        else Reply<_,_>(reply5.Status, error, reply5.State)
-                    else Reply<_,_>(reply4.Status, error, reply4.State)
-                else Reply<_,_>(reply3.Status, error, reply3.State)
-            else Reply<_,_>(reply2.Status, error, reply2.State)
-        else Reply<_,_>(reply1.Status, error, reply1.State)
+                             Reply(Ok, optF.Invoke(reply1.Result, reply2.Result, reply3.Result, reply4.Result, reply5.Result), error, reply5.State)
+                        else Reply(reply5.Status, error, reply5.State)
+                    else Reply(reply4.Status, error, reply4.State)
+                else Reply(reply3.Status, error, reply3.State)
+            else Reply(reply2.Status, error, reply2.State)
+        else Reply(reply1.Status, error, reply1.State)
 
 
 // -----------------------------------------------
@@ -292,7 +292,7 @@ let choice (ps: seq<Parser<'a,'u>>)  =
                        reply.Error <- mergeErrors error reply.Error
                    reply
                else
-                   Reply<_,_>(Error, NoErrorMessages, state)
+                   Reply(Error, NoErrorMessages, state)
 
 
 let choiceL (ps: seq<Parser<'a,'u>>) label =
@@ -336,7 +336,7 @@ let choiceL (ps: seq<Parser<'a,'u>>) label =
                        reply.Error <- error
                    reply
                else
-                   Reply<_,_>(Error, NoErrorMessages, state)
+                   Reply(Error, NoErrorMessages, state)
 
 let (<|>$) (p: Parser<'a,'u>) x =
     fun state ->
@@ -350,11 +350,11 @@ let opt (p: Parser<'a,'u>) : Parser<'a option,'u> =
     fun state ->
         let reply = p state
         if reply.Status = Ok then
-            Reply<_,_>(Ok, Some reply.Result, reply.Error, reply.State)
+            Reply(Ok, Some reply.Result, reply.Error, reply.State)
         else
             // None is represented as null
             let status = if reply.Status = Error && reply.State == state then Ok else reply.Status
-            Reply<_,_>(status, reply.Error, reply.State)
+            Reply(status, reply.Error, reply.State)
 
 let optional (p: Parser<'a,'u>) : Parser<unit,'u> =
     fun state ->
@@ -392,7 +392,7 @@ let (>>=?) (p: Parser<'a,'u>) (f: 'a -> Parser<'b,'u>) =
                     reply2.Status <- Error // turns FatalErrors into Error
             reply2
         else
-            Reply<_,_>(reply1.Status, reply1.Error, reply1.State)
+            Reply(reply1.Status, reply1.Error, reply1.State)
 
 let (>>?) (p: Parser<'a,'u>) (q: Parser<'b,'u>) =
     fun state ->
@@ -410,7 +410,7 @@ let (>>?) (p: Parser<'a,'u>) (q: Parser<'b,'u>) =
                     reply2.Status <- Error // turns FatalErrors into Errors
             reply2
         else
-            Reply<_,_>(reply1.Status, reply1.Error, reply1.State)
+            Reply(reply1.Status, reply1.Error, reply1.State)
 
 let (.>>?) (p: Parser<'a,'u>) (q: Parser<'b,'u>) =
     fun state ->
@@ -442,8 +442,8 @@ let (.>>?) (p: Parser<'a,'u>) (q: Parser<'b,'u>) =
 let internal followedByE (p: Parser<'a,'u>) error =
     fun state ->
         let reply = p state
-        if reply.Status = Ok then Reply<_,_>((), state)
-        else Reply<_,_>(Error, error, state)
+        if reply.Status = Ok then Reply((), state)
+        else Reply(Error, error, state)
 
 let followedBy  p       = followedByE p NoErrorMessages
 let followedByL p label = followedByE p (expectedError label)
@@ -451,8 +451,8 @@ let followedByL p label = followedByE p (expectedError label)
 let internal notFollowedByE (p: Parser<'a,'u>) error =
     fun state ->
         let reply = p state
-        if reply.Status <> Ok then Reply<_,_>((), state)
-        else Reply<_,_>(Error, error, state)
+        if reply.Status <> Ok then Reply((), state)
+        else Reply(Error, error, state)
 
 let notFollowedBy  p       = notFollowedByE p NoErrorMessages
 let notFollowedByL p label = notFollowedByE p (unexpectedError label)
@@ -505,11 +505,11 @@ let (<??>) (p: Parser<'a,'u>) label =
 let fail msg : Parser<'a,'u> =
     let error = messageError msg
     fun state ->
-        Reply<_,_>(Error, error, state)
+        Reply(Error, error, state)
 
 let failFatally msg : Parser<'a,'u> =
     let error = messageError msg
-    fun state -> Reply<_,_>(FatalError, error, state)
+    fun state -> Reply(FatalError, error, state)
 
 // -----------------
 // Parsing sequences
@@ -589,14 +589,14 @@ let
                 state <- reply.State
                 reply <- p state
             if reply.Status = Error && reply.State == state then
-                Reply<_,_>(Ok, applyF xs, mergeErrors error reply.Error, state)
+                Reply(Ok, applyF xs, mergeErrors error reply.Error, state)
             else
                 let error = mergeErrorsIfNeeded state error reply.State reply.Error
-                Reply<_,_>(reply.Status, error, reply.State)
+                Reply(reply.Status, error, reply.State)
         elif not require1 && reply.Status = Error && reply.State == state then
-            Reply<_,_>(Ok, getEmpty(), reply.Error, state)
+            Reply(Ok, getEmpty(), reply.Error, state)
         else
-            Reply<_,_>(reply.Status, reply.Error, reply.State)
+            Reply(reply.Status, reply.Error, reply.State)
 
 let
 #if NOINLINE
@@ -619,14 +619,14 @@ let
                 state <- reply.State
                 reply <- p state
             if reply.Status = Error && reply.State == state then
-                Reply<_,_>(Ok, applyF xs, mergeErrors error reply.Error, state)
+                Reply(Ok, applyF xs, mergeErrors error reply.Error, state)
             else
                 let error = mergeErrorsIfNeeded state error reply.State reply.Error
-                Reply<_,_>(reply.Status, error, reply.State)
+                Reply(reply.Status, error, reply.State)
         elif not require1 && reply1.Status = Error && reply1.State == state then
-            Reply<_,_>(Ok, getEmpty(), reply1.Error, state)
+            Reply(Ok, getEmpty(), reply1.Error, state)
         else
-            Reply<_,_>(reply1.Status, reply1.Error, reply1.State)
+            Reply(reply1.Status, reply1.Error, reply1.State)
 
 let
 #if NOINLINE
@@ -686,20 +686,20 @@ let
                 state  <- reply1.State
                 reply2 <- sep state
             if  reply2.Status = Error && reply2.State == state then
-                Reply<_,_>(Ok, applyF xs, mergeErrors error reply2.Error, state)
+                Reply(Ok, applyF xs, mergeErrors error reply2.Error, state)
             elif sepMayEnd && reply1.Status = Error && reply1.State == reply2.State then
                 let error = mergeErrors (mergeErrorsIfNeeded state error reply2.State reply2.Error) reply1.Error
-                Reply<_,_>(Ok, applyF xs, error, reply1.State)
+                Reply(Ok, applyF xs, error, reply1.State)
             elif reply1.Status <> Ok then
                 let error = mergeErrorsIfNeeded3 state error reply2.State reply2.Error reply1.State reply1.Error
-                Reply<_,_>(reply1.Status, error, reply1.State)
+                Reply(reply1.Status, error, reply1.State)
             else
                 let error = mergeErrorsIfNeeded state error reply2.State reply2.Error
-                Reply<_,_>(reply2.Status, error, reply2.State)
+                Reply(reply2.Status, error, reply2.State)
         elif not require1 && reply1.Status = Error && reply1.State == state then
-            Reply<_,_>(Ok, getEmpty(), reply1.Error, state)
+            Reply(Ok, getEmpty(), reply1.Error, state)
         else
-            Reply<_,_>(reply1.Status, reply1.Error, reply1.State)
+            Reply(reply1.Status, reply1.Error, reply1.State)
 
 let
 #if NOINLINE
@@ -758,22 +758,22 @@ let
                     reply2 <- endp state
                 if reply2.Status = Ok then
                     let error = mergeErrorsIfNeeded state error reply2.State reply2.Error
-                    Reply<_,_>(Ok, applyF xs reply2.Result, error, reply2.State)
+                    Reply(Ok, applyF xs reply2.Result, error, reply2.State)
                 elif reply1.Status = Error && reply1.State == state then
                     let error = if reply2.State != state then reply2.Error
                                 else mergeErrors (mergeErrors error reply1.Error) reply2.Error
-                    Reply<_,_>(reply2.Status, error, reply2.State)
+                    Reply(reply2.Status, error, reply2.State)
                 else
                     let error = mergeErrorsIfNeeded state error reply1.State reply1.Error
-                    Reply<_,_>(reply1.Status, error, reply1.State)
+                    Reply(reply1.Status, error, reply1.State)
             elif reply1.Status = Error && reply1.State == state then
                 let error = if reply2.State != state then reply2.Error
                             else mergeErrors reply1.Error reply2.Error
-                Reply<_,_>(reply2.Status, error, reply2.State)
+                Reply(reply2.Status, error, reply2.State)
             else
-                Reply<_,_>(reply1.Status, reply1.Error, reply1.State)
+                Reply(reply1.Status, reply1.Error, reply1.State)
         else
-            Reply<_,_>(Ok, getEmpty reply2.Result, reply2.Error, reply2.State)
+            Reply(Ok, getEmpty reply2.Result, reply2.Error, reply2.State)
 
 
 

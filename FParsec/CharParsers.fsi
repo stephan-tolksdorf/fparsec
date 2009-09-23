@@ -87,19 +87,19 @@ val run: Parser<'Result, unit> -> string -> ParserResult<'Result,unit>
 // -------------------------------------------------------------
 
 /// The parser `getPos` returns the current position in the input Stream.
-/// `getPos` is equivalent to `fun state -> Reply<_,_>(state.Pos, state)`.
+/// `getPos` is equivalent to `fun state -> Reply(state.Pos, state)`.
 val getPos: Parser<Pos,'u>
 
 
 /// The parser `getUserState` returns the current user state.
-/// `getUserState` is equivalent to `fun state -> Reply<_,_>(state.UserState, state)`.
+/// `getUserState` is equivalent to `fun state -> Reply(state.UserState, state)`.
 val getUserState: Parser<'u,'u>
 
 /// The parser `setUserState u` sets the user state to `u`.
-/// `setUserState u` is equivalent to `fun state -> Reply<_,_>((), state.WithUserState(u))`.
+/// `setUserState u` is equivalent to `fun state -> Reply((), state.WithUserState(u))`.
 val setUserState: 'u -> Parser<unit,'u>
 
-/// `updateUserState f` is equivalent to `fun state -> Reply<_,_>((), state.WithUserState(f state.UserState))`.
+/// `updateUserState f` is equivalent to `fun state -> Reply((), state.WithUserState(f state.UserState))`.
 val updateUserState: ('u -> 'u) -> Parser<unit,'u>
 
 /// The parser `userStateSatisfies f` succeeds if `f` returns `true`

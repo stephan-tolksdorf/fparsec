@@ -88,12 +88,12 @@ let checkParserStr parser1 parser2 (str: string) =
     checkParser parser1 parser2 s0
 
 let constantTestParsers r e : Parser<'a, int>[] = [| // we rely on the order of these parsers
-    fun s -> Reply<_,_>(Ok, r, e, s);
-    fun s -> Reply<_,_>(Ok, r, e, s.WithUserState(s.UserState + 1))
-    fun s -> Reply<_,_>(Error, e, s);
-    fun s -> Reply<_,_>(Error, e, s.WithUserState(s.UserState + 1));
-    fun s -> Reply<_,_>(FatalError, e, s);
-    fun s -> Reply<_,_>(FatalError, e, s.WithUserState(s.UserState + 1));
+    fun s -> Reply(Ok, r, e, s);
+    fun s -> Reply(Ok, r, e, s.WithUserState(s.UserState + 1))
+    fun s -> Reply(Error, e, s);
+    fun s -> Reply(Error, e, s.WithUserState(s.UserState + 1));
+    fun s -> Reply(FatalError, e, s);
+    fun s -> Reply(FatalError, e, s.WithUserState(s.UserState + 1));
 |]
 
 
@@ -109,7 +109,7 @@ let seqParserAndReset ps =
             psr:= ps
          match !psr with
          | hd::tl -> psr:= tl; hd state
-         | [] -> Reply<_,_>(Error, NoErrorMessages, state)),
+         | [] -> Reply(Error, NoErrorMessages, state)),
     (fun () -> psr:= ps)
 
 let seqParserAndReset2 ps =

@@ -202,7 +202,7 @@ let testOpParser() =
         opp.AddOperator(TernaryOp("?", opWsParser, ":", opWsParser, 1, Assoc.Left, fun x y z -> x + y + z))
 
         let expr2 =
-            let expect label = fun state -> Reply<_,_>(Ok, (), (expectedError label), state)
+            let expect label = fun state -> Reply(Ok, (), (expectedError label), state)
             let term = expect "prefix operator" >>. term
             let op1 = pstring "?" >>? opWsParser <?> "infix operator"
             let op2 = expect "infix operator" >>. (pstring ":" >>? opWsParser <?> "':'")

@@ -35,11 +35,11 @@ let id : Parser<string, unit> =
         if reply.Status = Ok then
             let id = reply.Result
             if not (keyWordSet.Contains(id)) then
-                Reply<_,_>(reply.Result, reply.State)
+                Reply(reply.Result, reply.State)
             else
-                Reply<_,_>(Error, expectedId, state)
+                Reply(Error, expectedId, state)
         else // reconstruct error
-            Reply<_,_>(reply.Status, reply.Error, reply.State)
+            Reply(reply.Status, reply.Error, reply.State)
 
 let numberFormat =     NumberLiteralOptions.AllowMinusSign
                    ||| NumberLiteralOptions.AllowFraction

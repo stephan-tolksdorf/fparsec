@@ -442,8 +442,7 @@
          returned state. Even successful parsers can return a non‐empty <code class="fsharp"><a href="error.html#members.ErrorMessageList"><span
          class="ci">ErrorMessageList</span></a></code>. For example, a parser that skips over the <em>optional</em> string <code class="fsharp"><span
          class="cs"><span class="left-delimiter">"</span>str<span class="right-delimiter">"</span></span></code> might return <code
-         class="fsharp"><span class="ci">Reply</span><span class="co">&lt;</span><span class="ci">_</span><span class="cp">,</span><span
-         class="ci">_</span><span class="cp">&gt;</span><span class="cp">(</span><a href="#members.Ok"><span class="ci">Ok</span></a><span
+         class="fsharp"><span class="ci">Reply</span><span class="cp">(</span><a href="#members.Ok"><span class="ci">Ok</span></a><span
          class="cp">,</span> <span class="cp">()</span><span class="cp">,</span> <a href="error.html#members.expectedError"><span
          class="ci">expectedError</span></a> <span class="cs"><span class="left-delimiter">"</span>'str'<span
          class="right-delimiter">"</span></span><span class="cp">,</span> <span class="ci">state</span><span class="cp">)</span></code> in case it
@@ -453,23 +452,18 @@
         </p>
         <p class="para _8">
          The four argument <span class="bold">constructor</span> simply initializes the fields to the given arguments. The constructor call <code
-         class="fsharp"><span class="ci">Reply</span><span class="co">&lt;</span><span class="ci">_</span><span class="cp">,</span><span
-         class="ci">_</span><span class="cp">&gt;</span><span class="cp">(</span><span class="ci">result</span><span class="cp">,</span> <span
+         class="fsharp"><span class="ci">Reply</span><span class="cp">(</span><span class="ci">result</span><span class="cp">,</span> <span
          class="ci">state</span><span class="cp">)</span></code> is equivalent to <code class="fsharp"><span class="ci">Reply</span><span
-         class="co">&lt;</span><span class="ci">_</span><span class="cp">,</span><span class="ci">_</span><span class="cp">&gt;</span><span
          class="cp">(</span><a href="#members.Ok"><span class="ci">Ok</span></a><span class="cp">,</span> <span class="ci">result</span><span
          class="cp">,</span> <a href="error.html#members.NoErrorMessages"><span class="ci">NoErrorMessages</span></a><span class="cp">,</span> <span
          class="ci">state</span><span class="cp">)</span></code>. The constructor call <code class="fsharp"><span class="ci">Reply</span><span
-         class="co">&lt;</span><span class="ci">_</span><span class="cp">,</span><span class="ci">_</span><span class="cp">&gt;</span><span
          class="cp">(</span><span class="ci">status</span><span class="cp">,</span> <span class="ci">error</span><span class="cp">,</span> <span
          class="ci">state</span><span class="cp">)</span></code> is equivalent to <code class="fsharp"><span class="ci">Reply</span><span
-         class="co">&lt;</span><span class="ci">_</span><span class="cp">,</span><span class="ci">_</span><span class="cp">&gt;</span><span
          class="cp">(</span><span class="ci">status</span><span class="cp">,</span> <span class="ci">Unchecked</span><span class="cp">.</span><span
          class="ci">defaultof</span><span class="co">&lt;</span><span class="ci">_</span><span class="cp">&gt;</span><span class="cp">,</span> <a
          href="error.html#members.NoErrorMessages"><span class="ci">NoErrorMessages</span></a><span class="cp">,</span> <span
          class="ci">state</span><span class="cp">)</span></code>. The latter constructor is normally only used to construct an error reply, like in
-         <code class="fsharp"><span class="ci">Reply</span><span class="co">&lt;</span><span class="ci">_</span><span class="cp">,</span><span
-         class="ci">_</span><span class="cp">&gt;</span><span class="cp">(</span><a href="#members.Error"><span class="ci">Error</span></a><span
+         <code class="fsharp"><span class="ci">Reply</span><span class="cp">(</span><a href="#members.Error"><span class="ci">Error</span></a><span
          class="cp">,</span> <a href="error.html#members.expectedError"><span class="ci">expectedError</span></a> <span class="cs"><span
          class="left-delimiter">"</span>'str'<span class="right-delimiter">"</span></span><span class="cp">,</span> <span class="ci">test</span><span
          class="cp">)</span></code>.
@@ -508,8 +502,7 @@
         <p class="para _2">
          <code class="fsharp"><span class="ci">preturn</span> <span class="ci">x</span></code> is defined as <code class="fsharp"><span
          class="ck">fun</span> <span class="ci">state</span> <span class="cr">-&gt;</span> <a href="#members.Reply"><span
-         class="ci">Reply</span></a><span class="co">&lt;</span><span class="ci">_</span><span class="cp">,</span><span class="ci">_</span><span
-         class="cp">&gt;</span><span class="cp">(</span><span class="ci">x</span><span class="cp">,</span> <span class="ci">state</span><span
+         class="ci">Reply</span></a><span class="cp">(</span><span class="ci">x</span><span class="cp">,</span> <span class="ci">state</span><span
          class="cp">)</span></code>.
         </p>
        </div>
@@ -528,8 +521,7 @@
         <p class="para _2">
          <code class="fsharp"><span class="ci">pzero</span> <span class="ci">x</span></code> is defined as <code class="fsharp"><span
          class="ck">fun</span> <span class="ci">state</span> <span class="cr">-&gt;</span> <a href="#members.Reply"><span
-         class="ci">Reply</span></a><span class="co">&lt;</span><span class="ci">_</span><span class="cp">,</span><span class="ci">_</span><span
-         class="cp">&gt;</span><span class="cp">(</span><a href="#members.Error"><span class="ci">Error</span></a><span class="cp">,</span> <a
+         class="ci">Reply</span></a><span class="cp">(</span><a href="#members.Error"><span class="ci">Error</span></a><span class="cp">,</span> <a
          href="error.html#members.NoErrorMessages"><span class="ci">NoErrorMessages</span></a><span class="cp">,</span> <span
          class="ci">state</span><span class="cp">)</span></code>.
         </p>
@@ -563,7 +555,7 @@
                 <span class="ci">reply2</span><span class="cp">.</span><span class="ci">Error</span> <span class="co">&lt;-</span> <a href="error.html#members.mergeErrors"><span class="ci">mergeErrors</span></a> <span class="ci">reply1</span><span class="cp">.</span><span class="ci">Error</span> <span class="ci">reply2</span><span class="cp">.</span><span class="ci">Error</span>
             <span class="ci">reply2</span>
         <span class="ck">else</span>
-            <a href="#members.Reply"><span class="ci">Reply</span></a><span class="co">&lt;</span><span class="ci">_</span><span class="cp">,</span><span class="ci">_</span><span class="cp">&gt;</span><span class="cp">(</span><span class="ci">reply1</span><span class="cp">.</span><span class="ci">Status</span><span class="cp">,</span> <span class="ci">reply1</span><span class="cp">.</span><span class="ci">Error</span><span class="cp">,</span> <span class="ci">reply1</span><span class="cp">.</span><span class="ci">State</span><span class="cp">)</span>
+            <a href="#members.Reply"><span class="ci">Reply</span></a><span class="cp">(</span><span class="ci">reply1</span><span class="cp">.</span><span class="ci">Status</span><span class="cp">,</span> <span class="ci">reply1</span><span class="cp">.</span><span class="ci">Error</span><span class="cp">,</span> <span class="ci">reply1</span><span class="cp">.</span><span class="ci">State</span><span class="cp">)</span>
 </pre>
         </div>
         <p class="para _4">
@@ -1195,8 +1187,7 @@
         <p class="para _2">
          <code class="fsharp"><span class="ci">fail</span> <span class="ci">msg</span></code> is equivalent to <code class="fsharp"><span
          class="ck">fun</span> <span class="ci">state</span> <span class="cr">-&gt;</span> <a href="#members.Reply"><span
-         class="ci">Reply</span></a><span class="co">&lt;</span><span class="ci">_</span><span class="cp">,</span><span class="ci">_</span><span
-         class="cp">&gt;</span><span class="cp">(</span><a href="#members.Error"><span class="ci">Error</span></a><span class="cp">,</span> <a
+         class="ci">Reply</span></a><span class="cp">(</span><a href="#members.Error"><span class="ci">Error</span></a><span class="cp">,</span> <a
          href="error.html#members.messageError"><span class="ci">messageError</span></a> <span class="ci">msg</span><span class="cp">,</span> <span
          class="ci">state</span><span class="cp">)</span></code>.
         </p>
@@ -1218,8 +1209,7 @@
         <p class="para _2">
          <code class="fsharp"><span class="ci">failFatally</span> <span class="ci">msg</span></code> is equivalent to <code class="fsharp"><span
          class="ck">fun</span> <span class="ci">state</span> <span class="cr">-&gt;</span> <a href="#members.Reply"><span
-         class="ci">Reply</span></a><span class="co">&lt;</span><span class="ci">_</span><span class="cp">,</span><span class="ci">_</span><span
-         class="cp">&gt;</span><span class="cp">(</span><a href="#members.FatalError"><span class="ci">FatalError</span></a><span
+         class="ci">Reply</span></a><span class="cp">(</span><a href="#members.FatalError"><span class="ci">FatalError</span></a><span
          class="cp">,</span> <a href="error.html#members.messageError"><span class="ci">messageError</span></a> <span class="ci">msg</span><span
          class="cp">,</span> <span class="ci">state</span><span class="cp">)</span></code>.
         </p>

@@ -102,11 +102,11 @@ type Parser<'Result, 'UserState> = State<'UserState> -> Reply<'Result,'UserState
 // Two basic primitives that are only seldomly directly used in user code:
 
 /// The parser `preturn x` always succeeds with the result `x` (without changing the parser state).
-/// `preturn x` is defined as `fun state -> Reply<_,_>(x, state)`.
+/// `preturn x` is defined as `fun state -> Reply(x, state)`.
 val preturn: 'a -> Parser<'a,'u>
 
 /// The parser `pzero` always fails with an empty error message list, i.e. an unspecified error.
-/// `pzero x` is defined as `fun state -> Reply<_,_>(Error, NoErrorMessages, state)`.
+/// `pzero x` is defined as `fun state -> Reply(Error, NoErrorMessages, state)`.
 val pzero: Parser<'a,'u>
 
 // ---------------------------
@@ -131,7 +131,7 @@ val (>>=): Parser<'a,'u> -> ('a -> Parser<'b,'u>) -> Parser<'b,'u>
 //                 reply2.Error <- mergeErrors reply1.Error reply2.Error
 //             reply2
 //         else
-//             Reply<_,_>(reply1.Status, reply1.Error, reply1.State)
+//             Reply(reply1.Status, reply1.Error, reply1.State)
 //
 // (`mergeErrors` is a helper function from the `Error` module that merges two
 //  `ErrorMessageList`s.)
@@ -329,12 +329,12 @@ val (<??>): Parser<'a,'u> -> string -> Parser<'a,'u>
 /// The parser `fail msg` always fails with a `messageError msg`.
 /// The error message will be displayed together with other error messages generated for
 /// the same input position.
-/// `fail msg` is equivalent to `fun state -> Reply<_,_>(Error, messageError msg, state)`.
+/// `fail msg` is equivalent to `fun state -> Reply(Error, messageError msg, state)`.
 val fail: string -> Parser<'a,'u>
 
 /// The parser `failFatally msg` always fails with a `messageError msg`. It signals a
 /// FatalError, so that no error recovery is attempted (except via backtracking constructs).
-/// `failFatally msg` is equivalent to `fun state -> Reply<_,_>(FatalError, messageError msg, state)`.
+/// `failFatally msg` is equivalent to `fun state -> Reply(FatalError, messageError msg, state)`.
 val failFatally: string -> Parser<'a,'u>
 
 // -----------------
