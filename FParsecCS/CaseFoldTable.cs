@@ -65,18 +65,13 @@ internal class CaseFoldTable {
         fixed (char* table = tableArray)
         fixed (char* mappings = oneToOneMappings) {
             var uiTable = (uint*) table;
-            table[0] = '\u0000';
-            table[1] = '\u0001';
-            uint c0 = uiTable[0];  // c = 0x10000 on little-endian platforms, and 0x1 on big-endian platforms
-            uiTable[1] = c0 + 0x20002u;
-            uiTable[2] = c0 + 0x40004u;
-            uiTable[3] = c0 + 0x60006u;
-            for (int i = 4; i < 0x10000/2; i += 4) {
-                c0 += 0x80008u;
-                uiTable[i   ]  = c0;
+            uint c0 = BitConverter.IsLittleEndian ? 0x10000u : 0x1u;
+            for (int i = 0; i < 0x10000/2; i += 4) {
+                uiTable[i    ] = c0;
                 uiTable[i + 1] = c0 + 0x20002u;
                 uiTable[i + 2] = c0 + 0x40004u;
                 uiTable[i + 3] = c0 + 0x60006u;
+                c0 = unchecked(c0 + 0x80008u);
             }
             for (int i = n - 2; i >= 0; i -= 2) {
                 table[mappings[i]] = mappings[i + 1];

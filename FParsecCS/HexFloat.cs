@@ -8,6 +8,14 @@ internal class HexFloat {
 #pragma warning disable 0429 // unreachable expression code
 #pragma warning disable 0162 // unreachable code
 
+// The non-LOW_TRUST code in this class relies on the endianness of floating-point
+// numbers in memory being the same as the normal platform endianness,
+// i.e. on *((uint*)(&s)) and *((ulong*)(&d)) returning the correct IEEE-754 bit
+// representation of the single and double precision numbers s and d.
+// I'm not aware of any .NET/Mono platform where this is not the case.
+// In the unlikely event anyone ever runs this code on a platform where
+// this is not the case the unit tests will detect the problem.
+
 #if !LOW_TRUST
     unsafe
 #endif
