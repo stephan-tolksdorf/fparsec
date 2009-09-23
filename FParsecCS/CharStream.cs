@@ -12,6 +12,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
 
 
 namespace FParsec {
@@ -984,6 +985,7 @@ namespace FParsec {
                 }
                 return IncrementContinue();
             }
+            [MethodImplAttribute(MethodImplOptions.NoInlining)]
             private char IncrementContinue() {
                 this = Next;
                 return Read();
@@ -1037,6 +1039,7 @@ namespace FParsec {
                 }
                 return DecrementContinue(numberOfChars);
             }
+            [MethodImplAttribute(MethodImplOptions.NoInlining)]
             private char DecrementContinue(uint numberOfChars) {
                this = Stream.Seek(Index - numberOfChars);
                return Read();
@@ -1071,6 +1074,7 @@ namespace FParsec {
                 }
                 return PeekContinue(numberOfChars);
             }
+            [MethodImplAttribute(MethodImplOptions.NoInlining)]
             private char PeekContinue(int numberOfChars) {
                 long newIndex = Index + numberOfChars;
                 return newIndex >= Anchor->CharIndexOffset ? Stream.Seek(newIndex).Read() : EOS;
@@ -1088,6 +1092,7 @@ namespace FParsec {
                     return *(ptr + numberOfChars);
                 return PeekContinue(numberOfChars);
             }
+            [MethodImplAttribute(MethodImplOptions.NoInlining)]
             private char PeekContinue(uint numberOfChars) {
                 if (Block == -1) return EOS;
                 return Stream.Seek(Index + numberOfChars).Read();
@@ -1103,6 +1108,7 @@ namespace FParsec {
                 if (Block == Anchor->Block) return *Ptr == c;
                 return MatchContinue(c);
             }
+            [MethodImplAttribute(MethodImplOptions.NoInlining)]
             private bool MatchContinue(char c) {
                 if (Block == -1) return false;
                 Stream.ReadBlock(Block);
@@ -1404,6 +1410,7 @@ namespace FParsec {
                 if (Block == Anchor->Block) return *Ptr;
                 return ReadContinue();
             }
+            [MethodImplAttribute(MethodImplOptions.NoInlining)]
             private char ReadContinue() {
                 if (Block == -1) return EOS;
                 Stream.ReadBlock(Block);
