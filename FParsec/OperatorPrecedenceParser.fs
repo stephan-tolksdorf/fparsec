@@ -3,6 +3,8 @@
 
 module FParsec.OperatorPrecedenceParser
 
+open System.Diagnostics
+
 open FParsec.Internals
 open FParsec.Error
 open FParsec.Primitives
@@ -82,10 +84,15 @@ type internal Operator<'a,'u>(op: PrecedenceParserOp<'a,'u>) =
     override t.ToString() = t.OriginalOp.ToString()
 
 
-type internal OpLookahead<'a,'u>(state: State<'u>, error: ErrorMessageList, op: Operator<'a, 'u>) = struct
-    member t.State = state
-    member t.Error = error
-    member t.Op = op
+type internal OpLookahead<'a,'u> = struct
+    /// the reply.State value before Op was parsed
+    val mutable State: State<'u>
+    /// the reply.Error value before Op was parsed
+    val mutable Error: ErrorMessageList
+    val mutable Op: Operator<'a,'u>
+
+    member t.IsValid = isNotNull t.Op
+    member t.SetInvalid() = t.Op <- Unchecked.defaultof<_>
 end
 
 
@@ -129,13 +136,14 @@ type OperatorPrecedenceParser<'a,'u> private () =
 
     member private t.InitializeExpressionParser() =
         expressionParser <- fun state ->
+             let mutable la = Unchecked.defaultof<_>
              let mutable reply = Unchecked.defaultof<Reply<_,_>>
              reply.Status <- Ok
              reply.State <- state
-             t.ParseExpression(state, zeroPrecedenceOp, &reply) |> ignore
-             if reply.Status = Ok && (nInfixOps > 0 || nPostfixOps > 0) then // we could always consume more infix and postfix operators
-                let error = if nInfixOps > 0 && nPostfixOps > 0 then expectedInfixOrPostfixOp
-                            elif nInfixOps > 0 then expectedInfixOp
+             t.ParseExpression(state, zeroPrecedenceOp, &la, &reply)
+             if reply.Status = Ok && ((nInfixOps ||| nPostfixOps) <> 0) then // we could always consume more infix and postfix operators
+                let error = if nInfixOps <> 0 && nPostfixOps <> 0 then expectedInfixOrPostfixOp
+                            elif nInfixOps <> 0 then expectedInfixOp
                             else expectedPostfixOp
                 reply.Error <- mergeErrors reply.Error error
              reply
@@ -304,11 +312,12 @@ type OperatorPrecedenceParser<'a,'u> private () =
         ra :> seq<_>
 
     member private t.ParseOp(opTable: Operator<'a,'u>[][], reply: byref<Reply<'a,'u>>) =
-        let c0 = reply.State.Iter.Read()
-        let array = opTable.[int c0 &&& (oppArrayLength - 1)]
         let mutable result = Unchecked.defaultof<_>
+        let cs = reply.State.Iter.Read2()
+        let c1 = cs.Char1
+        let c0 = cs.Char0
+        let array = opTable.[int c0 &&& (oppArrayLength - 1)]
         if isNotNull array then
-            let c1 = reply.State.Iter.Peek()
             let mutable j = 0
             while j < array.Length do
                 let op = array.[j]
@@ -317,12 +326,12 @@ type OperatorPrecedenceParser<'a,'u> private () =
                     if s.Length <= 1 || (s.[1] = c1 && (s.Length = 2 || reply.State.Iter.Match(s))) then
                         let state1 = reply.State.Advance(s.Length)
                         let reply2 = op.WhitespaceAfterStringParser(state1)
-                        if not (reply2.Status = Error && reply2.State == state1) then
-                            reply.State  <- reply2.State
-                            reply.Error  <- reply2.Error
-                            reply.Status <- reply2.Status
+                        if reply2.Status <> Error || reply2.State != state1 then
                             if reply2.Status = Ok then
                                 result <- op
+                            reply.Status <- reply2.Status
+                            reply.State  <- reply2.State
+                            reply.Error  <- reply2.Error
                         j <- System.Int32.MaxValue // break
                     else j <- j + 1
                 elif s.[0] >= c0 then j <- j + 1
@@ -331,139 +340,169 @@ type OperatorPrecedenceParser<'a,'u> private () =
 
     member private t.ParseTernaryOp2ndString(op: Operator<'a,'u>, reply: byref<Reply<'a,'u>>) =
         let s = op.Ternary2ndString
-        let mutable reply2 = Unchecked.defaultof<Reply<_,_>>
-        if    reply.State.Iter.Match(s)
-           && (let state1 = reply.State.Advance(s.Length)
-               reply2 <- op.WhitespaceAfter2ndStringParser(state1);
-               not (reply2.Status = Error && reply2.State == state1))
-        then
-            reply.State  <- reply2.State
-            reply.Error  <- reply2.Error
-            reply.Status <- reply2.Status
-            reply2.Status = Ok
+        if reply.State.Iter.Match(s) then
+            let state1 = reply.State.Advance(s.Length)
+            let reply2 = op.WhitespaceAfter2ndStringParser(state1);
+            if reply2.Status <> Error || reply2.State != state1 then
+                reply.State  <- reply2.State
+                reply.Error  <- reply2.Error
+                reply.Status <- reply2.Status
+            else t.ParseTernaryOp2ndStringError(op, &reply)
+        else t.ParseTernaryOp2ndStringError(op, &reply)
+    member private t.ParseTernaryOp2ndStringError(op: Operator<'a,'u>, reply: byref<Reply<'a,'u>>) =
+       reply.Status <- Error
+       // we could consume more infix or postfix operators
+       let error1 = let error = if nPostfixOps > 0 then expectedInfixOrPostfixOp
+                                else expectedInfixOp
+                    mergeErrors reply.Error error
+       // or the 2nd half of the ternary operator
+       let error2 = expectedError (quoteString op.Ternary2ndString)
+       reply.Error <- concatErrorMessages error1 error2
+
+    member private t.ParseRhsOpIntoLA(la: byref<OpLookahead<'a,'u>>, reply: byref<Reply<'a,'u>>) =
+        la.State <- reply.State
+        la.Error <- reply.Error
+        la.Op <- t.ParseOp(rhsOps, &reply) // sets Op to null (and thus makes la Invalid) if reply.Status <> Ok
+
+    member private t.ParseExpression(prevState: State<'u>, prevOp: Operator<'a,'u>, la: byref<OpLookahead<'a,'u>>, reply: byref<Reply<'a,'u>>) =
+        Debug.Assert(reply.Status = Ok)
+        if nPrefixOps = 0 then
+            let error = reply.Error
+            let state = reply.State // state before beginning of op
+            reply <- termParser state
+            if reply.State == state then
+                reply.Error <- mergeErrors error reply.Error
+            if reply.Status = Ok then
+                t.ParseRhsOpIntoLA(&la, &reply)
+                if la.IsValid then
+                    t.ParseInfixAndPostfixOps(prevState, prevOp, &la, &reply)
+            else la.SetInvalid()
         else
-           // we could consume more infix or postfix operators
-           let error1 = let error = if nPostfixOps > 0 then expectedInfixOrPostfixOp
-                                    else expectedInfixOp
-                        mergeErrors reply.Error error
-           // or the 2nd half of the ternary operator
-           let error2 = expectedError (quoteString op.Ternary2ndString)
-           reply <- Reply(Error, mergeErrors error1 error2, reply.State)
-           false
-
-    member t.ParseExpression(prevState: State<'u>, prevOp: Operator<'a,'u>, reply: byref<Reply<'a,'u>>) : OpLookahead<'a,'u> =
-        let conflictErrorReply currState currError msg =
-            Reply(Error, mergeErrors currError (messageError msg), currState)
-
-        let mutable currState = reply.State  // state before beginning of currOp
-        let mutable currError = reply.Error
-        let mutable currOp    = t.ParseOp(lhsOps, &reply)
-        if isNull currOp then
-            // no prefix operator
-            if reply.Status = Ok then // currOp might be null because the whitespace parser changed the state and returned an error
-                reply <- termParser currState
-                if reply.State == currState then
-                    reply.Error <- mergeErrors (if nPrefixOps = 0 then currError
-                                                else mergeErrors currError expectedPrefixOp)  reply.Error
-                if reply.Status = Ok then
-                    currState <- reply.State
-                    currError <- reply.Error
-                    currOp    <- t.ParseOp(rhsOps, &reply)
-        elif currOp.Fixity = Fixity.Prefix then
-            // a prefix operator
-            let mutable msg = null
-            if    prevOp.Precedence <> currOp.Precedence || prevOp.Fixity <> Fixity.Prefix
-               || prevOp.Assoc <> Assoc.None || currOp.Assoc <> Assoc.None
-               || (msg <- operatorConflictHandler prevState prevOp.OriginalOp currState currOp.OriginalOp;
-                   isNull msg || msg.Length = 0)
-            then
-                let lookahead = t.ParseExpression(currState, currOp, &reply)
-                if reply.Status = Ok then
-                    reply.Result <- if isNotNull currOp.Apply1 then currOp.Apply1(reply.Result)
-                                    else currOp.Apply1'.Invoke(currState, reply.Result)
-                currState <- lookahead.State; currError <- lookahead.Error; currOp <- lookahead.Op
+            let error = reply.Error
+            let state = reply.State // state before beginning of op
+            let op = t.ParseOp(lhsOps, &reply)
+            if isNull op then
+                // no prefix operator
+                if reply.Status = Ok then // op might be null because the whitespace parser changed the state and returned an error
+                    reply <- termParser state
+                    if reply.State == state then
+                        reply.Error <- mergeErrors (if nPrefixOps = 0 then error
+                                                    else mergeErrors error expectedPrefixOp) reply.Error
+                    if reply.Status = Ok then
+                        t.ParseRhsOpIntoLA(&la, &reply)
+                        if la.IsValid then
+                            t.ParseInfixAndPostfixOps(prevState, prevOp, &la, &reply)
+                    else la.SetInvalid()
+                else la.SetInvalid()
+            elif op.Fixity = Fixity.Prefix then
+                // a prefix operator
+                let mutable msg = null
+                if    prevOp.Precedence <> op.Precedence || prevOp.Fixity <> Fixity.Prefix
+                   || prevOp.Assoc <> Assoc.None || op.Assoc <> Assoc.None
+                   || (msg <- operatorConflictHandler prevState prevOp.OriginalOp state op.OriginalOp
+                       isNullOrEmpty msg)
+                then
+                    let lookahead = t.ParseExpression(state, op, &la, &reply)
+                    if reply.Status = Ok then
+                        reply.Result <- if isNotNull op.Apply1 then op.Apply1(reply.Result)
+                                        else op.Apply1'.Invoke(state, reply.Result)
+                        if la.IsValid then
+                            t.ParseInfixAndPostfixOps(prevState, prevOp, &la, &reply)
+                else
+                    t.ReplyConflictError(state, error, msg, &reply)
+                    la.SetInvalid()
             else
-                reply <- conflictErrorReply currState currError msg
-        else
-            // unexpected non-prefix operator
-            let error = unexpectedError (currOp.ToString())
-            reply <- Reply(Error, mergeErrors currError error, currState)
+                reply.Status <- Error
+                reply.Error  <- mergeErrors error (unexpectedError (op.ToString()))
+                reply.State  <- state
+                la.SetInvalid()
 
-        // parse infix and postfix operators
-        let mutable doContinue = true
-        while doContinue && isNotNull currOp && reply.Status = Ok do
-            if currOp.Fixity = Fixity.Infix then
-                if    prevOp.Precedence < currOp.Precedence
-                   || (   prevOp.Precedence = currOp.Precedence
-                       && prevOp.Fixity = Fixity.Infix
-                       && prevOp.Assoc = currOp.Assoc && currOp.Assoc = Assoc.Right)
-                then
-                    let result1 = reply.Result
-                    if not currOp.IsTernary then
-                        let lookahead = t.ParseExpression(currState, currOp, &reply)
+    member private t.ParseInfixAndPostfixOps(prevState: State<'u>, prevOp: Operator<'a,'u>,
+                                             la: byref<OpLookahead<'a,'u>>, reply: byref<Reply<'a,'u>>) =
+        Debug.Assert(la.IsValid && reply.Status = Ok)
+        let state = la.State
+        let op = la.Op
+        if op.Fixity = Fixity.Infix then
+            if    prevOp.Precedence < op.Precedence
+               || (   prevOp.Precedence = op.Precedence
+                   && prevOp.Fixity = Fixity.Infix
+                   && prevOp.Assoc = op.Assoc && op.Assoc = Assoc.Right)
+            then
+                let result1 = reply.Result
+                if not op.IsTernary then
+                    t.ParseExpression(state, op, &la, &reply)
+                    if reply.Status = Ok then
+                        reply.Result <- if isNotNull op.Apply2 then
+                                            op.Apply2.Invoke(result1, reply.Result)
+                                        else op.Apply2'.Invoke(state, result1, reply.Result)
+                        if la.IsValid then
+                            t.ParseInfixAndPostfixOps(prevState, prevOp, &la, &reply)
+                else
+                    t.ParseExpression(state, zeroPrecedenceOp, &la, &reply)
+                    if reply.Status = Ok then
+                        let state2 = reply.State
+                        let result2 = reply.Result
+                        t.ParseTernaryOp2ndString(op, &reply)
                         if reply.Status = Ok then
-                            reply.Result <- if isNotNull currOp.Apply2 then
-                                                currOp.Apply2.Invoke(result1, reply.Result)
-                                            else currOp.Apply2'.Invoke(currState, result1, reply.Result)
-                        currState <- lookahead.State; currError <- lookahead.Error; currOp <- lookahead.Op
+                            t.ParseExpression(state, op, &la, &reply)
+                            if reply.Status = Ok then
+                                reply.Result <- if isNotNull op.Apply3 then
+                                                    op.Apply3.Invoke(result1, result2, reply.Result)
+                                                else op.Apply3'.Invoke(state, state2, result1, result2, reply.Result)
+                                if la.IsValid then
+                                    t.ParseInfixAndPostfixOps(prevState, prevOp, &la, &reply)
+                        else la.SetInvalid()
+            elif    prevOp.Precedence = op.Precedence && prevOp.Fixity = Fixity.Infix
+                 && (prevOp.Assoc <> op.Assoc || op.Assoc = Assoc.None)
+            then
+                let msg = operatorConflictHandler prevState prevOp.OriginalOp state op.OriginalOp
+                if not (isNullOrEmpty msg) then t.ReplyConflictError(msg, &la, &reply)
+
+        elif op.Fixity = Fixity.Postfix then
+            if    prevOp.Precedence < op.Precedence
+              || (   prevOp.Precedence = op.Precedence
+                  && prevOp.Fixity = Fixity.Infix)
+            then
+                reply.Result <- if isNotNull op.Apply1 then op.Apply1(reply.Result)
+                                else op.Apply1'.Invoke(state, reply.Result)
+                t.ParseRhsOpIntoLA(&la, &reply)
+                if la.IsValid then
+                    if la.Op.Fixity <> Fixity.Postfix then
+                        t.ParseInfixAndPostfixOps(prevState, prevOp, &la, &reply)
                     else
-                        t.ParseExpression(currState, zeroPrecedenceOp, &reply) |> ignore
-                        if reply.Status = Ok then
-                            let currState2 = reply.State
-                            let result2 = reply.Result
-                            if t.ParseTernaryOp2ndString(currOp, &reply) then
-                                let lookahead = t.ParseExpression(currState, currOp, &reply)
-                                if reply.Status = Ok then
-                                    reply.Result <- if isNotNull currOp.Apply3 then
-                                                        currOp.Apply3.Invoke(result1, result2, reply.Result)
-                                                    else currOp.Apply3'.Invoke(currState, currState2, result1, result2, reply.Result)
-                                currState <- lookahead.State; currError <- lookahead.Error; currOp <- lookahead.Op
-                else
-                    if    prevOp.Precedence = currOp.Precedence && prevOp.Fixity = Fixity.Infix
-                       && (prevOp.Assoc <> currOp.Assoc || currOp.Assoc = Assoc.None)
-                    then
-                        let msg = operatorConflictHandler prevState prevOp.OriginalOp currState currOp.OriginalOp
-                        if isNotNull msg && msg.Length > 0 then
-                            reply <- conflictErrorReply currState currError msg
-                    doContinue <- false // break
+                        t.ParseMorePostfixOps(state, op, &la, &reply)
+                        if la.IsValid then
+                            t.ParseInfixAndPostfixOps(prevState, prevOp, &la, &reply)
+            elif    prevOp.Precedence = op.Precedence  // prevOp.Fixity = Fixity.Prefix
+                 && (prevOp.Assoc = Assoc.None && op.Assoc = Assoc.None)
+            then
+                let msg = operatorConflictHandler prevState prevOp.OriginalOp state op.OriginalOp
+                if not (isNullOrEmpty msg) then t.ReplyConflictError(msg, &la, &reply)
 
-            elif currOp.Fixity = Fixity.Postfix then
-                if    prevOp.Precedence < currOp.Precedence
-                  || (   prevOp.Precedence = currOp.Precedence
-                      && prevOp.Fixity = Fixity.Infix)
-                then
-                    reply.Result <- if isNotNull currOp.Apply1 then currOp.Apply1(reply.Result)
-                                    else currOp.Apply1'.Invoke(currState, reply.Result)
+        else // currOp.Fixity = Fixity.Prefix
+            // this doesn't have to be a syntax error because the grammar might allow two expressions next to each other
+            la.SetInvalid()
 
-                    // parse  more postfix operators
-                    let mutable pprevState, pprevOp = currState, currOp
-                    currState <- reply.State; currError <- reply.Error; currOp <- t.ParseOp(rhsOps, &reply)
-                    let mutable msg = null
-                    while    isNotNull currOp && currOp.Fixity = Fixity.Postfix
-                          && (   pprevOp.Precedence < currOp.Precedence
-                              || (   pprevOp.Precedence = currOp.Precedence
-                                  && (   pprevOp.Assoc <> Assoc.None
-                                      || currOp.Assoc <> Assoc.None
-                                      || (msg <- operatorConflictHandler pprevState pprevOp.OriginalOp currState currOp.OriginalOp;
-                                          isNull msg || msg.Length = 0 ||
-                                          (reply <- conflictErrorReply currState currError msg; false)))))
-                       do
-                        reply.Result <- if isNotNull currOp.Apply1 then currOp.Apply1(reply.Result)
-                                        else currOp.Apply1'.Invoke(currState, reply.Result)
-                        pprevState <- currState;  pprevOp <- currOp
-                        currState  <- reply.State; currError <- reply.Error; currOp <- t.ParseOp(rhsOps, &reply)
-                else
-                    if    prevOp.Precedence = currOp.Precedence  // prevOp.Fixity = Fixity.Prefix
-                       && (prevOp.Assoc = Assoc.None && currOp.Assoc = Assoc.None)
-                    then
-                        let msg = operatorConflictHandler prevState prevOp.OriginalOp currState currOp.OriginalOp
-                        if isNotNull msg && msg.Length > 0 then
-                            reply <- conflictErrorReply currState currError msg
-                    doContinue <- false // break
+    member private t.ParseMorePostfixOps(prevState: State<'u>, prevOp: Operator<'a,'u>,
+                                         la: byref<OpLookahead<'a,'u>>,  reply: byref<Reply<'a,'u>>) =
+        Debug.Assert(la.IsValid && reply.Status = Ok)
+        let state = la.State
+        let op = la.Op
+        if prevOp.Precedence < op.Precedence
+           || (    prevOp.Precedence = op.Precedence
+               && (   prevOp.Assoc <> Assoc.None || op.Assoc <> Assoc.None
+                   || (let msg = operatorConflictHandler prevState prevOp.OriginalOp state op.OriginalOp
+                       isNullOrEmpty msg || (t.ReplyConflictError(msg, &la, &reply); false))))
+        then
+            reply.Result <- if isNotNull op.Apply1 then op.Apply1(reply.Result)
+                            else op.Apply1'.Invoke(state, reply.Result)
+            t.ParseRhsOpIntoLA(&la, &reply)
+            if la.IsValid && la.Op.Fixity = Fixity.Postfix then
+                t.ParseMorePostfixOps(state, op, &la, &reply)
 
-            else // currOp.Fixity = Fixity.Prefix
-                // this doesn't have to be a syntax error because the grammar might allow two expressions next to each other
-                doContinue <- false // break
+    member private t.ReplyConflictError(state: State<'u>, error: ErrorMessageList, msg, reply: byref<Reply<'a,'u>>) =
+        reply <- Reply(Error, mergeErrors error (messageError msg), state)
 
-        OpLookahead(currState, currError, currOp)
-
+    member private t.ReplyConflictError(msg, la: byref<OpLookahead<'a,'u>>, reply: byref<Reply<'a,'u>>) =
+        t.ReplyConflictError(la.State, la.Error, msg, &reply)
+        la.SetInvalid()
