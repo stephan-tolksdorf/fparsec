@@ -14,8 +14,8 @@ public sealed class Helper {
 /// If detectEncoding is false, this function only searches for the preamble of the given default encoding,
 /// otherwise also for any of the standard unicode byte order marks (UTF-8, UTF-16 LE/BE, UTF-32 LE/BE).
 /// If an encoding different from the given default encoding is detected, the new encoding
-/// is assigned to the encoding reference and the number of bytes in the detected preamble
-/// is returned. Otherwise 0 is returned.
+/// is assigned to the encoding reference.
+/// Returns the number of bytes in the detected preamble, or 0 if no preamble is detected.
 /// </summary>
 internal static int DetectPreamble(byte[] buffer, int count, ref Encoding encoding, bool detectEncoding) {
     Debug.Assert(count >= 0);
