@@ -1,9 +1,7 @@
 ﻿// Copyright (c) Stephan Tolksdorf 2009
 // License: Simplified BSD License. See accompanying documentation.
 
-namespace FParsec.Test
-
-module StateTests
+module FParsec.Test.StateTests
 
 open FParsec
 open FParsec.Test.Test

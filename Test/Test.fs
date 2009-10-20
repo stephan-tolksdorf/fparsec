@@ -1,9 +1,7 @@
 ﻿// Copyright (c) Stephan Tolksdorf 2007-2009
 // License: Simplified BSD License. See accompanying documentation.
 
-namespace FParsec.Test
-
-module Test
+module FParsec.Test.Test
 
 open FParsec.Error
 open FParsec.Primitives

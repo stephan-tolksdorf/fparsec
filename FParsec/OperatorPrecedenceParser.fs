@@ -56,11 +56,11 @@ type internal Operator<'a,'u>(op: PrecedenceParserOp<'a,'u>) =
     let str2, ws2 = match op with TernaryOp (_,_,str2,ws2,_,_,_) | TernaryOp' (_,_,str2,ws2,_,_,_) -> str2, ws2 | _ -> null, Unchecked.defaultof<_>
 
     let apply1  = match op with PrefixOp   (_,_,_,_,f) | PostfixOp  (_,_,_,_,f) -> f | _ -> Unchecked.defaultof<_>
-    let apply1' = match op with PrefixOp'  (_,_,_,_,f) | PostfixOp' (_,_,_,_,f) -> OptimizedClosures.FastFunc2<_,_,_>.Adapt(f) | _ -> Unchecked.defaultof<_>
-    let apply2  = match op with InfixOp    (_,_,_,_,f)     -> OptimizedClosures.FastFunc2<_,_,_>.Adapt(f)       | _ -> Unchecked.defaultof<_>
-    let apply2' = match op with InfixOp'   (_,_,_,_,f)     -> OptimizedClosures.FastFunc3<_,_,_,_>.Adapt(f)     | _ -> Unchecked.defaultof<_>
-    let apply3  = match op with TernaryOp  (_,_,_,_,_,_,f) -> OptimizedClosures.FastFunc3<_,_,_,_>.Adapt(f)     | _ -> Unchecked.defaultof<_>
-    let apply3' = match op with TernaryOp' (_,_,_,_,_,_,f) -> OptimizedClosures.FastFunc5<_,_,_,_,_,_>.Adapt(f) | _ -> Unchecked.defaultof<_>
+    let apply1' = match op with PrefixOp'  (_,_,_,_,f) | PostfixOp' (_,_,_,_,f) -> OptimizedClosures.FSharpFunc<_,_,_>.Adapt(f) | _ -> Unchecked.defaultof<_>
+    let apply2  = match op with InfixOp    (_,_,_,_,f)     -> OptimizedClosures.FSharpFunc<_,_,_>.Adapt(f)       | _ -> Unchecked.defaultof<_>
+    let apply2' = match op with InfixOp'   (_,_,_,_,f)     -> OptimizedClosures.FSharpFunc<_,_,_,_>.Adapt(f)     | _ -> Unchecked.defaultof<_>
+    let apply3  = match op with TernaryOp  (_,_,_,_,_,_,f) -> OptimizedClosures.FSharpFunc<_,_,_,_>.Adapt(f)     | _ -> Unchecked.defaultof<_>
+    let apply3' = match op with TernaryOp' (_,_,_,_,_,_,f) -> OptimizedClosures.FSharpFunc<_,_,_,_,_,_>.Adapt(f) | _ -> Unchecked.defaultof<_>
 
     member t.OriginalOp = op
     member t.Fixity = fix

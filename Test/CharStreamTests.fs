@@ -1,9 +1,7 @@
 ﻿// Copyright (c) Stephan Tolksdorf 2007-2009
 // License: Simplified BSD License. See accompanying documentation.
 
-namespace FParsec.Test
-
-module CharStreamTests
+module FParsec.Test.CharStreamTests
 
 #nowarn "9" //"Uses of this construct may result in the generation of unverifiable .NET IL code."
 #nowarn "51" //"The address-of operator may result in non-verifiable code."
@@ -127,7 +125,7 @@ let testNonStreamConstructors() =
 
      let testCharPointerStream() =
          let handle = System.Runtime.InteropServices.GCHandle.Alloc(cs, System.Runtime.InteropServices.GCHandleType.Pinned)
-         let cp = NativePtr.of_array cs 0
+         let cp = &&cs.[0]
          use stream = new CharStream(NativePtr.add cp 0, s.Length)
          testStream stream 0 s.Length 0L false
          use stream = new CharStream(NativePtr.add cp 0, s.Length, 1000L)
@@ -139,7 +137,7 @@ let testNonStreamConstructors() =
          use stream = new CharStream(NativePtr.add cp 1, 0, 1000L)
          testStream stream 1 0 1000L false
 
-         try new CharStream(NativePtr.of_nativeint 0n, 10) |> ignore; Fail()
+         try new CharStream(NativePtr.ofNativeInt 0n, 10) |> ignore; Fail()
          with ArgumentNull -> ()
          try new CharStream(cp, -1) |> ignore; Fail()
          with ArgumentOutOfRange -> ()
@@ -309,7 +307,7 @@ let testStream (stream: CharStream) (refString: string) blockSize blockOverlap m
         let matchCaseFoldedArray (iter: CharStream.Iterator) (cs: char[]) i n =
             if n > 0 then
                 let handle = System.Runtime.InteropServices.GCHandle.Alloc(cs, System.Runtime.InteropServices.GCHandleType.Pinned)
-                let result = iter.MatchCaseFolded(NativePtr.of_array cs 0, n)
+                let result = iter.MatchCaseFolded(&&cs.[0], n)
                 handle.Free()
                 result
             else
@@ -423,14 +421,14 @@ let testStream (stream: CharStream) (refString: string) blockSize blockOverlap m
     #if LOW_TRUST
     #else
         let mutable c = '$'
-        try  iter0.Match(NativePtr.of_nativeint 0n, 1) |> ignore; Fail()
+        try  iter0.Match(NativePtr.ofNativeInt 0n, 1) |> ignore; Fail()
         with NullReference -> ()
         try  iter0.Match(&&c, -1) |> ignore; Fail()
         with ArgumentOutOfRange -> ()
         try  iter0.Match(&&c, System.Int32.MinValue) |> ignore; Fail()
         with ArgumentOutOfRange -> ()
 
-        try  iter0.MatchCaseFolded(NativePtr.of_nativeint 0n, 1) |> ignore; Fail()
+        try  iter0.MatchCaseFolded(NativePtr.ofNativeInt 0n, 1) |> ignore; Fail()
         with NullReference -> ()
         try  iter0.MatchCaseFolded(&&c, -1) |> ignore; Fail()
         with ArgumentOutOfRange -> ()
@@ -593,7 +591,7 @@ let testStream (stream: CharStream) (refString: string) blockSize blockOverlap m
     #if LOW_TRUST
     #else
         let mutable c = '_'
-        try  iter0.Read(NativePtr.of_nativeint 0n, 1) |> ignore; Fail()
+        try  iter0.Read(NativePtr.ofNativeInt 0n, 1) |> ignore; Fail()
         with NullReference -> ()
         try  iter0.Read(&&c, -1) |> ignore; Fail()
         with ArgumentOutOfRange -> ()
@@ -656,7 +654,7 @@ let testStream (stream: CharStream) (refString: string) blockSize blockOverlap m
     #if LOW_TRUST
     #else
         let mutable c = '_'
-        try  iterN.Read(NativePtr.of_nativeint 0n, 1) |> Equal 0
+        try  iterN.Read(NativePtr.ofNativeInt 0n, 1) |> Equal 0
         with NullReference -> ()
         try  iterN.Read(&&c, -1) |> ignore; Fail()
         with ArgumentOutOfRange -> ()

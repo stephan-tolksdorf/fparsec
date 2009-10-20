@@ -1,9 +1,7 @@
 ﻿// Copyright (c) Stephan Tolksdorf 2007-2009
 // License: Simplified BSD License. See accompanying documentation.
 
-namespace FParsec.Test
-
-module PrimitivesTests
+module FParsec.Test.PrimitivesTests
 
 open FParsec.Error
 
@@ -118,7 +116,7 @@ module Reference =
             else reply1
 
     let choice (ps: seq<Parser<'a,'u>>) =
-        List.fold (fun p pc -> p <|> pc) pzero (List.of_seq ps)
+        List.fold (fun p pc -> p <|> pc) pzero (List.ofSeq ps)
 
     let (<|>$) p x = p <|> preturn x
 
@@ -184,7 +182,7 @@ module Reference =
             if i = n then preturn []
             else
                 p >>= fun hd -> (loop (i + 1) |>> fun tl -> hd::tl)
-        loop 0 |>> Array.of_list
+        loop 0 |>> Array.ofList
 
     let skipArray n p = parray n p |>> ignore
 
@@ -377,7 +375,7 @@ let testPrimitives() =
             // choice and choiceL use different implementations depending on whether
             // the type of the supplied sequence is a list, an array or a seq,
             // so we must test all 3 input types.
-            let psa = Array.of_seq ps
+            let psa = Array.ofSeq ps
             let pss = match ps with
                       | [p1;p2;p3;p4] -> seq {yield p1
                                               yield p2
@@ -410,7 +408,7 @@ let testPrimitives() =
     let testPArray() =
         // parray
         for ps in parserSeq4 do
-            let p1, p2, pr = seqParserAndReset2 (List.of_seq ps)
+            let p1, p2, pr = seqParserAndReset2 (List.ofSeq ps)
             checkParser (parray 0 p1)     (Reference.parray 0 p2);    pr()
             checkParser (parray 1 p1)     (Reference.parray 1 p2);    pr()
             checkParser (parray 2 p1)     (Reference.parray 2 p2);    pr()

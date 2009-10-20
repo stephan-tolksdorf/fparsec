@@ -1,9 +1,8 @@
 ﻿// Copyright (c) Stephan Tolksdorf 2007-2009
 // License: Simplified BSD License. See accompanying documentation.
 
-namespace FParsec.Test
+module FParsec.Test.CharParsersTests
 
-module CharParsersTests
 open System.Text.RegularExpressions
 
 open FParsec
@@ -344,10 +343,10 @@ let testMany() =
             checkParser (skipMany1Chars2 p1 p_1) (skipMany1Chars2Ref p1 p_2) s0
 
     try manyChars (preturn ' ') s0 |> ignore; Fail()
-    with Microsoft.FSharp.Core.Failure _ -> ()
+    with Microsoft.FSharp.Core.Operators.Failure _ -> ()
 
     try skipManyChars (preturn ' ') s0 |> ignore; Fail()
-    with Microsoft.FSharp.Core.Failure _ -> ()
+    with Microsoft.FSharp.Core.Operators.Failure _ -> ()
 
     let sb = new System.Text.StringBuilder()
     for i = 1 to 200 do
@@ -381,10 +380,10 @@ let testMany() =
     skipMany1CharsTill2 hex digit (pchar '.') |> ROk "a23." 4 ()
 
     try manyCharsTill (preturn ' ') (fail "t") s0 |> ignore; Fail()
-    with Microsoft.FSharp.Core.Failure _ -> ()
+    with Microsoft.FSharp.Core.Operators.Failure _ -> ()
 
     try skipManyCharsTill (preturn ' ') (fail "t") s0 |> ignore; Fail()
-    with Microsoft.FSharp.Core.Failure _ -> ()
+    with Microsoft.FSharp.Core.Operators.Failure _ -> ()
 
 
     let sps1  = constantTestParsers "1" (expectedError "1")
@@ -416,7 +415,7 @@ let testMany() =
     manyStrings2 (pstring "1") (pstring "2") |> ROkE "12223" 4 "1222" (expectedError "'2'")
 
     try manyStrings (preturn "1") s0 |> ignore; Fail()
-    with Microsoft.FSharp.Core.Failure _ -> ()
+    with Microsoft.FSharp.Core.Operators.Failure _ -> ()
 
 let testSkipToString() =
     skipToString "abc" System.Int32.MaxValue |> RError "abbab" 5 (messageError "Could not find the string 'abc'.")

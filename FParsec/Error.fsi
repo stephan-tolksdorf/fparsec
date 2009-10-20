@@ -36,17 +36,14 @@ type ErrorMessage =
      /// An error that can be used for application specific error data.
      /// Users will have to define their own error printer, as the default printer
      /// does not print out `OtherError`s.
-     /// ATTENTION: The constructor argument is expected to be comparable by
-     /// F#'s structural comparison function `compare`. `OtherError`s with arguments
-     /// that are not comparable are ignored by the `ErrorMessageList` methods.
-     | OtherError of obj
+     | OtherError of System.IComparable
 
 /// A list of error messages. The order of error messages in the list carries no meaning.
 /// Duplicate error messages and empty `Expected`, `Unexpected` and `Message`
 /// messages have no influence on ordering or equality comparison and are ignored when
 /// the list is converted to a set.
 and [<CompilationRepresentation(CompilationRepresentationFlags.UseNullAsTrueValue);
-      StructuralEquality(false); StructuralComparison(false)>]
+      CustomEquality; CustomComparison>]
     ErrorMessageList  =
     | AddErrorMessage of ErrorMessage * ErrorMessageList
     | NoErrorMessages
@@ -69,8 +66,8 @@ val expectedError:   string -> ErrorMessageList
 val unexpectedError: string -> ErrorMessageList
 /// `messageError msg` is equivalent to `AddErrorMessage(Message(msg), NoErrorMessages)`.
 val messageError:    string -> ErrorMessageList
-/// `otherError obj` is equivalent to `AddErrorMessage(OtherError(obj: obj), NoErrorMessages)`.
-val otherError:      obj    -> ErrorMessageList
+/// `otherError obj` is equivalent to `AddErrorMessage(OtherError(obj), NoErrorMessages)`.
+val otherError:      System.IComparable -> ErrorMessageList
 
 /// `backtrackError state error` is a variant of `AddErrorMessage(BacktrackPoint(state.Pos, error), NoErrorMessages)`,
 /// that only wraps the error in a `BacktrackPoint` if it isn't already a `BacktrackPoint`.

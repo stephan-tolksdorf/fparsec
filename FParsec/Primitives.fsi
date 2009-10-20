@@ -55,7 +55,7 @@ type ReplyStatus = Ok         =  1
 [<Literal>] val FatalError: ReplyStatus = ReplyStatus.FatalError
 
 
-[<StructuralEquality(false); StructuralComparison(false)>]
+[<CustomEquality; NoComparison>]
 type Reply<'Result,'UserState> = struct
     new: 'Result * State<'UserState> -> Reply<'Result,'UserState>
     new: ReplyStatus * ErrorMessageList * State<'UserState> -> Reply<'Result,'UserState>

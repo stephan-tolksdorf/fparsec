@@ -18,7 +18,7 @@ let Error      = ReplyStatus.Error
 let FatalError = ReplyStatus.FatalError
 
 [<System.Diagnostics.DebuggerDisplay("{GetDebuggerDisplay(),nq}")>]
-[<StructuralEquality(false); StructuralComparison(false)>]
+[<CustomEquality; NoComparison>]
 type Reply<'Result,'UserState> = struct
     new (result, state)        = {State = state; Error = NoErrorMessages; Result = result; Status = Ok}
     new (status, error, state) = {State = state; Error = error; Result = Unchecked.defaultof<_>; Status = status}
@@ -39,7 +39,7 @@ type Reply<'Result,'UserState> = struct
         match value with
         | :? Reply<'Result,'UserState> as r ->
                t.Status = r.Status
-            && (t.Status <> Ok || t.Result = r.Result)
+            && (t.Status <> Ok || LanguagePrimitives.GenericEqualityERComparer.Equals(t.Result, r.Result))
             && t.State = r.State
             && t.Error = r.Error
         | _ -> false
@@ -82,7 +82,7 @@ let pzero : Parser<'a,'u> = fun state -> Reply(Error, NoErrorMessages, state)
 let (>>=) (p: Parser<'a,'u>) (f: 'a -> Parser<'b,'u>) =
     match box f with
     // optimization for uncurried functions
-    | :? OptimizedClosures.FastFunc2<'a, State<'u>, Reply<'b,'u>> as optF ->
+    | :? OptimizedClosures.FSharpFunc<'a, State<'u>, Reply<'b,'u>> as optF ->
         fun state ->
             let reply1 = p state
             if reply1.Status = Ok then
@@ -156,7 +156,7 @@ let (|>>) (p: Parser<'a,'u>) f =
               reply.State)
 
 let pipe2 (p1: Parser<'a,'u>) (p2: Parser<'b,'u>) f =
-    let optF = OptimizedClosures.FastFunc2.Adapt(f)
+    let optF = OptimizedClosures.FSharpFunc<_,_,_>.Adapt(f)
     fun state ->
         let reply1 = p1 state
         let mutable error = reply1.Error
@@ -169,7 +169,7 @@ let pipe2 (p1: Parser<'a,'u>) (p2: Parser<'b,'u>) f =
         else Reply(reply1.Status, reply1.Error, reply1.State)
 
 let pipe3 (p1: Parser<'a,'u>) (p2: Parser<'b,'u>) (p3: Parser<'c,'u>) f =
-    let optF = OptimizedClosures.FastFunc3.Adapt(f)
+    let optF = OptimizedClosures.FSharpFunc<_,_,_,_>.Adapt(f)
     fun state ->
         let reply1 = p1 state
         let mutable error = reply1.Error
@@ -186,7 +186,7 @@ let pipe3 (p1: Parser<'a,'u>) (p2: Parser<'b,'u>) (p3: Parser<'c,'u>) f =
         else Reply(reply1.Status, error, reply1.State)
 
 let pipe4 (p1: Parser<'a,'u>) (p2: Parser<'b,'u>) (p3: Parser<'c,'u>) (p4: Parser<'d,'u>) f =
-    let optF = OptimizedClosures.FastFunc4.Adapt(f)
+    let optF = OptimizedClosures.FSharpFunc<_,_,_,_,_>.Adapt(f)
     fun state ->
         let reply1 = p1 state
         let mutable error = reply1.Error
@@ -207,7 +207,7 @@ let pipe4 (p1: Parser<'a,'u>) (p2: Parser<'b,'u>) (p3: Parser<'c,'u>) (p4: Parse
         else Reply(reply1.Status, error, reply1.State)
 
 let pipe5 (p1: Parser<'a,'u>) (p2: Parser<'b,'u>) (p3: Parser<'c,'u>) (p4: Parser<'d,'u>) (p5: Parser<'e,'u>) f =
-    let optF = OptimizedClosures.FastFunc5.Adapt(f)
+    let optF = OptimizedClosures.FSharpFunc<_,_,_,_,_,_>.Adapt(f)
     fun state ->
         let reply1 = p1 state
         let mutable error = reply1.Error
@@ -376,7 +376,7 @@ let attempt (p: Parser<'a,'u>) =
         reply
 
 let (>>=?) (p: Parser<'a,'u>) (f: 'a -> Parser<'b,'u>) =
-    let optF = OptimizedClosures.FastFunc2.Adapt(f)
+    let optF = OptimizedClosures.FSharpFunc<_,_,_>.Adapt(f)
     fun state ->
         let reply1 = p state
         if reply1.Status = Ok then
@@ -780,59 +780,59 @@ let
 let many               p = manyFoldApply (fun x -> [x]) (fun xs x -> x::xs) List.rev       (fun () -> []) p
 let manyRev            p = manyFoldApply (fun x -> [x]) (fun xs x -> x::xs) (fun xs -> xs) (fun () -> []) p
 let skipMany           p = manyFoldApply (fun _ -> ())  (fun _ _ -> ())     (fun xs -> xs) (fun () -> ()) p
-let manyFold    acc0 f p = let optF = OptimizedClosures.FastFunc2.Adapt(f)
+let manyFold    acc0 f p = let optF = OptimizedClosures.FSharpFunc<_,_,_>.Adapt(f)
                            manyFoldApply (fun x -> optF.Invoke(acc0, x)) (fun acc x -> optF.Invoke(acc, x)) (fun acc -> acc) (fun () -> acc0) p
-let manyReduce  f altX p = let optF = OptimizedClosures.FastFunc2.Adapt(f)
+let manyReduce  f altX p = let optF = OptimizedClosures.FSharpFunc<_,_,_>.Adapt(f)
                            manyFoldApply (fun x0 -> x0) (fun x0 x -> optF.Invoke(x0, x)) (fun x0 -> x0) (fun () -> altX) p
 
 let many1              p = many1FoldApply (fun x -> [x]) (fun xs x -> x::xs) List.rev       p
 let many1Rev           p = many1FoldApply (fun x -> [x]) (fun xs x -> x::xs) (fun xs -> xs) p
 let skipMany1          p = many1FoldApply (fun _ -> ())  (fun _ _ -> ())     (fun xs -> xs) p
-let many1Fold   acc0 f p = let optF = OptimizedClosures.FastFunc2.Adapt(f)
+let many1Fold   acc0 f p = let optF = OptimizedClosures.FSharpFunc<_,_,_>.Adapt(f)
                            many1FoldApply (fun x -> optF.Invoke(acc0, x)) (fun acc x -> optF.Invoke(acc, x)) (fun x -> x) p
-let many1Reduce f      p = let optF = OptimizedClosures.FastFunc2.Adapt(f)
+let many1Reduce f      p = let optF = OptimizedClosures.FSharpFunc<_,_,_>.Adapt(f)
                            many1FoldApply (fun x0 -> x0) (fun x0 x -> optF.Invoke(x0, x)) (fun x0 -> x0) p
 
 
 let sepBy              p sep = sepByFoldApply (fun x -> [x]) (fun xs x -> x::xs) List.rev       (fun () -> [])  p sep
 let sepByRev           p sep = sepByFoldApply (fun x -> [x]) (fun xs x -> x::xs) (fun xs -> xs) (fun () -> [])  p sep
 let skipSepBy          p sep = sepByFoldApply (fun _ -> ())  (fun _ _ -> ())     (fun xs -> xs) (fun _ -> ())   p sep
-let sepByFold   acc0 f p sep = let optF = OptimizedClosures.FastFunc2.Adapt(f)
+let sepByFold   acc0 f p sep = let optF = OptimizedClosures.FSharpFunc<_,_,_>.Adapt(f)
                                sepByFoldApply (fun x -> optF.Invoke(acc0, x)) (fun acc x -> optF.Invoke(acc, x)) (fun acc -> acc) (fun () -> acc0) p sep
-let sepByReduce f altX p sep = let optF = OptimizedClosures.FastFunc2.Adapt(f)
+let sepByReduce f altX p sep = let optF = OptimizedClosures.FSharpFunc<_,_,_>.Adapt(f)
                                sepByFoldApply (fun x0 -> x0) (fun x0 x -> optF.Invoke(x0, x)) (fun x0 -> x0) (fun () -> altX) p sep
 
 let sepBy1              p sep = sepBy1FoldApply (fun x -> [x]) (fun xs x -> x::xs) List.rev       p sep
 let sepBy1Rev           p sep = sepBy1FoldApply (fun x -> [x]) (fun xs x -> x::xs) (fun xs -> xs) p sep
 let skipSepBy1          p sep = sepBy1FoldApply (fun _ -> ())  (fun _ _ -> ())     (fun xs -> xs) p sep
-let sepBy1Fold   acc0 f p sep = let optF = OptimizedClosures.FastFunc2.Adapt(f)
+let sepBy1Fold   acc0 f p sep = let optF = OptimizedClosures.FSharpFunc<_,_,_>.Adapt(f)
                                 sepBy1FoldApply (fun x -> optF.Invoke(acc0, x)) (fun acc x -> optF.Invoke(acc, x)) (fun acc -> acc) p sep
-let sepBy1Reduce f      p sep = let optF = OptimizedClosures.FastFunc2.Adapt(f)
+let sepBy1Reduce f      p sep = let optF = OptimizedClosures.FSharpFunc<_,_,_>.Adapt(f)
                                 sepBy1FoldApply (fun x0 -> x0) (fun x0 x -> optF.Invoke(x0, x)) (fun x0 -> x0) p sep
 
 
 let sepEndBy              p sep = sepEndByFoldApply(fun x -> [x]) (fun xs x -> x::xs) List.rev       (fun () -> [])  p sep
 let sepEndByRev           p sep = sepEndByFoldApply(fun x -> [x]) (fun xs x -> x::xs) (fun xs -> xs) (fun () -> [])  p sep
 let skipSepEndBy          p sep = sepEndByFoldApply(fun _ -> ())  (fun _ _ -> ())     (fun xs -> xs) (fun _ -> ())   p sep
-let sepEndByFold   acc0 f p sep = let optF = OptimizedClosures.FastFunc2.Adapt(f)
+let sepEndByFold   acc0 f p sep = let optF = OptimizedClosures.FSharpFunc<_,_,_>.Adapt(f)
                                   sepEndByFoldApply (fun x -> optF.Invoke(acc0, x)) (fun acc x -> optF.Invoke(acc, x)) (fun acc -> acc) (fun () -> acc0) p sep
-let sepEndByReduce f altX p sep = let optF = OptimizedClosures.FastFunc2.Adapt(f)
+let sepEndByReduce f altX p sep = let optF = OptimizedClosures.FSharpFunc<_,_,_>.Adapt(f)
                                   sepEndByFoldApply (fun x0 -> x0) (fun x0 x -> optF.Invoke(x0, x)) (fun x0 -> x0) (fun () -> altX) p sep
 
 let sepEndBy1              p sep = sepEndBy1FoldApply (fun x -> [x]) (fun xs x -> x::xs) List.rev       p sep
 let sepEndBy1Rev           p sep = sepEndBy1FoldApply (fun x -> [x]) (fun xs x -> x::xs) (fun xs -> xs) p sep
 let skipSepEndBy1          p sep = sepEndBy1FoldApply (fun _ -> ())  (fun _ _ -> ())     (fun xs -> xs) p sep
-let sepEndBy1Fold   acc0 f p sep = let optF = OptimizedClosures.FastFunc2.Adapt(f)
+let sepEndBy1Fold   acc0 f p sep = let optF = OptimizedClosures.FSharpFunc<_,_,_>.Adapt(f)
                                    sepEndBy1FoldApply (fun x -> optF.Invoke(acc0, x)) (fun acc x -> optF.Invoke(acc, x)) (fun acc -> acc) p sep
-let sepEndBy1Reduce f      p sep = let optF = OptimizedClosures.FastFunc2.Adapt(f)
+let sepEndBy1Reduce f      p sep = let optF = OptimizedClosures.FSharpFunc<_,_,_>.Adapt(f)
                                    sepEndBy1FoldApply (fun x0 -> x0) (fun x0 x -> optF.Invoke(x0, x)) (fun x0 -> x0) p sep
 
 let manyTill              p endp = manyTillFoldApply (fun x -> [x]) (fun xs x -> x::xs) (fun xs _ -> List.rev xs) (fun _ -> [])       p endp
 let manyTillRev           p endp = manyTillFoldApply (fun x -> [x]) (fun xs x -> x::xs) (fun xs _ -> xs) (fun _ -> []) p endp
 let skipManyTill          p endp = manyTillFoldApply (fun _ -> ())  (fun _ _ -> ())     (fun _ _ -> ()) (fun _ -> ())  p endp
-let manyTillFold   acc0 f p endp = let optF = OptimizedClosures.FastFunc2.Adapt(f)
+let manyTillFold   acc0 f p endp = let optF = OptimizedClosures.FSharpFunc<_,_,_>.Adapt(f)
                                    manyTillFoldApply (fun x -> optF.Invoke(acc0, x)) (fun acc x -> optF.Invoke(acc, x)) (fun acc _ -> acc) (fun _ -> acc0) p endp
-let manyTillReduce f altX p endp = let optF = OptimizedClosures.FastFunc2.Adapt(f)
+let manyTillReduce f altX p endp = let optF = OptimizedClosures.FSharpFunc<_,_,_>.Adapt(f)
                                    manyTillFoldApply (fun x0 -> x0) (fun x0 x -> optF.Invoke(x0, x)) (fun x0 _ -> x0) (fun _ -> altX) p endp
 
 

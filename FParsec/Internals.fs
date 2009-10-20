@@ -1,7 +1,9 @@
 ﻿// Copyright (c) Stephan Tolksdorf 2009
 // License: Simplified BSD License. See accompanying documentation.
 
-module internal FParsec.Internals
+module FParsec.Internals
+
+open System.Diagnostics
 
 // the following functions are defined using inline IL to help fsc generate code the JIT knows better how to optimize
 let inline isNull<'a when 'a : not struct> (x: 'a) = (# "ldnull ceq" x : bool #) // match box x with null -> true  | _ -> false

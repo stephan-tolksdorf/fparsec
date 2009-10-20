@@ -500,7 +500,7 @@ public sealed class State<TUserState> : IEquatable<State<TUserState>> {
         return this;
     }
 
-    public State<TUserState> SkipCharsOrNewlinesWhile(Microsoft.FSharp.Core.FastFunc<char,bool> f1, Microsoft.FSharp.Core.FastFunc<char,bool> f) {
+    public State<TUserState> SkipCharsOrNewlinesWhile(Microsoft.FSharp.Core.FSharpFunc<char,bool> f1, Microsoft.FSharp.Core.FSharpFunc<char,bool> f) {
         int nLines = 0;
         int lineBegin = 0;
         int idx = Iter.Idx;
@@ -556,7 +556,7 @@ public sealed class State<TUserState> : IEquatable<State<TUserState>> {
         return this;
     }
 
-    public State<TUserState> SkipCharsOrNewlinesWhile(Microsoft.FSharp.Core.FastFunc<char,bool> f1, Microsoft.FSharp.Core.FastFunc<char,bool> f, out string skippedString) {
+    public State<TUserState> SkipCharsOrNewlinesWhile(Microsoft.FSharp.Core.FSharpFunc<char,bool> f1, Microsoft.FSharp.Core.FSharpFunc<char,bool> f, out string skippedString) {
         int nLines = 0;
         int nCR = 0;
         int nCRLF = 0;
@@ -635,7 +635,7 @@ public sealed class State<TUserState> : IEquatable<State<TUserState>> {
         return this;
     }
 
-    public State<TUserState> SkipCharsOrNewlinesWhile(Microsoft.FSharp.Core.FastFunc<char,bool> f1, Microsoft.FSharp.Core.FastFunc<char,bool> f, int minCharsOrNewlines, int maxCharsOrNewlines) {
+    public State<TUserState> SkipCharsOrNewlinesWhile(Microsoft.FSharp.Core.FSharpFunc<char,bool> f1, Microsoft.FSharp.Core.FSharpFunc<char,bool> f, int minCharsOrNewlines, int maxCharsOrNewlines) {
         if (maxCharsOrNewlines < 0) throw new ArgumentOutOfRangeException("maxCharsOrNewlines is negative.");
         int lineBegin = 0;
         int nLines = 0;
@@ -703,7 +703,7 @@ public sealed class State<TUserState> : IEquatable<State<TUserState>> {
         return this;
     }
 
-    public State<TUserState> SkipCharsOrNewlinesWhile(Microsoft.FSharp.Core.FastFunc<char,bool> f1, Microsoft.FSharp.Core.FastFunc<char,bool> f, int minCharsOrNewlines, int maxCharsOrNewlines, out string skippedString) {
+    public State<TUserState> SkipCharsOrNewlinesWhile(Microsoft.FSharp.Core.FSharpFunc<char,bool> f1, Microsoft.FSharp.Core.FSharpFunc<char,bool> f, int minCharsOrNewlines, int maxCharsOrNewlines, out string skippedString) {
         if (maxCharsOrNewlines < 0) throw new ArgumentOutOfRangeException("maxCharsOrNewlines is negative.");
         int lineBegin = 0;
         int nLines = 0;

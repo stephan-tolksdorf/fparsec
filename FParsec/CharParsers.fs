@@ -1,9 +1,7 @@
 ﻿// Copyright (c) Stephan Tolksdorf 2007-2009
 // License: Simplified BSD License. See accompanying documentation.
 
-namespace FParsec
-
-module CharParsers
+module FParsec.CharParsers
 
 open System.Diagnostics
 open System.Text
@@ -180,8 +178,8 @@ let newlineReturn result : Parser<_,'u> =
         else
             Reply(Error, expectedNewline, newState)
 
-let newline<'u>     = newlineReturn<char,'u> '\n'
-let skipNewline<'u> = newlineReturn<unit,'u> ()
+let newline<'u>     = newlineReturn '\n' : Parser<_,'u>
+let skipNewline<'u> = newlineReturn  ()  : Parser<_,'u>
 
 let charReturn c result : Parser<'a,'u> =
     if c <> '\r' && c <> '\n' then
@@ -696,7 +694,7 @@ type internal StructCharList = struct
     val mutable count: int
 
     member inline t.BufferPtr =
-        NativePtr.of_nativeint<char> (NativePtr.to_nativeint (&&t.buffer_ui64_0))
+        NativePtr.ofNativeInt<char> (NativePtr.toNativeInt (&&t.buffer_ui64_0))
 
     /// an optimized version of Append(c) for the first char
     member inline t.AppendFirst(c) =
@@ -885,12 +883,12 @@ let
 
 
 let manyCharsTill      p endp   = inlineManyCharsTillApply p endp (fun str _ -> str)
-let manyCharsTillApply p endp f = let optF = OptimizedClosures.FastFunc2.Adapt(f)
+let manyCharsTillApply p endp f = let optF = OptimizedClosures.FSharpFunc<_,_,_>.Adapt(f)
                                   inlineManyCharsTillApply p endp (fun str x -> optF.Invoke(str, x))
 let skipManyCharsTill  p endp   = skipManyTill p endp
 
 let many1CharsTill2      p1 p endp   = inlineMany1CharsTill2Apply p1 p endp (fun str _ -> str)
-let many1CharsTillApply2 p1 p endp f = let optF = OptimizedClosures.FastFunc2.Adapt(f)
+let many1CharsTillApply2 p1 p endp f = let optF = OptimizedClosures.FSharpFunc<_,_,_>.Adapt(f)
                                        inlineMany1CharsTill2Apply p1 p endp (fun str x -> optF.Invoke(str, x))
 let many1CharsTill          p endp   = many1CharsTill2 p p endp
 let many1CharsTillApply     p endp f = many1CharsTillApply2 p p endp f
@@ -972,7 +970,7 @@ let skipped (p: Parser<unit,'u>) : Parser<string,'u> =
         Reply(reply.Status, result, reply.Error, reply.State)
 
 let withSkippedString (f: string -> 'a -> 'b) (p: Parser<'a,'u>) : Parser<'b,'u> =
-    let optF = OptimizedClosures.FastFunc2<_,_,_>.Adapt(f)
+    let optF = OptimizedClosures.FSharpFunc<_,_,_>.Adapt(f)
     fun state ->
         let reply = p state
         let result = if reply.Status = Ok then
@@ -1250,7 +1248,7 @@ let pfloat : Parser<float,'u> =
             with e ->
                 let msg = if   (e :? System.OverflowException) then "This number is outside the allowable range for double precision floating-pointer numbers."
                           elif (e :? System.FormatException) then "The floating-point number has an invalid format (this error is unexpected, please report this error message to fparsec@quanttec.com)."
-                          else rethrow()
+                          else reraise()
                 Reply(FatalError, messageError msg, state)
         else Reply(reply.Status, reply.Error, reply.State)
 

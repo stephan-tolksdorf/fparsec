@@ -74,7 +74,7 @@ ReturnTrue:
 
 #if LOW_TRUST
 internal static T RunParserOnSubstream<T,TUserState,TSubStreamUserState>(
-                             Microsoft.FSharp.Core.FastFunc<State<TSubStreamUserState>,T> parser,
+                             Microsoft.FSharp.Core.FSharpFunc<State<TSubStreamUserState>,T> parser,
                              TSubStreamUserState userState,
                              State<TUserState> stateBeforeSubStream, State<TUserState> stateAfterSubStream)
 {
@@ -96,7 +96,7 @@ internal static T RunParserOnSubstream<T,TUserState,TSubStreamUserState>(
 }
 #else
 internal unsafe static T RunParserOnSubstream<T,TUserState,TSubStreamUserState>(
-                             Microsoft.FSharp.Core.FastFunc<State<TSubStreamUserState>,T> parser,
+                             Microsoft.FSharp.Core.FSharpFunc<State<TSubStreamUserState>,T> parser,
                              TSubStreamUserState userState,
                              State<TUserState> stateBeforeSubStream, State<TUserState> stateAfterSubStream)
 {

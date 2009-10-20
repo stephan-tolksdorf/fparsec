@@ -48,7 +48,7 @@ let testRemove (opp: OperatorPrecedenceParser<_,_>) (op: PrecedenceParserOp<_,_>
     | TernaryOp' (str,_,str2,_,_,_,_) -> opp.RemoveTernaryOp(str, str2) |> True
 
 let testRemoveSeq opp ops =
-    let ops = Seq.to_array ops
+    let ops = Seq.toArray ops
     shuffleArray ops
     for op in ops do
         testRemove opp op
