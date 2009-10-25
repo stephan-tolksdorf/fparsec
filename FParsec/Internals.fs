@@ -5,10 +5,16 @@ module FParsec.Internals
 
 open System.Diagnostics
 
-// the following functions are defined using inline IL to help fsc generate code the JIT knows better how to optimize
-let inline isNull<'a when 'a : not struct> (x: 'a) = (# "ldnull ceq" x : bool #) // match box x with null -> true  | _ -> false
-let inline isNotNull<'a when 'a : not struct> (x: 'a) = (# "ldnull cgt.un" x : bool #) // match box x with null -> false | _ -> true
-let inline referenceEquals<'a when 'a : not struct> (x: 'a) (y: 'a) = LanguagePrimitives.PhysicalEquality x y
+// The following functions are defined using inline IL to help fsc generate code
+// the JIT knows better how to optimize.
+// Should F# stop supporting inline IL outside the standard library, you can switch
+// to the commented out alternatives (which by then will probably be just as efficient).
+let inline referenceEquals<'a when 'a : not struct> (x: 'a) (y: 'a) =
+    (# "ceq" x y : bool #) // LanguagePrimitives.PhysicalEquality x y
+let inline isNull<'a when 'a : not struct> (x: 'a) =
+    (# "ldnull ceq" x : bool #) // referenceEquals (box x) null
+let inline isNotNull<'a when 'a : not struct> (x: 'a) =
+    (# "ldnull cgt.un" x : bool #) // not (isNull x)
 
 let inline isNullOrEmpty (s: string) = isNull s || s.Length = 0
 
