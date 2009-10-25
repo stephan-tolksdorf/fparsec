@@ -51,9 +51,10 @@ type PrecedenceParserOp<'a,'u> =
 
 /// Represents a dynamically configurable parser for parsing expressions involving
 /// prefix, postfix, infix and ternary operators of different precedence and associativity.
+[<Sealed>]
 type OperatorPrecedenceParser<'a,'u> =
     /// Constructs an OperatorPrecedenceParser instance and optionally adds the given operators.
-    new: ?ops:seq<PrecedenceParserOp<'a,'u>> -> OperatorPrecedenceParser<'a,'u>
+    new: ?operators:seq<PrecedenceParserOp<'a,'u>> -> OperatorPrecedenceParser<'a,'u>
 
     // Operators with higher precedence bind tighter.
 

@@ -46,6 +46,7 @@ type internal Fixity = Infix   = 0
                      | Postfix = 2
 
 // an internally used union type for operators
+[<Sealed>]
 type internal Operator<'a,'u>(op: PrecedenceParserOp<'a,'u>) =
     let str, ws, fix, prec, assoc =
             match op with
@@ -103,8 +104,9 @@ let internal expectedInfixOp           = expectedError "infix operator"
 let internal expectedInfixOrPostfixOp  = expectedError "infix or postfix operator"
 let internal expectedPostfixOp         = expectedError "postfix operator"
 
-type OperatorPrecedenceParser<'a,'u> private () =
-    let mutable expressionParser = Unchecked.defaultof<Parser<'a,'u>>
+[<Sealed>]
+type OperatorPrecedenceParser<'a,'u>(?operators: seq<PrecedenceParserOp<'a,'u>>) =
+    let mutable expressionParser = Unchecked.defaultof<Parser<'a,'u>> // lazily initialized to avoid compiler-generated initialization checks
     let mutable termParser : Parser<'a,'u> = fun state -> failwith "OperatorPrecedenceParser.termParser is not initialized";
     let mutable operatorConflictHandler = OperatorPrecedenceParser<'a,'u>.DefaultOperatorConflictHandler
 
@@ -128,42 +130,7 @@ type OperatorPrecedenceParser<'a,'u> private () =
 
     let reserved = new System.Collections.Generic.Dictionary<_,_>()
 
-    let zeroPrecedenceOp = Operator<'a,'u>(PrefixOp(null, spaces, -1, true, fun x -> x))
-
-    member t.ExpressionParser = expressionParser
-    member t.TermParser with get() = termParser and set v = termParser <- v
-    member t.OperatorConflictHandler with get() = operatorConflictHandler and set v = operatorConflictHandler <- v
-
-    member private t.InitializeExpressionParser() =
-        expressionParser <- fun state ->
-             let mutable la = Unchecked.defaultof<_>
-             let mutable reply = Unchecked.defaultof<Reply<_,_>>
-             reply.Status <- Ok
-             reply.State <- state
-             t.ParseExpression(state, zeroPrecedenceOp, &la, &reply)
-             if reply.Status = Ok && ((nInfixOps ||| nPostfixOps) <> 0) then // we could always consume more infix and postfix operators
-                let error = if nInfixOps <> 0 && nPostfixOps <> 0 then expectedInfixOrPostfixOp
-                            elif nInfixOps <> 0 then expectedInfixOp
-                            else expectedPostfixOp
-                reply.Error <- mergeErrors reply.Error error
-             reply
-
-    new (?ops: seq<PrecedenceParserOp<'a,'u>>) as t =
-        OperatorPrecedenceParser<_,_>()
-        then
-            match ops with Some s -> t.AddOperators(s) | _ -> ()
-            t.InitializeExpressionParser()
-
-    static member private DefaultOperatorConflictHandler (state1: State<'u>) (op1: PrecedenceParserOp<'a,'u>) (state2: State<'u>) (op2: PrecedenceParserOp<'a,'u>) =
-        let pos1, pos2 = state1.Pos, state2.Pos
-        sprintf "The %s conflicts with the %s %s."
-                (op2.ToString()) (op1.ToString())
-                (if pos1.StreamName = pos2.StreamName then
-                     if pos1.Line = pos2.Line then "on the same line at col. " + pos1.Column.ToString()
-                     else sprintf "at (Ln: %i, Col: %i)" pos1.Line pos1.Column
-                  else sprintf "at (%s, Ln: %i, Col: %i)" pos1.StreamName pos1.Line pos1.Column)
-
-    static member private FindPosition(opTable: Operator<_,_>[][], str: string) =
+    static let findPosition (opTable: Operator<_,_>[][]) (str: string) =
         if str.Length > 0 then
             let c0 = str.[0]
             let i = int c0 &&& (oppArrayLength - 1)
@@ -176,12 +143,12 @@ type OperatorPrecedenceParser<'a,'u> private () =
             (nameExists, i, j)
         else (false, -1, -1)
 
-    member t.AddOperator(operator: PrecedenceParserOp<'a,'u>) =
+    let addOperator operator =
         let conflictsMessage (op: Operator<_,_>) (oldOp: Operator<_,_>) =
             "The definition of the " + (op.ToString()) + " conflicts with (or duplicates) the previous definition of the " + (oldOp.ToString()) + "."
 
         let findPositionToInsert (opTable: Operator<_,_>[][]) (str: string) (op: Operator<_,_>) =
-            let (nameExists, i, j) as pos = OperatorPrecedenceParser<_,_>.FindPosition(opTable, str)
+            let (nameExists, i, j) as pos = findPosition opTable str
             if nameExists then
                 let oldOp = opTable.[i].[j]
                 if    str <> op.String // str could be op.Ternary2ndString
@@ -235,8 +202,44 @@ type OperatorPrecedenceParser<'a,'u> private () =
         | Fixity.Prefix  -> nPrefixOps  <- nPrefixOps  + 1
         | _              -> nPostfixOps <- nPostfixOps + 1
 
-    member t.AddOperators(operators: seq<PrecedenceParserOp<'a,'u>>) =
-        for op in operators do t.AddOperator(op)
+    let zeroPrecedenceOp = Operator<'a,'u>(PrefixOp(null, spaces, -1, true, fun x -> x))
+
+    do
+       match operators with
+       | Some ops -> for op in ops do addOperator op
+       | _ -> ()
+
+    member t.ExpressionParser =
+        if isNull expressionParser then
+           expressionParser <- fun state ->
+               let mutable la = Unchecked.defaultof<_>
+               let mutable reply = Unchecked.defaultof<Reply<_,_>>
+               reply.Status <- Ok
+               reply.State <- state
+               t.ParseExpression(state, zeroPrecedenceOp, &la, &reply)
+               if reply.Status = Ok && ((nInfixOps ||| nPostfixOps) <> 0) then // we could always consume more infix and postfix operators
+                  let error = if nInfixOps <> 0 && nPostfixOps <> 0 then expectedInfixOrPostfixOp
+                              elif nInfixOps <> 0 then expectedInfixOp
+                              else expectedPostfixOp
+                  reply.Error <- mergeErrors reply.Error error
+               reply
+        expressionParser
+
+    member t.TermParser with get() = termParser and set v = termParser <- v
+
+    member t.OperatorConflictHandler with get() = operatorConflictHandler and set v = operatorConflictHandler <- v
+
+    static member private DefaultOperatorConflictHandler (state1: State<'u>) (op1: PrecedenceParserOp<'a,'u>) (state2: State<'u>) (op2: PrecedenceParserOp<'a,'u>) =
+        let pos1, pos2 = state1.Pos, state2.Pos
+        sprintf "The %s conflicts with the %s %s."
+                (op2.ToString()) (op1.ToString())
+                (if pos1.StreamName = pos2.StreamName then
+                     if pos1.Line = pos2.Line then "on the same line at col. " + pos1.Column.ToString()
+                     else sprintf "at (Ln: %i, Col: %i)" pos1.Line pos1.Column
+                  else sprintf "at (%s, Ln: %i, Col: %i)" pos1.StreamName pos1.Line pos1.Column)
+
+    member t.AddOperator(operator)   = addOperator operator
+    member t.AddOperators(operators) = for op in operators do addOperator op
 
     member t.RemoveInfixOp(string: string)   = t.Remove(Fixity.Infix, string)
     member t.RemovePrefixOp(string: string)  = t.Remove(Fixity.Prefix, string)
@@ -256,7 +259,7 @@ type OperatorPrecedenceParser<'a,'u> private () =
             | PostfixOp (str,_,_,_,_)     | PostfixOp' (str,_,_,_,_)     -> Fixity.Postfix, str, rhsOps
             | InfixOp   (str,_,_,_,_)     | InfixOp'   (str,_,_,_,_)     -> Fixity.Infix,   str, rhsOps
             | TernaryOp (str,_,_,_,_,_,_) | TernaryOp' (str,_,_,_,_,_,_) -> Fixity.Infix,   str, rhsOps
-        let nameExists, i, j = OperatorPrecedenceParser<_,_>.FindPosition(opTable, str)
+        let nameExists, i, j = findPosition opTable str
         if not nameExists then false
         else
             let top = opTable.[i].[j]
@@ -268,7 +271,7 @@ type OperatorPrecedenceParser<'a,'u> private () =
         let opTable, altOpTable = match fixity with
                                   | Fixity.Prefix -> lhsOps, rhsOps
                                   | _             -> rhsOps, lhsOps
-        let nameExists, i, j = OperatorPrecedenceParser<_,_>.FindPosition(opTable, str)
+        let nameExists, i, j = findPosition opTable str
         if not nameExists || opTable.[i].[j].Fixity <> fixity then false
         else
             // remove from opTables
