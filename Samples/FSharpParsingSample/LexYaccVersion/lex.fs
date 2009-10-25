@@ -1,6 +1,7 @@
-#light
 # 15 "lex.fsl"
 
+
+module Lex
 
 open System
 open Pars
@@ -15,7 +16,7 @@ open Lexing
 let record_newline (lexbuf : lexbuf) = lexbuf.EndPos <- lexbuf.EndPos.NextLine
 
 
-# 18 "lex.fs"
+# 19 "lex.fs"
 let trans : uint16[] array =
     [|
    (* State 0 *)
@@ -126,109 +127,109 @@ let trans : uint16[] array =
  [|65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 26us; 26us; 26us; 26us; 26us; 26us; 26us; 26us; 26us; 26us; 26us; 26us; 26us; 26us; 26us; 26us; 26us; 26us; 26us; 26us; 26us; 26us; 26us; 26us; 26us; 26us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; |];
     |]
 let actions : uint16[] = [|65535us; 0us; 1us; 65535us; 15us; 15us; 15us; 15us; 15us; 15us; 15us; 11us; 12us; 13us; 65535us; 15us; 16us; 65535us; 18us; 16us; 65535us; 65535us; 17us; 17us; 17us; 17us; 15us; 14us; 15us; 15us; 15us; 9us; 15us; 15us; 7us; 6us; 5us; 15us; 15us; 10us; 15us; 15us; 15us; 8us; 4us; 15us; 15us; 15us; 3us; 15us; 15us; 15us; 2us; |]
-let __fslex_tables = Microsoft.FSharp.Text.Lexing.AsciiTables.Create(trans,actions)
-let rec __fslex_dummy () = __fslex_dummy()
+let _fslex_tables = Microsoft.FSharp.Text.Lexing.AsciiTables.Create(trans,actions)
+let rec _fslex_dummy () = _fslex_dummy()
 (* Rule token *)
-and token  (lexbuf : Microsoft.FSharp.Text.Lexing.LexBuffer<_>) = __fslex_token  0 lexbuf
-and __fslex_token  __fslex_state lexbuf =
-  match __fslex_tables.Interpret(__fslex_state,lexbuf) with
+and token  (lexbuf : Microsoft.FSharp.Text.Lexing.LexBuffer<_>) = _fslex_token  0 lexbuf
+and _fslex_token  _fslex_state lexbuf =
+  match _fslex_tables.Interpret(_fslex_state,lexbuf) with
   | 0 -> (
-# 53 "lex.fsl"
+# 55 "lex.fsl"
                 token lexbuf
-# 138 "lex.fs"
+# 139 "lex.fs"
           )
   | 1 -> (
-# 54 "lex.fsl"
+# 56 "lex.fsl"
                 record_newline lexbuf; token lexbuf
-# 143 "lex.fs"
+# 144 "lex.fs"
           )
   | 2 -> (
-# 55 "lex.fsl"
+# 57 "lex.fsl"
                 WHILE
-# 148 "lex.fs"
+# 149 "lex.fs"
           )
   | 3 -> (
-# 56 "lex.fsl"
+# 58 "lex.fsl"
                 BEGIN
-# 153 "lex.fs"
+# 154 "lex.fs"
           )
   | 4 -> (
-# 57 "lex.fsl"
+# 59 "lex.fsl"
                 END
-# 158 "lex.fs"
+# 159 "lex.fs"
           )
   | 5 -> (
-# 58 "lex.fsl"
+# 60 "lex.fsl"
                 DO
-# 163 "lex.fs"
+# 164 "lex.fs"
           )
   | 6 -> (
-# 59 "lex.fsl"
+# 61 "lex.fsl"
                 IF
-# 168 "lex.fs"
+# 169 "lex.fs"
           )
   | 7 -> (
-# 60 "lex.fsl"
+# 62 "lex.fsl"
                 THEN
-# 173 "lex.fs"
+# 174 "lex.fs"
           )
   | 8 -> (
-# 61 "lex.fsl"
+# 63 "lex.fsl"
                 ELSE
-# 178 "lex.fs"
+# 179 "lex.fs"
           )
   | 9 -> (
-# 62 "lex.fsl"
+# 64 "lex.fsl"
                 PRINT
-# 183 "lex.fs"
+# 184 "lex.fs"
           )
   | 10 -> (
-# 63 "lex.fsl"
+# 65 "lex.fsl"
                 DECR
-# 188 "lex.fs"
+# 189 "lex.fs"
           )
   | 11 -> (
-# 64 "lex.fsl"
+# 66 "lex.fsl"
                 LPAREN
-# 193 "lex.fs"
+# 194 "lex.fs"
           )
   | 12 -> (
-# 65 "lex.fsl"
+# 67 "lex.fsl"
                 RPAREN
-# 198 "lex.fs"
+# 199 "lex.fs"
           )
   | 13 -> (
-# 66 "lex.fsl"
+# 68 "lex.fsl"
                 SEMI
-# 203 "lex.fs"
+# 204 "lex.fs"
           )
   | 14 -> (
-# 67 "lex.fsl"
+# 69 "lex.fsl"
                 ASSIGN
-# 208 "lex.fs"
+# 209 "lex.fs"
           )
   | 15 -> (
-# 69 "lex.fsl"
+# 71 "lex.fsl"
                 ID(lexeme lexbuf)
-# 213 "lex.fs"
+# 214 "lex.fs"
           )
   | 16 -> (
-# 71 "lex.fsl"
-                INT (Int32.Parse(lexeme lexbuf))
-# 218 "lex.fs"
+# 73 "lex.fsl"
+                INT (int32 (lexeme lexbuf))
+# 219 "lex.fs"
           )
   | 17 -> (
-# 73 "lex.fsl"
-                FLOAT (Double.Parse(lexeme lexbuf))
-# 223 "lex.fs"
+# 75 "lex.fsl"
+                FLOAT (float (lexeme lexbuf))
+# 224 "lex.fs"
           )
   | 18 -> (
-# 74 "lex.fsl"
+# 76 "lex.fsl"
                 EOF
-# 228 "lex.fs"
+# 229 "lex.fs"
           )
   | _ -> failwith "token"
 
-# 82 "lex.fsl"
+# 84 "lex.fsl"
 
 # 3000000 "lex.fs"

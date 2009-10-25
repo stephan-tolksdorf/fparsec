@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Stephan Tolksdorf 2007-2008
 // License: Simplified BSD License. See accompanying documentation.
 
+module Parser
+
 open System
 open FParsec.Primitives
 open FParsec.CharParsers

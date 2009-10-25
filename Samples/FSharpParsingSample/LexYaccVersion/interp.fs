@@ -5,7 +5,7 @@
 // warranties of merchantability and fitness for a particular purpose.
 //
 
-#light
+module Interp
 
 open Ast
 

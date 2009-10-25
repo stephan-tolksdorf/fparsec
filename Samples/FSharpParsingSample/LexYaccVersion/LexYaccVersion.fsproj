@@ -32,9 +32,10 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <StartArguments>..\..\test.lang</StartArguments>
+    <OtherFlags>--mlcompatibility</OtherFlags>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <OtherFlags>--debug</OtherFlags>
+    <OtherFlags>--debug --mlcompatibility</OtherFlags>
     <StartArguments>..\..\test.lang</StartArguments>
   </PropertyGroup>
   <ItemGroup>

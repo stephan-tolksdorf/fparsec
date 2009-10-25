@@ -7,7 +7,6 @@
 
 open System.IO
 open Ast
-open List
 open Printf
 
 open Lexing

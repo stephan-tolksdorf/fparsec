@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Stephan Tolksdorf 2008
 // License: Simplified BSD License. See accompanying documentation.
 
+module Parser
+
 open FParsec.Primitives
 open FParsec.CharParsers
 
@@ -60,7 +62,7 @@ let jobject =
     let keyValue = tuple2 stringLiteral (ch ':' >>. jvalue)
     between (ch '{') (ch '}')
             // we read the object as a list of key-value pairs and then turn it into a Map
-            (sepBy keyValue (ch ',') |>> (Map.of_list >> JObject))
+            (sepBy keyValue (ch ',') |>> (Map.ofList >> JObject))
 
 
 do jvalueRef := choice [jobject;

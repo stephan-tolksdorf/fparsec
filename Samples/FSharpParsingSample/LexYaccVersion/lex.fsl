@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation 2005-2006.
-// This sample code is provided "as is" without warranty of any kind. 
-// We disclaim all warranties, either express or implied, including the 
-// warranties of merchantability and fitness for a particular purpose. 
+// This sample code is provided "as is" without warranty of any kind.
+// We disclaim all warranties, either express or implied, including the
+// warranties of merchantability and fitness for a particular purpose.
 //
 
 // This file is a sample lexer specification for use with F# Lex (fslex.exe).
@@ -14,14 +14,16 @@
 
 {
 
+module Lex
+
 open System
 open Pars
 open Lexing
 
-// Fslex generated parsers follow the same pattern as OCamllex 
-// and Mossmllex generated parsers, and do not update line number 
-// information automatically, partly because the knowledge of when 
-// a newline has occured is best placed in the lexer rules. 
+// Fslex generated parsers follow the same pattern as OCamllex
+// and Mossmllex generated parsers, and do not update line number
+// information automatically, partly because the knowledge of when
+// a newline has occured is best placed in the lexer rules.
 // Thus the following boiler-plate code is very useful:
 
 let record_newline (lexbuf : lexbuf) = lexbuf.EndPos <- lexbuf.EndPos.NextLine
@@ -38,12 +40,12 @@ let whitespace = [' ' '\t' ]
 let newline = ('\n' | '\r' '\n')
 
 //--------------------------------------------------------------
-// Part III. Token generators and rules.  
+// Part III. Token generators and rules.
 //
 // These are the rules specifying the tokens matched by the lexer
 //
 // This lexer has only one generator ('token')
-// 
+//
 // Generator definitions can take arguments, e.g.
 //
 //   rule token arg1 arg2 = parse ...
@@ -65,11 +67,11 @@ rule token = parse
 | ")"       { RPAREN }
 | ";"       { SEMI }
 | ":="      { ASSIGN }                                // ...
-| ['a'-'z']+    
+| ['a'-'z']+
             { ID(lexeme lexbuf) }                     // return a token carrying data!
-| ['-']?digit+  
+| ['-']?digit+
             { INT (int32 (lexeme lexbuf)) }      // return a token carrying data!
-| ['-']?digit+('.'digit+)?(['e''E']digit+)?   
+| ['-']?digit+('.'digit+)?(['e''E']digit+)?
             { FLOAT (float (lexeme lexbuf)) }
 | eof   { EOF }                                           // return a token for the EOF
 

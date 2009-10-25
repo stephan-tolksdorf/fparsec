@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Stephan Tolksdorf 2008
 // License: Simplified BSD License. See accompanying documentation.
 
+module Ast
+
 [<StructuredFormatDisplay("{StructuredFormatDisplay}")>]
 type Json = JString of string
           | JNumber of float
@@ -16,4 +18,4 @@ type Json = JString of string
                 | JBool   b -> box b
                 | JNull     -> box "null"
                 | JList   l -> box l
-                | JObject m -> Map.to_list m :> obj
+                | JObject m -> Map.toList m :> obj

@@ -3,6 +3,8 @@
 
 // Compare this parser implementation with the implementation in ../LexYaccVersion.
 
+module Parser
+
 open System
 
 open FParsec.Error

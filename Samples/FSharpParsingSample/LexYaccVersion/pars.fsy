@@ -1,10 +1,10 @@
 // Copyright (c) Microsoft Corporation 2005-2006.
-// This sample code is provided "as is" without warranty of any kind. 
-// We disclaim all warranties, either express or implied, including the 
-// warranties of merchantability and fitness for a particular purpose. 
+// This sample code is provided "as is" without warranty of any kind.
+// We disclaim all warranties, either express or implied, including the
+// warranties of merchantability and fitness for a particular purpose.
 //
 
-// This example shows how to write an F# Yacc parser file which creates 
+// This example shows how to write an F# Yacc parser file which creates
 // nodes that carry F# values.
 
 %{
@@ -31,8 +31,8 @@ open Ast
 
 %%
 
-// These are the rules of the grammar along with the F# code of the 
-// actions executed as rules are reduced.  In this case the actions 
+// These are the rules of the grammar along with the F# code of the
+// actions executed as rules are reduced.  In this case the actions
 // produce data using F# data construction terms.
 start: Prog {  $1 }
 
@@ -51,7 +51,7 @@ Stmt: ID ASSIGN Expr              { Assign($1,$3) }
     | IF Expr THEN Stmt ELSE Stmt { IfThenElse($2,$4,$6) }
     | PRINT Expr                  { Print($2) }
 
-StmtList: 
+StmtList:
     | Stmt               { [$1] }
     | StmtList SEMI Stmt { $3 :: $1  }
 
