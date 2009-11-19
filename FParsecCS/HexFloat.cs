@@ -160,13 +160,15 @@ public static double DoubleFromHexString(string str) {
     const int maxBits2 = maxBits + 2;
     const ulong mask  = (1UL << (maxBits - 1)) - 1; // mask for lower (maxBits - 1) bits
 
-    if (str == null) throw new ArgumentNullException("string");
+    if (str == null) throw new ArgumentNullException("str");
     int n = str.Length;
     if (n == 0) goto InvalidFormat;
 
-    if (n > (int.MaxValue + minSExp - 1 - 9)/4) {// n*4 <= Int32.MaxValue protects against an nBits overflow
-        throw new System.FormatException("The given hexadecimal string representation of a double precision float is too long.");
-    }
+    // n*4 <= Int32.MaxValue protects against an nBits overflow,
+    // the additional -minSExp + 10 margin is needed for parsing the exponent
+    if (n > (int.MaxValue + minSExp - 10)/4)
+        throw new System.FormatException("The given hexadecimal string representation of a double precision floating-point number is too long.");
+
     int sign = 0;   // 0 == positive, 1 == negative
     ulong xn = 0;    // integer significand with up to maxBits + 2 bits, where the (maxBits + 2)th bit
                     // (the least significant bit) is the logical OR of the (maxBits + 2)th and all following input bits
@@ -218,7 +220,7 @@ public static double DoubleFromHexString(string str) {
                     int surplusBits = h & (0xf >> nRemBits);
                     surplusBits = (0xfffe >> surplusBits) & 1; // == surplusBits != 0 ? 1 : 0
                     xn <<= nRemBits;
-                    xn |= (uint)((h >> nSurplusBits) | (surplusBits));
+                    xn |= (uint)((h >> nSurplusBits) | surplusBits);
                     nBits += 4;
                 } else {
                     xn |= (uint)((0xfffe >> h) & 1); // (0xfffe >> h) & 1 == h != 0 ? 1 : 0
@@ -245,11 +247,23 @@ public static double DoubleFromHexString(string str) {
                     } else goto InvalidFormat;
                 } while (i < n);
                 e*= eSign;
-                // |either e is exact, or |e| >= int.MaxValue - 8
-                // |exp| <= n*4 <= Int32.MaxValue - |minSExp - 1| - 9
-                // either e is exact or |exp + e| >= |minSExp - 1| + 1
+                // either e is exact or |e| >= int.MaxValue - 8
+                // |exp| <= n*4 <= int.MaxValue + minSExp - 10
+                //
+                // Case 1: e and exp have the same sign
+                //    Case 1.a: e is exact && |exp + e| <= int.MaxValue             ==> |exp + e| is exact
+                //    Case 1.b: |e| >= int.MaxValue - 8 || |exp + e| > int.MaxValue ==> |exp + e| >= int.MaxValue - 8
+                // Case 2: e and exp have opposite signs
+                //    Case 2.a: e is exact  ==> |exp + e| is exact
+                //    Case 2.b: |e| >= int.MaxValue - 8
+                //               ==> Case e > 0:
+                //                       exp + e >= -(int.MaxValue + minSExp - 10) + (int.MaxValue - 8) = -minSExp + 2 > maxExp
+                //                   Case e < 0:
+                //                       exp + e <=  (int.MaxValue + minSExp - 10) - (int.MaxValue - 8) =  minSExp - 2
+                //
+                // hence, |exp + e| is exact || exp + e > maxExp || exp + e < minSExp - 1
                 try {
-                    exp += e;
+                    exp = checked (exp + e);
                 } catch (System.OverflowException) {
                     exp = e < 0 ? int.MinValue : int.MaxValue;
                 }
@@ -322,13 +336,13 @@ public static double DoubleFromHexString(string str) {
     }
 
 Overflow:
-    string msg = n < 32 ? "The given string (\"" + str + "\") represents a value either too large or too small for a double precision float."
-                        : "The given string represents a value either too large or too small for a double precision float.";
+    string msg = n < 32 ? "The given string (\"" + str + "\") represents a value either too large or too small for a double precision floating-point number."
+                        : "The given string represents a value either too large or too small for a double precision floating-point number.";
     throw new System.OverflowException(msg);
 
 InvalidFormat:
-    string errmsg = n < 32 ? "The given hexadecimal string representation of a double precision float (\"" + str + "\") is invalid."
-                           : "The given hexadecimal string representation of a double precision float is invalid.";
+    string errmsg = n < 32 ? "The given hexadecimal string representation of a double precision floating-point number (\"" + str + "\") is invalid."
+                           : "The given hexadecimal string representation of a double precision floating-point number is invalid.";
     throw new System.FormatException(errmsg);
 }
 
@@ -346,13 +360,15 @@ public static float SingleFromHexString(string str) {
     const int maxBits2 = maxBits + 2;
     const int mask  = (1 << (maxBits - 1)) - 1; // mask for lower (maxBits - 1) bits
 
-    if (str == null) throw new ArgumentNullException("string");
+    if (str == null) throw new ArgumentNullException("str");
     int n = str.Length;
     if (n == 0) goto InvalidFormat;
 
-    if (n > (int.MaxValue + minSExp - 1 - 9)/4) {// n*4 <= Int32.MaxValue protects against an nBits overflow
-        throw new System.FormatException("The given hexadecimal string representation of a single precision float is too long.");
-    }
+    // n*4 <= Int32.MaxValue protects against an nBits overflow,
+    // the additional -minSExp + 10 margin is needed for parsing the exponent
+    if (n > (int.MaxValue + minSExp - 10)/4)
+        throw new System.FormatException("The given hexadecimal string representation of a single precision floating-point number is too long.");
+
     int sign = 0;   // 0 == positive, 1 == negative
     int xn = 0;     // integer significand with up to maxBits + 2 bits, where the (maxBits + 2)th bit
                     // (the least significant bit) is the logical OR of the (maxBits + 2)th and all following input bits
@@ -404,7 +420,7 @@ public static float SingleFromHexString(string str) {
                     int surplusBits = h & (0xf >> nRemBits);
                     surplusBits = (0xfffe >> surplusBits) & 1; // == surplusBits != 0 ? 1 : 0
                     xn <<= nRemBits;
-                    xn |= (h >> nSurplusBits) | (surplusBits);
+                    xn |= (h >> nSurplusBits) | surplusBits;
                     nBits += 4;
                 } else {
                     xn |= (0xfffe >> h) & 1; // (0xfffe >> h) & 1 == h != 0 ? 1 : 0
@@ -431,11 +447,23 @@ public static float SingleFromHexString(string str) {
                     } else goto InvalidFormat;
                 } while (i < n);
                 e*= eSign;
-                // |either e is exact, or |e| >= int.MaxValue - 8
-                // |exp| <= n*4 <= Int32.MaxValue - |minSExp - 1| - 9
-                // either e is exact or |exp + e| >= |minSExp - 1| + 1
+                // either e is exact or |e| >= int.MaxValue - 8
+                // |exp| <= n*4 <= int.MaxValue + minSExp - 10
+                //
+                // Case 1: e and exp have the same sign
+                //    Case 1.a: e is exact && |exp + e| <= int.MaxValue             ==> |exp + e| is exact
+                //    Case 1.b: |e| >= int.MaxValue - 8 || |exp + e| > int.MaxValue ==> |exp + e| >= int.MaxValue - 8
+                // Case 2: e and exp have opposite signs
+                //    Case 2.a: e is exact  ==> |exp + e| is exact
+                //    Case 2.b: |e| >= int.MaxValue - 8
+                //               ==> Case e > 0:
+                //                       exp + e >= -(int.MaxValue + minSExp - 10) + (int.MaxValue - 8) = -minSExp + 2 > maxExp
+                //                   Case e < 0:
+                //                       exp + e <=  (int.MaxValue + minSExp - 10) - (int.MaxValue - 8) =  minSExp - 2
+                //
+                // hence, |exp + e| is exact || exp + e > maxExp || exp + e < minSExp - 1
                 try {
-                    exp += e;
+                    exp = checked (exp + e);
                 } catch (System.OverflowException) {
                     exp = e < 0 ? int.MinValue : int.MaxValue;
                 }
@@ -508,13 +536,13 @@ public static float SingleFromHexString(string str) {
     }
 
 Overflow:
-    string msg = n < 32 ? "The given string (\"" + str + "\") represents a value either too large or too small for a single precision float."
-                        : "The given string represents a value either too large or too small for a single precision float.";
+    string msg = n < 32 ? "The given string (\"" + str + "\") represents a value either too large or too small for a single precision floating-point number."
+                        : "The given string represents a value either too large or too small for a single precision floating-point number.";
     throw new System.OverflowException(msg);
 
 InvalidFormat:
-    string errmsg = n < 32 ? "The given hexadecimal string representation of a single precision float (\"" + str + "\") is invalid."
-                           : "The given hexadecimal string representation of a single precision float is invalid.";
+    string errmsg = n < 32 ? "The given hexadecimal string representation of a single precision floating-point number (\"" + str + "\") is invalid."
+                           : "The given hexadecimal string representation of a single precision floating-point number is invalid.";
     throw new System.FormatException(errmsg);
 }
 

@@ -12,7 +12,6 @@ let testHexDoubleHelpers () =
     let BEqual a b =
         Equal (System.BitConverter.DoubleToInt64Bits(a)) (System.BitConverter.DoubleToInt64Bits(b))
 
-
     // float32ToHexString
     ///////////////////
 
@@ -44,6 +43,9 @@ let testHexDoubleHelpers () =
     // floatOfHexString
     ///////////////////
 
+    try floatOfHexString null |> ignore; Fail()
+    with :? System.ArgumentNullException -> ()
+
     let checkFormatError s =
         try floatOfHexString s |> ignore; Fail ()
         with :? System.FormatException -> ()
@@ -60,6 +62,8 @@ let testHexDoubleHelpers () =
     checkFormatError "0.1p-"
     checkFormatError "0.fg"
     checkFormatError "1.0 "
+    checkFormatError "1.."
+    checkFormatError "1.0."
 
     floatOfHexString "Inf"      |> Equal System.Double.PositiveInfinity
 
@@ -140,7 +144,14 @@ let testHexDoubleHelpers () =
     floatOfHexString "0x00.000"   |> BEqual 0.
     floatOfHexString "0x00.000p0" |> BEqual 0.
     floatOfHexString "0x00.000p99999999" |> BEqual 0.
-    floatOfHexString "1P-9999999999999999999999999999999" |> BEqual 0.
+    floatOfHexString "100P-2147483639"   |> BEqual 0.
+    floatOfHexString "100P-2147483640"   |> BEqual 0.
+    floatOfHexString "100P-2147483647"   |> BEqual 0.
+    floatOfHexString "100P-9999999999999999999999999"   |> BEqual 0.
+    floatOfHexString "0.001P-2147483639" |> BEqual 0.
+    floatOfHexString "0.001P-2147483640" |> BEqual 0.
+    floatOfHexString "0.001P-2147483647" |> BEqual 0.
+    floatOfHexString "0.001P-9999999999999999999999999" |> BEqual 0.
 
     floatOfHexString "-0"        |> BEqual -0.0
     floatOfHexString "-0."       |> BEqual -0.0
@@ -157,7 +168,14 @@ let testHexDoubleHelpers () =
     floatOfHexString "-0x00.000p0" |> BEqual -0.0
     floatOfHexString "-0x00.000p0" |> BEqual -0.
     floatOfHexString "-0x00.000p99999999" |> BEqual -0.
-    floatOfHexString "-1P-9999999999999999999999999999999" |> BEqual -0.
+    floatOfHexString "-100P-2147483639"   |> BEqual -0.
+    floatOfHexString "-100P-2147483640"   |> BEqual -0.
+    floatOfHexString "-100P-2147483647"   |> BEqual -0.
+    floatOfHexString "-100P-9999999999999999999999999"   |> BEqual -0.
+    floatOfHexString "-0.001P-2147483639" |> BEqual -0.
+    floatOfHexString "-0.001P-2147483640" |> BEqual -0.
+    floatOfHexString "-0.001P-2147483647" |> BEqual -0.
+    floatOfHexString "-0.001P-9999999999999999999999999" |> BEqual -0.
 
     let v = floatOfHexString "0x1.23456789abcde"
 
@@ -199,7 +217,14 @@ let testHexDoubleHelpers () =
     checkOverflow "0x1.fffffffffffff800000p1023"
     checkOverflow "0x1.ffffffffffffffp1023"
     checkOverflow "0x1p1024"
-    checkOverflow "0x1p999999999"
+    checkOverflow "100P2147483639"
+    checkOverflow "100P2147483640"
+    checkOverflow "100P2147483647"
+    checkOverflow "100P9999999999999999999999999"
+    checkOverflow "0.001P2147483639"
+    checkOverflow "0.001P2147483640"
+    checkOverflow "0.001P2147483647"
+    checkOverflow "0.001P9999999999999999999999999"
 
     // near 1
     floatOfHexString "0x1.0000000000000f" |> Equal (1.0 + 2.*eps)
@@ -391,6 +416,9 @@ let testHexSingleHelpers () =
     // float32OfHexString
     ///////////////////
 
+    try float32OfHexString null |> ignore; Fail()
+    with :? System.ArgumentNullException -> ()
+
     let checkFormatError s =
         try float32OfHexString s |> ignore; Fail ()
         with :? System.FormatException -> ()
@@ -407,6 +435,8 @@ let testHexSingleHelpers () =
     checkFormatError "0.1p-"
     checkFormatError "0.fg"
     checkFormatError "1.0 "
+    checkFormatError "1.."
+    checkFormatError "1.0."
 
     float32OfHexString "Inf"      |> Equal System.Single.PositiveInfinity
 
@@ -487,7 +517,14 @@ let testHexSingleHelpers () =
     float32OfHexString "0x00.000"   |> BEqual 0.f
     float32OfHexString "0x00.000p0" |> BEqual 0.f
     float32OfHexString "0x00.000p99999999" |> BEqual 0.f
-    float32OfHexString "1P-9999999999999999999999999999999" |> BEqual 0.f
+    float32OfHexString "100P-2147483639"   |> BEqual 0.f
+    float32OfHexString "100P-2147483640"   |> BEqual 0.f
+    float32OfHexString "100P-2147483647"   |> BEqual 0.f
+    float32OfHexString "100P-9999999999999999999999999"   |> BEqual 0.f
+    float32OfHexString "0.001P-2147483639" |> BEqual 0.f
+    float32OfHexString "0.001P-2147483640" |> BEqual 0.f
+    float32OfHexString "0.001P-2147483647" |> BEqual 0.f
+    float32OfHexString "0.001P-9999999999999999999999999" |> BEqual 0.f
 
     float32OfHexString "-0"        |> BEqual -0.0f
     float32OfHexString "-0."       |> BEqual -0.0f
@@ -504,7 +541,14 @@ let testHexSingleHelpers () =
     float32OfHexString "-0x00.000p0" |> BEqual -0.0f
     float32OfHexString "-0x00.000p0" |> BEqual -0.f
     float32OfHexString "-0x00.000p99999999" |> BEqual -0.f
-    float32OfHexString "-1P-9999999999999999999999999999999" |> BEqual -0.f
+    float32OfHexString "-100P-2147483639"   |> BEqual -0.f
+    float32OfHexString "-100P-2147483640"   |> BEqual -0.f
+    float32OfHexString "-100P-2147483647"   |> BEqual -0.f
+    float32OfHexString "-100P-9999999999999999999999999"   |> BEqual -0.f
+    float32OfHexString "-0.001P-2147483639" |> BEqual -0.f
+    float32OfHexString "-0.001P-2147483640" |> BEqual -0.f
+    float32OfHexString "-0.001P-2147483647" |> BEqual -0.f
+    float32OfHexString "-0.001P-9999999999999999999999999" |> BEqual -0.f
 
     let v = float32OfHexString "0x1.23456e"
 
@@ -547,7 +591,14 @@ let testHexSingleHelpers () =
     checkOverflow "0x0.ffffff800000p128"
     checkOverflow "0x0.fffffffp128"
     checkOverflow "0x1p128"
-    checkOverflow "0x1p999999999"
+    checkOverflow "100P2147483639"
+    checkOverflow "100P2147483640"
+    checkOverflow "100P2147483647"
+    checkOverflow "100P9999999999999999999999999"
+    checkOverflow "0.001P2147483639"
+    checkOverflow "0.001P2147483640"
+    checkOverflow "0.001P2147483647"
+    checkOverflow "0.001P9999999999999999999999999"
 
     // near 1
     float32OfHexString "0x1.000001e" |> Equal (1.f + 2.f*eps)
