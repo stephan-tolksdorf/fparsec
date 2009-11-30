@@ -88,7 +88,7 @@ internal static T RunParserOnSubstream<T,TUserState,TSubStreamUserState>(
     if (idx1 < 0) idx1 = stream.IndexEnd;
     if (idx0 > idx1)
         throw new ArgumentException("The position of the second state lies before the position of the first state.");
-    var subStream = new CharStream(stream.String, idx0, idx1 - idx0, idx0 - stream.IndexBegin);
+    var subStream = new CharStream(stream.String, idx0, idx1 - idx0, (idx0 - stream.IndexBegin) + stream.StreamIndexOffset);
     var data0 = stateBeforeSubStream.data;
     var data = new State<TSubStreamUserState>.Data(data0.Line, data0.LineBegin, userState, data0.StreamName);
     var state = new State<TSubStreamUserState>(subStream.Begin, data);

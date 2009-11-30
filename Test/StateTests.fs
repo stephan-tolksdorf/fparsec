@@ -637,14 +637,32 @@ let testSkipToString() =
 open FParsec.CharParsers
 
 let testHelperParseSubstream() =
-    use stream = new CharStream("1234567", 1, 6)
+    use stream = new CharStream("1234567", 1, 6, 100L)
     let s0 = (new State<_>(stream, ())).Advance(2)
     let s1 = s0.Advance(3)
+    let sEnd = s0.Advance(System.Int32.MaxValue)
+    match runParserOnSubstream restOfLine -1 s0 s0 with
+    | Success(result, ustate, pos) ->
+        result |> Equal ""
+        ustate |> Equal -1
+        pos.Index |> Equal 102L
+    | Failure(msg, _, _) -> Fail()
+    match runParserOnSubstream restOfLine -1 sEnd sEnd with
+    | Success(result, ustate, pos) ->
+        result |> Equal ""
+        ustate |> Equal -1
+        pos.Index |> Equal 106L
+    | Failure(msg, _, _) -> Fail()
     match runParserOnSubstream restOfLine -1 s0 s1 with
     | Success(result, ustate, pos) ->
         result |> Equal "456"
-        pos.Index |> Equal 5L
+        ustate |> Equal -1
+        pos.Index |> Equal 105L
     | Failure(msg, _, _) -> Fail()
+    try runParserOnSubstream restOfLine -1 s1 s0 |> ignore; Fail()
+    with :? System.ArgumentException -> ()
+
+    let oldS0 = s0
 
 #if LOW_TRUST
 #else
@@ -666,8 +684,10 @@ let testHelperParseSubstream() =
         result |> Equal "34567"
         pos.Index |> Equal 7L
     | Failure(msg, _, _) -> Fail()
+    try runParserOnSubstream restOfLine -1 s1 s0 |> ignore; Fail()
+    with :? System.ArgumentException -> ()
 
-    let s2 = s0.Advance(10)  // the stream's block is now different from the one s0 and s1
+    let s2 = s0.Advance(10)  // the stream's block is now different from the one of s0 and s1
     match runParserOnSubstream restOfLine -1 s0 s1 with
     | Success(result, ustate, pos) ->
         result |> Equal "34567"
@@ -679,6 +699,12 @@ let testHelperParseSubstream() =
         result |> Equal "34567890"
         pos.Index |> Equal 10L
     | Failure(msg, _, _) -> Fail()
+
+    try runParserOnSubstream restOfLine -1 s2 s0 |> ignore; Fail()
+    with :? System.ArgumentException -> ()
+
+    try runParserOnSubstream restOfLine -1 oldS0 s0 |> ignore; Fail()
+    with :? System.ArgumentException -> ()
 
 let run () =
     testSkipWhitespace()
