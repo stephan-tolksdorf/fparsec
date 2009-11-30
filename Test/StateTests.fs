@@ -44,73 +44,74 @@ let testSkipWhitespace() =
         let sEnd = sBegin.SkipWhitespace()
         if i = iBegin then sBegin |> ReferenceEqual sEnd
         else
-            int32 sEnd.Index |> Equal i
+            let indexOffset = int32 sBegin.Index - iBegin
+            int32 sEnd.Index |> Equal (i + indexOffset)
             int32 sEnd.Line  |> Equal line
-            int32 sEnd.LineBegin |> Equal lineBegin
+            int32 sEnd.LineBegin |> Equal (if line <> 1 then lineBegin + indexOffset else int32 sBegin.LineBegin)
             sEnd.Iter.Read() |> Equal (if i < cs.Length then cs.[i] else EOS)
 
     let testFastPath() =
-        let cs = Array.create 10 '_'
+        let cs = Array.create 11 '_'
     #if LOW_TRUST
     #else
-        use stream = new CharStream(cs, 0, cs.Length)
-        let s0 = new State<unit>(stream, ())
+        use stream = new CharStream(cs, 1, 10, 100L)
+        let s1 = new State<unit>(stream, ())
     #endif
-        for c0 in testChars do
-            cs.[0] <- c0
-            for c1 in testChars do
-                cs.[1] <- c1
-                for c2 in testChars do
-                    cs.[2] <- c2
-                    for c3 in testChars do
-                        cs.[3] <- c3
-                        for c4 in testChars do
-                            cs.[4] <- c4
-                            for c5 in testChars do
-                                cs.[5] <- c5
-                                for c6 in testChars do
-                                    cs.[6] <- c6
+        for c1 in testChars do
+            cs.[1] <- c1
+            for c2 in testChars do
+                cs.[2] <- c2
+                for c3 in testChars do
+                    cs.[3] <- c3
+                    for c4 in testChars do
+                        cs.[4] <- c4
+                        for c5 in testChars do
+                            cs.[5] <- c5
+                            for c6 in testChars do
+                                cs.[6] <- c6
+                                for c7 in testChars do
+                                    cs.[7] <- c7
                                 #if LOW_TRUST
-                                    let stream = new CharStream(new string(cs))
-                                    let s0 = new State<unit>(stream, ())
+                                    let stream = new CharStream(new string(cs), 1, 10, 100L)
+                                    let s1 = new State<unit>(stream, ())
                                 #endif
-                                    checkSkipWhitespace cs 0 s0
+                                    checkSkipWhitespace cs 1 s1
 
         // check end of block/stream handling
     #if LOW_TRUST
     #else
-        let s6 = s0.Advance(6)
-        let s7 = s0.Advance(7)
-        let s8 = s0.Advance(8)
-        let s9 = s0.Advance(9)
+        let s7  = s1.Advance(6)
+        let s8  = s1.Advance(7)
+        let s9  = s1.Advance(8)
+        let s10 = s1.Advance(9)
     #endif
-        for c6 in testChars do
-            cs.[6] <- c6
-            for c7 in testChars do
-                cs.[7] <- c7
-                for c8 in testChars do
-                    cs.[8] <- c8
-                    for c9 in testChars do
-                        cs.[9] <- c9
+        for c7 in testChars do
+            cs.[7] <- c7
+            for c8 in testChars do
+                cs.[8] <- c8
+                for c9 in testChars do
+                    cs.[9] <- c9
+                    for c10 in testChars do
+                        cs.[10] <- c10
                     #if LOW_TRUST
-                        let stream = new CharStream(new string(cs))
-                        let s0 = new State<unit>(stream, ())
-                        let s6 = s0.Advance(6)
-                        let s7 = s0.Advance(7)
-                        let s8 = s0.Advance(8)
-                        let s9 = s0.Advance(9)
+                        let stream = new CharStream(new string(cs), 1, 10, 100L)
+                        let s1 = new State<unit>(stream, ())
+                        let s7  = s1.Advance(6)
+                        let s8  = s1.Advance(7)
+                        let s9  = s1.Advance(8)
+                        let s10 = s1.Advance(9)
                     #endif
-                        checkSkipWhitespace cs 6 s6
-                        checkSkipWhitespace cs 7 s7
-                        checkSkipWhitespace cs 8 s8
-                        checkSkipWhitespace cs 9 s9
+                        checkSkipWhitespace cs 7  s7
+                        checkSkipWhitespace cs 8  s8
+                        checkSkipWhitespace cs 9  s9
+                        checkSkipWhitespace cs 10 s10
 
     #if LOW_TRUST
-        let stream = new CharStream(new string(cs))
-        let s0 = new State<unit>(stream, ())
+        let stream = new CharStream(new string(cs), 1, 10, 100L)
+        let s1 = new State<unit>(stream, ())
     #endif
-        let s10 = s0.Advance(10)
-        s10.SkipWhitespace() |> ReferenceEqual s10
+        let s11 = s1.Advance(10)
+        s11.SkipWhitespace() |> ReferenceEqual s11
 
     let testSlowPath() =
         let cs =  Array.create 17 '_'
@@ -141,11 +142,13 @@ let testSkipRestOfLine() =
 
     let checkSkipRestOfLine (cs: char[]) iBegin (sBegin: State<unit>) =
         let stream = sBegin.Stream
+        let iter0 = stream.Begin
+        let indexOffset = int32 sBegin.Index - iBegin
         let mutable i = iBegin
         while i < cs.Length  && (cs.[i] <> '\r' && cs.[i] <> '\n') do i <- i + 1
-        stream.Seek(0L) |> ignore; sBegin.Iter.Read() |> ignore
+        iter0.Read() |> ignore; sBegin.Iter.Read() |> ignore
         let sEnd1 = sBegin.SkipRestOfLine(false)
-        stream.Seek(0L) |> ignore; sBegin.Iter.Read() |> ignore
+        iter0.Read() |> ignore; sBegin.Iter.Read() |> ignore
         let mutable str = null
         let sEnd2 = sBegin.SkipRestOfLine(false, &str)
         sEnd1 |> Equal sEnd2
@@ -156,9 +159,9 @@ let testSkipRestOfLine() =
         else
             str.Length |> Equal (i - iBegin)
             sBegin.Iter.Match(str) |> True
-            int32 sEnd1.Index |> Equal i
+            int32 sEnd1.Index |> Equal (i + indexOffset)
             int32 sEnd1.Line  |> Equal 1
-            int32 sEnd1.LineBegin |> Equal 0
+            sEnd1.LineBegin   |> Equal sBegin.LineBegin
             sEnd1.Iter.Read() |> Equal (if i < cs.Length then cs.[i] else EOS)
 
         let mutable line = 1
@@ -168,10 +171,10 @@ let testSkipRestOfLine() =
                 i <- i + if c = '\r' && i + 1 < cs.Length && cs.[i + 1] = '\n' then 2 else 1
                 line <- 2
 
-        stream.Seek(0L) |> ignore; sBegin.Iter.Read() |> ignore
+        iter0.Read() |> ignore; sBegin.Iter.Read() |> ignore
         let sEnd3 = sBegin.SkipRestOfLine(true)
         let mutable str2 = null
-        stream.Seek(0L) |> ignore; sBegin.Iter.Read() |> ignore
+        iter0.Read() |> ignore; sBegin.Iter.Read() |> ignore
         let sEnd4 = sBegin.SkipRestOfLine(true, &str2)
         sEnd3 |> Equal sEnd4
         str2 |> Equal str
@@ -179,65 +182,65 @@ let testSkipRestOfLine() =
             sBegin |> ReferenceEqual sEnd3
             sBegin |> ReferenceEqual sEnd4
         else
-            int32 sEnd3.Index |> Equal i
+            int32 sEnd3.Index |> Equal (i + indexOffset)
             int32 sEnd3.Line  |> Equal line
-            int32 sEnd3.LineBegin |> Equal (if line = 1 then 0 else i)
+            int32 sEnd3.LineBegin |> Equal (if line <> 1 then i + indexOffset else int32 sBegin.LineBegin)
             sEnd3.Iter.Read() |> Equal (if i < cs.Length then cs.[i] else EOS)
 
     let testFastPath() =
-        let cs = Array.create 7 '_'
+        let cs = Array.create 8 '_'
     #if LOW_TRUST
     #else
-        use stream = new CharStream(cs, 0, cs.Length)
-        let s0 = new State<unit>(stream, ())
+        use stream = new CharStream(cs, 1, 7, 100L)
+        let s1 = new State<unit>(stream, ())
     #endif
-        for c0 in testChars do
-            cs.[0] <- c0
-            for c1 in testChars do
-                cs.[1] <- c1
-                for c2 in testChars do
-                    cs.[2] <- c2
-                    for c3 in testChars do
-                        cs.[3] <- c3
-                        for c4 in testChars do
-                            cs.[4] <- c4
+        for c1 in testChars do
+            cs.[1] <- c1
+            for c2 in testChars do
+                cs.[2] <- c2
+                for c3 in testChars do
+                    cs.[3] <- c3
+                    for c4 in testChars do
+                        cs.[4] <- c4
+                        for c5 in testChars do
+                            cs.[5] <- c5
                         #if LOW_TRUST
-                            use stream = new CharStream(new string(cs))
-                            let s0 = new State<unit>(stream, ())
+                            use stream = new CharStream(new string(cs), 1, 7, 100L)
+                            let s1 = new State<unit>(stream, ())
                         #endif
-                            checkSkipRestOfLine cs 0 s0
+                            checkSkipRestOfLine cs 1 s1
 
 
         // check end of block/stream handling
     #if LOW_TRUST
     #else
-        let s4 = s0.Advance(4)
-        let s5 = s0.Advance(5)
-        let s6 = s0.Advance(6)
+        let s5 = s1.Advance(4)
+        let s6 = s1.Advance(5)
+        let s7 = s1.Advance(6)
     #endif
-        for c4 in testChars do
-            cs.[4] <- c4
-            for c5 in testChars do
-                cs.[5] <- c5
-                for c6 in testChars do
-                    cs.[6] <- c6
+        for c5 in testChars do
+            cs.[5] <- c5
+            for c6 in testChars do
+                cs.[6] <- c6
+                for c7 in testChars do
+                    cs.[7] <- c7
                 #if LOW_TRUST
-                    use stream = new CharStream(new string(cs))
-                    let s0 = new State<unit>(stream, ())
-                    let s4 = s0.Advance(4)
-                    let s5 = s0.Advance(5)
-                    let s6 = s0.Advance(6)
+                    use stream = new CharStream(new string(cs), 1, 7, 100L)
+                    let s1 = new State<unit>(stream, ())
+                    let s5 = s1.Advance(4)
+                    let s6 = s1.Advance(5)
+                    let s7 = s1.Advance(6)
                 #endif
-                    checkSkipRestOfLine cs 4 s4
                     checkSkipRestOfLine cs 5 s5
                     checkSkipRestOfLine cs 6 s6
+                    checkSkipRestOfLine cs 7 s7
 
     #if LOW_TRUST
-        use stream = new CharStream(new string(cs))
-        let s0 = new State<unit>(stream, ())
+        use stream = new CharStream(new string(cs), 1, 7, 100L)
+        let s1 = new State<unit>(stream, ())
     #endif
-        let s7 = s0.Advance(7)
-        checkSkipRestOfLine cs 7 s7
+        let s8 = s1.Advance(7)
+        checkSkipRestOfLine cs 8 s8
 
     let testSlowPath() =
         let cs =  Array.create 17 '_'
@@ -265,8 +268,11 @@ let testSkipCharsOrNewlines() =
 
     let check (sBegin: State<unit>) (cs: char[]) iBegin nMax =
         let stream = sBegin.Stream
+        let indexOffset = int32 sBegin.Index - iBegin
+        let mutable iter0 = stream.Begin
         let mutable iterBegin = sBegin.Iter
-        let alwaysTrue = fun (c: char) -> true
+        let alwaysTrue  = fun (c: char) -> true
+        let alwaysFalse = fun (c: char) -> false
         let nTrueN = ref 0
         let nTrue = fun (c: char) -> if !nTrueN > 0 then decr nTrueN; true else false
         for n = 0 to nMax do
@@ -285,8 +291,9 @@ let testSkipCharsOrNewlines() =
                 c <- c + 1
 
             let line = line
-            let lineBegin = lineBegin
+            let lineBegin = if line <> 1 then lineBegin + indexOffset else int32 sBegin.LineBegin
             let i = i
+            let index = i + indexOffset
             let c = c
 
             let str = CharStream.NormalizeNewlines(sBegin.Iter.Read(i - iBegin))
@@ -294,87 +301,87 @@ let testSkipCharsOrNewlines() =
             let checkOutputState (sEnd: State<unit>) =
                 if c = 0 then sEnd |> ReferenceEqual sBegin
                 else
-                    int32 sEnd.Index |> Equal i
+                    int32 sEnd.Index |> Equal index
                     int32 sEnd.Line  |> Equal line
                     int32 sEnd.LineBegin |> Equal lineBegin
                     sEnd.Iter.Read() |> Equal (if i < cs.Length then cs.[i] else EOS)
 
             if n = 1 then
-                stream.Seek(0L) |> ignore; sBegin.Iter.Read() |> ignore
+                iter0.Read() |> ignore; iterBegin.Read() |> ignore
                 let sEndA = sBegin.SkipCharOrNewline()
                 checkOutputState sEndA
 
-                stream.Seek(0L) |> ignore; sBegin.Iter.Read() |> ignore
+                iter0.Read() |> ignore; iterBegin.Read() |> ignore
                 let sEndB = sBegin.SkipNewline()
                 if line <> 1 then checkOutputState sEndB
                 else sEndB |> ReferenceEqual sBegin
 
-            stream.Seek(0L) |> ignore; sBegin.Iter.Read() |> ignore
+            iter0.Read() |> ignore; iterBegin.Read() |> ignore
             let mutable nSkipped = -1
             let sEnd1 = sBegin.SkipCharsOrNewlines(n, &nSkipped)
             nSkipped |> Equal c
             checkOutputState sEnd1
 
-            stream.Seek(0L) |> ignore; sBegin.Iter.Read() |> ignore
+            iter0.Read() |> ignore; iterBegin.Read() |> ignore
             let mutable str2 = null
             let sEnd2 = sBegin.SkipCharsOrNewlines(n, &str2)
             str2 |> Equal str
             checkOutputState sEnd2
 
-            stream.Seek(0L) |> ignore; sBegin.Iter.Read() |> ignore
+            iter0.Read() |> ignore; iterBegin.Read() |> ignore
             nTrueN:= n
             let sEnd3 = sBegin.SkipCharsOrNewlinesWhile(nTrue, nTrue)
             checkOutputState sEnd3
 
-            stream.Seek(0L) |> ignore; sBegin.Iter.Read() |> ignore
+            iter0.Read() |> ignore; iterBegin.Read() |> ignore
             nTrueN:= n
             let mutable str3 = null
             let sEnd4 = sBegin.SkipCharsOrNewlinesWhile(nTrue, nTrue, &str3)
             str3 |> Equal str
             checkOutputState sEnd4
 
-            stream.Seek(0L) |> ignore; sBegin.Iter.Read() |> ignore
+            iter0.Read() |> ignore; iterBegin.Read() |> ignore
             nTrueN:= n
             let sEnd5 = sBegin.SkipCharsOrNewlinesWhile(nTrue, nTrue, 0, System.Int32.MaxValue)
             checkOutputState sEnd5
 
-            stream.Seek(0L) |> ignore; sBegin.Iter.Read() |> ignore
+            iter0.Read() |> ignore; iterBegin.Read() |> ignore
             nTrueN:= n
             let mutable str6 = null
             let sEnd6 = sBegin.SkipCharsOrNewlinesWhile(nTrue, nTrue, 0, System.Int32.MaxValue, &str6)
             str6 |> Equal str
             checkOutputState sEnd6
 
-            stream.Seek(0L) |> ignore; sBegin.Iter.Read() |> ignore
+            iter0.Read() |> ignore; iterBegin.Read() |> ignore
             nTrueN:= n
             let sEnd7 = sBegin.SkipCharsOrNewlinesWhile(alwaysTrue, alwaysTrue, 0, n)
             checkOutputState sEnd7
 
-            stream.Seek(0L) |> ignore; sBegin.Iter.Read() |> ignore
+            iter0.Read() |> ignore; iterBegin.Read() |> ignore
             nTrueN:= n
             let mutable str8 = null
             let sEnd8 = sBegin.SkipCharsOrNewlinesWhile(alwaysTrue, alwaysTrue, 0, n, &str8)
             str8 |> Equal str
             checkOutputState sEnd8
 
-            stream.Seek(0L) |> ignore; sBegin.Iter.Read() |> ignore
+            iter0.Read() |> ignore; iterBegin.Read() |> ignore
             let mutable foundString = false
             let sEnd9 = sBegin.SkipToString("x", n, &foundString) // there's no x in the input
             foundString |> False
             checkOutputState sEnd9
 
-            stream.Seek(0L) |> ignore; sBegin.Iter.Read() |> ignore
+            iter0.Read() |> ignore; iterBegin.Read() |> ignore
             let sEnd10 = sBegin.SkipToStringCI("x", n, &foundString)
             foundString |> False
             checkOutputState sEnd10
 
-            stream.Seek(0L) |> ignore; sBegin.Iter.Read() |> ignore
+            iter0.Read() |> ignore; iterBegin.Read() |> ignore
             let mutable str11 = null : string
             let sEnd11 = sBegin.SkipToString("x", n, &str11)
             str11 |> Equal null
             checkOutputState sEnd11
 
-            stream.Seek(0L) |> ignore; sBegin.Iter.Read() |> ignore
+            iter0.Read()|> ignore; iterBegin.Read() |> ignore
             let mutable str12 = null : string
             let sEnd12 = sBegin.SkipToStringCI("x", n, &str12)
             str12 |> Equal null
@@ -383,66 +390,66 @@ let testSkipCharsOrNewlines() =
     let testChars = [|'\n'; '\r'; '\t'; '\u000C'; '\u000E'|]
 
     let testFastPath() =
-        let cs = Array.create 10 '_'
+        let cs = Array.create 11 '_'
     #if LOW_TRUST
     #else
-        use stream = new CharStream(cs, 0, cs.Length)
-        let s0 = new State<unit>(stream, ())
+        use stream = new CharStream(cs, 1, 10, 100L)
+        let s1 = new State<unit>(stream, ())
     #endif
-        for c0 in testChars do
-            cs.[0] <- c0
-            for c1 in testChars do
-                cs.[1] <- c1
-                for c2 in testChars do
-                    cs.[2] <- c2
-                    for c3 in testChars do
-                        cs.[3] <- c3
-                        for c4 in testChars do
-                            cs.[4] <- c4
-                            for c5 in testChars do
-                                cs.[5] <- c5
-                                for c6 in testChars do
-                                    cs.[6] <- c6
+        for c1 in testChars do
+            cs.[1] <- c1
+            for c2 in testChars do
+                cs.[2] <- c2
+                for c3 in testChars do
+                    cs.[3] <- c3
+                    for c4 in testChars do
+                        cs.[4] <- c4
+                        for c5 in testChars do
+                            cs.[5] <- c5
+                            for c6 in testChars do
+                                cs.[6] <- c6
+                                for c7 in testChars do
+                                    cs.[7] <- c7
                                 #if LOW_TRUST
-                                    use stream = new CharStream(new string(cs))
-                                    let s0 = new State<unit>(stream, ())
+                                    use stream = new CharStream(new string(cs), 1, 10, 100L)
+                                    let s1 = new State<unit>(stream, ())
                                 #endif
-                                    check s0 cs 0 7
+                                    check s1 cs 1 7
 
         // check end of block/stream handling
     #if LOW_TRUST
     #else
-        let s6 = s0.Advance(6)
-        let s7 = s0.Advance(7)
-        let s8 = s0.Advance(8)
-        let s9 = s0.Advance(9)
+        let s7  = s1.Advance(6)
+        let s8  = s1.Advance(7)
+        let s9  = s1.Advance(8)
+        let s10 = s1.Advance(9)
     #endif
-        for c6 in testChars do
-            cs.[6] <- c6
-            for c7 in testChars do
-                cs.[7] <- c7
-                for c8 in testChars do
-                    cs.[8] <- c8
-                    for c9 in testChars do
-                        cs.[9] <- c9
+        for c7 in testChars do
+            cs.[7] <- c7
+            for c8 in testChars do
+                cs.[8] <- c8
+                for c9 in testChars do
+                    cs.[9] <- c9
+                    for c10 in testChars do
+                        cs.[10] <- c10
                     #if LOW_TRUST
-                        use stream = new CharStream(new string(cs))
-                        let s0 = new State<unit>(stream, ())
-                        let s6 = s0.Advance(6)
-                        let s7 = s0.Advance(7)
-                        let s8 = s0.Advance(8)
-                        let s9 = s0.Advance(9)
+                        use stream = new CharStream(new string(cs), 1, 10, 100L)
+                        let s1 = new State<unit>(stream, ())
+                        let s7  = s1.Advance(6)
+                        let s8  = s1.Advance(7)
+                        let s9  = s1.Advance(8)
+                        let s10 = s1.Advance(9)
                     #endif
-                        check s6 cs 6 5
-                        check s7 cs 7 4
-                        check s8 cs 8 3
-                        check s9 cs 9 2
+                        check s7  cs  7 5
+                        check s8  cs  8 4
+                        check s9  cs  9 3
+                        check s10 cs 10 2
     #if LOW_TRUST
-        use stream = new CharStream(new string(cs))
-        let s0 = new State<unit>(stream, ())
+        use stream = new CharStream(new string(cs), 1, 10, 100L)
+        let s1 = new State<unit>(stream, ())
     #endif
-        let s10 = s0.Advance(10)
-        check s10 cs 10 1
+        let s11 = s1.Advance(10)
+        check s11 cs 11 1
 
     let testSlowPath() =
         let cs =  Array.create 17 '_'

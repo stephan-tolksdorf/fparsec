@@ -121,14 +121,14 @@ public sealed class State<TUserState> : IEquatable<State<TUserState>> {
     internal State<TUserState> AdvanceTo(int idx, int lineBegin) {
         var iter = Iter;
         iter.Idx = idx;
-        long newLineBegin = lineBegin + iter.Stream.StreamIndexOffset;
+        long newLineBegin = (uint)(lineBegin - Iter.Stream.IndexBegin) + Iter.Stream.StreamIndexOffset;
         var newData = new Data(data.Line + 1, newLineBegin, data.UserState, data.StreamName);
         return new State<TUserState>(iter, newData);
     }
     internal State<TUserState> AdvanceTo(int idx, int lineBegin, int nLines) {
         var iter = Iter;
         iter.Idx = idx;
-        long newLineBegin = lineBegin + iter.Stream.StreamIndexOffset;
+        long newLineBegin = (uint)(lineBegin - Iter.Stream.IndexBegin) + Iter.Stream.StreamIndexOffset;
         var newData = new Data(data.Line + nLines, newLineBegin, data.UserState, data.StreamName);
         return new State<TUserState>(iter, newData);
     }
