@@ -340,7 +340,7 @@ public sealed class State<TUserState> : IEquatable<State<TUserState>> {
                 } else if (c == '\r' || c == '\n') {
                     if (!skipNewline) {
                         if (idx != Iter.Idx) return AdvanceTo(idx);
-                        else return this;
+                        return this;
                     } else {
                         if (++idx >= end) goto EndOfStreamNewline;
                         if (c == '\r' && s[idx] == '\n')
@@ -407,7 +407,7 @@ public sealed class State<TUserState> : IEquatable<State<TUserState>> {
             if (c <= '\r') goto CheckForNewline;
         SkipNormalChar:
             if (idx < end) return AdvanceTo(idx);
-            else return AdvanceTo(Int32.MinValue);
+            return AdvanceTo(Int32.MinValue);
         CheckForNewline:
             if (c == '\r') {
                 if (idx >= end) goto EndOfStreamNewline;
@@ -434,7 +434,7 @@ public sealed class State<TUserState> : IEquatable<State<TUserState>> {
         var stream = Iter.Stream;
         int indexEnd = stream.IndexEnd;
         var s = stream.String;
-        int end2 = unchecked (idx + maxCharsOrNewlines); // is negative if idx == Int32.MinValue
+        int end2 = unchecked(idx + maxCharsOrNewlines); // is negative if idx == Int32.MinValue
         int end = end2 >= idx && unchecked((uint)end2) <= (uint)indexEnd ? end2 : indexEnd; // is always positive
         if (unchecked((uint)idx) < (uint)end) {
             for (;;) {
@@ -485,7 +485,7 @@ public sealed class State<TUserState> : IEquatable<State<TUserState>> {
         var stream = Iter.Stream;
         int indexEnd = stream.IndexEnd;
         var s = stream.String;
-        int end2 = unchecked (idx + maxCharsOrNewlines); // is negative if idx == Int32.MinValue
+        int end2 = unchecked(idx + maxCharsOrNewlines); // is negative if idx == Int32.MinValue
         int end = end2 >= idx && unchecked((uint)end2) <= (uint)indexEnd ? end2 : indexEnd; // is always positive
         if (unchecked((uint)idx) < (uint)end) {
             for (;;) {
@@ -508,7 +508,7 @@ public sealed class State<TUserState> : IEquatable<State<TUserState>> {
             }
             numberOfSkippedCharsOrNewlines = idx - Iter.Idx - nCRLF;
             if (nLines == 0) return AdvanceTo(idx == indexEnd ? Int32.MinValue : idx);
-            else return AdvanceTo(idx == indexEnd ? Int32.MinValue : idx, lineBegin, nLines);
+            return AdvanceTo(idx == indexEnd ? Int32.MinValue : idx, lineBegin, nLines);
         }
         numberOfSkippedCharsOrNewlines = 0;
         return this;
@@ -567,7 +567,7 @@ public sealed class State<TUserState> : IEquatable<State<TUserState>> {
             newIterIdx = Int32.MinValue;
         ReturnState:
             if (nLines == 0) return AdvanceTo(newIterIdx);
-            else return AdvanceTo(newIterIdx, lineBegin, nLines);
+            return AdvanceTo(newIterIdx, lineBegin, nLines);
         }
     ReturnEmpty:
         return this;
@@ -667,7 +667,7 @@ public sealed class State<TUserState> : IEquatable<State<TUserState>> {
         var stream = Iter.Stream;
         int indexEnd = stream.IndexEnd;
         var s = stream.String;
-        int end2 = unchecked (idx + maxCharsOrNewlines); // is negative if idx == Int32.MinValue
+        int end2 = unchecked(idx + maxCharsOrNewlines); // is negative if idx == Int32.MinValue
         int end = end2 >= idx && unchecked((uint)end2) <= (uint)indexEnd ? end2 : indexEnd; // is always positive
         if (unchecked((uint)idx) < (uint)end) {
             char c = s[idx++];
@@ -739,7 +739,7 @@ public sealed class State<TUserState> : IEquatable<State<TUserState>> {
         var stream = Iter.Stream;
         int indexEnd = stream.IndexEnd;
         var s = stream.String;
-        int end2 = unchecked (idx + maxCharsOrNewlines); // is negative if idx == Int32.MinValue
+        int end2 = unchecked(idx + maxCharsOrNewlines); // is negative if idx == Int32.MinValue
         int end = end2 >= idx && unchecked((uint)end2) <= (uint)indexEnd ? end2 : indexEnd; // is always positive
         if (unchecked((uint)idx) < (uint)end) {
             char c = s[idx++];
@@ -839,7 +839,7 @@ public sealed class State<TUserState> : IEquatable<State<TUserState>> {
         int indexEnd = stream.IndexEnd;
         int end1 = indexEnd - str.Length;
         var s = stream.String;
-        int end2 = unchecked (idx + maxCharsOrNewlines); // is negative if idx == Int32.MinValue
+        int end2 = unchecked(idx + maxCharsOrNewlines); // is negative if idx == Int32.MinValue
         int end = end2 >= idx && unchecked((uint)end2) <= (uint)indexEnd ? end2 : indexEnd; // is always positive
         if (unchecked((uint)idx) < (uint)end) {
             for (;;) {
@@ -893,7 +893,7 @@ public sealed class State<TUserState> : IEquatable<State<TUserState>> {
         int indexEnd = stream.IndexEnd;
         int end1 = indexEnd - str.Length;
         var s = stream.String;
-        int end2 = unchecked (idx + maxCharsOrNewlines); // is negative if idx == Int32.MinValue
+        int end2 = unchecked(idx + maxCharsOrNewlines); // is negative if idx == Int32.MinValue
         int end = end2 >= idx && unchecked((uint)end2) <= (uint)indexEnd ? end2 : indexEnd; // is always positive
         if (unchecked((uint)idx) < (uint)end) {
             for (;;) {
@@ -965,7 +965,7 @@ public sealed class State<TUserState> : IEquatable<State<TUserState>> {
         var s = stream.String;
         char[] cftable = CaseFoldTable.FoldedChars;
         if (cftable == null) cftable = CaseFoldTable.Initialize();
-        int end2 = unchecked (idx + maxCharsOrNewlines); // is negative if idx == Int32.MinValue
+        int end2 = unchecked(idx + maxCharsOrNewlines); // is negative if idx == Int32.MinValue
         int end = end2 >= idx && unchecked((uint)end2) <= (uint)indexEnd ? end2 : indexEnd; // is always positive
         if (unchecked((uint)idx) < (uint)end) {
             for (;;) {
@@ -1022,7 +1022,7 @@ public sealed class State<TUserState> : IEquatable<State<TUserState>> {
         var s = stream.String;
         char[] cftable = CaseFoldTable.FoldedChars;
         if (cftable == null) cftable = CaseFoldTable.Initialize();
-        int end2 = unchecked (idx + maxCharsOrNewlines); // is negative if idx == Int32.MinValue
+        int end2 = unchecked(idx + maxCharsOrNewlines); // is negative if idx == Int32.MinValue
         int end = end2 >= idx && unchecked((uint)end2) <= (uint)indexEnd ? end2 : indexEnd; // is always positive
         if (unchecked((uint)idx) < (uint)end) {
             for (;;) {

@@ -179,8 +179,8 @@ let testStream (stream: CharStream) (refString: string) blockSize blockOverlap m
         iteri1.Read() |> Equal ci
         if d = 1 then
             let itern = iteri1.Next
-            itern.Index   |> Equal jj
-            itern.Read()  |> Equal cj
+            itern.Index  |> Equal jj
+            itern.Read() |> Equal cj
             iter0.Read() |> Equal c0; iteri1.Read() |> Equal ci; // restore state of stream before branch
 
         let iterj1 = iteri1.Advance(d)

@@ -21,7 +21,7 @@ public sealed class CharStream : IDisposable {
     internal String String;
     /// <summary>Index of the first char in the string belonging to the stream, or 0 if the stream is empty.</summary>
     internal int IndexBegin;
-    /// <summary>Index of the last char in the string belonging to the stream + 1, or 0 if the stream is empty.</summary>
+    /// <summary>1 + Index of the last char in the string belonging to the stream, or 0 if the stream is empty.</summary>
     internal int IndexEnd;
     /// <summary>BeginIndex (stream index of the first char) - IndexBegin (string index of the first char)</summary>
     internal long StringToStreamIndexOffset;
@@ -59,7 +59,7 @@ public sealed class CharStream : IDisposable {
         if (chars == null) throw new ArgumentNullException("chars");
         if (index < 0) throw new ArgumentOutOfRangeException("index", "The index is negative.");
         if (streamBeginIndex < 0 || streamBeginIndex >= (1L << 60)) throw new ArgumentOutOfRangeException("streamBeginIndex", "streamBeginIndex must be non-negative and less than 2^60.");
-        int indexEnd = unchecked (index + length);
+        int indexEnd = unchecked(index + length);
         if (indexEnd < index || indexEnd > chars.Length) throw new ArgumentOutOfRangeException("length", "The length is out of range.");
 
         String = chars;
@@ -194,9 +194,9 @@ public sealed class CharStream : IDisposable {
     /// <summary>An iterator pointing to the beginning of the stream (or to the end if the CharStream is empty).</summary>
     public Iterator Begin { get {
         if (IndexBegin < IndexEnd)
-            return new Iterator {Stream = this, Idx = IndexBegin};
+            return new Iterator{Stream = this, Idx = IndexBegin};
         else
-            return new Iterator {Stream = this, Idx = Int32.MinValue};
+            return new Iterator{Stream = this, Idx = Int32.MinValue};
     } }
 
     /// <summary>Returns an iterator pointing to the given index in the stream,
@@ -205,10 +205,10 @@ public sealed class CharStream : IDisposable {
     public Iterator Seek(long index) {
         long idx = unchecked(index - StringToStreamIndexOffset);
         if (idx >= IndexBegin && idx < IndexEnd)
-            return new Iterator {Stream = this, Idx = (int)idx};
+            return new Iterator{Stream = this, Idx = (int)idx};
         if (index < BeginIndex)
             throw (new ArgumentOutOfRangeException("index", "The index is negative or less than the BeginIndex."));
-        return new Iterator {Stream = this, Idx = Int32.MinValue};
+        return new Iterator{Stream = this, Idx = Int32.MinValue};
     }
 
     /// <summary>The iterator type for CharStreams.</summary>
@@ -247,9 +247,9 @@ public sealed class CharStream : IDisposable {
         public Iterator Next { get {
             int idx = Idx + 1;
             if (unchecked((uint)idx) < (uint)Stream.IndexEnd)
-                return new Iterator {Stream = Stream, Idx = idx};
+                return new Iterator{Stream = Stream, Idx = idx};
             else
-                return new Iterator {Stream = Stream, Idx = Int32.MinValue};
+                return new Iterator{Stream = Stream, Idx = Int32.MinValue};
         } }
 
         /// <summary>Returns an Iterator that is advanced by offset chars. The Iterator can't
@@ -262,7 +262,7 @@ public sealed class CharStream : IDisposable {
             if (offset < 0) goto Negative;
             if (unchecked((uint)idx) >= (uint)stream.IndexEnd) goto EndOfStream;
         ReturnIter:
-            return new Iterator {Stream = stream, Idx = idx};
+            return new Iterator{Stream = stream, Idx = idx};
         Negative:
             if (Idx >= 0) {
                 if (idx >= stream.IndexBegin) goto ReturnIter;
@@ -309,7 +309,7 @@ public sealed class CharStream : IDisposable {
             if ((int)offset < 0) goto Negative;
             if (unchecked((uint)idx) >= (uint)stream.IndexEnd) goto EndOfStream;
         ReturnIter:
-            return new Iterator {Stream = stream, Idx = idx};
+            return new Iterator{Stream = stream, Idx = idx};
         EndOfStream:
             idx = Int32.MinValue;
             goto ReturnIter;
@@ -337,9 +337,9 @@ public sealed class CharStream : IDisposable {
             if (n >= 0) { // offset <= Int32.MaxValue
                 int idx = unchecked(Idx + n);
                 if (unchecked((uint)idx) < (uint)indexEnd)
-                    return new Iterator {Stream = Stream, Idx = idx};
+                    return new Iterator{Stream = Stream, Idx = idx};
             }
-            return new Iterator {Stream = Stream, Idx = Int32.MinValue};
+            return new Iterator{Stream = Stream, Idx = Int32.MinValue};
         }
 
         /// <summary>Advances the Iterator *in-place* by 1 char and returns the char on the new position.

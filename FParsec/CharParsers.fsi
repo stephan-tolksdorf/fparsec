@@ -581,7 +581,7 @@ type NumberLiteral =
     member IsOctal: bool
     member IsNaN: bool
     member IsInfinity: bool
-    
+
     override Equals: obj -> bool
     override GetHashCode: unit -> int
 

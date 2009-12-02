@@ -6,13 +6,13 @@ using System;
 namespace FParsec {
 
 public sealed class Position : IEquatable<Position>, IComparable, IComparable<Position> {
-    public long   Index      { get; private set;}
-    public long   Line       { get; private set;}
-    public long   Column     { get; private set;}
-    public string StreamName { get; private set;}
+    public long   Index      { get; private set; }
+    public long   Line       { get; private set; }
+    public long   Column     { get; private set; }
+    public string StreamName { get; private set; }
 
     public Position(string streamName, long index, long line, long column) {
-        this.StreamName = streamName; this.Index = index; this.Line = line; this.Column = column;
+        StreamName = streamName; Index = index; Line = line; Column = column;
     }
 
     public override string ToString() {

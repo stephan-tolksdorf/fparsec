@@ -20,10 +20,10 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
         public Data() {}
 
         public Data(long line, long lineBegin, TUserState userState, string streamName) {
-            this.Line       = line;
-            this.LineBegin  = lineBegin;
-            this.UserState  = userState;
-            this.StreamName = streamName;
+            Line       = line;
+            LineBegin  = lineBegin;
+            UserState  = userState;
+            StreamName = streamName;
         }
     }
 
@@ -400,7 +400,7 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
                 } else if (c == '\r' || c == '\n') {
                     if (!skipNewline) {
                         if (ptr != Iter.Ptr) return AdvanceTo(ptr);
-                        else return this;
+                        return this;
                     } else {
                         ++ptr;
                         if (c == '\r' && *ptr == '\n') ++ptr;
@@ -500,7 +500,7 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
             char c = Iter.Read();
             if (c != CharStream.Iterator.EndOfStreamChar) {
                 if (c != '\r' && c != '\n') return Next;
-                else return Advance(c == '\r' && Iter.Peek() == '\n' ? 2 : 1, 1, 0);
+                return Advance(c == '\r' && Iter.Peek() == '\n' ? 2 : 1, 1, 0);
             } else return this;
         }
     }
@@ -515,7 +515,7 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
         var anchor = Iter.Anchor;
         if (Iter.Block == anchor->Block) {
             char* bufferEnd1 = anchor->BufferEnd - 1; // - 1 to guarantee the lookahead for '\r'
-            char* end2 = unchecked (ptr + maxCharsOrNewlines);
+            char* end2 = unchecked(ptr + maxCharsOrNewlines);
             char* end = end2 >= ptr && end2 <= bufferEnd1 ? end2 : bufferEnd1;
             if (ptr < end) {
                 for (;;) {
@@ -618,7 +618,7 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
         var anchor = Iter.Anchor;
         if (Iter.Block == anchor->Block) {
             char* bufferEnd1 = anchor->BufferEnd - 1; // - 1 to guarantee the lookahead for '\r'
-            char* end2 = unchecked (ptr + maxCharsOrNewlines);
+            char* end2 = unchecked(ptr + maxCharsOrNewlines);
             char* end = end2 >= ptr && end2 <= bufferEnd1 ? end2 : bufferEnd1;
             if (ptr < end) {
                 for (;;) {
@@ -643,7 +643,7 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
                 if (end < bufferEnd1) {
                     numberOfSkippedCharsOrNewlines = CharStream.PositiveDistance(Iter.Ptr, ptr) - nCRLF;
                     if (nLines == 0) return AdvanceTo(ptr);
-                    else return AdvanceTo(ptr, lineBegin, nLines);
+                    return AdvanceTo(ptr, lineBegin, nLines);
                 }
             }
         }
@@ -680,8 +680,9 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
         numberOfSkippedCharsOrNewlines = count;
         if (count != 0) {
             if (nLines == 0) return AdvanceTo(iter);
-            else return AdvanceTo(iter, nLines, count - lineBeginCount);
-        } else return this;
+            return AdvanceTo(iter, nLines, count - lineBeginCount);
+        }
+        return this;
     }
 
     public State<TUserState> SkipCharsOrNewlinesWhile(Microsoft.FSharp.Core.FSharpFunc<char,bool> f) {
@@ -732,7 +733,7 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
                 }
                 --ptr;
                 if (nLines == 0) return AdvanceTo(ptr);
-                else return AdvanceTo(ptr, lineBegin, nLines);
+                return AdvanceTo(ptr, lineBegin, nLines);
             }
             // reached the end of the current block
             int index = CharStream.PositiveDistance(Iter.Ptr, ptr);
@@ -938,7 +939,7 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
                 int count = CharStream.PositiveDistance(Iter.Ptr, ptr) - nCRLF;
                 if (count >= minCharsOrNewlines) {
                     if (nLines == 0) return AdvanceTo(ptr);
-                    else return AdvanceTo(ptr, lineBegin, nLines);
+                    return AdvanceTo(ptr, lineBegin, nLines);
                 }
             }
         ReturnEmpty:
@@ -969,8 +970,7 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
             }
             ff = f;
         }
-        if (count >= minCharsOrNewlines) return state;
-        else return this;
+        return count < minCharsOrNewlines ? this : state;
     }
 
     public State<TUserState> SkipCharsOrNewlinesWhile(Microsoft.FSharp.Core.FSharpFunc<char,bool> f, int minCharsOrNewlines, int maxCharsOrNewlines, out string skippedString) {
@@ -983,8 +983,8 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
         int nCRLF = 0;
         int nCR = 0;
         char* ptr = Iter.Ptr;
-        char* bufferEnd1 = Iter.Anchor->BufferEnd - 1; // - 1 to guarantee the lookahead for '\r'
-        char* end2 = unchecked (ptr + maxCharsOrNewlines);
+        char* bufferEnd1 = unchecked(Iter.Anchor->BufferEnd - 1); // - 1 to guarantee the lookahead for '\r'
+        char* end2 = unchecked(ptr + maxCharsOrNewlines);
         char* end = end2 >= ptr && end2 <= bufferEnd1 ? end2 : bufferEnd1;
         if (Iter.Block == Iter.Anchor->Block && ptr + 2 < end) { // + 2 so that we don't need to check after the first iteration
             char c = *ptr;
@@ -1134,9 +1134,9 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
             char first = pStr[0];
             char* ptr = Iter.Ptr;
             char* bufferEnd = Iter.Anchor->BufferEnd;
-            char* end1 = unchecked (bufferEnd - strLength);
+            char* end1 = unchecked(bufferEnd - strLength);
             if (end1 >= ptr && end1 < bufferEnd) {
-                char* end2 = unchecked (ptr + maxCharsOrNewlines);
+                char* end2 = unchecked(ptr + maxCharsOrNewlines);
                 char* end = end1 <= end2 || end2 < ptr ? end1 : end2;
                 if (Iter.Block == Iter.Anchor->Block && ptr < end) {
                     for (;;) {
@@ -1175,8 +1175,9 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
                 ReturnState:
                     if (ptr != Iter.Ptr) {
                         if (nLines == 0) return AdvanceTo(ptr);
-                        else return AdvanceTo(ptr, lineBegin, nLines);
-                    } else return this;
+                        return AdvanceTo(ptr, lineBegin, nLines);
+                    }
+                    return this;
                 }
             }
         EndOfBlock:
@@ -1220,8 +1221,9 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
         }
         if (count != 0) {
             if (nLines == 0) return AdvanceTo(iter);
-            else return AdvanceTo(iter, nLines, count - lineBeginCount);
-        } else return this;
+            return AdvanceTo(iter, nLines, count - lineBeginCount);
+        }
+        return this;
     }
 
     public State<TUserState> SkipToString(string str, int maxCharsOrNewlines, out string skippedString) {
@@ -1236,9 +1238,9 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
             char first = pStr[0];
             char* ptr = Iter.Ptr;
             char* bufferEnd = Iter.Anchor->BufferEnd;
-            char* end1 = unchecked (bufferEnd - strLength);
+            char* end1 = unchecked(bufferEnd - strLength);
             if (end1 >= ptr && end1 < bufferEnd) {
-                char* end2 = unchecked (ptr + maxCharsOrNewlines);
+                char* end2 = unchecked(ptr + maxCharsOrNewlines);
                 char* end = end1 <= end2 || end2 < ptr ? end1 : end2;
                 if (Iter.Block == Iter.Anchor->Block && ptr < end) {
                     for (;;) {
@@ -1360,8 +1362,9 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
         skippedString = null;
         if (count != 0) {
             if (nLines == 0) return AdvanceTo(iter);
-            else return AdvanceTo(iter, nLines, count - lineBeginCount);
-        } else return this;
+            return AdvanceTo(iter, nLines, count - lineBeginCount);
+        }
+        return this;
     }
 
     public State<TUserState> SkipToStringCI(string caseFoldedString, int maxCharsOrNewlines, out bool foundString) {
@@ -1375,9 +1378,9 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
             char first = pStr[0];
             char* ptr = Iter.Ptr;
             char* bufferEnd = Iter.Anchor->BufferEnd;
-            char* end1 = unchecked (bufferEnd - strLength);
+            char* end1 = unchecked(bufferEnd - strLength);
             if (end1 >= ptr && end1 < bufferEnd) {
-                char* end2 = unchecked (ptr + maxCharsOrNewlines);
+                char* end2 = unchecked(ptr + maxCharsOrNewlines);
                 char* end = end1 <= end2 || end2 < ptr ? end1 : end2;
                 if (Iter.Block == Iter.Anchor->Block && ptr < end) {
                     char* cftable = CaseFoldTable.FoldedChars;
@@ -1416,8 +1419,9 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
                 ReturnState:
                     if (ptr != Iter.Ptr) {
                         if (nLines == 0) return AdvanceTo(ptr);
-                        else return AdvanceTo(ptr, lineBegin, nLines);
-                    } else return this;
+                        return AdvanceTo(ptr, lineBegin, nLines);
+                    }
+                    return this;
                 }
             }
         EndOfBlock:
@@ -1463,8 +1467,9 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
         }
         if (count != 0) {
             if (nLines == 0) return AdvanceTo(iter);
-            else return AdvanceTo(iter, nLines, count - lineBeginCount);
-        } else return this;
+            return AdvanceTo(iter, nLines, count - lineBeginCount);
+        }
+        return this;
     }
 
     public State<TUserState> SkipToStringCI(string caseFoldedString, int maxCharsOrNewlines, out string skippedString) {
@@ -1479,9 +1484,9 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
             char first = pStr[0];
             char* ptr = Iter.Ptr;
             char* bufferEnd = Iter.Anchor->BufferEnd;
-            char* end1 = unchecked (bufferEnd - strLength);
+            char* end1 = unchecked(bufferEnd - strLength);
             if (end1 >= ptr && end1 < bufferEnd) {
-                char* end2 = unchecked (ptr + maxCharsOrNewlines);
+                char* end2 = unchecked(ptr + maxCharsOrNewlines);
                 char* end = end1 <= end2 || end2 < ptr ? end1 : end2;
                 if (Iter.Block == Iter.Anchor->Block && ptr < end) {
                     char* cftable = CaseFoldTable.FoldedChars;
@@ -1605,8 +1610,9 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
         skippedString = null;
         if (count != 0) {
             if (nLines == 0) return AdvanceTo(iter);
-            else return AdvanceTo(iter, nLines, count - lineBeginCount);
-        } else return this;
+            return AdvanceTo(iter, nLines, count - lineBeginCount);
+        }
+        return this;
     }
 
 } // class State
