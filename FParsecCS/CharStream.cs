@@ -155,7 +155,9 @@ public unsafe sealed class CharStream : IDisposable {
         /// <summary>The index of the last block of the stream, or Int32.MaxValue if the end of stream has not yet been detected.</summary>
         public int LastBlock;
         public GCHandle StreamHandle;
+        /// <summary>Begin of the used part of the char buffer (stays constant). Is null if the CharStream is empty.</summary>
         public char* BufferBegin;
+        /// <summary>End of the used part of the char buffer (varies for a multi-block stream). Is null if the CharStream is empty.</summary>
         public char* BufferEnd;
         public long CharIndex;
         public long CharIndexPlusOffset;
@@ -597,9 +599,15 @@ public unsafe sealed class CharStream : IDisposable {
         Encoding = Encoding.Unicode;
         var anchor = Anchor.Create(this);
         this.anchor = anchor;
-        anchor->BufferBegin = bufferBegin;
-        anchor->BufferEnd = bufferBegin + length;
-        anchor->BlockSizeMinusOverlap = length;
+        if (length != 0) {
+            anchor->BufferBegin = bufferBegin;
+            anchor->BufferEnd = bufferBegin + length;
+            anchor->BlockSizeMinusOverlap = length;
+        } else {
+            anchor->BufferBegin = null; // ensure that BufferBegin is null if length is 0
+            anchor->BufferEnd = null;
+            anchor->BlockSizeMinusOverlap = 0;
+        }
         anchor->Block = 0;
         anchor->LastBlock = 0;
         anchor->CharIndex = 0;
@@ -618,9 +626,15 @@ public unsafe sealed class CharStream : IDisposable {
         Encoding = Encoding.Unicode;
         var anchor = newUninitializedAnchor;
         this.anchor = anchor;
-        anchor->BufferBegin = begin;
-        anchor->BufferEnd = begin + length;
-        anchor->BlockSizeMinusOverlap = length;
+        if (length != 0) {
+            anchor->BufferBegin = begin;
+            anchor->BufferEnd = begin + length;
+            anchor->BlockSizeMinusOverlap = length;
+        } else {
+            anchor->BufferBegin = null; // ensure that BufferBegin is null if length is 0
+            anchor->BufferEnd = null;
+            anchor->BlockSizeMinusOverlap = 0;
+        }
         anchor->CharIndexPlusOffset = streamIndexOffset;
         anchor->CharIndexOffset = streamIndexOffset;
         anchor->EndIndex = streamIndexOffset + length;
@@ -749,7 +763,7 @@ public unsafe sealed class CharStream : IDisposable {
             }
         }
         var buffer = StringBuffer.Create(blockSize);
-        Debug.Assert(buffer.Length >= blockSize);
+        Debug.Assert(buffer.Length >= blockSize && (blockSize > 0 || buffer.StringPointer == null));
         Buffer = buffer;
         BufferString = buffer.String;
         BufferStringPointer = buffer.StringPointer;
@@ -764,8 +778,13 @@ public unsafe sealed class CharStream : IDisposable {
                 this.anchor = anchor;
                 anchor->BlockSizeMinusOverlap = bufferCount;
                 anchor->EndIndex = bufferCount;
-                anchor->BufferBegin = bufferBegin;
-                anchor->BufferEnd = bufferBegin + bufferCount;
+                if (bufferCount != 0) {
+                    anchor->BufferBegin = bufferBegin;
+                    anchor->BufferEnd = bufferBegin + bufferCount;
+                } else {
+                    anchor->BufferBegin = null;
+                    anchor->BufferEnd = null;
+                }
                 anchor->Block = 0;
                 anchor->LastBlock = 0;
                 anchor->CharIndex = 0;
@@ -808,6 +827,11 @@ public unsafe sealed class CharStream : IDisposable {
                 // the first block has no overlap with a previous block
                 d.Blocks.Add(new BlockInfo(byteBufferIndex, byteBufferIndex, 0, EOS, null, new DecoderState(), null, new DecoderState()));
                 d.ReadBlock(0);
+                if (anchor->BufferBegin == anchor->BufferEnd) {
+                    Debug.Assert(anchor->EndIndex == anchor->CharIndexOffset);
+                    anchor->BufferBegin = null;
+                    anchor->BufferEnd = null;
+                }
             }
         } catch {
             buffer.Dispose();
@@ -835,7 +859,7 @@ public unsafe sealed class CharStream : IDisposable {
         Anchor* anchor = this.anchor;
         if (anchor == null) throw new ObjectDisposedException("CharStream");
         char* bufferBegin = anchor->BufferBegin;
-        if (bufferBegin != anchor->BufferEnd) {
+        if (bufferBegin != null) {
             return new Iterator(){Anchor = anchor, Ptr = bufferBegin, Block = 0};
         } else {
             return new Iterator(){Anchor = anchor, Ptr = null, Block = -1};
@@ -906,12 +930,12 @@ public unsafe sealed class CharStream : IDisposable {
         /// <summary>Indicates whether the Iterator points to the beginning of the CharStream.
         /// If the CharStream is empty, this property is always true.</summary>
         public bool IsBeginOfStream { get {
-            return Ptr == Anchor->BufferBegin ? Block <= 0 : (Ptr == null && Anchor->BufferBegin == Anchor->BufferEnd);
+            return Ptr == Anchor->BufferBegin && Block <= 0;
         } }
 
         /// <summary>Indicates whether the Iterator points to the end of the CharStream,
         /// i.e. whether it points to one char beyond the last char in the CharStream.</summary>
-        public bool IsEndOfStream { get { return Block == -1; } }
+        public bool IsEndOfStream { get { return Block < 0; } }
 
         /// <summary>The char returned by Read() if the iterator has
         /// reached the end of the stream. The value is '\uFFFF'.</summary>
@@ -928,7 +952,6 @@ public unsafe sealed class CharStream : IDisposable {
         public long Index { get {
             Anchor* anchor = Anchor;
             int block = Block;
-
             if (block == anchor->Block) {
                 Debug.Assert(anchor->BufferBegin <= Ptr && Ptr < anchor->BufferEnd);
                 return (uint)PositiveDistance(anchor->BufferBegin, Ptr) + anchor->CharIndexPlusOffset;
