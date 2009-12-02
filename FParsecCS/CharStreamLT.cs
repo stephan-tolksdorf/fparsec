@@ -8,6 +8,7 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace FParsec {
 
@@ -18,17 +19,20 @@ public sealed class CharStream : IDisposable {
 
     public Encoding Encoding { get; private set; }
     internal String String;
+    /// <summary>Index of the first char in the string belonging to the stream, or 0 if the stream is empty.</summary>
     internal int IndexBegin;
+    /// <summary>Index of the last char in the string belonging to the stream + 1, or 0 if the stream is empty.</summary>
     internal int IndexEnd;
-    internal long StreamIndexOffset;
+    /// <summary>BeginIndex (stream index of the first char) - IndexBegin (string index of the first char)</summary>
+    internal long StringToStreamIndexOffset;
 
     /// <summary>The index of the first char in the stream, i.e. Begin.Index.
     /// This value is determined by the streamBeginIndex argument of some of the CharStream constructors.
     /// By default this value is 0.</summary>
-    public long BeginIndex { get { return StreamIndexOffset; } }
+    public long BeginIndex { get { return (uint)IndexBegin + StringToStreamIndexOffset; } }
 
     /// <summary>The index of the last char of the stream plus 1.</summary>
-    public long EndIndex   { get { return StreamIndexOffset + (IndexEnd - IndexBegin); } }
+    public long EndIndex   { get { return (uint)IndexEnd + StringToStreamIndexOffset; } }
 
     [Obsolete("CharStream.IndexOffset has been renamed to CharStream.BeginIndex.")]
     public long IndexOffset { get { return BeginIndex; } }
@@ -40,7 +44,7 @@ public sealed class CharStream : IDisposable {
         String = chars;
         //IndexBegin = 0;
         IndexEnd = chars.Length;
-        //StreamIndexOffset = 0L;
+        //IndexOffset_ = 0L;
     }
 
     /// <summary>Constructs a CharStream from the chars in the string argument between the indices index (inclusive) and index + length (exclusive).</summary>
@@ -61,7 +65,7 @@ public sealed class CharStream : IDisposable {
         String = chars;
         IndexBegin = index;
         IndexEnd = indexEnd;
-        StreamIndexOffset = streamBeginIndex;
+        StringToStreamIndexOffset = streamBeginIndex - IndexBegin;
     }
 
 
@@ -114,8 +118,8 @@ public sealed class CharStream : IDisposable {
         // the ByteBuffer must be larger than the longest detectable preamble
         if (byteBufferLength < MinimumByteBufferLength) byteBufferLength = MinimumByteBufferLength;
 
-        long streamPosition = 0;
         int bytesInStream = -1;
+        long streamPosition;
         if (stream.CanSeek) {
             streamPosition = stream.Position;
             long streamLength = stream.Length - streamPosition;
@@ -123,74 +127,63 @@ public sealed class CharStream : IDisposable {
                 bytesInStream = (int) streamLength;
                 if (bytesInStream < byteBufferLength) byteBufferLength = bytesInStream;
             }
+        } else {
+            streamPosition = 0;
         }
 
         byte[] byteBuffer = new byte[byteBufferLength];
-
         int byteBufferCount = 0;
+        // byteBufferLength should be larger than the longest detectable preamble
         do {
-            int c = stream.Read(byteBuffer, byteBufferCount, byteBuffer.Length - byteBufferCount);
-            if (c > 0) byteBufferCount += c;
-            else {
+            int n = stream.Read(byteBuffer, byteBufferCount, byteBuffer.Length - byteBufferCount);
+            if (n == 0) {
                 bytesInStream = byteBufferCount;
                 break;
             }
-        } while (byteBufferCount < 16);
+            byteBufferCount += n;
+        } while (byteBufferCount < MinimumByteBufferLength);
+        streamPosition += byteBufferCount;
+
         int preambleLength = Helper.DetectPreamble(byteBuffer, byteBufferCount, ref encoding, detectEncodingFromByteOrderMarks);
         bytesInStream -= preambleLength;
-        streamPosition += preambleLength;
         Encoding = encoding;
 
-        if (bytesInStream == 0) {
-            String = "";
-            //Index = 0;
-            //Length = 0;
-            //StreamIndexOffset = 0L;
-            return;
-        }
-
-        Decoder decoder = encoding.GetDecoder();
-        int charBufferLength = encoding.GetMaxCharCount(byteBufferLength); // might throw
-        char[] charBuffer = new char[charBufferLength];
-
-        int stringBufferCapacity = 2*charBufferLength;
-        if (bytesInStream > 0) {
-            try {
-                stringBufferCapacity = encoding.GetMaxCharCount(bytesInStream); // might throw
-            } catch (ArgumentOutOfRangeException) { }
-        }
-        StringBuilder sb = new StringBuilder(stringBufferCapacity);
-        if (byteBufferCount > preambleLength) {
-            int charBufferCount;
-            try {
-                charBufferCount = decoder.GetChars(byteBuffer, preambleLength, byteBufferCount - preambleLength, charBuffer, 0, false);
-                streamPosition += byteBufferCount - preambleLength;
-            } catch (DecoderFallbackException e) {
-                e.Data.Add("Stream.Position", streamPosition + e.Index);
-                throw;
+        if (bytesInStream != 0) {
+            int charBufferLength = encoding.GetMaxCharCount(byteBufferLength); // might throw
+            char[] charBuffer = new char[charBufferLength];
+            int stringBufferCapacity = 2*charBufferLength;
+            if (bytesInStream > 0) {
+                try {
+                    stringBufferCapacity = encoding.GetMaxCharCount(bytesInStream); // might throw
+                } catch (ArgumentOutOfRangeException) { }
             }
-            sb.Append(charBuffer, 0, charBufferCount);
-        }
-        for (;;) {
-            byteBufferCount = stream.Read(byteBuffer, 0, byteBuffer.Length);
-            bool flush = byteBufferCount == 0;
-            int charBufferCount;
-            try {
-                charBufferCount = decoder.GetChars(byteBuffer, 0, byteBufferCount, charBuffer, 0, flush);
+            var sb = new StringBuilder(stringBufferCapacity);
+            var decoder = encoding.GetDecoder();
+            Debug.Assert(preambleLength < byteBufferCount);
+            int byteBufferIndex = preambleLength;
+            bool flush = false;
+            for (;;) {
+                try {
+                    int charBufferCount = decoder.GetChars(byteBuffer, byteBufferIndex, byteBufferCount - byteBufferIndex, charBuffer, 0, flush);
+                    sb.Append(charBuffer, 0, charBufferCount);
+                } catch (DecoderFallbackException e) {
+                    e.Data.Add("Stream.Position", streamPosition - (byteBufferCount - byteBufferIndex) + e.Index);
+                    throw;
+                }
+                if (flush) break;
+                byteBufferIndex = 0;
+                byteBufferCount = stream.Read(byteBuffer, 0, byteBuffer.Length);
                 streamPosition += byteBufferCount;
-            } catch (DecoderFallbackException e) {
-                e.Data.Add("Stream.Position", streamPosition + e.Index);
-                throw;
+                flush = byteBufferCount == 0;
             }
-            sb.Append(charBuffer, 0, charBufferCount);
-            if (flush) break;
+            String = sb.ToString();
+            if (!leaveOpen) stream.Close();
+        } else {
+            String = "";
         }
-        String = sb.ToString();
         //Index = 0;
         IndexEnd = String.Length;
-        //StreamIndexOffset = 0L;
-
-        if (!leaveOpen) stream.Close();
+        //StringToStreamIndexOffset = 0L;
     }
 
     /// <summary>The low trust version of the CharStream class implements the IDisposable
@@ -210,7 +203,7 @@ public sealed class CharStream : IDisposable {
     /// or to the end of the stream if the indexed position lies beyond the last char in the stream.</summary>
     /// <exception cref="ArgumentOutOfRangeException">The index is negative or less than the BeginIndex.</exception>
     public Iterator Seek(long index) {
-        long idx = unchecked((uint)IndexBegin + index - StreamIndexOffset);
+        long idx = unchecked(index - StringToStreamIndexOffset);
         if (idx >= IndexBegin && idx < IndexEnd)
             return new Iterator {Stream = this, Idx = (int)idx};
         if (index < BeginIndex)
@@ -242,9 +235,9 @@ public sealed class CharStream : IDisposable {
         /// <summary>The index of the stream char pointed to by the Iterator.</summary>
         public long Index { get {
             if (Idx >= 0)
-                return Stream.StreamIndexOffset + (Idx - Stream.IndexBegin);
+                return (uint)Idx + Stream.StringToStreamIndexOffset;
             else
-                return Stream.StreamIndexOffset + (Stream.IndexEnd - Stream.IndexBegin);
+                return (uint)Stream.IndexEnd + Stream.StringToStreamIndexOffset;
         } }
 
         /// <summary>Returns an Iterator pointing to the next char in the stream. If the Iterator already
@@ -264,9 +257,56 @@ public sealed class CharStream : IDisposable {
         /// in the stream is interpreted as precisely one char beyond the last char.</summary>
         /// <exception cref="ArgumentOutOfRangeException">The new position would lie before the beginning of the `CharStream`.</exception>
         public Iterator Advance(int offset) {
-            var stream = Stream;
             int idx = unchecked(Idx + offset);
+            var stream = Stream;
             if (offset < 0) goto Negative;
+            if (unchecked((uint)idx) >= (uint)stream.IndexEnd) goto EndOfStream;
+        ReturnIter:
+            return new Iterator {Stream = stream, Idx = idx};
+        Negative:
+            if (Idx >= 0) {
+                if (idx >= stream.IndexBegin) goto ReturnIter;
+            } else {
+                idx = stream.IndexEnd + offset;
+                if (idx >= stream.IndexBegin) goto ReturnIter;
+            }
+            throw new ArgumentOutOfRangeException("offset");
+        EndOfStream:
+            idx = Int32.MinValue;
+            goto ReturnIter;
+        }
+
+        /// <summary>A helper routine for optimizing State methods</summary>
+        internal void _AdvanceInPlace(int offset) {
+            int idx = unchecked(Idx + offset);
+            var stream = Stream;
+            if (offset < 0) goto Negative;
+            if (unchecked((uint)idx) >= (uint)stream.IndexEnd) goto EndOfStream;
+        Return:
+            Idx = idx;
+            return;
+        Negative:
+            if (Idx >= 0) {
+                if (idx >= stream.IndexBegin) goto Return;
+            } else {
+                idx = stream.IndexEnd + offset;
+                if (idx >= stream.IndexBegin) goto Return;
+            }
+            throw new ArgumentOutOfRangeException("offset");
+        EndOfStream:
+            idx = Int32.MinValue;
+            goto Return;
+        }
+
+        /// <summary>Returns an Iterator that is advanced by offset chars. The Iterator can't
+        /// move past the end of the stream, i.e. any position beyond the last char
+        /// in the stream is interpreted as precisely one char beyond the last char.</summary>
+        /// <exception cref="ArgumentOutOfRangeException">The new position would lie before the beginning of the `CharStream`.</exception>
+        public Iterator Advance(long offset) {
+            if (unchecked((int)offset) != offset) goto LargeNumber;
+            int idx = unchecked(Idx + (int)offset);
+            var stream = Stream;
+            if ((int)offset < 0) goto Negative;
             if (unchecked((uint)idx) >= (uint)stream.IndexEnd) goto EndOfStream;
         ReturnIter:
             return new Iterator {Stream = stream, Idx = idx};
@@ -277,36 +317,13 @@ public sealed class CharStream : IDisposable {
             if (Idx >= 0) {
                 if (idx >= stream.IndexBegin) goto ReturnIter;
             } else {
-                idx = stream.IndexEnd + offset;
+                idx = stream.IndexEnd + (int)offset;
                 if (idx >= stream.IndexBegin) goto ReturnIter;
-            }
-            throw new ArgumentOutOfRangeException("offset");
-        }
-
-        /// <summary>Returns an Iterator that is advanced by offset chars. The Iterator can't
-        /// move past the end of the stream, i.e. any position beyond the last char
-        /// in the stream is interpreted as precisely one char beyond the last char.</summary>
-        /// <exception cref="ArgumentOutOfRangeException">The new position would lie before the beginning of the `CharStream`.</exception>
-        public Iterator Advance(long offset) {
-            if (unchecked((int)offset) != offset) goto LargeNumber;
-            int idx = unchecked(Idx + (int)offset);
-            if ((int)offset < 0) goto Negative;
-            if (unchecked((uint)idx) >= (uint)Stream.IndexEnd) goto EndOfStream;
-        ReturnIter:
-            return new Iterator {Stream = Stream, Idx = idx};
-        EndOfStream:
-            idx = Int32.MinValue;
-            goto ReturnIter;
-        Negative:
-            if (Idx >= 0) {
-                if (idx >= Stream.IndexBegin) goto ReturnIter;
-            } else {
-                idx = Stream.IndexEnd + (int)offset;
-                if (idx >= Stream.IndexBegin) goto ReturnIter;
             }
         OutOfRange:
             throw new ArgumentOutOfRangeException("offset");
         LargeNumber:
+            stream = Stream;
             if (offset >= 0) goto EndOfStream;
             else goto OutOfRange;
         }
@@ -319,9 +336,8 @@ public sealed class CharStream : IDisposable {
             int n = unchecked((int)offset);
             if (n >= 0) { // offset <= Int32.MaxValue
                 int idx = unchecked(Idx + n);
-                if (unchecked((uint)idx) < (uint)indexEnd) {
+                if (unchecked((uint)idx) < (uint)indexEnd)
                     return new Iterator {Stream = Stream, Idx = idx};
-                }
             }
             return new Iterator {Stream = Stream, Idx = Int32.MinValue};
         }
@@ -343,10 +359,10 @@ public sealed class CharStream : IDisposable {
         /// <summary>Advances the Iterator *in-place* by offset chars and returns the char on the new position.
         /// `c &lt;- iter._Increment(offset)` is an optimized implementation of `iter &lt;- iter.Advance(offset); c &lt;- iter.Read()`.</summary>
         public char _Increment(uint offset) {
-            var stream = Stream;
             int n = unchecked((int)offset);
             if (n >= 0) { // offset <= Int32.MaxValue
                 int idx = unchecked(Idx + n);
+                var stream = Stream;
                 if (unchecked((uint)idx) < (uint)stream.IndexEnd) {
                     Idx = idx;
                     return stream.String[idx];
@@ -366,14 +382,8 @@ public sealed class CharStream : IDisposable {
                 idx -= 1;
                 Idx = idx;
                 return stream.String[idx];
-            } else if (idx < 0) {
-                idx = stream.IndexEnd - 1;
-                if (idx >= stream.IndexBegin)  {
-                    Idx = idx;
-                    return stream.String[idx];
-                }
             }
-            return EOS;
+            return DecrementContinue(1);
         }
 
         /// <summary>Advances the Iterator *in-place* by -numberOfChars chars and returns the char on the new position,
@@ -382,21 +392,29 @@ public sealed class CharStream : IDisposable {
         public char _Decrement(uint offset) {
             int idx = unchecked(Idx - (int)offset);
             var stream = Stream;
-            if (idx < Idx && idx >= stream.IndexBegin) {
+            if (idx <= Idx && idx >= stream.IndexBegin) {
                 Idx = idx;
                 return stream.String[idx];
-            } else if (offset != 0) {
+            }
+            return DecrementContinue(offset);
+        }
+        [MethodImplAttribute(MethodImplOptions.NoInlining)]
+        private char DecrementContinue(uint offset) {
+            if (offset != 0) {
+                var stream = Stream;
                 if (Idx < 0) {
                     int indexEnd = stream.IndexEnd;
-                    idx = unchecked(indexEnd - (int)offset);
+                    var idx = unchecked(indexEnd - (int)offset);
                     if (idx < indexEnd && idx >= stream.IndexBegin) {
                         Idx = idx;
                         return stream.String[idx];
                     }
                 }
-            } else return Read();
-            Idx = stream.IndexBegin;
-            return EOS;
+                if (stream.IndexBegin != stream.IndexEnd)
+                    Idx = stream.IndexBegin;
+                return EOS;
+            }
+            return Read();
         }
 
         /// <summary>Is an optimized implementation of Next.Read().</summary>

@@ -474,7 +474,7 @@ public unsafe sealed class CharStream : IDisposable {
             anchor->CharIndex = charIndex;
             anchor->CharIndexPlusOffset = anchor->CharIndexOffset + charIndex;
             anchor->BufferEnd = buffer;
-            return buffer > begin ? begin : null;
+            return begin == buffer ? null : begin;
         }
     }
 
@@ -483,25 +483,23 @@ public unsafe sealed class CharStream : IDisposable {
     private static int ReadAllRemainingCharsFromStream(char* buffer, int maxCount, byte[] byteBuffer, int byteBufferIndex, int byteBufferCount, Stream stream, long streamPosition, Decoder decoder) {
         Debug.Assert(maxCount > 0 && byteBufferIndex >= 0 && byteBufferIndex < byteBufferCount);
         fixed (byte* pByteBuffer = byteBuffer) {
-            try {
-                int bufferCount = 0;
-                bufferCount += decoder.GetChars(pByteBuffer + byteBufferIndex, byteBufferCount - byteBufferIndex,
-                                                buffer + bufferCount, maxCount - bufferCount, false);
-                byteBufferIndex = 0;
-                bool flush;
-                do {
-                    byteBufferCount = stream.Read(byteBuffer, 0, byteBuffer.Length);
-                    streamPosition += byteBufferCount;
-                    flush = byteBufferCount == 0;
-                    bufferCount += decoder.GetChars(pByteBuffer, byteBufferCount,
+            bool flush = false;
+            int bufferCount = 0;
+            for (;;) {
+                try {
+                    bufferCount += decoder.GetChars(pByteBuffer + byteBufferIndex, byteBufferCount - byteBufferIndex,
                                                     buffer + bufferCount, maxCount - bufferCount, flush);
-                    byteBufferIndex += byteBufferCount; // GetChars consumed all bytes in the byte buffer
-                } while (!flush);
-                return bufferCount;
-            } catch (DecoderFallbackException e) {
-                e.Data.Add("Stream.Position", streamPosition - (byteBufferCount - byteBufferIndex) + e.Index);
-                throw;
+                } catch (DecoderFallbackException e) {
+                    e.Data.Add("Stream.Position", streamPosition - (byteBufferCount - byteBufferIndex) + e.Index);
+                    throw;
+                }
+                if (flush) break;
+                byteBufferIndex = 0; // GetChars consumed all bytes in the byte buffer
+                byteBufferCount = stream.Read(byteBuffer, 0, byteBuffer.Length);
+                streamPosition += byteBufferCount;
+                flush = byteBufferCount == 0;
             }
+            return bufferCount;
         }
     }
 
@@ -728,17 +726,17 @@ public unsafe sealed class CharStream : IDisposable {
 
         byte[] byteBuffer = new byte[byteBufferLength];
         int byteBufferCount = 0;
-        // byteBufferLength should be larger than the longest detectable preamble
         do {
             int n = stream.Read(byteBuffer, byteBufferCount, byteBufferLength - byteBufferCount);
-            if (n == 0) break;
+            if (n == 0) {
+                bytesInStream = byteBufferCount;
+                break;
+            }
             byteBufferCount += n;
-        } while (byteBufferCount < byteBufferLength);
-        if (byteBufferCount < byteBufferLength) bytesInStream = byteBufferCount;
+        } while (byteBufferCount < MinimumByteBufferLength);
         streamPosition += byteBufferCount;
 
         int preambleLength = Helper.DetectPreamble(byteBuffer, byteBufferCount, ref encoding, detectEncodingFromByteOrderMarks);
-        int byteBufferIndex = preambleLength;
         bytesInStream -= preambleLength;
 
         Encoding = encoding;
@@ -770,9 +768,9 @@ public unsafe sealed class CharStream : IDisposable {
         char* bufferBegin = buffer.StringPointer + buffer.Index;
         try {
             if (allCharsFitIntoOneBlock) {
-                int bufferCount = byteBufferIndex == byteBufferCount
+                int bufferCount = preambleLength == byteBufferCount
                                   ? 0
-                                  : ReadAllRemainingCharsFromStream(bufferBegin, buffer.Length, byteBuffer, byteBufferIndex, byteBufferCount, stream, streamPosition, decoder);
+                                  : ReadAllRemainingCharsFromStream(bufferBegin, buffer.Length, byteBuffer, preambleLength, byteBufferCount, stream, streamPosition, decoder);
                 if (!leaveOpen) stream.Close();
                 var anchor = Anchor.Create(this);
                 this.anchor = anchor;
@@ -799,7 +797,7 @@ public unsafe sealed class CharStream : IDisposable {
                 d.LeaveOpen = leaveOpen;
                 d.Decoder = decoder;
                 d.ByteBuffer = byteBuffer;
-                d.ByteBufferIndex = byteBufferIndex;
+                d.ByteBufferIndex = preambleLength;
                 d.ByteBufferCount = byteBufferCount;
                 d.MaxCharCountForOneByte = Math.Max(1, Encoding.GetMaxCharCount(1));
                 d.SerializableDecoderMembers = GetSerializableDecoderMemberInfo(decoder);
@@ -825,7 +823,7 @@ public unsafe sealed class CharStream : IDisposable {
                 anchor->CharIndexPlusOffset = 0;
                 d.Blocks = new List<BlockInfo>();
                 // the first block has no overlap with a previous block
-                d.Blocks.Add(new BlockInfo(byteBufferIndex, byteBufferIndex, 0, EOS, null, new DecoderState(), null, new DecoderState()));
+                d.Blocks.Add(new BlockInfo(preambleLength, preambleLength, 0, EOS, null, new DecoderState(), null, new DecoderState()));
                 d.ReadBlock(0);
                 if (anchor->BufferBegin == anchor->BufferEnd) {
                     Debug.Assert(anchor->EndIndex == anchor->CharIndexOffset);
@@ -852,6 +850,10 @@ public unsafe sealed class CharStream : IDisposable {
     /// <summary>an optimized version of end - begin, which assumes that 2^31 > end - begin >= 0. </summary>
     internal static int PositiveDistance(char* begin, char* end) {
         return (int)((uint)((byte*)end - (byte*)begin)/2);
+    }
+
+    internal static long PositiveDistance64(char* begin, char* end) {
+        return (long)((ulong)((byte*)end - (byte*)begin)/2);
     }
 
     /// <summary>An iterator pointing to the beginning of the stream (or to the end if the CharStream is empty).</summary>
@@ -954,14 +956,22 @@ public unsafe sealed class CharStream : IDisposable {
             int block = Block;
             if (block == anchor->Block) {
                 Debug.Assert(anchor->BufferBegin <= Ptr && Ptr < anchor->BufferEnd);
-                return (uint)PositiveDistance(anchor->BufferBegin, Ptr) + anchor->CharIndexPlusOffset;
-            } else if (block == -1) {
+                if (sizeof(System.IntPtr) != 8) // the JIT removes the inactive branch
+                    return (uint)PositiveDistance(anchor->BufferBegin, Ptr) + anchor->CharIndexPlusOffset;
+                else
+                    return PositiveDistance64(anchor->BufferBegin, Ptr) + anchor->CharIndexPlusOffset;
+            } else if (block < 0) {
+                Debug.Assert(block == -1 && Ptr == null);
                 // this is safe, as there can only be an end-of-stream iterator
                 // once the end of stream has been detected
-                return Anchor->EndIndex;
+                return anchor->EndIndex;
             } else {
+                Debug.Assert(anchor->BufferBegin <= Ptr && (Ptr < anchor->BufferEnd || anchor->Block == anchor->LastBlock));
                 long charIndexPlusOffset = anchor->CharIndexOffset + Math.BigMul(block, anchor->BlockSizeMinusOverlap);
-                return (uint)PositiveDistance(anchor->BufferBegin, Ptr) + charIndexPlusOffset;
+                if (sizeof(System.IntPtr) != 8)
+                    return (uint)PositiveDistance(anchor->BufferBegin, Ptr) + charIndexPlusOffset;
+                else
+                    return PositiveDistance64(anchor->BufferBegin, Ptr) + charIndexPlusOffset;
             }
         } }
 
@@ -975,14 +985,13 @@ public unsafe sealed class CharStream : IDisposable {
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public Iterator Next { get {
             Anchor* anchor = Anchor;
-            char* newPtr = this.Ptr + 1;
-            int block = Block;
-            if (block == anchor->Block && newPtr < anchor->BufferEnd)
-                return new Iterator() {Anchor = anchor, Ptr = newPtr, Block = block};
-            if (anchor->LastBlock == 0)
-                return new Iterator(){Anchor = anchor, Ptr = null, Block = -1};
-            return Stream.Seek(Index + 1);
+            char* newPtr = Ptr + 1;
+            if (Block == anchor->Block && newPtr < anchor->BufferEnd)
+                return new Iterator(){Anchor = anchor, Ptr = newPtr, Block = Block};
+            return NextContinue();
         } }
+        [MethodImplAttribute(MethodImplOptions.NoInlining)]
+        private Iterator NextContinue() { return AdvanceContinue(1u); }
 
         /// <summary>Returns an Iterator that is advanced by offset chars. The Iterator can't
         /// move past the end of the stream, i.e. any position beyond the last char
@@ -993,15 +1002,19 @@ public unsafe sealed class CharStream : IDisposable {
         /// <exception cref="ArgumentException">The input stream contains invalid bytes and the encoding was constructed with the throwOnInvalidBytes option.</exception>
         /// <exception cref="DecoderFallbackException">The input stream contains invalid bytes for which the decoder fallback threw this exception.</exception>
         public Iterator Advance(int offset) {
-            Anchor* anchor = Anchor;
-            char* ptr = this.Ptr;
-            char* newPtr = unchecked (ptr + offset);
-            // note that the second case in the following ternary condition must not include newPtr == ptr,
-            // so that ptr + Int32.MinValue == ptr on 32-bit platforms is correctly handled
-            if (Block == anchor->Block && offset >= 0 ? newPtr >= ptr && newPtr <  anchor->BufferEnd
-                                                      : newPtr <  ptr && newPtr >= anchor->BufferBegin)
-                return new Iterator() {Anchor = anchor, Ptr = newPtr, Block = Block};
-
+            if (offset >= 0) {
+                Anchor* anchor = Anchor;
+                if (Block == anchor->Block && offset < PositiveDistance(Ptr, anchor->BufferEnd))
+                    return new Iterator(){Anchor = Anchor, Ptr = Ptr + offset, Block = Block};
+                return AdvanceContinue((uint)offset);
+            } else {
+                if (Block >= 0 && unchecked((uint)-offset) <= (uint)PositiveDistance(Anchor->BufferBegin, Ptr))
+                    return new Iterator(){Anchor = Anchor, Ptr = unchecked(Ptr + offset), Block = Block};
+                return AdvanceContinue(offset);
+            }
+        }
+        [MethodImplAttribute(MethodImplOptions.NoInlining)]
+        internal Iterator AdvanceContinue(int offset) {
             return Stream.Seek(Index + offset);
         }
 
@@ -1039,14 +1052,15 @@ public unsafe sealed class CharStream : IDisposable {
         /// <exception cref="DecoderFallbackException">The input stream contains invalid bytes for which the decoder fallback threw this exception.</exception>
         public Iterator Advance(uint offset) {
             Anchor* anchor = Anchor;
-            char* ptr = this.Ptr;
-            int block = Block;
-            if (block == anchor->Block && offset < (uint)PositiveDistance(ptr, anchor->BufferEnd)) {
-                char* newPtr = ptr + offset;
-                return new Iterator() {Anchor = Anchor, Ptr = newPtr, Block = Block};
-            }
-            if (anchor->LastBlock == 0)
-                return new Iterator(){Anchor = anchor, Ptr = null, Block = -1};
+            if (Block == anchor->Block && offset < (uint)PositiveDistance(Ptr, anchor->BufferEnd))
+                return new Iterator(){Anchor = Anchor, Ptr = Ptr + offset, Block = Block};
+            return AdvanceContinue(offset);
+        }
+        [MethodImplAttribute(MethodImplOptions.NoInlining)]
+        private Iterator AdvanceContinue(uint offset) {
+            Debug.Assert(offset != 0 || Block != Anchor->Block);
+            if (Anchor->LastBlock == 0 || Block < 0 || (Block == Anchor->LastBlock && Block == Anchor->Block))
+                return new Iterator(){Anchor = Anchor, Ptr = null, Block = -1};
             return Stream.Seek(Index + offset);
         }
 
@@ -1072,10 +1086,7 @@ public unsafe sealed class CharStream : IDisposable {
             return IncrementContinue();
         }
         [MethodImplAttribute(MethodImplOptions.NoInlining)]
-        private char IncrementContinue() {
-            this = Next;
-            return Read();
-        }
+        private char IncrementContinue() { return IncrementContinue(1u); }
 
         /// <summary>Advances the Iterator *in-place* by offset chars and returns the char on the new position.
         /// `c &lt;- iter._Increment(offset)` is an optimized implementation of `iter &lt;- iter.Advance(offset); c &lt;- iter.Read()`.</summary>
@@ -1091,7 +1102,17 @@ public unsafe sealed class CharStream : IDisposable {
                 this.Ptr = newPtr;
                 return *newPtr;
             }
-            this = Advance(offset);
+            return IncrementContinue(offset);
+        }
+        [MethodImplAttribute(MethodImplOptions.NoInlining)]
+        internal char IncrementContinue(uint offset) {
+            Debug.Assert(offset != 0 || Block != Anchor->Block);
+            if (Anchor->LastBlock == 0 || Block < 0 || (Block == Anchor->LastBlock && Block == Anchor->Block)) {
+                Ptr   = null;
+                Block = -1;
+                return EOS;
+            }
+            this = Stream.Seek(Index + offset);
             return Read();
         }
 
@@ -1102,13 +1123,15 @@ public unsafe sealed class CharStream : IDisposable {
         /// <exception cref="IOException">An I/O error occured.</exception>
         public char _Decrement() {
             Anchor* anchor = Anchor;
-            char* newPtr = unchecked (this.Ptr - 1);
+            char* newPtr = unchecked (Ptr - 1);
             if (Block == anchor->Block && newPtr >= anchor->BufferBegin) {
-                this.Ptr = newPtr;
+                Ptr = newPtr;
                 return *newPtr;
             }
-            return DecrementContinue(1u);
+            return DecrementContinue();
         }
+        [MethodImplAttribute(MethodImplOptions.NoInlining)]
+        private char DecrementContinue() { return DecrementContinue(1u); }
 
         /// <summary>Advances the Iterator *in-place* by -offset chars and returns the char on the new position,
         /// except if the new position would lie before the beginning of the CharStream,
@@ -1117,24 +1140,45 @@ public unsafe sealed class CharStream : IDisposable {
         /// <exception cref="IOException">An I/O error occured.</exception>
         public char _Decrement(uint offset) {
             Anchor* anchor = Anchor;
-            char* ptr = this.Ptr;
-            if (Block == anchor->Block && offset <= (uint)PositiveDistance(anchor->BufferBegin, ptr)) {
-                char* newPtr = ptr - offset;
-                this.Ptr = newPtr;
+            if (Block == anchor->Block && offset <= (uint)PositiveDistance(anchor->BufferBegin, Ptr)) {
+                char* newPtr = Ptr - offset;
+                Ptr = newPtr;
                 return *newPtr;
             }
             return DecrementContinue(offset);
         }
         [MethodImplAttribute(MethodImplOptions.NoInlining)]
         private char DecrementContinue(uint offset) {
-           long newIndex = Index - offset;
-           if (newIndex >= Anchor->CharIndexOffset) {
-               this = Stream.Seek(newIndex);
-               return Read();
-           } else {
-               this = Stream.Begin;
-               return EOS;
-           }
+            Debug.Assert(offset != 0 || Block != Anchor->Block);
+            if (Block == 0 && Anchor->Block == 0) {
+                Ptr = Anchor->BufferBegin;
+                return EOS;
+            }
+            long newIndex = Index - offset;
+            if (newIndex >= Anchor->CharIndexOffset) {
+                this = Stream.Seek(newIndex);
+                return Read();
+            } else {
+                this = Stream.Begin;
+                return EOS;
+            }
+        }
+
+        /// <summary>A helper routine for optimizing State methods</summary>
+        internal void _AdvanceInPlace(int offset) { // uses the same logic as Peek(int)
+            char* newPtr = unchecked(Ptr + offset);
+            if (offset >= 0) {
+                if (newPtr >= Ptr && newPtr <  Anchor->BufferEnd   && Anchor->Block == Block)
+                    Ptr = newPtr;
+                else
+                    IncrementContinue((uint)offset);
+            } else {
+                // we must exclude ptrOff == Ptr here, because Ptr + Int32.MinValue == Ptr
+                if (newPtr <  Ptr && newPtr >= Anchor->BufferBegin && Anchor->Block == Block)
+                    Ptr = newPtr;
+                else
+                    this = AdvanceContinue(offset);
+            }
         }
 
         /// <summary>Is an optimized implementation of Next.Read().</summary>
@@ -1144,10 +1188,12 @@ public unsafe sealed class CharStream : IDisposable {
         /// <exception cref="DecoderFallbackException">The input stream contains invalid bytes for which the decoder fallback threw this exception.</exception>
         public char Peek() {
             Anchor* anchor = Anchor;
-            char* ptr1 = this.Ptr + 1;
+            char* ptr1 = Ptr + 1;
             if (Block == anchor->Block && ptr1 < anchor->BufferEnd) return *ptr1;
-            return PeekContinue(1u);
+            return PeekContinue();
         }
+        [MethodImplAttribute(MethodImplOptions.NoInlining)]
+        private char PeekContinue() { return PeekContinue(1u); }
 
         /// <summary>Is an optimized implementation of Advance(offset).Read(),
         /// except that the EndOfStreamChar ('\uFFFF') is returned if Index + offset &lt; 0 (instead of an exception being thrown).</summary>
@@ -1156,20 +1202,22 @@ public unsafe sealed class CharStream : IDisposable {
         /// <exception cref="ArgumentException">The input stream contains invalid bytes and the encoding was constructed with the throwOnInvalidBytes option.</exception>
         /// <exception cref="DecoderFallbackException">The input stream contains invalid bytes for which the decoder fallback threw this exception.</exception>
         public char Peek(int offset) {
-            char* ptrN = unchecked (Ptr + offset);
-            if (Block == Anchor->Block) {
-                if (offset < 0) {
-                    if (ptrN >= Anchor->BufferBegin && ptrN <  Ptr) return *ptrN;
-                } else {
-                    if (ptrN <  Anchor->BufferEnd   && ptrN >= Ptr) return *ptrN;
-                }
+            char* ptrOff = unchecked(Ptr + offset);
+            if (offset < 0) {
+                // we must exclude ptrOff == Ptr here, because Ptr + Int32.MinValue == Ptr
+                if (ptrOff <  Ptr && ptrOff >= Anchor->BufferBegin && Anchor->Block == Block) return *ptrOff;
+                return PeekContinue(offset);
+            } else {
+                if (ptrOff >= Ptr && ptrOff <  Anchor->BufferEnd   && Anchor->Block == Block) return *ptrOff;
+                return PeekContinue((uint)offset);
             }
-            return PeekContinue(offset);
         }
         [MethodImplAttribute(MethodImplOptions.NoInlining)]
         private char PeekContinue(int offset) {
+            Debug.Assert(offset < 0);
+            if (Block == 0 && Anchor->Block == 0) return EOS;
             long newIndex = Index + offset;
-            return newIndex >= Anchor->CharIndexOffset ? Stream.Seek(newIndex).Read() : EOS;
+            return newIndex < Anchor->CharIndexOffset ? EOS : Stream.Seek(newIndex).Read();
         }
 
         /// <summary>Is an optimized implementation of Advance(offset).Read().</summary>
@@ -1179,14 +1227,15 @@ public unsafe sealed class CharStream : IDisposable {
         /// <exception cref="DecoderFallbackException">The input stream contains invalid bytes for which the decoder fallback threw this exception.</exception>
         public char Peek(uint offset) {
             Anchor* anchor = Anchor;
-            char* ptr = this.Ptr;
+            char* ptr = Ptr;
             if (Block == anchor->Block && offset < (uint)PositiveDistance(ptr, anchor->BufferEnd))
-                return *(ptr + offset);
+                return ptr[offset];
             return PeekContinue(offset);
         }
         [MethodImplAttribute(MethodImplOptions.NoInlining)]
         private char PeekContinue(uint offset) {
-            if (Block == -1) return EOS;
+            Debug.Assert(offset != 0 || Block != Anchor->Block);
+            if (Anchor->LastBlock == 0 || Block < 0 || (Block == Anchor->LastBlock && Block == Anchor->Block)) return EOS;
             return Stream.Seek(Index + offset).Read();
         }
 
@@ -1202,7 +1251,7 @@ public unsafe sealed class CharStream : IDisposable {
         }
         [MethodImplAttribute(MethodImplOptions.NoInlining)]
         private bool MatchContinue(char ch) {
-            if (Block == -1) return false;
+            if (Block < 0) return false;
             Stream.Data.ReadBlock(Block);
             return *Ptr == ch;
         }
@@ -1218,17 +1267,20 @@ public unsafe sealed class CharStream : IDisposable {
         public bool Match(string chars) {
             Anchor* anchor = Anchor;
             if (Block == anchor->Block && chars.Length <= PositiveDistance(Ptr, anchor->BufferEnd)) {
-                for (int i = 0; i < chars.Length; ++i) {
-                    // The 64-bit JIT doesn't eliminate the bounds checking for strings, *sigh*.
-                    // The goto is necessary to improve the code generated by the 32-bit JIT.
+                for (int i = 0; i < chars.Length; ++i)
                     if (Ptr[i] != chars[i]) goto ReturnFalse;
-                }
                 return true;
             ReturnFalse:
                 return false;
             }
-            if (Block == -1) return chars.Length == 0;
-            return Match(chars, 0, chars.Length);
+            return MatchContinue(chars);
+        }
+        [MethodImplAttribute(MethodImplOptions.NoInlining)]
+        private bool MatchContinue(string chars) {
+            int length = chars.Length; // throws if chars is null
+            if (Anchor->LastBlock == 0 || Block < 0 || (Block == Anchor->LastBlock && Block == Anchor->Block))
+                return length == 0;
+            fixed (char* pChars = chars) return MatchContinue(pChars, length);
         }
 
         /// <summary>Returns true if caseFoldedChars matches the chars in the stream
@@ -1243,25 +1295,25 @@ public unsafe sealed class CharStream : IDisposable {
         /// <exception cref="ArgumentException">The input stream contains invalid bytes and the encoding was constructed with the throwOnInvalidBytes option.</exception>
         /// <exception cref="DecoderFallbackException">The input stream contains invalid bytes for which the decoder fallback threw this exception.</exception>
         public bool MatchCaseFolded(string caseFoldedChars) {
-            // The x86 JIT is not able to cope with the additional register pressure due to
-            // the cftable lookup. Our only hope for an efficient loop is to pin the string,
-            // and use pointer arithmetic.
-            fixed (char* pStr_ = caseFoldedChars) {
-                char* ptr = Ptr;
-                char* end = unchecked (ptr + caseFoldedChars.Length);
-                if (Block == Anchor->Block && end >= ptr && end <= Anchor->BufferEnd) {
-                    char* cftable = CaseFoldTable.FoldedChars;
-                    if (cftable == null) cftable = CaseFoldTable.Initialize();
-                    char* pStr = pStr_;
-                    for (; ptr < end; ++ptr, ++pStr) {
-                        if (cftable[*ptr] != *pStr) goto ReturnFalse;
-                    }
-                    return true;
-                ReturnFalse:
-                    return false;
-                }
-                return MatchCaseFoldedContinue(pStr_, caseFoldedChars.Length);
+            Anchor* anchor = Anchor;
+            if (Block == anchor->Block && caseFoldedChars.Length <= PositiveDistance(Ptr, anchor->BufferEnd)
+                && CaseFoldTable.FoldedChars != null)
+            {
+                for (int i = 0; i < caseFoldedChars.Length; ++i)
+                    if (CaseFoldTable.FoldedChars[Ptr[i]] != caseFoldedChars[i]) goto ReturnFalse;
+                return true;
+            ReturnFalse:
+                return false;
             }
+            return MatchCaseFoldedContinue(caseFoldedChars);
+        }
+        [MethodImplAttribute(MethodImplOptions.NoInlining)]
+        private bool MatchCaseFoldedContinue(string caseFoldedChars) {
+            int length = caseFoldedChars.Length; // throws if chars is null
+            if (Anchor->LastBlock == 0 || Block < 0 || (Block == Anchor->LastBlock && Block == Anchor->Block))
+                return length == 0;
+            fixed (char* pCaseFoldedCharsChars = caseFoldedChars)
+            return MatchCaseFoldedContinue(pCaseFoldedCharsChars, length);
         }
 
         /// <summary>Returns true if the chars in chars between the indices charsIndex (inclusive) and
@@ -1277,7 +1329,7 @@ public unsafe sealed class CharStream : IDisposable {
         public bool Match(string chars, int charsIndex, int length) {
             if (charsIndex < 0)
                 throw new ArgumentOutOfRangeException("charsIndex", "charsIndex is negative.");
-            if (length > chars.Length - charsIndex)
+            if (length > chars.Length - charsIndex) // throws if chars is null
                 throw new ArgumentOutOfRangeException("length", "Length is out of range.");
             fixed (char* pChars = chars) return Match(pChars + charsIndex, length); // checks length >= 0
         }
@@ -1295,7 +1347,7 @@ public unsafe sealed class CharStream : IDisposable {
         public bool Match(char[] chars, int charsIndex, int length) {
             if (charsIndex < 0)
                 throw new ArgumentOutOfRangeException("charsIndex", "charsIndex is negative.");
-            if (length > chars.Length - charsIndex)
+            if (length > chars.Length - charsIndex) // throws if chars is null
                 throw new ArgumentOutOfRangeException("length", "Length is out of range.");
             fixed (char* pChars = chars) return Match(pChars + charsIndex, length); // checks length >= 0
         }
@@ -1310,21 +1362,20 @@ public unsafe sealed class CharStream : IDisposable {
         /// <exception cref="ArgumentException">The input stream contains invalid bytes and the encoding was constructed with the throwOnInvalidBytes option.</exception>
         /// <exception cref="DecoderFallbackException">The input stream contains invalid bytes for which the decoder fallback threw this exception.</exception>
         public bool Match(char* chars, int length) {
-            char* ptr = Ptr;
             Anchor* anchor = Anchor;      // the unsigned comparison will correctly handle negative length values
-            if (Block == anchor->Block && unchecked((uint)length) <= (uint)PositiveDistance(ptr, anchor->BufferEnd)) {
+            if (Block == anchor->Block && unchecked((uint)length <= (uint)PositiveDistance(Ptr, anchor->BufferEnd))) {
                 #if UNALIGNED_READS
                     int len = length & 0x7ffffffe;
                     for (int i = 0; i < len; i += 2) {
-                        if (*((int*)(ptr + i)) != *((int*)(chars + i))) goto ReturnFalse;
+                        if (*((int*)(Ptr + i)) != *((int*)(chars + i))) goto ReturnFalse;
                     }
                     if (len != length) {
-                        if (ptr[len] != chars[len]) goto ReturnFalse;
+                        if (Ptr[len] != chars[len]) goto ReturnFalse;
                     }
                     return true;
                 #else
                     for (int i = 0; i < length; ++i) {
-                        if (ptr[i] != chars[i]) goto ReturnFalse;
+                        if (Ptr[i] != chars[i]) goto ReturnFalse;
                     }
                     return true;
                 #endif
@@ -1346,15 +1397,11 @@ public unsafe sealed class CharStream : IDisposable {
         /// <exception cref="ArgumentException">The input stream contains invalid bytes and the encoding was constructed with the throwOnInvalidBytes option.</exception>
         /// <exception cref="DecoderFallbackException">The input stream contains invalid bytes for which the decoder fallback threw this exception.</exception>
         public bool MatchCaseFolded(char* caseFoldedChars, int length) {
-            char* ptr = Ptr;
-            char* end = unchecked (ptr + length);
-            Anchor* anchor = Anchor; // we don't check length >= 0, so we must require end > ptr, because length could be Int32.MinValue
-            if (Block == anchor->Block && end > ptr && end <= anchor->BufferEnd) {
-                char* cftable = CaseFoldTable.FoldedChars;
-                if (cftable == null) cftable = CaseFoldTable.Initialize();
-                char* pStr = caseFoldedChars;
-                for (; ptr < end; ++ptr, ++pStr) {
-                    if (cftable[*ptr] != *pStr) goto ReturnFalse;
+            if (Block == Anchor->Block && unchecked((uint)length) <= (uint)PositiveDistance(Ptr, Anchor->BufferEnd)
+                && CaseFoldTable.FoldedChars != null)
+            {
+                for (int i = 0; i < length; ++i) {
+                    if (CaseFoldTable.FoldedChars[Ptr[i]] != caseFoldedChars[i]) goto ReturnFalse;
                 }
                 return true;
             ReturnFalse:
@@ -1370,7 +1417,7 @@ public unsafe sealed class CharStream : IDisposable {
             }
 
             int block = this.Block; // local copy that might be modified below
-            if (block == -1 || Anchor->LastBlock == 0) return false;
+            if (block < 0 || Anchor->LastBlock == 0 || (block == Anchor->LastBlock && block == Anchor->Block)) return false;
 
             CharStream stream = null;
             if (block != Anchor->Block) {
@@ -1419,7 +1466,7 @@ public unsafe sealed class CharStream : IDisposable {
             }
 
             int block = this.Block; // local copy that might be modified below
-            if (block == -1 || Anchor->LastBlock == 0) return false;
+            if (block < 0 || Anchor->LastBlock == 0 || (block == Anchor->LastBlock && block == Anchor->Block)) return false;
 
             CharStream stream = null;
             if (block != Anchor->Block) {
@@ -1490,6 +1537,7 @@ public unsafe sealed class CharStream : IDisposable {
                             // the char pointed to by the iterator has moved to beginning of the buffer
                             Block = block + 1;
                             Ptr -= Anchor->BlockSizeMinusOverlap;
+                            Debug.Assert(Anchor->BufferBegin <= Ptr && Ptr < Anchor->BufferEnd);
                         } else {
                             // block < LastBlock and we failed to read new chars from block + 1,
                             // so we now definitely need to read the current block
@@ -1512,7 +1560,7 @@ public unsafe sealed class CharStream : IDisposable {
         }
         [MethodImplAttribute(MethodImplOptions.NoInlining)]
         private char ReadContinue() {
-            if (Block == -1) return EOS;
+            if (Block < 0) return EOS;
             Stream.Data.ReadBlock(Block);
             return *Ptr;
         }
@@ -1560,7 +1608,7 @@ public unsafe sealed class CharStream : IDisposable {
         }
         [MethodImplAttribute(MethodImplOptions.NoInlining)]
         private TwoChars Read2Continue() {
-            if (Block == -1)
+            if (Block < 0)
                 return new TwoChars(EOS, EOS);
             else
                 return new TwoChars(Read(), Peek());
@@ -1598,7 +1646,7 @@ public unsafe sealed class CharStream : IDisposable {
         }
         private string ReadContinue(int length, bool allOrEmpty) {
             if (length < 0) throw new ArgumentOutOfRangeException("length", "Length is negative.");
-            if (length == 0 || Block == -1) return "";
+            if (length == 0 || Block < 0) return "";
             if (Anchor->LastBlock != Int32.MaxValue) {
                 long maxLength = Anchor->EndIndex - Index;
                 if (length > maxLength) {
@@ -1695,7 +1743,7 @@ public unsafe sealed class CharStream : IDisposable {
             }
 
             int block = this.Block; // local copy that might be modified below
-            if (block == -1) return 0;
+            if (block < 0) return 0;
 
             CharStream stream = null;
             if (block != Anchor->Block) {
@@ -1768,9 +1816,9 @@ public unsafe sealed class CharStream : IDisposable {
             if (Anchor != iterToCharAfterLastInString.Anchor)
                 throw new ArgumentOutOfRangeException("iterToCharAfterLastInString", "The Iterator argument belongs to a different CharStream.");
             int block = Block;
-            char* ptr = Ptr;
-            char* end = iterToCharAfterLastInString.Ptr;
             if (block == Anchor->Block && block == iterToCharAfterLastInString.Block) {
+                char* ptr = Ptr;
+                char* end = iterToCharAfterLastInString.Ptr;
                 if (ptr < end) return new String(ptr, 0, PositiveDistance(ptr, end));
                 else return "";
             }
@@ -1811,21 +1859,21 @@ public unsafe sealed class CharStream : IDisposable {
     /// points in the Basic Multilingual Plane, i.e. code points below 0x10000.
     /// If the argument is null, null is returned.</summary>
     static public string FoldCase(string str) {
-        char* cftable = CaseFoldTable.FoldedChars;
-        if (cftable == null) cftable = CaseFoldTable.Initialize();
         if (str != null) {
             fixed (char* src0 = str) {
+                char* end = src0 + str.Length;
+                char* cftable_ = CaseFoldTable.FoldedChars;
+                char* cftable = cftable_ == null ? CaseFoldTable.Initialize() : cftable_;
                 char* src = src0;
-                char* end = src + str.Length;
                 for (;;) { // src is null-terminated, so we can always read one char
-                    char   c = *src;
-                    char cfc = cftable[c];
-                    if (c == cfc) {
+                    char c = *src;
+                    if (c == cftable[c]) {
                         if (++src >= end) break;
                     } else {
-                        string newString = new String(src0, 0, str.Length);
-                        fixed (char* dst0 = newString) {
-                            char* dst = dst0 + PositiveDistance(src0, src);
+                        string newString = new String('\u0000', str.Length);
+                        fixed (char* dst_ = newString) {
+                            src = src0;
+                            char* dst = dst_;
                             do {
                                 *dst = cftable[*src];
                                  ++src; ++dst;

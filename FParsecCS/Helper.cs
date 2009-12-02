@@ -89,13 +89,17 @@ internal unsafe static T RunParserOnString<T,TParser,TUserState>(
     fixed (char* pStr = str) {
         var stream = new CharStream(str, pStr, pStr + index, length, 0, &anchor);
         try {
-            var data0  = new State<TUserState>.Data(1, 0, userState, streamName);
-            var state0 = new State<TUserState>(stream.Begin, data0);
+            var data = new State<TUserState>.Data{Line = 1, LineBegin = 0, UserState = userState, StreamName = streamName};
+            var state = new State<TUserState>{data = data};
+            // state0.Iter = stream.Begin
+            state.Iter.Anchor = &anchor;
+            state.Iter.Ptr    = anchor.BufferBegin; // will be null if length is 0
+            state.Iter.Block  = length == 0 ? -1 : 0;
             var applyParserOpt = applyParser as Microsoft.FSharp.Core.OptimizedClosures.FSharpFunc<TParser, State<TUserState>, T>;
             if (applyParserOpt != null)
-                return applyParserOpt.Invoke(parser, state0);
+                return applyParserOpt.Invoke(parser, state);
             else
-                return applyParser.Invoke(parser).Invoke(state0);
+                return applyParser.Invoke(parser).Invoke(state);
         } finally { // manually dispose stream
             if (stream.anchor != null) {
                 stream.anchor = null;
@@ -122,10 +126,13 @@ internal static T RunParserOnSubstream<T,TUserState,TSubStreamUserState>(
     if (idx1 < 0) idx1 = stream.IndexEnd;
     if (idx0 > idx1)
         throw new ArgumentException("The position of the second state lies before the position of the first state.");
-    var subStream = new CharStream(stream.String, idx0, idx1 - idx0, (idx0 - stream.IndexBegin) + stream.StreamIndexOffset);
+    var subStream = new CharStream(stream.String, idx0, idx1 - idx0, (uint)idx0 + stream.StringToStreamIndexOffset);
     var data0 = stateBeforeSubStream.data;
-    var data = new State<TSubStreamUserState>.Data(data0.Line, data0.LineBegin, userState, data0.StreamName);
-    var state = new State<TSubStreamUserState>(subStream.Begin, data);
+    var data = new State<TSubStreamUserState>.Data{Line = data0.Line, LineBegin = data0.LineBegin, UserState = userState, StreamName = data0.StreamName};
+    var state = new State<TSubStreamUserState>{data = data};
+    // state.Iter = subStream.Begin
+    state.Iter.Stream = subStream;
+    state.Iter.Idx = idx0 == idx1 ? Int32.MinValue : idx0;
     return parser.Invoke(state);
 }
 #else
@@ -136,11 +143,14 @@ internal unsafe static T RunParserOnSubstream<T,TUserState,TSubStreamUserState>(
 {
     CharStream.Anchor subStreamAnchor;
     var s0 = stateBeforeSubStream;
-    var s1 = stateAfterSubStream;
+    var data0 = s0.data;
+    var data = new State<TSubStreamUserState>.Data{Line = data0.Line, LineBegin = data0.LineBegin,
+                                                   UserState = userState, StreamName = data0.StreamName};
+    var state = new State<TSubStreamUserState>{data = data}; // the Iter member is assigned below
     CharStream.Anchor* anchor = s0.Iter.Anchor;
+    var s1 = stateAfterSubStream;
     if (anchor != s1.Iter.Anchor)
         throw new ArgumentException("The states are associated with different CharStreams.");
-
     if (anchor->LastBlock == 0) {
         // the CharStream has only one block, so its safe to
         // construct a new CharStream from a pointer into the original buffer
@@ -152,9 +162,10 @@ internal unsafe static T RunParserOnSubstream<T,TUserState,TSubStreamUserState>(
         int length = CharStream.PositiveDistance(ptr, end);
         CharStream stream = (CharStream)anchor->StreamHandle.Target;
         using (var subStream = new CharStream(stream.BufferString, stream.BufferStringPointer, ptr, length, s0.Index, &subStreamAnchor)) {
-            var data0 = stateBeforeSubStream.data;
-            var data = new State<TSubStreamUserState>.Data(data0.Line, data0.LineBegin, userState, data0.StreamName);
-            var state = new State<TSubStreamUserState>(subStream.Begin, data);
+            // state.Iter = subStream.Begin
+            state.Iter.Anchor = &subStreamAnchor;
+            state.Iter.Ptr    = subStreamAnchor.BufferBegin; // will be null if length is 0
+            state.Iter.Block  = length == 0 ? -1 : 0;
             return parser.Invoke(state);
         }
     } else if (s0.Iter.Block == s1.Iter.Block && anchor->Block == s1.Iter.Block) {
@@ -165,9 +176,10 @@ internal unsafe static T RunParserOnSubstream<T,TUserState,TSubStreamUserState>(
         string subString = new String(ptr, 0, length);
         fixed (char* pSubString = subString)
         using (var subStream = new CharStream(subString, pSubString, pSubString, length, s0.Index, &subStreamAnchor)) {
-            var data0 = stateBeforeSubStream.data;
-            var data = new State<TSubStreamUserState>.Data(data0.Line, data0.LineBegin, userState, data0.StreamName);
-            var state = new State<TSubStreamUserState>(subStream.Begin, data);
+            // state.Iter = subStream.Begin
+            state.Iter.Anchor = &subStreamAnchor;
+            state.Iter.Ptr    = subStreamAnchor.BufferBegin; // will be null if length is 0
+            state.Iter.Block  = length == 0 ? -1 : 0;
             return parser.Invoke(state);
         }
     } else {
@@ -181,9 +193,10 @@ internal unsafe static T RunParserOnSubstream<T,TUserState,TSubStreamUserState>(
         fixed (char* pSubString = subString) {
             s0.Iter.Read(pSubString, length);
             using (var subStream = new CharStream(subString, pSubString, pSubString, length, s0.Index, &subStreamAnchor)) {
-                var data0 = stateBeforeSubStream.data;
-                var data = new State<TSubStreamUserState>.Data(data0.Line, data0.LineBegin, userState, data0.StreamName);
-                var state = new State<TSubStreamUserState>(subStream.Begin, data);
+                // state.Iter = subStream.Begin
+                state.Iter.Anchor = &subStreamAnchor;
+                state.Iter.Ptr    = subStreamAnchor.BufferBegin; // will be null if length is 0
+                state.Iter.Block  = length == 0 ? -1 : 0;
                 return parser.Invoke(state);
             }
         }
@@ -213,7 +226,7 @@ public sealed class CharSet {
             tableMin = min = 0x10000;
             max = -1;
             table = new int[0];
-            charsNotInTable = null;
+            // charsNotInTable = null;
             return;
         }
         if (maxTableSize < 4) maxTableSize = 4;
