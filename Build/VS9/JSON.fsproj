@@ -5,13 +5,13 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{368d4810-4cb8-43e7-901f-3050091f114e}</ProjectGuid>
+    <ProjectGuid>{5fbfe1a7-82c2-49ce-92b0-b0ec04021419}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>PEG</RootNamespace>
-    <AssemblyName>peg</AssemblyName>
+    <RootNamespace>JSON</RootNamespace>
+    <AssemblyName>json</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <Name>PEG</Name>
+    <Name>JSON</Name>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -31,14 +31,12 @@
     <WarningLevel>3</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <StartArguments>..\..\test_peg.txt</StartArguments>
-    <StartWorkingDirectory>
-    </StartWorkingDirectory>
+    <OutputPath>bin\Debug</OutputPath>
+    <StartArguments>..\..\..\..\Samples\JSON\test_json.txt</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <StartArguments>..\..\test_peg.txt</StartArguments>
-    <StartWorkingDirectory>
-    </StartWorkingDirectory>
+    <OutputPath>bin\Release</OutputPath>
+    <StartArguments>..\..\..\..\Samples\JSON\test_json.txt</StartArguments>
     <OtherFlags>--debug</OtherFlags>
   </PropertyGroup>
   <ItemGroup>
@@ -48,20 +46,26 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ast.fs" />
-    <Compile Include="parser.fs" />
-    <Compile Include="main.fs" />
+    <Compile Include="..\..\Samples\JSON\ast.fs">
+      <Link>ast.fs</Link>
+    </Compile>
+    <Compile Include="..\..\Samples\JSON\parser.fs">
+      <Link>parser.fs</Link>
+    </Compile>
+    <Compile Include="..\..\Samples\JSON\main.fs">
+      <Link>main.fs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\FParsecCS\FParsecCS.csproj">
+    <ProjectReference Include="FParsecCS.csproj">
       <Name>FParsecCS</Name>
       <Project>{501423c3-8ea5-4e54-8d9c-ef60272b57fa}</Project>
-      <Private>True</Private>
+      <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\FParsec\FParsec.fsproj">
+    <ProjectReference Include="FParsec.fsproj">
       <Name>FParsec</Name>
       <Project>{8ea340d3-e9e0-477e-9ac3-fbfdf3bad41e}</Project>
-      <Private>True</Private>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\FSharp\1.0\Microsoft.FSharp.Targets" />

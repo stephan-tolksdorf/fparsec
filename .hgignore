@@ -1,11 +1,11 @@
 syntax: glob
 
 Thumbs.db
-Build/Debug/*
-Build/Release/*
+Build/bin/*
 Unused/*
 */bin/*
 */obj/*
+*.user
 *.suo
 *.pyc
 *~

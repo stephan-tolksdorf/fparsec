@@ -5,13 +5,13 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{ec65683f-e2a1-4523-bf89-b081b20b0cc5}</ProjectGuid>
+    <ProjectGuid>{ecc92e10-c53b-40fc-9033-f3bb63a6f7a8}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Calculator</RootNamespace>
-    <AssemblyName>Calculator</AssemblyName>
+    <RootNamespace>FParsecVersion</RootNamespace>
+    <AssemblyName>interp_fparsec</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <Name>Calculator</Name>
+    <Name>FParsecVersion</Name>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -31,28 +31,47 @@
     <WarningLevel>3</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <OutputPath>bin\Release\</OutputPath>
+    <StartArguments>..\..\..\..\Samples\FSharpParsingSample\LexYaccVersion\test.lang</StartArguments>
     <OtherFlags>--debug</OtherFlags>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <StartArguments>..\..\..\..\Samples\FSharpParsingSample\LexYaccVersion\test.lang</StartArguments>
+  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FSharp.PowerPack, Version=1.9.6.16, Culture=neutral, PublicKeyToken=a19089b1c74d0809">
+      <Name>FSharp.PowerPack</Name>
+      <AssemblyName>FSharp.PowerPack.dll</AssemblyName>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="calculator.fs" />
+    <Compile Include="..\..\Samples\FSharpParsingSample\LexYaccVersion\ast.fs">
+      <Link>ast.fs</Link>
+    </Compile>
+    <Compile Include="..\..\Samples\FSharpParsingSample\LexYaccVersion\interp.fs">
+      <Link>interp.fs</Link>
+    </Compile>
+    <Compile Include="..\..\Samples\FSharpParsingSample\FParsecVersion\parser.fs">
+      <Link>parser.fs</Link>
+    </Compile>
+    <Compile Include="..\..\Samples\FSharpParsingSample\FParsecVersion\main.fs">
+      <Link>main.fs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\FParsecCS\FParsecCS.csproj">
+    <ProjectReference Include="FParsecCS.csproj">
       <Name>FParsecCS</Name>
       <Project>{501423c3-8ea5-4e54-8d9c-ef60272b57fa}</Project>
-      <Private>True</Private>
+      <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\FParsec\FParsec.fsproj">
+    <ProjectReference Include="FParsec.fsproj">
       <Name>FParsec</Name>
       <Project>{8ea340d3-e9e0-477e-9ac3-fbfdf3bad41e}</Project>
-      <Private>True</Private>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\FSharp\1.0\Microsoft.FSharp.Targets" />

@@ -5,13 +5,13 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{8ea340d3-e9e0-477e-9ac3-fbfdf3bad41e}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <RootNamespace>FParsec</RootNamespace>
-    <AssemblyName>FParsec</AssemblyName>
+    <ProjectGuid>{368d4810-4cb8-43e7-901f-3050091f114e}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>PEG</RootNamespace>
+    <AssemblyName>peg</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <Name>FParsec</Name>
+    <Name>PEG</Name>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -30,38 +30,45 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>3</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <OutputPath>..\Build\Release\</OutputPath>
-    <OtherFlags>--debug</OtherFlags>
-    <Tailcalls>false</Tailcalls>
-  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <OutputPath>..\Build\Debug\</OutputPath>
-    <OtherFlags>
-    </OtherFlags>
-    <DefineConstants>TRACE;DEBUG;NOINLINE</DefineConstants>
+    <StartArguments>..\..\..\..\Samples\PEG\test_peg.txt</StartArguments>
+    <StartWorkingDirectory>
+    </StartWorkingDirectory>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <StartArguments>..\..\..\..\Samples\PEG\test_peg.txt</StartArguments>
+    <StartWorkingDirectory>
+    </StartWorkingDirectory>
+    <OtherFlags>--debug</OtherFlags>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\FParsecCS\FParsecCS.csproj">
+    <Compile Include="..\..\Samples\PEG\ast.fs">
+      <Link>ast.fs</Link>
+    </Compile>
+    <Compile Include="..\..\Samples\PEG\parser.fs">
+      <Link>parser.fs</Link>
+    </Compile>
+    <Compile Include="..\..\Samples\PEG\main.fs">
+      <Link>main.fs</Link>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="FParsecCS.csproj">
       <Name>FParsecCS</Name>
       <Project>{501423c3-8ea5-4e54-8d9c-ef60272b57fa}</Project>
       <Private>False</Private>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="AssemblyInfo.fs" />
-    <Compile Include="Internals.fs" />
-    <Compile Include="Error.fsi" />
-    <Compile Include="Error.fs" />
-    <Compile Include="Primitives.fsi" />
-    <Compile Include="Primitives.fs" />
-    <Compile Include="CharParsers.fsi" />
-    <Compile Include="CharParsers.fs" />
-    <Compile Include="OperatorPrecedenceParser.fsi" />
-    <Compile Include="OperatorPrecedenceParser.fs" />
+    <ProjectReference Include="FParsec.fsproj">
+      <Name>FParsec</Name>
+      <Project>{8ea340d3-e9e0-477e-9ac3-fbfdf3bad41e}</Project>
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\FSharp\1.0\Microsoft.FSharp.Targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -5,13 +5,13 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{5fbfe1a7-82c2-49ce-92b0-b0ec04021419}</ProjectGuid>
+    <ProjectGuid>{a5957be0-a31b-4245-be7f-2218caf83541}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>JSON</RootNamespace>
-    <AssemblyName>json</AssemblyName>
+    <RootNamespace>Test</RootNamespace>
+    <AssemblyName>test_fparsec</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <Name>JSON</Name>
+    <Name>Test</Name>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -30,36 +30,54 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>3</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <NoWarn>
+    </NoWarn>
+    <OtherFlags>--debug</OtherFlags>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <OutputPath>bin\Debug</OutputPath>
-    <StartArguments>..\..\test_json.txt</StartArguments>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <OutputPath>bin\Release</OutputPath>
-    <StartArguments>..\..\test_json.txt</StartArguments>
-    <OtherFlags>--debug</OtherFlags>
-  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\..\Test\Test.fs">
+      <Link>Test.fs</Link>
+    </Compile>
+    <Compile Include="..\..\Test\CharStreamTests.fs">
+      <Link>CharStreamTests.fs</Link>
+    </Compile>
+    <Compile Include="..\..\Test\StateTests.fs">
+      <Link>StateTests.fs</Link>
+    </Compile>
+    <Compile Include="..\..\Test\PrimitivesTests.fs">
+      <Link>PrimitivesTests.fs</Link>
+    </Compile>
+    <Compile Include="..\..\Test\CharParsersTests.fs">
+      <Link>CharParsersTests.fs</Link>
+    </Compile>
+    <Compile Include="..\..\Test\HexLiteralHelpersTests.fs">
+      <Link>HexLiteralHelpersTests.fs</Link>
+    </Compile>
+    <Compile Include="..\..\Test\OperatorPrecedenceParserTests.fs">
+      <Link>OperatorPrecedenceParserTests.fs</Link>
+    </Compile>
+    <Compile Include="..\..\Test\AllTests.fs">
+      <Link>AllTests.fs</Link>
+    </Compile>
+  </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="ast.fs" />
-    <Compile Include="parser.fs" />
-    <Compile Include="main.fs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\FParsecCS\FParsecCS.csproj">
+    <ProjectReference Include="FParsecCS.csproj">
       <Name>FParsecCS</Name>
       <Project>{501423c3-8ea5-4e54-8d9c-ef60272b57fa}</Project>
-      <Private>True</Private>
+      <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\FParsec\FParsec.fsproj">
+    <ProjectReference Include="FParsec.fsproj">
       <Name>FParsec</Name>
       <Project>{8ea340d3-e9e0-477e-9ac3-fbfdf3bad41e}</Project>
-      <Private>True</Private>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\FSharp\1.0\Microsoft.FSharp.Targets" />

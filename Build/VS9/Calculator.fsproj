@@ -5,13 +5,13 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{1cda7320-dbcf-465c-b88a-11a2ec0625da}</ProjectGuid>
+    <ProjectGuid>{ec65683f-e2a1-4523-bf89-b081b20b0cc5}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>OriginalSample</RootNamespace>
-    <AssemblyName>interp</AssemblyName>
+    <RootNamespace>Calculator</RootNamespace>
+    <AssemblyName>calculator</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <Name>LexYaccVersion</Name>
+    <Name>Calculator</Name>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -30,34 +30,32 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>3</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <StartArguments>..\..\test.lang</StartArguments>
-    <OtherFlags>--mlcompatibility</OtherFlags>
-  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <OtherFlags>--debug --mlcompatibility</OtherFlags>
-    <StartArguments>..\..\test.lang</StartArguments>
+    <OutputPath>bin\Release\</OutputPath>
+    <OtherFlags>--debug</OtherFlags>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="ast.fs" />
-    <Compile Include="interp.fs" />
-    <Content Include="lex.fsl" />
-    <Content Include="pars.fsy" />
-    <Compile Include="pars.fsi" />
-    <Compile Include="pars.fs" />
-    <Compile Include="lex.fs" />
-    <Compile Include="main.fs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="FSharp.PowerPack, Version=1.9.6.16, Culture=neutral, PublicKeyToken=a19089b1c74d0809">
-      <Name>FSharp.PowerPack</Name>
-      <AssemblyName>FSharp.PowerPack.dll</AssemblyName>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\Samples\Calculator\calculator.fs">
+      <Link>calculator.fs</Link>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="FParsecCS.csproj">
+      <Name>FParsecCS</Name>
+      <Project>{501423c3-8ea5-4e54-8d9c-ef60272b57fa}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="FParsec.fsproj">
+      <Name>FParsec</Name>
+      <Project>{8ea340d3-e9e0-477e-9ac3-fbfdf3bad41e}</Project>
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\FSharp\1.0\Microsoft.FSharp.Targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

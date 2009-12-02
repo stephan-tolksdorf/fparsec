@@ -5,13 +5,13 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{ecc92e10-c53b-40fc-9033-f3bb63a6f7a8}</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <RootNamespace>FParsecVersion</RootNamespace>
-    <AssemblyName>interp</AssemblyName>
+    <ProjectGuid>{8ea340d3-e9e0-477e-9ac3-fbfdf3bad41e}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>FParsec</RootNamespace>
+    <AssemblyName>FParsec</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <Name>FParsecVersion</Name>
+    <Name>FParsec</Name>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -31,44 +31,57 @@
     <WarningLevel>3</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <StartArguments>..\..\..\LexYaccVersion\test.lang</StartArguments>
+    <OutputPath>bin\Release\</OutputPath>
     <OtherFlags>--debug</OtherFlags>
+    <Tailcalls>false</Tailcalls>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <StartArguments>..\..\..\LexYaccVersion\test.lang</StartArguments>
+    <OutputPath>bin\Debug\</OutputPath>
+    <OtherFlags>
+    </OtherFlags>
+    <DefineConstants>TRACE;DEBUG;NOINLINE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FSharp.PowerPack, Version=1.9.6.16, Culture=neutral, PublicKeyToken=a19089b1c74d0809">
-      <Name>FSharp.PowerPack</Name>
-      <AssemblyName>FSharp.PowerPack.dll</AssemblyName>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\LexYaccVersion\ast.fs">
-      <Link>ast.fs</Link>
-    </Compile>
-    <Compile Include="..\LexYaccVersion\interp.fs">
-      <Link>interp.fs</Link>
-    </Compile>
-    <Compile Include="parser.fs" />
-    <Compile Include="main.fs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\FParsecCS\FParsecCS.csproj">
+    <ProjectReference Include="FParsecCS.csproj">
       <Name>FParsecCS</Name>
       <Project>{501423c3-8ea5-4e54-8d9c-ef60272b57fa}</Project>
-      <Private>True</Private>
+      <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\FParsec\FParsec.fsproj">
-      <Name>FParsec</Name>
-      <Project>{8ea340d3-e9e0-477e-9ac3-fbfdf3bad41e}</Project>
-      <Private>True</Private>
-    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\FParsec\AssemblyInfo.fs">
+      <Link>AssemblyInfo.fs</Link>
+    </Compile>
+    <Compile Include="..\..\FParsec\Internals.fs">
+      <Link>Internals.fs</Link>
+    </Compile>
+    <Compile Include="..\..\FParsec\Error.fsi">
+      <Link>Error.fsi</Link>
+    </Compile>
+    <Compile Include="..\..\FParsec\Error.fs">
+      <Link>Error.fs</Link>
+    </Compile>
+    <Compile Include="..\..\FParsec\Primitives.fsi">
+      <Link>Primitives.fsi</Link>
+    </Compile>
+    <Compile Include="..\..\FParsec\Primitives.fs">
+      <Link>Primitives.fs</Link>
+    </Compile>
+    <Compile Include="..\..\FParsec\CharParsers.fsi">
+      <Link>CharParsers.fsi</Link>
+    </Compile>
+    <Compile Include="..\..\FParsec\CharParsers.fs">
+      <Link>CharParsers.fs</Link>
+    </Compile>
+    <Compile Include="..\..\FParsec\OperatorPrecedenceParser.fsi">
+      <Link>OperatorPrecedenceParser.fsi</Link>
+    </Compile>
+    <Compile Include="..\..\FParsec\OperatorPrecedenceParser.fs">
+      <Link>OperatorPrecedenceParser.fs</Link>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\FSharp\1.0\Microsoft.FSharp.Targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
