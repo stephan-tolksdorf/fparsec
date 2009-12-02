@@ -4,6 +4,7 @@
 using System;
 using System.Diagnostics;
 using System.Text;
+using System.Globalization;
 using System.Runtime.InteropServices;
 
 namespace FParsec {
@@ -72,6 +73,39 @@ ReturnTrue:
     return true;
 }
 
+#if !LOW_TRUST
+// This is about the fastest way to run a parser on a string.
+// (If you need something faster, you'll have to recycle CharStream and (first) State instances;
+//  but that's too application specific to be efficiently implementable in this library.)
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification="The CharStream is manually disposed.")]
+internal unsafe static T RunParserOnString<T,TParser,TUserState>(
+                             string str, int index, int length,
+                             Microsoft.FSharp.Core.FSharpFunc<TParser,Microsoft.FSharp.Core.FSharpFunc<State<TUserState>,T>> applyParser,
+                             TParser parser,
+                             TUserState userState,
+                             string streamName)
+{
+    CharStream.Anchor anchor;
+    fixed (char* pStr = str) {
+        var stream = new CharStream(str, pStr + index, index, length, 0, &anchor);
+        try {
+            var data0  = new State<TUserState>.Data(1, 0, userState, streamName);
+            var state0 = new State<TUserState>(stream.Begin, data0);
+            var applyParserOpt = applyParser as Microsoft.FSharp.Core.OptimizedClosures.FSharpFunc<TParser, State<TUserState>, T>;
+            if (applyParserOpt != null)
+                return applyParserOpt.Invoke(parser, state0);
+            else
+                return applyParser.Invoke(parser).Invoke(state0);
+        } finally { // manually dispose stream
+            if (stream.anchor != null) {
+                stream.anchor = null;
+                anchor.StreamHandle.Free();
+            }
+        }
+    }
+}
+#endif
+
 #if LOW_TRUST
 internal static T RunParserOnSubstream<T,TUserState,TSubStreamUserState>(
                              Microsoft.FSharp.Core.FSharpFunc<State<TSubStreamUserState>,T> parser,
@@ -100,6 +134,7 @@ internal unsafe static T RunParserOnSubstream<T,TUserState,TSubStreamUserState>(
                              TSubStreamUserState userState,
                              State<TUserState> stateBeforeSubStream, State<TUserState> stateAfterSubStream)
 {
+    CharStream.Anchor subStreamAnchor;
     var s0 = stateBeforeSubStream;
     var s1 = stateAfterSubStream;
     CharStream.Anchor* anchor = s0.Iter.Anchor;
@@ -117,10 +152,8 @@ internal unsafe static T RunParserOnSubstream<T,TUserState,TSubStreamUserState>(
         int length = CharStream.PositiveDistance(ptr, end);
         CharStream stream = (CharStream)anchor->StreamHandle.Target;
         string buffer = stream.BufferString;
-        using (var subStream = buffer != null
-                               ? new CharStream(buffer, ptr, CharStream.PositiveDistance(anchor->BufferBegin, ptr) + stream.BufferStringIndex, length, s0.Index)
-                               : new CharStream(ptr, length, s0.Index, 0))
-        {
+        int index = buffer == null ? 0 : CharStream.PositiveDistance(anchor->BufferBegin, ptr) + stream.BufferStringIndex;
+        using (var subStream = new CharStream(buffer, ptr, index, length, s0.Index, &subStreamAnchor)) {
             var data0 = stateBeforeSubStream.data;
             var data = new State<TSubStreamUserState>.Data(data0.Line, data0.LineBegin, userState, data0.StreamName);
             var state = new State<TSubStreamUserState>(subStream.Begin, data);
@@ -133,7 +166,7 @@ internal unsafe static T RunParserOnSubstream<T,TUserState,TSubStreamUserState>(
         int length = CharStream.PositiveDistance(ptr, end);
         string subString = new String(ptr, 0, length);
         fixed (char* pSubString = subString)
-        using (var subStream = new CharStream(subString, pSubString, 0, length, s0.Index)) {
+        using (var subStream = new CharStream(subString, pSubString, 0, length, s0.Index, &subStreamAnchor)) {
             var data0 = stateBeforeSubStream.data;
             var data = new State<TSubStreamUserState>.Data(data0.Line, data0.LineBegin, userState, data0.StreamName);
             var state = new State<TSubStreamUserState>(subStream.Begin, data);
@@ -149,7 +182,7 @@ internal unsafe static T RunParserOnSubstream<T,TUserState,TSubStreamUserState>(
         string subString = new String('\u0000', length);
         fixed (char* pSubString = subString) {
             s0.Iter.Read(pSubString, length);
-            using (var subStream = new CharStream(subString, pSubString, 0, length, s0.Index)) {
+            using (var subStream = new CharStream(subString, pSubString, 0, length, s0.Index, &subStreamAnchor)) {
                 var data0 = stateBeforeSubStream.data;
                 var data = new State<TSubStreamUserState>.Data(data0.Line, data0.LineBegin, userState, data0.StreamName);
                 var state = new State<TSubStreamUserState>(subStream.Begin, data);

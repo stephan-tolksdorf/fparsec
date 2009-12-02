@@ -16,7 +16,6 @@ using System.Runtime.CompilerServices;
 
 
 namespace FParsec {
-
 /// <summary>Provides access to the char content of a binary Stream (or a String) through
 /// an iterator-based interface that is especially well suited for parser applications.</summary>
 public unsafe sealed class CharStream : IDisposable {
@@ -142,7 +141,7 @@ public unsafe sealed class CharStream : IDisposable {
     //   allocated on the stack and all fields are initialized to 0/null!).
 
     /// <summary>Represents the link between a CharStream and its Iterators.
-    /// Lives on the unmanaged heap and holds a GCHandle, hence must be properly freed.</summary>
+    /// May be allocated on the unmanaged heap and holds a GCHandle, hence must be properly freed.</summary>
     internal struct Anchor {
         public int Block;
         /// <summary>The index of the last block of the stream, or Int32.MaxValue if the end of stream has not yet been detected.</summary>
@@ -155,6 +154,7 @@ public unsafe sealed class CharStream : IDisposable {
         public long CharIndexOffset;
         public long EndIndex;
         public int BlockSizeMinusOverlap;
+        public bool NeedToFree;
 
         public static Anchor* Create(CharStream stream) {
             // We create the anchor instance on the unmanaged heap. An alternative would be to use a
@@ -162,13 +162,14 @@ public unsafe sealed class CharStream : IDisposable {
             // (because an Anchor is a small object that can be long-lived).
             // (If AllocHGlobal becomes a bottleneck, we could replace it with a pool allocator.)
             Anchor* p = (Anchor*) Marshal.AllocHGlobal(sizeof(Anchor));
+            p->NeedToFree = true;
             p->StreamHandle = GCHandle.Alloc(stream, GCHandleType.Normal);
             return p;
         }
 
         public static void Free(Anchor *p) {
             p->StreamHandle.Free();
-            Marshal.FreeHGlobal((IntPtr) p);
+            if (p->NeedToFree) Marshal.FreeHGlobal((IntPtr) p);
         }
     }
 
@@ -215,8 +216,8 @@ public unsafe sealed class CharStream : IDisposable {
     // because either the stream is small and the lifetime short, or the BufferString is
     // so large that it will be allocated on the large object heap and the pinning is a no-op.
 
-    private Anchor* anchor; // allocated and assigned during construction,
-                            // freed and set to null during disposal
+    internal Anchor* anchor; // allocated and assigned during construction,
+                             // freed and set to null during disposal
 
     /// <summary>The current block in BufferString.</summary>
     private int Block { get { return anchor->Block; } }
@@ -270,13 +271,6 @@ public unsafe sealed class CharStream : IDisposable {
         CharConstructorContinue(bufferBegin, length, streamBeginIndex);
     }
 
-    internal CharStream(string chars, char* pCharsPlusIndex, int index, int length, long streamBeginIndex) {
-        Debug.Assert(index >= 0 && length <= chars.Length - index && pCharsPlusIndex != null && streamIndexOffset >= 0 && streamIndexOffset < (1L << 60));
-        BufferString = chars;
-        ByteBufferIndex = index; // we recycle ByteBufferIndex for BufferStringIndex
-        CharConstructorContinue(pCharsPlusIndex, length, streamIndexOffset);
-    }
-
     /// <summary>Constructs a CharStream from the chars in the char array argument between the indices index (inclusive) and index + length (exclusive).</summary>
     /// <exception cref="ArgumentNullException">chars is null.</exception>
     /// <exception cref="ArgumentOutOfRangeException">At least one of the following conditions is not satisfied: index ≥ 0, length ≥ 0 and index + length ≤ chars.Length.</exception>
@@ -315,15 +309,11 @@ public unsafe sealed class CharStream : IDisposable {
         CharConstructorContinue(pchars, length, streamBeginIndex);
     }
 
-    internal CharStream(char* pchars, int length, long streamBeginIndex, int dummyArgumentForInternalConstructorWithoutParameterChecking) {
-        CharConstructorContinue(pchars, length, streamBeginIndex);
-    }
-
     private void CharConstructorContinue(char* bufferBegin, int length, long streamBeginIndex) {
         Debug.Assert(bufferBegin != null && length >= 0 && bufferBegin <= bufferBegin + length && streamBeginIndex >= 0 && streamBeginIndex < (1L << 60));
         Encoding = Encoding.Unicode;
         BlockSize = length;
-        anchor = Anchor.Create(this);
+        var anchor = Anchor.Create(this);
         anchor->BlockSizeMinusOverlap = length;
         anchor->EndIndex = streamBeginIndex + length;
         anchor->BufferBegin = bufferBegin;
@@ -333,6 +323,26 @@ public unsafe sealed class CharStream : IDisposable {
         anchor->CharIndex = 0;
         anchor->CharIndexPlusOffset = streamBeginIndex;
         anchor->CharIndexOffset = streamBeginIndex;
+        this.anchor = anchor;
+    }
+
+    internal CharStream(string chars, char* pCharsPlusIndex, int index, int length, long streamIndexOffset, Anchor* newUninitializedAnchor) {
+        Debug.Assert(index >= 0 && length >= 0 && (chars == null ? index == 0 : length <= chars.Length - index) && pCharsPlusIndex != null && streamIndexOffset >= 0 && streamIndexOffset < (1L << 60));
+        Debug.Assert(newUninitializedAnchor->NeedToFree == false && !newUninitializedAnchor->StreamHandle.IsAllocated);
+        Debug.Assert(newUninitializedAnchor->Block == 0 && newUninitializedAnchor->LastBlock == 0 && newUninitializedAnchor->CharIndex == 0);
+        BufferString = chars;
+        ByteBufferIndex = index; // we recycle ByteBufferIndex for BufferStringIndex
+        BlockSize = length;
+        Encoding = Encoding.Unicode;
+        var anchor = newUninitializedAnchor;
+        anchor->BlockSizeMinusOverlap = length;
+        anchor->EndIndex = streamIndexOffset + length;
+        anchor->BufferBegin = pCharsPlusIndex;
+        anchor->BufferEnd = pCharsPlusIndex + length;
+        anchor->CharIndexPlusOffset = streamIndexOffset;
+        anchor->CharIndexOffset = streamIndexOffset;
+        anchor->StreamHandle = GCHandle.Alloc(this, GCHandleType.Normal);
+        this.anchor = anchor;
     }
 
     /// <summary>Constructs a CharStream from the file at the given path.<br/>Is equivalent to CharStream(new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.SequentialScan), false, encoding, true, defaultBlockSize, defaultBlockSize/3, ((defaultBlockSize/3)*2)/3, defaultByteBufferLength).</summary>

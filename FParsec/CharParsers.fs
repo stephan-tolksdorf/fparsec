@@ -68,23 +68,31 @@ let runParser (parser: Parser<'Result,'UserState>) (ustate: 'UserState) (name: s
 let runParserOnString (parser: Parser<'Result,'UserState>) (ustate: 'UserState) (streamName: string) (chars: string) =
     if isNull chars then nullArg "chars"
 #if LOW_TRUST
-    let
-#else
-    use
-#endif
-        stream = new CharStream(chars)
+    let stream = new CharStream(chars)
     let state0 = new State<'UserState>(stream, ustate, streamName)
     applyParser parser state0
+#else
+    // use stream = new CharStream(chars)
+    // let state0 = new State<'UserState>(stream, ustate, streamName)
+    // applyParser parser state0
+
+    // Helper.RunParserOnString is an optimized internal helper function
+    Helper.RunParserOnString(chars, 0, chars.Length, applyParser, parser, ustate, streamName)
+#endif
 
 let runParserOnSubstring (parser: Parser<'Result,'UserState>) (ustate: 'UserState) (streamName: string) (chars: string) (index: int) length =
 #if LOW_TRUST
-    let
-#else
-    use
-#endif
-        stream = new CharStream(chars, index, length)
+    let stream = new CharStream(chars, index, length)
     let state0 = new State<'UserState>(stream, ustate, streamName)
     applyParser parser state0
+#else
+    // Helper.RunParserOnString does no argument checking
+    if index < 0 then
+        raise (System.ArgumentOutOfRangeException("index", "The index is negative."))
+    if length < 0 || length > chars.Length - index then
+        raise (System.ArgumentOutOfRangeException("length", "The length is out of range."))
+    Helper.RunParserOnString(chars, index, length, applyParser, parser, ustate, streamName)
+#endif
 
 let runParserOnStream (parser: Parser<'Result,'UserState>) (ustate: 'UserState) (streamName: string) (byteStream: System.IO.Stream) (encoding: System.Text.Encoding) =
 #if LOW_TRUST
