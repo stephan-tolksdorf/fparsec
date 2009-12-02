@@ -801,8 +801,8 @@ public unsafe sealed class CharStream : IDisposable {
         if (0 <= off && off < PositiveDistance(anchor->BufferBegin, anchor->BufferEnd))
             return new Iterator(){Anchor = anchor, Ptr = anchor->BufferBegin + (int)off, Block = anchor->Block};
         if (index >= anchor->EndOfStream) return new Iterator() {Anchor = anchor, Ptr = null, Block = -1};
+        if (index < anchor->CharIndexOffset) throw (new ArgumentOutOfRangeException("index", "The index is negative (or less than the char index offset specified at construction time)."));
         index -= anchor->CharIndexOffset;
-        if (index < 0) throw (new ArgumentOutOfRangeException("index", "The index is negative (or less than the char index offset specified at construction time)."));
         int blockSizeMinusOverlap = anchor->BlockSizeMinusOverlap;
         long idx_;
         long block_ = Math.DivRem(index, blockSizeMinusOverlap, out idx_);
@@ -944,7 +944,8 @@ public unsafe sealed class CharStream : IDisposable {
                                                      // if overflow checking is activated
                 return new Iterator() {Anchor = Anchor, Ptr = newPtr, Block = Block};
             }
-            return Stream.Seek(Index + numberOfChars);
+            long index = Index;
+            return Stream.Seek(numberOfChars > long.MaxValue - index ? long.MaxValue : index + numberOfChars);
         }
 
         /// <summary>Returns an Iterator that is advanced by numberOfChars chars. The Iterator can't

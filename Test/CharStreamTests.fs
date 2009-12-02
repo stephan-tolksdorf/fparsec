@@ -151,21 +151,22 @@ let testNonStreamConstructors() =
 
 /// Tries to systematically test all code branches in CharStream.Iterator methods.
 let testStream (stream: CharStream) (refString: string) blockSize blockOverlap minRegexSpace =
+    let beginIndex = stream.Begin.Index
     let dollarString = new string('$', refString.Length)
     let N = refString.Length
 
     let testMove i j =
         let c0 = refString.[0]
-        let ii = int64 (min i N)
+        let ii = int64 (min i N) + beginIndex
         let ci = if i < N then refString.[i] else EOS
-        let jj = int64 (min j N)
+        let jj = int64 (min j N) + beginIndex
         let cj = if j < N then refString.[j] else EOS
         let d = j - min i N
 
-        let iteri = stream.Seek(int64 i)
+        let iteri = stream.Seek(int64 i + beginIndex)
         iteri.Index  |> Equal ii
         iteri.Read() |> Equal ci
-        let iterj = stream.Seek(int64 j)
+        let iterj = stream.Seek(int64 j + beginIndex)
         iterj.Index  |> Equal jj
         iterj.Read() |> Equal cj
         iterj.IsEndOfStream |> Equal (j >= N)
@@ -239,16 +240,17 @@ let testStream (stream: CharStream) (refString: string) blockSize blockOverlap m
         iter.Advance(i)
 
     let testMoveException() =
-        stream.Seek(System.Int64.MaxValue).Index |> Equal (int64 N)
+        let endIndex = beginIndex + int64 N
+        stream.Seek(System.Int64.MaxValue).Index |> Equal endIndex
         try  stream.Seek(-1L) |> ignore; Fail ()
         with ArgumentOutOfRange -> ()
         try  stream.Seek(System.Int64.MinValue) |> ignore; Fail ()
         with ArgumentOutOfRange -> ()
 
         let iter0 = getIter(0)
-        getIter(0).Advance(System.Int32.MaxValue).Index |> Equal (int64 N)
-        getIter(0).Advance(System.UInt32.MaxValue).Index |> Equal (int64 N)
-        getIter(0).Advance(System.Int64.MaxValue).Index |> Equal (int64 N)
+        getIter(0).Advance(System.Int32.MaxValue).Index |> Equal endIndex
+        getIter(0).Advance(System.UInt32.MaxValue).Index |> Equal endIndex
+        getIter(0).Advance(System.Int64.MaxValue).Index |> Equal endIndex
 
         try  getIter(0).Advance(-1) |> ignore; Fail ()
         with ArgumentOutOfRange -> ()
@@ -293,9 +295,9 @@ let testStream (stream: CharStream) (refString: string) blockSize blockOverlap m
         try  iter._Decrement(uint32 (N + 1)) |> ignore; Fail ()
         with ArgumentOutOfRange -> ()
         iter._Decrement(uint32 N) |> Equal refString.[0]
-        iter.Index |> Equal 0L
+        iter.Index |> Equal beginIndex
         iter._Increment(System.UInt32.MaxValue) |> Equal EOS
-        iter.Index |> Equal (int64 N)
+        iter.Index |> Equal endIndex
 
     testMoveException()
 
@@ -932,7 +934,7 @@ let run() =
 
     let testStreams() =
         let refString = "1234567890ABCDEF"
-        use stringStream = new CharStream(refString, 0, refString.Length)
+        use stringStream = new CharStream(" " + refString, 1, refString.Length, 100L)
         testStream stringStream refString refString.Length 0 0
 
         let be = new System.Text.UTF32Encoding(true, true)

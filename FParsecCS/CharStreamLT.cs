@@ -201,14 +201,12 @@ public sealed class CharStream : IDisposable {
     /// or to the end of the stream if the indexed position lies beyond the last char in the stream.</summary>
     /// <exception cref="ArgumentOutOfRangeException">The index is less than 0 (or less than the index offset specified when the CharStream was constructed).</exception>
     public Iterator Seek(long index) {
-        long off = unchecked(index - StreamIndexOffset);
-        if (off < 0)
-            throw (new ArgumentOutOfRangeException("index", "The index is negative (or less than the char index offset specified at construction time)."));
-        int streamLength = IndexEnd - IndexBegin;
-        if (off < streamLength)
-            return new Iterator {Stream = this, Idx = IndexBegin + (int)off};
-        else
-            return new Iterator {Stream = this, Idx = Int32.MinValue};
+        long idx = unchecked((uint)IndexBegin + index - StreamIndexOffset);
+        if (idx >= IndexBegin && idx < IndexEnd)
+            return new Iterator {Stream = this, Idx = (int)idx};
+        if (index < IndexOffset)
+            throw (new ArgumentOutOfRangeException("index", "The index is less than 0 or or less than the BeginIndex."));
+        return new Iterator {Stream = this, Idx = Int32.MinValue};
     }
 
     /// <summary>The iterator type for CharStreams.</summary>
