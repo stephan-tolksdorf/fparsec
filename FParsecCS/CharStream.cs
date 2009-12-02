@@ -123,6 +123,11 @@ public unsafe sealed class CharStream : IDisposable {
         }
     }
 
+    private const int DefaultBlockSize = 3*(1 << 16); // 3*2^16 = 200k
+    private const int DefaultByteBufferLength = (1 << 12);
+    private static int MinimumByteBufferLength = 128; // must be larger than longest detectable preamble (we can only guess here)
+    private const char EOS = '\uFFFF';
+
     // For ease of use, we need the iterators to hold a reference to the CharStream. If we stored
     // a CharStream reference directly in the iterator, the JIT would emit a call to the write barrier
     // thunk for each write to the reference field. As we want to use iterators mainly as immutable values,
@@ -139,6 +144,9 @@ public unsafe sealed class CharStream : IDisposable {
     //   call) and overall FParsec performance is only marginally influenced by this optimization.
     //   (Each Reply<_,_> value alone currently triggers 2-3 write barrier calls, even when it is
     //   allocated on the stack and all fields are initialized to 0/null!).
+
+    internal Anchor* anchor; // allocated and assigned during construction,
+                             // freed and set to null during disposal
 
     /// <summary>Represents the link between a CharStream and its Iterators.
     /// May be allocated on the unmanaged heap and holds a GCHandle, hence must be properly freed.</summary>
@@ -172,11 +180,6 @@ public unsafe sealed class CharStream : IDisposable {
             if (p->NeedToFree) Marshal.FreeHGlobal((IntPtr) p);
         }
     }
-
-    private const int DefaultBlockSize = 3*(1 << 16); // 3*2^16 = 200k
-    private const int DefaultByteBufferLength = (1 << 12);
-    private static int MinimumByteBufferLength = 128; // must be larger than longest detectable preamble (we can only guess here)
-    private const char EOS = '\uFFFF';
 
     /// <summary>The Encoding that is used for decoding the underlying byte stream, or
     /// System.Text.UnicodeEncoding in case the stream was directly constructed
@@ -213,8 +216,292 @@ public unsafe sealed class CharStream : IDisposable {
     /// <summary>Holds the StringBuffer for CharStreams constructed from a binary stream.</summary>
     private StringBuffer Buffer;
 
-    internal Anchor* anchor; // allocated and assigned during construction,
-                             // freed and set to null during disposal
+    private MultiBlockData Data;
+
+    /// <summary>Contains the data and methods needed in case the input byte stream
+    /// is large enough to span multiple blocks of the CharStream.</summary>
+    private class MultiBlockData {
+        public Anchor* anchor;
+
+        public Stream Stream;
+        // we keep a seperate record of the Stream.Position, so that we don't need to require Stream.CanSeek
+        public long StreamPosition;
+        public bool LeaveOpen;
+
+        public int MaxCharCountForOneByte;
+        public Decoder Decoder;
+        public MemberInfo[] SerializableDecoderMembers;
+
+        public int BlockSize;
+        public int BlockOverlap;
+        /// <summary>BufferBegin + BlockSize - minRegexSpace</summary>
+        public char* RegexSpaceThreshold;
+
+        /// <summary>The byte stream index of the first unused byte in the ByteBuffer.</summary>
+        public long ByteIndex { get { return StreamPosition - (ByteBufferCount - ByteBufferIndex); } }
+
+        public List<BlockInfo> Blocks;
+
+        public byte[] ByteBuffer;
+        public int ByteBufferIndex;
+        public int ByteBufferCount;
+
+         /// <summary>Refills the ByteBuffer if no unused byte is remaining.
+        /// Returns the number of unused bytes in the (refilled) ByteBuffer.</summary>
+        private int FillByteBuffer() {
+            int n = ByteBufferCount - ByteBufferIndex;
+            if (n > 0) return n;
+            return ClearAndRefillByteBuffer(0);
+        }
+
+        /// <summary>Refills the ByteBuffer starting at the given index. If the underlying byte
+        /// stream contains enough bytes, the ByteBuffer is filled up to the ByteBuffer.Length.
+        /// Returns the number of bytes available for consumption in the refilled ByteBuffer.</summary>
+        private int ClearAndRefillByteBuffer(int byteBufferIndex) {
+            Debug.Assert(byteBufferIndex >= 0 && byteBufferIndex <= ByteBuffer.Length);
+            // Stream.Read is not guaranteed to use all the provided output buffer, so we need
+            // to call it in a loop when we want to rely on the buffer being fully filled
+            // (unless we reach the end of the stream). Knowing that the buffer always gets
+            // completely filled allows us to calculate the buffer utilization after skipping
+            // a certain number of input bytes. For most streams there will be only one loop
+            // iteration anyway (or two at the end of the stream).
+            int i = byteBufferIndex;
+            int m = ByteBuffer.Length - byteBufferIndex;
+            while (m != 0) {
+                int c = Stream.Read(ByteBuffer, i, m);
+                if (c == 0) break;
+                i += c;
+                m -= c;
+            }
+            int n = i - byteBufferIndex;
+            ByteBufferIndex = byteBufferIndex;
+            ByteBufferCount = byteBufferIndex + n;
+            StreamPosition += n;
+            return n;
+        }
+
+        /// <summary>Reads up to the given maximum number of chars into the given buffer.
+        /// If more than the maximum number of chars have to be read from the stream in order to
+        /// fill the buffer (due to	the way the Decoder API works), the overhang chars are
+        /// returned through the output parameter.
+        /// Returns a pointer to one char after the last char read.</summary>
+        private char* ReadCharsFromStream(char* buffer, int maxCount, out string overhangChars) {
+            Debug.Assert(maxCount >= 0);
+            fixed (byte* byteBuffer = ByteBuffer) {
+                overhangChars = null;
+                try {
+                    while (maxCount >= MaxCharCountForOneByte) {// if maxCount < MaxCharCountForOneByte, Convert could throw
+                        int nBytesInByteBuffer = FillByteBuffer();
+                        bool flush = nBytesInByteBuffer == 0;
+                        int bytesUsed, charsUsed; bool completed = false;
+                        Decoder.Convert(byteBuffer + ByteBufferIndex, nBytesInByteBuffer,
+                                        buffer, maxCount, flush,
+                                        out bytesUsed, out charsUsed, out completed);
+                        ByteBufferIndex += bytesUsed; // GetChars consumed bytesUsed bytes from the byte buffer
+                        buffer += charsUsed;
+                        maxCount -= charsUsed;
+                        if (flush && completed) return buffer;
+                    }
+                    if (maxCount == 0) return buffer;
+
+                    char* cs = stackalloc char[MaxCharCountForOneByte];
+                    for (;;) {
+                        int nBytesInByteBuffer = FillByteBuffer();
+                        bool flush = nBytesInByteBuffer == 0;
+                        int bytesUsed, charsUsed; bool completed;
+                        Decoder.Convert(byteBuffer + ByteBufferIndex, nBytesInByteBuffer,
+                                        cs, MaxCharCountForOneByte, flush,
+                                        out bytesUsed, out charsUsed, out completed);
+                        ByteBufferIndex += bytesUsed;
+                        if (charsUsed > 0) {
+                            int i = 0;
+                            do {
+                                *(buffer++) = cs[i++];
+                                if (--maxCount == 0) {
+                                    if (i < charsUsed) overhangChars = new string(cs, i, charsUsed - i);
+                                    return buffer;
+                                }
+                            } while (i < charsUsed);
+                        }
+                        if (flush && completed) return buffer;
+                    }
+                } catch (DecoderFallbackException e) {
+                    e.Data.Add("Stream.Position", ByteIndex + e.Index);
+                    throw;
+                }
+            }
+        }
+
+        /// <summary> Reads a block of chars (must be different from the current block)
+        /// into the BufferString. Returns a pointer to the first char of the new block,
+        /// or null if no chars could be read.</summary>
+        internal char* ReadBlock(int block) {
+            if (block > anchor->LastBlock) return null;
+            int prevBlock = anchor->Block;
+            if (block == prevBlock) throw new InvalidOperationException();
+
+            BlockInfo bi = Blocks[block];
+            int blockSizeMinusOverlap = BlockSize - BlockOverlap;
+            long charIndex = Math.BigMul(block, blockSizeMinusOverlap);
+            char* bufferBegin = anchor->BufferBegin;
+            char* begin, buffer;
+            int nCharsToRead;
+
+            // fill [0 ... BlockOverlap-1] if block > 0
+            if (prevBlock == block - 1) {
+                MemMove(bufferBegin, bufferBegin + blockSizeMinusOverlap, BlockOverlap*2);
+                Debug.Assert(bufferBegin[BlockOverlap - 1] == bi.LastCharInOverlap);
+                begin = buffer = bufferBegin + BlockOverlap;
+            } else if (prevBlock >= 0) {
+                if (block > 0 && SerializableDecoderMembers == null)
+                    throw new NotSupportedException("The CharStream does not support seeking backward over ranges longer than the block overlap because the Encoding's Decoder is not serializable.");
+                Stream.Seek(bi.ByteIndex, SeekOrigin.Begin); // will throw if Stream can't seek
+                // now that there was no exception, we can change the state...
+                StreamPosition = bi.ByteIndex;
+                ClearAndRefillByteBuffer(bi.ByteBufferIndex);
+                bi.DecoderStateAtBlockBegin.WriteTo(ref Decoder, SerializableDecoderMembers); // will reset Decoder if block == 0
+                if (prevBlock == block + 1) {
+                    // move the overlap into [BlockSize - BlockOverlap, BlockSize - 1] before it gets overwritten
+                    MemMove(bufferBegin + blockSizeMinusOverlap, bufferBegin, BlockOverlap*2);
+                }
+                begin = buffer = bufferBegin;
+                if (block > 0) {
+                    nCharsToRead = BlockOverlap;
+                    if (bi.OverhangCharsAtBlockBegin != null) {
+                        nCharsToRead -= bi.OverhangCharsAtBlockBegin.Length;
+                        for (int i = 0; i < bi.OverhangCharsAtBlockBegin.Length; ++i)
+                            *(buffer++) = bi.OverhangCharsAtBlockBegin[i];
+                    }
+                    string overhangCharsAfterOverlap;
+                    buffer = ReadCharsFromStream(buffer, nCharsToRead, out overhangCharsAfterOverlap);
+                    if (   buffer != bufferBegin + BlockOverlap
+                        || ByteIndex != bi.ByteIndex + bi.NumberOfBytesInOverlap
+                        || *(buffer - 1) != bi.LastCharInOverlap
+                        || overhangCharsAfterOverlap != bi.OverhangCharsAfterOverlap)
+                        throw new IOException("CharStream: stream integrity error");
+                }
+            } else { // ReadBlock was called from the constructor
+                if (block != 0) throw new InvalidOperationException();
+                begin = buffer = bufferBegin;
+            }
+
+            // fill [0            ... BlockSize-BlockOverlap-1] if block == 0
+            // and  [BlockOverlap ... BlockSize-BlockOverlap-1] otherwise
+            if (block == 0) {
+                nCharsToRead = blockSizeMinusOverlap;
+            } else {
+                nCharsToRead = blockSizeMinusOverlap - BlockOverlap;
+                if (bi.OverhangCharsAfterOverlap != null) {
+                    nCharsToRead -= bi.OverhangCharsAfterOverlap.Length;
+                    for (int i = 0; i < bi.OverhangCharsAfterOverlap.Length; ++i)
+                        *(buffer++) = bi.OverhangCharsAfterOverlap[i];
+                }
+            }
+            string overhangCharsAtNextBlockBegin;
+            buffer = ReadCharsFromStream(buffer, nCharsToRead, out overhangCharsAtNextBlockBegin);
+
+            long byteIndexAtNextBlockBegin = ByteIndex;
+            int byteBufferIndexAtNextBlockBegin = ByteBufferIndex;
+
+            // fill [BlockSize-BlockOverlap ... BlockSize-1]
+            if (block == Blocks.Count - 1) { // next block hasn't yet been read
+                DecoderState decoderStateAtNextBlockBegin = new DecoderState(Decoder, SerializableDecoderMembers);
+                nCharsToRead = BlockOverlap;
+                if (overhangCharsAtNextBlockBegin != null) {
+                    nCharsToRead -= overhangCharsAtNextBlockBegin.Length;
+                    for (int i = 0; i < overhangCharsAtNextBlockBegin.Length; ++i)
+                        *(buffer++) = overhangCharsAtNextBlockBegin[i];
+                }
+                string overhangCharsAfterOverlapWithNextBlock;
+                buffer = ReadCharsFromStream(buffer, nCharsToRead, out overhangCharsAfterOverlapWithNextBlock);
+                if (anchor->LastBlock == Int32.MaxValue) { // last block hasn't yet been detected
+                    if (buffer == bufferBegin + BlockSize) {
+                        DecoderState decoderStateAfterOverlapWithNextBlock = new DecoderState(Decoder, SerializableDecoderMembers);
+                        int nBytesInOverlapWithNextBlock = (int)(ByteIndex - byteIndexAtNextBlockBegin);
+                        Blocks.Add(new BlockInfo(byteIndexAtNextBlockBegin, byteBufferIndexAtNextBlockBegin,
+                                                 nBytesInOverlapWithNextBlock, *(buffer - 1),
+                                                 overhangCharsAtNextBlockBegin, decoderStateAtNextBlockBegin,
+                                                 overhangCharsAfterOverlapWithNextBlock, decoderStateAfterOverlapWithNextBlock));
+                    } else { // we reached the end of the stream
+                        anchor->LastBlock = block;
+                        anchor->EndIndex = anchor->CharIndexOffset + charIndex + (buffer - bufferBegin);
+                    }
+                } else if (anchor->EndIndex != anchor->CharIndexOffset + charIndex + (buffer - bufferBegin)) {
+                    throw new IOException("CharStream: stream integrity error");
+                }
+            } else {
+                BlockInfo nbi = Blocks[block + 1];
+                if (buffer != bufferBegin + blockSizeMinusOverlap
+                    || byteIndexAtNextBlockBegin != nbi.ByteIndex
+                    || byteBufferIndexAtNextBlockBegin != nbi.ByteBufferIndex
+                    || overhangCharsAtNextBlockBegin != nbi.OverhangCharsAtBlockBegin)
+                    throw new IOException("CharStream: stream integrity error");
+
+                if (prevBlock != block + 1 || (block == 0 && SerializableDecoderMembers == null)) { // jumping back to block 0 is supported even if the decoder is not serializable
+                    nCharsToRead = BlockOverlap;
+                    if (overhangCharsAtNextBlockBegin != null) {
+                        nCharsToRead -= overhangCharsAtNextBlockBegin.Length;
+                        for (int i = 0; i < overhangCharsAtNextBlockBegin.Length; ++i)
+                            *(buffer++) = overhangCharsAtNextBlockBegin[i];
+                    }
+                    string overhangCharsAfterOverlapWithNextBlock;
+                    buffer = ReadCharsFromStream(buffer, nCharsToRead, out overhangCharsAfterOverlapWithNextBlock);
+                    int nBytesInOverlapWithNextBlock = (int)(ByteIndex - byteIndexAtNextBlockBegin);
+                    if (buffer != bufferBegin + BlockSize
+                        || nBytesInOverlapWithNextBlock != nbi.NumberOfBytesInOverlap
+                        || *(buffer - 1) != nbi.LastCharInOverlap
+                        || overhangCharsAfterOverlapWithNextBlock != nbi.OverhangCharsAfterOverlap)
+                        throw new IOException("CharStream: stream integrity error");
+                } else {
+                    Debug.Assert(bufferBegin[BlockSize - 1] == nbi.LastCharInOverlap);
+                    buffer += BlockOverlap; // we already copied the chars at the beginning of this function
+                    int off = nbi.NumberOfBytesInOverlap - (ByteBufferCount - ByteBufferIndex);
+                    if (off > 0) {
+                        // we wouldn't have gotten here if the Stream didn't support seeking
+                        Stream.Seek(off, SeekOrigin.Current);
+                        StreamPosition += off;
+                        ClearAndRefillByteBuffer(off%ByteBuffer.Length);
+                    } else {
+                        ByteBufferIndex += nbi.NumberOfBytesInOverlap;
+                    }
+                    nbi.DecoderStateAfterOverlap.WriteTo(ref Decoder, SerializableDecoderMembers);
+                }
+            }
+
+            anchor->Block = block;
+            anchor->CharIndex = charIndex;
+            anchor->CharIndexPlusOffset = anchor->CharIndexOffset + charIndex;
+            anchor->BufferEnd = buffer;
+            return buffer > begin ? begin : null;
+        }
+    }
+
+    /// <summary>Reads all remaining chars into the given buffer. If the remaining stream
+    /// content holds more than the given maximum number of chars, an exception will be thrown.</summary>
+    private static int ReadAllRemainingCharsFromStream(char* buffer, int maxCount, byte[] byteBuffer, int byteBufferIndex, int byteBufferCount, Stream stream, long streamPosition, Decoder decoder) {
+        Debug.Assert(maxCount > 0 && byteBufferIndex >= 0 && byteBufferIndex < byteBufferCount);
+        fixed (byte* pByteBuffer = byteBuffer) {
+            try {
+                int bufferCount = 0;
+                bufferCount += decoder.GetChars(pByteBuffer + byteBufferIndex, byteBufferCount - byteBufferIndex,
+                                                buffer + bufferCount, maxCount - bufferCount, false);
+                byteBufferIndex = 0;
+                bool flush;
+                do {
+                    byteBufferCount = stream.Read(byteBuffer, 0, byteBuffer.Length);
+                    streamPosition += byteBufferCount;
+                    flush = byteBufferCount == 0;
+                    bufferCount += decoder.GetChars(pByteBuffer, byteBufferCount,
+                                                    buffer + bufferCount, maxCount - bufferCount, flush);
+                    byteBufferIndex += byteBufferCount; // GetChars consumed all bytes in the byte buffer
+                } while (!flush);
+                return bufferCount;
+            } catch (DecoderFallbackException e) {
+                e.Data.Add("Stream.Position", streamPosition - (byteBufferCount - byteBufferIndex) + e.Index);
+                throw;
+            }
+        }
+    }
 
     /// <summary>The current block in BufferString.</summary>
     private int Block { get { return anchor->Block; } }
@@ -542,295 +829,6 @@ public unsafe sealed class CharStream : IDisposable {
     internal static int PositiveDistance(char* begin, char* end) {
         return (int)((uint)((byte*)end - (byte*)begin)/2);
     }
-
-    private MultiBlockData Data;
-
-/// <summary>Contains the data and methods needed in case the input byte stream
-/// is large enough to span multiple blocks of the CharStream.</summary>
-private partial class MultiBlockData {
-    public Anchor* anchor;
-
-    public Stream Stream;
-    // we keep a seperate record of the Stream.Position, so that we don't need to require Stream.CanSeek
-    public long StreamPosition;
-    public bool LeaveOpen;
-
-    public int MaxCharCountForOneByte;
-    public Decoder Decoder;
-    public MemberInfo[] SerializableDecoderMembers;
-
-    public int BlockSize;
-    public int BlockOverlap;
-    /// <summary>BufferBegin + BlockSize - minRegexSpace</summary>
-    public char* RegexSpaceThreshold;
-
-    /// <summary>The byte stream index of the first unused byte in the ByteBuffer.</summary>
-    public long ByteIndex { get { return StreamPosition - (ByteBufferCount - ByteBufferIndex); } }
-
-    public List<BlockInfo> Blocks;
-
-    public byte[] ByteBuffer;
-    public int ByteBufferIndex;
-    public int ByteBufferCount;
-
-    /// <summary>Refills the ByteBuffer if no unused byte is remaining.
-    /// Returns the number of unused bytes in the (refilled) ByteBuffer.</summary>
-    private int FillByteBuffer() {
-        int n = ByteBufferCount - ByteBufferIndex;
-        if (n > 0) return n;
-        return ClearAndRefillByteBuffer(0);
-    }
-
-    /// <summary>Refills the ByteBuffer starting at the given index. If the underlying byte
-    /// stream contains enough bytes, the ByteBuffer is filled up to the ByteBuffer.Length.
-    /// Returns the number of bytes available for consumption in the refilled ByteBuffer.</summary>
-    private int ClearAndRefillByteBuffer(int byteBufferIndex) {
-        Debug.Assert(byteBufferIndex >= 0 && byteBufferIndex <= ByteBuffer.Length);
-        // Stream.Read is not guaranteed to use all the provided output buffer, so we need
-        // to call it in a loop when we want to rely on the buffer being fully filled
-        // (unless we reach the end of the stream). Knowing that the buffer always gets
-        // completely filled allows us to calculate the buffer utilization after skipping
-        // a certain number of input bytes. For most streams there will be only one loop
-        // iteration anyway (or two at the end of the stream).
-        int i = byteBufferIndex;
-        int m = ByteBuffer.Length - byteBufferIndex;
-        while (m != 0) {
-            int c = Stream.Read(ByteBuffer, i, m);
-            if (c == 0) break;
-            i += c;
-            m -= c;
-        }
-        int n = i - byteBufferIndex;
-        ByteBufferIndex = byteBufferIndex;
-        ByteBufferCount = byteBufferIndex + n;
-        StreamPosition += n;
-        return n;
-    }
-}
-
-    /// <summary>Reads all remaining chars into the given buffer. If the remaining stream
-    /// content holds more than the given maximum number of chars, an exception will be thrown.</summary>
-    private static int ReadAllRemainingCharsFromStream(char* buffer, int maxCount, byte[] byteBuffer, int byteBufferIndex, int byteBufferCount, Stream stream, long streamPosition, Decoder decoder) {
-        Debug.Assert(maxCount > 0 && byteBufferIndex >= 0 && byteBufferIndex < byteBufferCount);
-        fixed (byte* pByteBuffer = byteBuffer) {
-            try {
-                int bufferCount = 0;
-                bufferCount += decoder.GetChars(pByteBuffer + byteBufferIndex, byteBufferCount - byteBufferIndex,
-                                                buffer + bufferCount, maxCount - bufferCount, false);
-                byteBufferIndex = 0;
-                bool flush;
-                do {
-                    byteBufferCount = stream.Read(byteBuffer, 0, byteBuffer.Length);
-                    streamPosition += byteBufferCount;
-                    flush = byteBufferCount == 0;
-                    bufferCount += decoder.GetChars(pByteBuffer, byteBufferCount,
-                                                    buffer + bufferCount, maxCount - bufferCount, flush);
-                    byteBufferIndex += byteBufferCount; // GetChars consumed all bytes in the byte buffer
-                } while (!flush);
-                return bufferCount;
-            } catch (DecoderFallbackException e) {
-                e.Data.Add("Stream.Position", streamPosition - (byteBufferCount - byteBufferIndex) + e.Index);
-                throw;
-            }
-        }
-    }
-
-private partial class MultiBlockData {
-    /// <summary>Reads up to the given maximum number of chars into the given buffer.
-    /// If more than the maximum number of chars have to be read from the stream in order to
-    /// fill the buffer (due to	the way the Decoder API works), the overhang chars are
-    /// returned through the output parameter.
-    /// Returns a pointer to one char after the last char read.</summary>
-    private char* ReadCharsFromStream(char* buffer, int maxCount, out string overhangChars) {
-        Debug.Assert(maxCount >= 0);
-        fixed (byte* byteBuffer = ByteBuffer) {
-            overhangChars = null;
-            try {
-                while (maxCount >= MaxCharCountForOneByte) {// if maxCount < MaxCharCountForOneByte, Convert could throw
-                    int nBytesInByteBuffer = FillByteBuffer();
-                    bool flush = nBytesInByteBuffer == 0;
-                    int bytesUsed, charsUsed; bool completed = false;
-                    Decoder.Convert(byteBuffer + ByteBufferIndex, nBytesInByteBuffer,
-                                    buffer, maxCount, flush,
-                                    out bytesUsed, out charsUsed, out completed);
-                    ByteBufferIndex += bytesUsed; // GetChars consumed bytesUsed bytes from the byte buffer
-                    buffer += charsUsed;
-                    maxCount -= charsUsed;
-                    if (flush && completed) return buffer;
-                }
-                if (maxCount == 0) return buffer;
-
-                char* cs = stackalloc char[MaxCharCountForOneByte];
-                for (;;) {
-                    int nBytesInByteBuffer = FillByteBuffer();
-                    bool flush = nBytesInByteBuffer == 0;
-                    int bytesUsed, charsUsed; bool completed;
-                    Decoder.Convert(byteBuffer + ByteBufferIndex, nBytesInByteBuffer,
-                                    cs, MaxCharCountForOneByte, flush,
-                                    out bytesUsed, out charsUsed, out completed);
-                    ByteBufferIndex += bytesUsed;
-                    if (charsUsed > 0) {
-                        int i = 0;
-                        do {
-                            *(buffer++) = cs[i++];
-                            if (--maxCount == 0) {
-                                if (i < charsUsed) overhangChars = new string(cs, i, charsUsed - i);
-                                return buffer;
-                            }
-                        } while (i < charsUsed);
-                    }
-                    if (flush && completed) return buffer;
-                }
-            } catch (DecoderFallbackException e) {
-                e.Data.Add("Stream.Position", ByteIndex + e.Index);
-                throw;
-            }
-        }
-    }
-
-    /// <summary> Reads a block of chars (must be different from the current block)
-    /// into the BufferString. Returns a pointer to the first char of the new block,
-    /// or null if no chars could be read.</summary>
-    internal char* ReadBlock(int block) {
-        if (block > anchor->LastBlock) return null;
-        int prevBlock = anchor->Block;
-        if (block == prevBlock) throw new InvalidOperationException();
-
-        BlockInfo bi = Blocks[block];
-        int blockSizeMinusOverlap = BlockSize - BlockOverlap;
-        long charIndex = Math.BigMul(block, blockSizeMinusOverlap);
-        char* bufferBegin = anchor->BufferBegin;
-        char* begin, buffer;
-        int nCharsToRead;
-
-        // fill [0 ... BlockOverlap-1] if block > 0
-        if (prevBlock == block - 1) {
-            MemMove(bufferBegin, bufferBegin + blockSizeMinusOverlap, BlockOverlap*2);
-            Debug.Assert(bufferBegin[BlockOverlap - 1] == bi.LastCharInOverlap);
-            begin = buffer = bufferBegin + BlockOverlap;
-        } else if (prevBlock >= 0) {
-            if (block > 0 && SerializableDecoderMembers == null)
-                throw new NotSupportedException("The CharStream does not support seeking backward over ranges longer than the block overlap because the Encoding's Decoder is not serializable.");
-            Stream.Seek(bi.ByteIndex, SeekOrigin.Begin); // will throw if Stream can't seek
-            // now that there was no exception, we can change the state...
-            StreamPosition = bi.ByteIndex;
-            ClearAndRefillByteBuffer(bi.ByteBufferIndex);
-            bi.DecoderStateAtBlockBegin.WriteTo(ref Decoder, SerializableDecoderMembers); // will reset Decoder if block == 0
-            if (prevBlock == block + 1) {
-                // move the overlap into [BlockSize - BlockOverlap, BlockSize - 1] before it gets overwritten
-                MemMove(bufferBegin + blockSizeMinusOverlap, bufferBegin, BlockOverlap*2);
-            }
-            begin = buffer = bufferBegin;
-            if (block > 0) {
-                nCharsToRead = BlockOverlap;
-                if (bi.OverhangCharsAtBlockBegin != null) {
-                    nCharsToRead -= bi.OverhangCharsAtBlockBegin.Length;
-                    for (int i = 0; i < bi.OverhangCharsAtBlockBegin.Length; ++i)
-                        *(buffer++) = bi.OverhangCharsAtBlockBegin[i];
-                }
-                string overhangCharsAfterOverlap;
-                buffer = ReadCharsFromStream(buffer, nCharsToRead, out overhangCharsAfterOverlap);
-                if (   buffer != bufferBegin + BlockOverlap
-                    || ByteIndex != bi.ByteIndex + bi.NumberOfBytesInOverlap
-                    || *(buffer - 1) != bi.LastCharInOverlap
-                    || overhangCharsAfterOverlap != bi.OverhangCharsAfterOverlap)
-                    throw new IOException("CharStream: stream integrity error");
-            }
-        } else { // ReadBlock was called from the constructor
-            if (block != 0) throw new InvalidOperationException();
-            begin = buffer = bufferBegin;
-        }
-
-        // fill [0            ... BlockSize-BlockOverlap-1] if block == 0
-        // and  [BlockOverlap ... BlockSize-BlockOverlap-1] otherwise
-        if (block == 0) {
-            nCharsToRead = blockSizeMinusOverlap;
-        } else {
-            nCharsToRead = blockSizeMinusOverlap - BlockOverlap;
-            if (bi.OverhangCharsAfterOverlap != null) {
-                nCharsToRead -= bi.OverhangCharsAfterOverlap.Length;
-                for (int i = 0; i < bi.OverhangCharsAfterOverlap.Length; ++i)
-                    *(buffer++) = bi.OverhangCharsAfterOverlap[i];
-            }
-        }
-        string overhangCharsAtNextBlockBegin;
-        buffer = ReadCharsFromStream(buffer, nCharsToRead, out overhangCharsAtNextBlockBegin);
-
-        long byteIndexAtNextBlockBegin = ByteIndex;
-        int byteBufferIndexAtNextBlockBegin = ByteBufferIndex;
-
-        // fill [BlockSize-BlockOverlap ... BlockSize-1]
-        if (block == Blocks.Count - 1) { // next block hasn't yet been read
-            DecoderState decoderStateAtNextBlockBegin = new DecoderState(Decoder, SerializableDecoderMembers);
-            nCharsToRead = BlockOverlap;
-            if (overhangCharsAtNextBlockBegin != null) {
-                nCharsToRead -= overhangCharsAtNextBlockBegin.Length;
-                for (int i = 0; i < overhangCharsAtNextBlockBegin.Length; ++i)
-                    *(buffer++) = overhangCharsAtNextBlockBegin[i];
-            }
-            string overhangCharsAfterOverlapWithNextBlock;
-            buffer = ReadCharsFromStream(buffer, nCharsToRead, out overhangCharsAfterOverlapWithNextBlock);
-            if (anchor->LastBlock == Int32.MaxValue) { // last block hasn't yet been detected
-                if (buffer == bufferBegin + BlockSize) {
-                    DecoderState decoderStateAfterOverlapWithNextBlock = new DecoderState(Decoder, SerializableDecoderMembers);
-                    int nBytesInOverlapWithNextBlock = (int)(ByteIndex - byteIndexAtNextBlockBegin);
-                    Blocks.Add(new BlockInfo(byteIndexAtNextBlockBegin, byteBufferIndexAtNextBlockBegin,
-                                             nBytesInOverlapWithNextBlock, *(buffer - 1),
-                                             overhangCharsAtNextBlockBegin, decoderStateAtNextBlockBegin,
-                                             overhangCharsAfterOverlapWithNextBlock, decoderStateAfterOverlapWithNextBlock));
-                } else { // we reached the end of the stream
-                    anchor->LastBlock = block;
-                    anchor->EndIndex = anchor->CharIndexOffset + charIndex + (buffer - bufferBegin);
-                }
-            } else if (anchor->EndIndex != anchor->CharIndexOffset + charIndex + (buffer - bufferBegin)) {
-                throw new IOException("CharStream: stream integrity error");
-            }
-        } else {
-            BlockInfo nbi = Blocks[block + 1];
-            if (buffer != bufferBegin + blockSizeMinusOverlap
-                || byteIndexAtNextBlockBegin != nbi.ByteIndex
-                || byteBufferIndexAtNextBlockBegin != nbi.ByteBufferIndex
-                || overhangCharsAtNextBlockBegin != nbi.OverhangCharsAtBlockBegin)
-                throw new IOException("CharStream: stream integrity error");
-
-            if (prevBlock != block + 1 || (block == 0 && SerializableDecoderMembers == null)) { // jumping back to block 0 is supported even if the decoder is not serializable
-                nCharsToRead = BlockOverlap;
-                if (overhangCharsAtNextBlockBegin != null) {
-                    nCharsToRead -= overhangCharsAtNextBlockBegin.Length;
-                    for (int i = 0; i < overhangCharsAtNextBlockBegin.Length; ++i)
-                        *(buffer++) = overhangCharsAtNextBlockBegin[i];
-                }
-                string overhangCharsAfterOverlapWithNextBlock;
-                buffer = ReadCharsFromStream(buffer, nCharsToRead, out overhangCharsAfterOverlapWithNextBlock);
-                int nBytesInOverlapWithNextBlock = (int)(ByteIndex - byteIndexAtNextBlockBegin);
-                if (buffer != bufferBegin + BlockSize
-                    || nBytesInOverlapWithNextBlock != nbi.NumberOfBytesInOverlap
-                    || *(buffer - 1) != nbi.LastCharInOverlap
-                    || overhangCharsAfterOverlapWithNextBlock != nbi.OverhangCharsAfterOverlap)
-                    throw new IOException("CharStream: stream integrity error");
-            } else {
-                Debug.Assert(bufferBegin[BlockSize - 1] == nbi.LastCharInOverlap);
-                buffer += BlockOverlap; // we already copied the chars at the beginning of this function
-                int off = nbi.NumberOfBytesInOverlap - (ByteBufferCount - ByteBufferIndex);
-                if (off > 0) {
-                    // we wouldn't have gotten here if the Stream didn't support seeking
-                    Stream.Seek(off, SeekOrigin.Current);
-                    StreamPosition += off;
-                    ClearAndRefillByteBuffer(off%ByteBuffer.Length);
-                } else {
-                    ByteBufferIndex += nbi.NumberOfBytesInOverlap;
-                }
-                nbi.DecoderStateAfterOverlap.WriteTo(ref Decoder, SerializableDecoderMembers);
-            }
-        }
-
-        anchor->Block = block;
-        anchor->CharIndex = charIndex;
-        anchor->CharIndexPlusOffset = anchor->CharIndexOffset + charIndex;
-        anchor->BufferEnd = buffer;
-        return buffer > begin ? begin : null;
-    }
-}
 
     /// <summary>An iterator pointing to the beginning of the stream (or to the end if the CharStream is empty).</summary>
     public Iterator Begin { get {
