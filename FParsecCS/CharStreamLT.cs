@@ -553,7 +553,7 @@ public sealed class CharStream : IDisposable {
             else return EOS;
         }
 
-        public struct TwoChars {
+        public struct TwoChars : IEquatable<TwoChars> {
             private uint chars;
 
             internal TwoChars(uint chars) {
@@ -565,6 +565,12 @@ public sealed class CharStream : IDisposable {
 
             public char Char0 { get { return unchecked((char)chars); } }
             public char Char1 { get { return (char)(chars >> 16); } }
+
+            public override bool Equals(object obj) { return (obj is TwoChars) && chars == ((TwoChars) obj).chars; }
+            public bool Equals(TwoChars other) { return chars == other.chars; }
+            public override int GetHashCode()  { return (int)chars; }
+            public static bool operator==(TwoChars left, TwoChars right) { return left.chars == right.chars; }
+            public static bool operator!=(TwoChars left, TwoChars right) { return left.chars != right.chars; }
         }
 
         /// <summary>Is an optimized implementation of new TwoChars(Read(), Next.Read()).</summary>
