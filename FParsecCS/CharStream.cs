@@ -341,6 +341,11 @@ public unsafe sealed class CharStream : IDisposable {
             if (block > anchor->LastBlock) return null;
             int prevBlock = anchor->Block;
             if (block == prevBlock) throw new InvalidOperationException();
+            if (SerializableDecoderMembers == null && block > 0) {
+                if (prevBlock > block)
+                    throw new NotSupportedException("The CharStream does not support seeking backwards over ranges longer than the block overlap because the Encoding's Decoder is not serializable.");
+                while (prevBlock + 1 < block) ReadBlock(++prevBlock);
+            }
 
             BlockInfo bi = Blocks[block];
             int blockSizeMinusOverlap = BlockSize - BlockOverlap;
@@ -355,8 +360,6 @@ public unsafe sealed class CharStream : IDisposable {
                 Debug.Assert(bufferBegin[BlockOverlap - 1] == bi.LastCharInOverlap);
                 begin = buffer = bufferBegin + BlockOverlap;
             } else if (prevBlock >= 0) {
-                if (block > 0 && SerializableDecoderMembers == null)
-                    throw new NotSupportedException("The CharStream does not support seeking backward over ranges longer than the block overlap because the Encoding's Decoder is not serializable.");
                 Stream.Seek(bi.ByteIndex, SeekOrigin.Begin); // will throw if Stream can't seek
                 // now that there was no exception, we can change the state...
                 StreamPosition = bi.ByteIndex;
