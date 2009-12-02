@@ -304,6 +304,77 @@ public sealed class CharSet {
     }
 }
 
+/// <summary>A faster implementation of System.Globalization.StringInfo(str).LengthInTextElements.</summary>
+internal static int CountTextElements(string str) {
+    int count = 0;
+    int end = str.Length;
+    int i = 0;
+    for (;;) {
+    SkipBaseCharacter:
+        if (i >= end) break;
+        char c = str[i];
+        ++i;
+        ++count;
+        if (c < ' ') continue; // control char
+        if (c > '~') {
+            var uc = CharUnicodeInfo.GetUnicodeCategory(c);
+            if (uc == UnicodeCategory.Surrogate) {
+                uc = System.Char.GetUnicodeCategory(str, i - 1);
+                if (uc != UnicodeCategory.Surrogate) ++i;
+            }
+            switch (uc) {
+            case UnicodeCategory.NonSpacingMark:
+            case UnicodeCategory.SpacingCombiningMark:
+            case UnicodeCategory.EnclosingMark:
+            case UnicodeCategory.Control:
+            case UnicodeCategory.Format:
+            case UnicodeCategory.Surrogate:
+            case UnicodeCategory.OtherNotAssigned:
+                continue;
+            default:
+                break; // exits the switch, not the loop
+            }
+        }
+    // SkipMoreBaseCharactersOrCombiningMarks:
+        for (;;) {
+            if (i >= end) break;
+            c = str[i];
+            ++i;
+            if (c >= ' ') {
+                if (c <= '~') {
+                    ++count;
+                    continue;
+                }
+            } else { // control char
+                ++count;
+                goto SkipBaseCharacter;
+            }
+            var uc = CharUnicodeInfo.GetUnicodeCategory(c);
+            if (uc == UnicodeCategory.Surrogate) {
+                uc = System.Char.GetUnicodeCategory(str, i - 1);
+                if (uc != UnicodeCategory.Surrogate) ++i;
+            }
+            switch (uc) {
+            case UnicodeCategory.NonSpacingMark:
+            case UnicodeCategory.SpacingCombiningMark:
+            case UnicodeCategory.EnclosingMark:
+                continue;
+            case UnicodeCategory.Control:
+            case UnicodeCategory.Format:
+            case UnicodeCategory.Surrogate:
+            case UnicodeCategory.OtherNotAssigned:
+                ++count;
+                goto SkipBaseCharacter;
+            default:
+                ++count;
+                continue;
+            }
+        }
+        break;
+    }
+    return count;
+}
+
 } // class Helper
 
 }

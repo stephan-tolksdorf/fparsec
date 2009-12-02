@@ -4,7 +4,8 @@
 module FParsec.Error
 
 open System.Diagnostics
-
+open System.Globalization
+open System.IO
 open FParsec.Internals
 
 #nowarn "61" // "The containing type can use 'null' as a representation value for its nullary union case. This member will be compiled as a static member."
@@ -86,7 +87,6 @@ and [<CompilationRepresentation(CompilationRepresentationFlags.UseNullAsTrueValu
                    | e1::e2::tl -> "[" + e1.GetDebuggerDisplay() + "; " + e2.GetDebuggerDisplay() + "]"
 
 
-
 and [<Sealed>]
     ErrorMessageListDebugView(msgs: ErrorMessageList) =
         [<DebuggerBrowsable(DebuggerBrowsableState.RootHidden)>]
@@ -143,7 +143,9 @@ let
     let error = mergeErrorsIfNeeded veryOldState veryOldError oldState oldError
     mergeErrorsIfNeeded oldState error newState newError
 
+let internal newlineChars = [|'\r'; '\n'; '\u0085'; '\u000C'; '\u2028'; '\u2029'|]
 
+[<System.Obsolete>]
 let printErrorLine (stream: CharStream) (index: int64) (tw: System.IO.TextWriter) (indent: string) (columnWidth: int) =
     let iter = stream.Seek(index)
     if index > iter.Index then
@@ -153,7 +155,6 @@ let printErrorLine (stream: CharStream) (index: int64) (tw: System.IO.TextWriter
        let leftBound = max (index - int64 space) stream.BeginIndex
        let off = int32 (index - leftBound)
        let s = iter.Advance(-off).Read(2*space)
-       let newlineChars = [|'\r'; '\n'; '\u0085'; '\u000C'; '\u2028'; '\u2029'|]
        let lineBegin = if off > 0 then s.LastIndexOfAny(newlineChars, off - 1) + 1 else 0
        let lineEnd   = let i = s.IndexOfAny(newlineChars, lineBegin) in if i >= 0 then i else s.Length
        let space = if lineEnd > off then space else space - 1
@@ -175,14 +176,116 @@ let printErrorLine (stream: CharStream) (index: int64) (tw: System.IO.TextWriter
     else
         tw.WriteLine(if columnWidth = indent.Length then indent else "")
 
+
 /// the default position printer
 let internal printPosition (tw: System.IO.TextWriter) (p: Pos) (indent: string) (columnWidth: int) =
     fprintfn tw "%sError in %s%sLn: %i Col: %i"
-                indent p.StreamName (if System.String.IsNullOrEmpty(p.StreamName) then "" else ": ") p.Line p.Column
+                indent p.StreamName (if isNullOrEmpty p.StreamName then "" else ": ") p.Line p.Column
+
+let mutable internal tabSize = 8 // not mutated within this library
+
+let internal printErrorPosition (lw: LineWrapper) (stream: CharStream) (p: Pos) =
+    /// writes the string with all tabs and unicode newline chars replaced with ' '
+    let writeStringWithSimplifiedWhitespace (tw: TextWriter) (s: string) =
+        let mutable i0 = 0
+        for i = 0 to s.Length - 1 do
+            let c = s.[i]
+            if (if c <= '\r' then c >= '\t'
+                else c >= '\u0085' && (c = '\u0085' || c = '\u2028' || c = '\u2029'))
+            then
+                if i0 < i then
+                    tw.Write(s.Substring(i0, i - i0))
+                tw.Write(' ')
+                i0 <- i + 1
+        if i0 < s.Length then
+            if i0 = 0 then tw.Write(s)
+            else tw.Write(s.Substring(i0, s.Length - i0))
+
+    let sn = getLineSnippet stream p lw.ColumnWidth tabSize lw.WriterIsMultiCharGraphemeSafe
+    let str = sn.String
+
+    lw.Print("Error in ")
+    if not (isNullOrEmpty p.StreamName) then lw.Print(p.StreamName, ": ")
+    lw.Print("Ln: ", string p.Line)
+    if sn.UnaccountedNewlines <> 0 then
+        lw.Print(" (+", string sn.UnaccountedNewlines, "?)")
+    lw.Print(" Col: ", string sn.Column)
+    if sn.Column <> sn.Utf16Column then
+        lw.Print(" (UTF16-Col: ", string sn.Utf16Column ,")")
+    lw.Newline()
+
+    let msgs = new ResizeArray<_>()
+    if sn.LineContainsTabsBeforeIndex then
+        msgs.Add(concat4 "The column count assumes a tab stop distance of " (tabSize.ToString()) " chars."
+                          (if sn.Column <> sn.Utf16Column then
+                              " The UTF-16 column count only counts each tab as 1 char."
+                           else ""))
+
+    if str.Length > 0 then
+        let tw = lw.TextWriter
+        writeStringWithSimplifiedWhitespace tw str
+        tw.WriteLine()
+        if sn.TextElementIndex > 0 then
+            tw.Write(new string(' ', sn.TextElementIndex))
+        tw.Write('^')
+        let d = sn.Index - sn.TextElementIndex
+        if d <> 0 && not lw.WriterIsMultiCharGraphemeSafe then
+            if d > 1 then
+                tw.Write(new string('-', d - 1))
+            tw.Write('^')
+            msgs.Add("The exact error position between the two ^ depends on the unicode capabilities of the display.")
+        tw.WriteLine()
+
+    if sn.Index < str.Length then
+        let i = sn.Index
+        let c = str.[i]
+        if System.Char.IsSurrogate(c) then
+            if System.Char.IsHighSurrogate(c) then
+                if i + 1 < str.Length && System.Char.IsLowSurrogate(str.[i + 1]) then
+                    msgs.Add(concat3 "The error occurred at the beginning of the surrogate pair " (asciiQuoteString (str.Substring(i, 2))) ".")
+                else
+                    msgs.Add(concat3 "The char at the error position ('" (hexEscapeChar c) "') is an isolated high surrogate.")
+            else // low surrogate
+                if i > 0 && System.Char.IsHighSurrogate(str.[i - 1]) then
+                    msgs.Add(concat3 "The error occurred at the second char in the surrogate pair " (asciiQuoteString (str.Substring(i - 1, 2))) ".")
+                else
+                    msgs.Add(concat3 "The char at the error position ('" (hexEscapeChar c) "') is an isolated low surrogate.")
+        elif i > 0 && System.Char.IsHighSurrogate(str.[i - 1]) then
+            msgs.Add(concat3 "The char before the error position ('" (hexEscapeChar (str.[i - 1])) "') is an isolated high surrogate.")
+    else
+        if p.Index = stream.EndIndex then msgs.Add("The error occurred at the end of the input stream.")
+        elif str.Length = 0 then msgs.Add("The error occured on an empty line.")
+        else msgs.Add("The error occurred at the end of the line.")
+
+    if sn.LengthOfTextElement > 1 && (sn.LengthOfTextElement > 2 || not (System.Char.IsSurrogate(str.[sn.Index]))) then
+        let te = str.Substring(sn.IndexOfTextElement, sn.LengthOfTextElement)
+        let n = sn.Index - sn.IndexOfTextElement + 1
+        msgs.Add(concat6 "The error occurred at the " (string n) (ordinalEnding n) " char in the combining character sequence " (asciiQuoteString te) ".")
+    elif sn.IsBetweenCRAndLF then
+        msgs.Add("The error occured at the 2nd char in the newline char sequence '\r\n'.")
+
+    if sn.UnaccountedNewlines > 0 then
+        let n = sn.UnaccountedNewlines
+        msgs.Add(concat6 "The input contains at least " (string n) (if n = 1 then " newline " else " newlines " ) "in the input that " (if n = 1 then "wasn't" else "weren't ") " properly registered in the parser state.")
+
+    if msgs.Count = 1 then lw.PrintLine("Note: ", msgs.[0])
+    elif msgs.Count > 1 then
+        let ind  = lw.Indentation
+        let ind2 = ind + "  "
+        lw.PrintLine("Note:")
+        for msg in msgs do
+            lw.Print("* ")
+            lw.Indentation <- ind2
+            lw.PrintLine(msg)
+            lw.Indentation <- ind
 
 [<Sealed>]
 type ParserError(pos: Pos, error: ErrorMessageList) =
     do if isNull pos then nullArg "pos"
+
+    let defaultColumnWidth = 79
+    let defaultIndentation = ""
+    let defaultIndentationIncrement = "  "
 
     member t.Pos = pos
     member T.Error = error
@@ -194,29 +297,51 @@ type ParserError(pos: Pos, error: ErrorMessageList) =
 
     member t.ToString(streamWhereErrorOccurred: CharStream) =
         use sw = new System.IO.StringWriter()
-        t.WriteTo(sw, streamWhereErrorOccurred = streamWhereErrorOccurred)
+        t.WriteTo(sw, streamWhereErrorOccurred)
         sw.ToString()
 
     member t.WriteTo(textWriter: System.IO.TextWriter,
-                     ?positionPrinter: System.IO.TextWriter -> Pos -> string -> int -> unit,
-                     ?columnWidth: int, ?initialIndention: string, ?indentionIncrement: string,
-                     ?streamWhereErrorOccurred: CharStream) =
-        let tw = textWriter
-        let positionPrinter = defaultArg positionPrinter printPosition
-        let positionPrinter = match streamWhereErrorOccurred with
-                              | None        -> positionPrinter
-                              | Some stream ->
-                                  let originalStreamName = t.Pos.StreamName
-                                  fun tw pos indent columnWidth ->
-                                      positionPrinter tw pos indent columnWidth
-                                      if pos.StreamName = originalStreamName then
-                                          printErrorLine stream pos.Index tw indent columnWidth
-        let columnWidth     = defaultArg columnWidth 79
-        let ind             = defaultArg initialIndention ""
-        let indIncrement    = defaultArg indentionIncrement "  "
+                     ?positionPrinter: (System.IO.TextWriter -> Pos -> string -> int -> unit),
+                     ?columnWidth: int, ?initialIndentation: string, ?indentationIncrement: string) =
 
-        let rec printMessages (pos: Pos) (msgs: ErrorMessageList) ind =
-            positionPrinter tw pos ind columnWidth
+        let positionPrinter = defaultArg positionPrinter printPosition
+        let columnWidth     = defaultArg columnWidth defaultColumnWidth
+        let ind             = defaultArg initialIndentation defaultIndentation
+        let indIncrement    = defaultArg indentationIncrement defaultIndentationIncrement
+        let lw = new LineWrapper(textWriter, columnWidth, Indentation = ind)
+        t.WriteTo(lw, positionPrinter, indIncrement)
+
+    member t.WriteTo(textWriter: System.IO.TextWriter,
+                     streamWhereErrorOccurred: CharStream,
+                     ?columnWidth: int, ?initialIndentation: string, ?indentationIncrement: string) =
+
+        let originalStreamName = t.Pos.StreamName
+        let getStreamByName = fun streamName -> if streamName = originalStreamName then streamWhereErrorOccurred else null
+        t.WriteTo(textWriter, getStreamByName, ?columnWidth = columnWidth, ?initialIndentation = initialIndentation, ?indentationIncrement = indentationIncrement)
+
+    member t.WriteTo(textWriter: System.IO.TextWriter,
+                     getStreamByname: (string -> CharStream),
+                     ?columnWidth: int, ?initialIndentation: string, ?indentationIncrement: string) =
+
+        let columnWidth  = defaultArg columnWidth defaultColumnWidth
+        let ind          = defaultArg initialIndentation defaultIndentation
+        let indIncrement = defaultArg indentationIncrement defaultIndentationIncrement
+        let lw = new LineWrapper(textWriter, columnWidth, Indentation = ind)
+        let positionPrinter =
+            fun tw (pos: Pos) indent columnWidth ->
+                let stream = getStreamByname pos.StreamName
+                if isNotNull stream then
+                   printErrorPosition lw stream pos
+                else
+                   printPosition lw.TextWriter pos indent columnWidth
+        t.WriteTo(lw, positionPrinter, indIncrement)
+
+    member private t.WriteTo(lw: LineWrapper,
+                             positionPrinter: System.IO.TextWriter -> Pos -> string -> int -> unit,
+                             indentationIncrement: string) =
+
+        let rec printMessages (pos: Pos) (msgs: ErrorMessageList) =
+            positionPrinter lw.TextWriter pos lw.Indentation lw.ColumnWidth
             let nra() = new ResizeArray<_>()
             let expectedA, unexpectedA, messageA, compoundA, backtrackA = nra(), nra(), nra(), nra(), nra()
             let mutable otherCount = 0
@@ -227,43 +352,49 @@ type ParserError(pos: Pos, error: ErrorMessageList) =
                 | Message s    -> messageA.Add(s)
                 | OtherError obj -> otherCount <- otherCount + 1
                 | CompoundError (s, pos2, msgs2) ->
-                    if not (System.String.IsNullOrEmpty(s)) then expectedA.Add(s)
+                    if not (isNullOrEmpty s) then expectedA.Add(s)
                     compoundA.Add((s, pos2, msgs2))
                 | BacktrackPoint (pos2, msgs2) ->
                     backtrackA.Add((pos2, msgs2))
             let printArray title (a: ResizeArray<string>) (sep: string) =
-                fprintf tw "%s%s: " ind title
+                lw.Print(title, ": ")
                 let n = a.Count
                 for i = 0 to n - 3 do
-                    fprintf tw "%s, " a.[i]
-                if n > 1 then fprintf tw "%s%s" a.[n - 2] sep
-                if n > 0 then fprintf tw "%s" a.[n - 1]
-                fprintfn tw ""
+                    lw.Print(a.[i], ", ")
+                if n > 1 then lw.Print(a.[n - 2], sep)
+                if n > 0 then lw.Print(a.[n - 1])
+                lw.Newline()
             if expectedA.Count > 0 then
                 printArray "Expecting" expectedA " or "
             if unexpectedA.Count > 0 then
                 printArray "Unexpected" unexpectedA " and "
+            let ind = lw.Indentation
+            let indInd = ind + indentationIncrement
             if messageA.Count > 0 then
-                let ind =  if expectedA.Count > 0 || unexpectedA.Count > 0 then
-                               fprintfn tw "%sOther errors:" ind;
-                               ind + indIncrement
-                           else ind
+                if expectedA.Count > 0 || unexpectedA.Count > 0 then
+                    lw.PrintLine("Other errors:")
+                    lw.Indentation <- indInd
                 for m in messageA do
-                    fprintfn tw "%s%s" ind m
+                    lw.PrintLine(m)
+                if expectedA.Count > 0 || unexpectedA.Count > 0 then
+                    lw.Indentation <- ind
             for s, pos2, msgs2 in compoundA do
-                fprintfn tw ""
-                fprintfn tw "%s%s could not be parsed because:" ind s
-                printMessages pos2 msgs2 (ind + indIncrement)
+                lw.Newline()
+                lw.PrintLine(s, " could not be parsed because:")
+                lw.Indentation <- indInd
+                printMessages pos2 msgs2
+                lw.Indentation <- ind
             for pos2, msgs2 in backtrackA do
-                fprintfn tw ""
-                fprintfn tw "%sThe parser backtracked after:" ind
-                printMessages pos2 msgs2 (ind + indIncrement)
-
+                lw.Newline()
+                lw.PrintLine("The parser backtracked after:")
+                lw.Indentation <- indInd
+                printMessages pos2 msgs2
+                lw.Indentation <- ind
             if    expectedA.Count = 0 && unexpectedA.Count = 0 && messageA.Count = 0
                && compoundA.Count = 0 && backtrackA.Count = 0
             then
-                fprintfn tw "%sUnknown error(s)" ind
-        printMessages pos error ind
+                lw.PrintLine("Unknown error(s)")
+        printMessages pos error
 
     override t.Equals(value: obj) =
         referenceEquals (t :> obj) value

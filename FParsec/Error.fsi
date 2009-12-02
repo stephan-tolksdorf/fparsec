@@ -77,7 +77,6 @@ val backtrackError:            State<'u> -> ErrorMessageList -> ErrorMessageList
 /// that uses the original error position instead of `state.Pos` in case `error` is a `BacktrackPoint`.
 val compoundError:   string -> State<'u> -> ErrorMessageList -> ErrorMessageList
 
-
 /// `concatErrorMessages error1 error2` concatenates the two error message lists `error1` and `error2`.
 val concatErrorMessages: ErrorMessageList -> ErrorMessageList -> ErrorMessageList
 
@@ -119,31 +118,55 @@ type ParserError =
     member Pos:   Pos
     member Error: ErrorMessageList
 
+    /// Returns a string representation of the `ParserError`.
     override ToString: unit -> string
 
-    /// Returns a string representation of the ParserError.
-    /// For each error location the printed position information is augmented with the line of
-    /// text surrounding the error position together with a '^'-marker pointing to the exact location
-    /// of the error in the input stream.
-    /// The given CharStream must contain the original input for which the parser error was generated.
-    /// Newlines in the returned string are represented by System.Environment.Newline.
+    /// Returns a string representation of the `ParserError`.
+    ///
+    /// The given `CharStream` must contain the content of the original `CharStream`
+    /// for which this `ParserError` was generated (at the original indices).
+    ///
+    /// For each error location the printed position information is augmented
+    /// with the line of text surrounding the error position, together with a '^'-marker
+    /// pointing to the exact location of the error in the input stream.
     member ToString: streamWhereErrorOccurred: CharStream -> string
 
-    /// Writes a string representation of the ParserError to the given TextWriter value.
+    /// Writes a string representation of the `ParserError` to the given `TextWriter` value.
     ///
-    /// The format of the position information can be customized by specifying the positionPrinter
-    /// argument. The given function is expected to print a representation of the passed Pos value
-    /// to the passed TextWriter value. If possible, it should indent text lines with the passed string
+    /// The given `CharStream` must contain the content of the original `CharStream`
+    /// for which this `ParserError` was generated (at the original indices).
+    ///
+    /// For each error location the printed position information is augmented
+    /// with the line of text surrounding the error position, together with a '^'-marker
+    /// pointing to the exact location of the error in the input stream.
+    member WriteTo:   textWriter: System.IO.TextWriter
+                    * streamWhereErrorOccurred: CharStream
+                    * ?columnWidth: int * ?initialIndention: string * ?indentionIncrement: string
+                    -> unit
+
+    /// Writes a string representation of the `ParserError` to the given `TextWriter` value.
+    ///
+    /// For each error position `getStreamByName` is called with the `StreamName` of the `Pos`.
+    /// The returned `CharStream` must be `null` or contain the content of the `CharStream` for which
+    /// the error was generated (at the original indices).
+    ///
+    /// If `getStreamByName` returns a non-null `CharStream`, the printed error position information is
+    /// augmented with the line of text surrounding the error position, together with a '^'-marker
+    /// pointing to the exact location of the error in the input stream.
+    member WriteTo:   textWriter: System.IO.TextWriter
+                    * getStreamByName: (string -> CharStream)
+                    * ?columnWidth: int * ?initialIndention: string * ?indentionIncrement: string
+                    -> unit
+
+    /// Writes a string representation of the `ParserError` to the given `TextWriter` value.
+    ///
+    /// The format of the position information can be customized by specifying the `positionPrinter`
+    /// argument. The given function is expected to print a representation of the passed `Pos` value
+    /// to the passed `TextWriter` value. If possible, it should indent text lines with the passed string
     /// and take into account the maximum column count (including indention) passed as the last argument.
-    ///
-    /// If a value for the optional CharStream argument is given, the printed position
-    /// information is augmented with the the line of text surrounding the error position
-    /// together with a '^'-marker pointing to the exact location of the error in the input stream.
-    /// The given CharStream must contain the original input for which the parser error was generated.
     member WriteTo:   textWriter: System.IO.TextWriter
                     * ?positionPrinter: (System.IO.TextWriter -> Pos -> string -> int -> unit)
                     * ?columnWidth: int * ?initialIndention: string * ?indentionIncrement: string
-                    * ?streamWhereErrorOccurred: CharStream
                     -> unit
 
     override Equals: obj -> bool
@@ -154,8 +177,8 @@ type ParserError =
 /// marks the position of the index with a caret (^) on a second line.
 /// The output is indented with the given string and is restricted to the
 /// given columWidth (including the indention).
+[<System.Obsolete("This function will be removed in a future version of FParsec. If you want to continue to use it, please copy its source code.")>]
 val printErrorLine: CharStream -> index: int64 -> System.IO.TextWriter -> indentionString: string -> columnWidth: int -> unit
-
 
 /// Internal helper function that needs to be public because it gets called from inline functions.
 val _raiseInfiniteLoopException: string -> State<'u> -> 'a

@@ -737,9 +737,44 @@ let testHelperParseSubstream() =
     try runParserOnSubstream restOfLine -1 oldS0 s0 |> ignore; Fail()
     with :? System.ArgumentException -> ()
 
+
+let testHelperCountTextElements() =
+    let countTextElementsRef s =
+        let te = System.Globalization.StringInfo.GetTextElementEnumerator(s)
+        let mutable count = 0
+        while te.MoveNext() do count <- count + 1
+        count
+
+    let chars = [|"\u0020"; "\u007e"; "\U0001D41A";
+                  "\u001F";" \u007F"; // control
+                  "\u00AD"; "\U0001D173"; // format
+                  "\ud800"; // surrogate
+                  "\u0333"; "\U000101FD" // nonspacing mark
+                  "\u0BBE"; "\U0001D166" // spacing combining mark
+                  "\u20DD" // enclosing mark
+                |]
+
+    for c in chars do
+        Helper.CountTextElements(c) |> Equal (countTextElementsRef c)
+
+    for c1 in chars do
+        for c2 in chars do
+            let s = c1 + c2
+            Helper.CountTextElements(s) |> Equal (countTextElementsRef s)
+
+    let rand = System.Random()
+    let strings = Array.zeroCreate 5
+    for i = 0 to 100000 do
+        for j = 0 to strings.Length - 1 do
+           strings.[j] <- chars.[rand.Next()%chars.Length]
+           let s = System.String.Concat(strings)
+           Helper.CountTextElements(s) |> Equal (countTextElementsRef s)
+
+
 let run () =
     testSkipWhitespace()
     testSkipRestOfLine()
     testSkipCharsOrNewlines()
     testSkipToString()
     testHelperParseSubstream()
+    testHelperCountTextElements()
