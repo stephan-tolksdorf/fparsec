@@ -690,9 +690,9 @@ val puint8: Parser<uint8,'u>
 // -------------------
 
 /// `followedByChar c` is an optimized implementation of `followedByL (pchar c) ("'" + c.ToString() + "'")`.
-val followedByChar:      char   -> Parser<unit,'u>
+val followedByChar:        char   -> Parser<unit,'u>
 /// `notFollowedByChar c` is an optimized implementation of `notFollowedByL (pchar c) ("'" + c.ToString() + "'")`.
-val notFollowedByChar:   char   -> Parser<unit,'u>
+val notFollowedByChar:     char   -> Parser<unit,'u>
 /// `followedByString str` is an optimized implementation of `followedByL (pstring str) ("'" + str + "'")`.
 val followedByString:    string -> Parser<unit,'u>
 /// `notFollowedByString str` is an optimized implementation of `notFollowedByL (pstring str) ("'" + str + "'")`.

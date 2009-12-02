@@ -192,7 +192,7 @@ let skipNewline<'u> = newlineReturn  ()  : Parser<_,'u>
 let charReturn c result : Parser<'a,'u> =
     if c <> '\r' && c <> '\n' then
         if c = EOS then invalidArg "c" "The char '\uffff' (EOS) is not a valid argument for the pchar/skipChar/charReturn parser. If you want to check for the end of the stream, consider using the `eof` parser."
-        let error = expectedError (quoteChar c)
+        let error = expectedStringError (string c)
         fun state ->
             if state.Iter.Read() = c then
                  Reply(result, state.Next)
@@ -433,7 +433,7 @@ let internal checkStringContainsNoNewlineChar s name =
 
 let stringReturn s result : Parser<'a,'u> =
     checkStringContainsNoNewlineChar s "pstring/skipString/stringReturn"
-    let error = expectedError (quoteString s)
+    let error = expectedStringError s
     fun state ->
         if state.Iter.Match(s) then Reply(result, state.Advance(s.Length))
         else Reply(Error, error, state)
@@ -443,7 +443,7 @@ let skipString s = stringReturn s ()
 
 let pstringCI s : Parser<string,'u> =
     checkStringContainsNoNewlineChar s "pstringCI"
-    let error = expectedError (quoteString s + " (case-insensitive)")
+    let error = expectedStringCIError s
     let cfs = foldCase s
     fun state ->
         if state.Iter.MatchCaseFolded(cfs) then
@@ -452,7 +452,7 @@ let pstringCI s : Parser<string,'u> =
 
 let stringCIReturn s result : Parser<'a,'u> =
     checkStringContainsNoNewlineChar s "skipStringCI/stringCIReturn"
-    let error = expectedError (quoteString s + " (case-insensitive)")
+    let error = expectedStringCIError s
     let cfs = foldCase s
     fun state ->
         if state.Iter.MatchCaseFolded(cfs) then
@@ -1534,7 +1534,7 @@ let puint8  state = pint NumberLiteralOptions.DefaultUnsignedInteger 0xffu      
 
 let followedByChar c : Parser<unit,'u> =
     if c <> '\r' && c <> '\n' then
-        let error = expectedError (quoteChar c)
+        let error = expectedStringError (string c)
         fun state ->
             if state.Iter.Match(c) then Reply((), state)
             else Reply(Error, error, state)
@@ -1547,7 +1547,7 @@ let followedByChar c : Parser<unit,'u> =
 
 let notFollowedByChar c : Parser<unit,'u> =
     if c <> '\r' && c <> '\n' then
-        let error = unexpectedError (quoteChar c)
+        let error = unexpectedStringError (string c)
         fun state ->
             if not (state.Iter.Match(c)) then Reply((), state)
             else Reply(Error, error, state)
@@ -1560,14 +1560,14 @@ let notFollowedByChar c : Parser<unit,'u> =
 
 let followedByString s : Parser<unit,'u> =
     checkStringContainsNoNewlineChar s "followedByString"
-    let error = expectedError (quoteString s)
+    let error = expectedStringError s
     fun state ->
         if state.Iter.Match(s) then Reply((), state)
         else Reply(Error, error, state)
 
 let notFollowedByString s : Parser<unit,'u> =
     checkStringContainsNoNewlineChar s "notFollowedByString"
-    let error = unexpectedError (quoteString s)
+    let error = unexpectedStringError s
     fun state ->
         if not (state.Iter.Match(s)) then Reply((), state)
         else Reply(Error, error, state)

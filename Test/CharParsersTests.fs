@@ -18,8 +18,8 @@ type NLF = NumberLiteralResultFlags
 let testCharParsers() =
     pchar ' '  |> ROk " " 1 ' '
     pchar '\t' |> ROk "\t\t" 1 '\t'
-    pchar ' '  |> RError "" 0 (expectedError "' '")
-    pchar ' '  |> RError "x" 0 (expectedError "' '")
+    pchar ' '  |> RError "" 0 (expectedStringError " ")
+    pchar ' '  |> RError "x" 0 (expectedStringError " ")
 
     pchar '\r' |> RError "_\r" 0 (expectedError "newline")
     newline    |> RError "_\n" 0 (expectedError "newline")
@@ -226,7 +226,7 @@ let testSpecialCharParsers() =
 
 
 let testStringParsers() =
-    pstring "test"    |> RError "pest" 0 (expectedError "'test'")
+    pstring "test"    |> RError "pest" 0 (expectedStringError "test")
     pstring "test"    |> ROk "test" 4 "test"
     skipString "test" |> ROk "test" 4 ()
     stringReturn "test" -1 |> ROk "test" 4 -1
@@ -234,7 +234,7 @@ let testStringParsers() =
     try pstring "\n" |> ROkNL "\n" 1 "\n"; Fail()
     with :? System.ArgumentException -> ()
 
-    pstringCI      "tEsT"    |> RError "pest" 0 (expectedError "'tEsT' (case-insensitive)")
+    pstringCI      "tEsT"    |> RError "pest" 0 (expectedStringCIError "tEsT")
     pstringCI      "tEsT"    |> ROk "TeSt" 4 "TeSt"
     skipStringCI   "tEsT"    |> ROk "TeSt" 4 ()
     stringCIReturn "tEsT" -1 |> ROk "TeSt" 4 -1
@@ -412,7 +412,7 @@ let testMany() =
         checkParser (manyStrings  p_1) (manyStringsRef  p_2) s0; pr()
         checkParser (many1Strings p_1) (many1StringsRef p_2) s0
 
-    manyStrings2 (pstring "1") (pstring "2") |> ROkE "12223" 4 "1222" (expectedError "'2'")
+    manyStrings2 (pstring "1") (pstring "2") |> ROkE "12223" 4 "1222" (expectedStringError "2")
 
     try manyStrings (preturn "1") s0 |> ignore; Fail()
     with Microsoft.FSharp.Core.Operators.Failure _ -> ()
@@ -970,23 +970,23 @@ let testNumberParsers() =
 
 let testFollowedBy() =
     followedByChar '1' |> ROk "1" 0 ()
-    followedByChar '1' |> RError "2" 0 (expectedError "'1'")
+    followedByChar '1' |> RError "2" 0 (expectedStringError "1")
     followedByChar '\r' |> ROk "\r" 0 ()
     followedByChar '\r' |> ROk "\n" 0 ()
     followedByChar '\n' |> ROk "\r" 0 ()
     followedByChar '\n' |> ROk "\n" 0 ()
 
     notFollowedByChar '1'  |> ROk "2" 0 ()
-    notFollowedByChar '1'  |> RError "1" 0 (unexpectedError "'1'")
+    notFollowedByChar '1'  |> RError "1" 0 (unexpectedStringError "1")
     notFollowedByChar '\r' |> RError "\r" 0 (unexpectedError "newline")
     notFollowedByChar '\r' |> RError "\n" 0 (unexpectedError "newline")
     notFollowedByChar '\n' |> RError "\r" 0 (unexpectedError "newline")
     notFollowedByChar '\n' |> RError "\n" 0 (unexpectedError "newline")
 
     followedByString "123" |> ROk "123" 0 ()
-    followedByString "123" |> RError "124" 0 (expectedError "'123'")
+    followedByString "123" |> RError "124" 0 (expectedStringError "123")
     notFollowedByString "123" |> ROk "124" 0 ()
-    notFollowedByString "123" |> RError "123" 0 (unexpectedError "'123'")
+    notFollowedByString "123" |> RError "123" 0 (unexpectedStringError "123")
 
     try followedByString "13\r" |> ignore; Fail()
     with :? System.ArgumentException -> ()
