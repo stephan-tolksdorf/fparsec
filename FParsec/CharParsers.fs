@@ -561,7 +561,7 @@ let
 #else
     inline
 #endif
-           internal manySatisfyImpl require1 f1 f error : Parser<string,'u> =
+           internal manySatisfyImpl require1 (f1: char -> bool) (f: char -> bool) error : Parser<string,'u> =
     fun state ->
         let mutable str = null
         let newState = state.SkipCharsOrNewlinesWhile(f1, f, &str)
@@ -573,7 +573,7 @@ let
 #else
     inline
 #endif
-           internal skipManySatisfyImpl require1 f1 f error : Parser<unit,'u> =
+           internal skipManySatisfyImpl require1 (f1: char -> bool) (f: char -> bool) error : Parser<unit,'u> =
     fun state ->
         let newState = state.SkipCharsOrNewlinesWhile(f1, f)
         if not require1 || not (referenceEquals newState state) then Reply((), newState)

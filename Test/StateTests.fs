@@ -316,11 +316,35 @@ let testSkipCharsOrNewlines() =
                 if line <> 1 then checkOutputState sEndB
                 else sEndB |> ReferenceEqual sBegin
 
+                iter0.Read() |> ignore; iterBegin.Read() |> ignore
+                let sEndC = sBegin.SkipCharsOrNewlinesWhile(alwaysTrue, alwaysFalse)
+                checkOutputState sEndC
+
+                iter0.Read() |> ignore; iterBegin.Read() |> ignore
+                let mutable strD = null
+                let sEndD = sBegin.SkipCharsOrNewlinesWhile(alwaysTrue, alwaysFalse, &strD)
+                strD |> Equal str
+                checkOutputState sEndD
+
+                iter0.Read() |> ignore; iterBegin.Read() |> ignore
+                let sEndE = sBegin.SkipCharsOrNewlinesWhile(alwaysTrue, alwaysFalse, 0, System.Int32.MaxValue)
+                checkOutputState sEndE
+
+                iter0.Read() |> ignore; iterBegin.Read() |> ignore
+                let mutable strF = null
+                let sEndF = sBegin.SkipCharsOrNewlinesWhile(alwaysTrue, alwaysFalse, 0, System.Int32.MaxValue, &strF)
+                strF |> Equal str
+                checkOutputState sEndF
+
             iter0.Read() |> ignore; iterBegin.Read() |> ignore
             let mutable nSkipped = -1
             let sEnd1 = sBegin.SkipCharsOrNewlines(n, &nSkipped)
             nSkipped |> Equal c
             checkOutputState sEnd1
+
+            iter0.Read() |> ignore; iterBegin.Read() |> ignore
+            let sEnd1_b = sBegin.SkipCharsOrNewlines(n)
+            checkOutputState sEnd1_b
 
             iter0.Read() |> ignore; iterBegin.Read() |> ignore
             let mutable str2 = null
@@ -330,37 +354,37 @@ let testSkipCharsOrNewlines() =
 
             iter0.Read() |> ignore; iterBegin.Read() |> ignore
             nTrueN:= n
-            let sEnd3 = sBegin.SkipCharsOrNewlinesWhile(nTrue, nTrue)
+            let sEnd3 = sBegin.SkipCharsOrNewlinesWhile(nTrue)
             checkOutputState sEnd3
 
             iter0.Read() |> ignore; iterBegin.Read() |> ignore
             nTrueN:= n
             let mutable str3 = null
-            let sEnd4 = sBegin.SkipCharsOrNewlinesWhile(nTrue, nTrue, &str3)
+            let sEnd4 = sBegin.SkipCharsOrNewlinesWhile(nTrue, &str3)
             str3 |> Equal str
             checkOutputState sEnd4
 
             iter0.Read() |> ignore; iterBegin.Read() |> ignore
             nTrueN:= n
-            let sEnd5 = sBegin.SkipCharsOrNewlinesWhile(nTrue, nTrue, 0, System.Int32.MaxValue)
+            let sEnd5 = sBegin.SkipCharsOrNewlinesWhile(nTrue, 0, System.Int32.MaxValue)
             checkOutputState sEnd5
 
             iter0.Read() |> ignore; iterBegin.Read() |> ignore
             nTrueN:= n
             let mutable str6 = null
-            let sEnd6 = sBegin.SkipCharsOrNewlinesWhile(nTrue, nTrue, 0, System.Int32.MaxValue, &str6)
+            let sEnd6 = sBegin.SkipCharsOrNewlinesWhile(nTrue, 0, System.Int32.MaxValue, &str6)
             str6 |> Equal str
             checkOutputState sEnd6
 
             iter0.Read() |> ignore; iterBegin.Read() |> ignore
             nTrueN:= n
-            let sEnd7 = sBegin.SkipCharsOrNewlinesWhile(alwaysTrue, alwaysTrue, 0, n)
+            let sEnd7 = sBegin.SkipCharsOrNewlinesWhile(alwaysTrue, 0, n)
             checkOutputState sEnd7
 
             iter0.Read() |> ignore; iterBegin.Read() |> ignore
             nTrueN:= n
             let mutable str8 = null
-            let sEnd8 = sBegin.SkipCharsOrNewlinesWhile(alwaysTrue, alwaysTrue, 0, n, &str8)
+            let sEnd8 = sBegin.SkipCharsOrNewlinesWhile(alwaysTrue, 0, n, &str8)
             str8 |> Equal str
             checkOutputState sEnd8
 
