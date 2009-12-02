@@ -33,13 +33,13 @@ type PrecedenceParserOp<'a,'u> =
                                | _           -> "non-associative"
              match t with
              | PrefixOp  (str, _, prec, isAssoc, _) | PrefixOp' (str, _, prec, isAssoc, _) ->
-                 sprintf "prefix operator \"%s\" (precedence: %i%s)" str prec (if isAssoc then "" else ", non-associative")
+                 sprintf "prefix operator '%s' (precedence: %i%s)" str prec (if isAssoc then "" else ", non-associative")
              | PostfixOp  (str, _, prec, isAssoc, _) | PostfixOp' (str, _, prec, isAssoc, _) ->
-                 sprintf "postfix operator \"%s\" (precedence: %i%s)" str prec (if isAssoc then "" else ", non-associative")
+                 sprintf "postfix operator '%s' (precedence: %i%s)" str prec (if isAssoc then "" else ", non-associative")
              | InfixOp (str, _, prec, assoc, _) |  InfixOp' (str, _, prec, assoc, _) ->
-                 sprintf "infix operator \"%s\" (precedence: %i, %s)" str prec (assocToString assoc)
+                 sprintf "infix operator '%s' (precedence: %i, %s)" str prec (assocToString assoc)
              | TernaryOp (str, _, str2, _, prec, assoc,_) | TernaryOp' (str, _, str2, _, prec, assoc, _) ->
-                 sprintf "ternary operator \"%s\" \"%s\" (precedence: %i, %s)" str str2 prec (assocToString assoc)
+                 sprintf "ternary operator '%s' '%s' (precedence: %i, %s)" str str2 prec (assocToString assoc)
 
 type internal Fixity = Infix   = 0
                      | Prefix  = 1
