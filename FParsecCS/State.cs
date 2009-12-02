@@ -86,18 +86,14 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
         return new State<TUserState>(Iter.Advance(charOffset), newData);
     }
     public State<TUserState> Advance(int charOffset, int lineOffset, int newColumnMinus1) {
-        if (lineOffset > 0) {
-            long newLineBegin = Iter.Index + charOffset - newColumnMinus1;
-            var newData = new Data(data.Line + lineOffset, newLineBegin, data.UserState, data.StreamName);
-            return new State<TUserState>(Iter.Advance(charOffset), newData);
-        } else return Advance(charOffset);
+        long newLineBegin = Iter.Index + charOffset - newColumnMinus1;
+        var newData = new Data(data.Line + lineOffset, newLineBegin, data.UserState, data.StreamName);
+        return new State<TUserState>(Iter.Advance(charOffset), newData);
     }
     public State<TUserState> Advance(int charOffset, int lineOffset, int newColumnMinus1, TUserState userState) {
-        if (lineOffset > 0) {
-            long newLineBegin = Iter.Index + charOffset - newColumnMinus1;
-            var newData = new Data(data.Line + lineOffset, newLineBegin,      userState, data.StreamName);
-            return new State<TUserState>(Iter.Advance(charOffset), newData);
-        } else return Advance(charOffset, userState);
+        long newLineBegin = Iter.Index + charOffset - newColumnMinus1;
+        var newData = new Data(data.Line + lineOffset, newLineBegin,      userState, data.StreamName);
+        return new State<TUserState>(Iter.Advance(charOffset), newData);
     }
 
     internal State<TUserState> AdvanceTo(char* ptr) {
@@ -132,36 +128,28 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
         return new State<TUserState>(iter, newData);
     }
     public State<TUserState> AdvanceTo(CharStream.Iterator iter, int lineOffset, int newColumnMinus1) {
-        if (lineOffset > 0) {
-            var newData = new Data(data.Line + lineOffset, iter.Index - newColumnMinus1, data.UserState, data.StreamName);
-            return new State<TUserState>(iter, newData);
-        } else return AdvanceTo(iter);
+        var newData = new Data(data.Line + lineOffset, iter.Index - newColumnMinus1, data.UserState, data.StreamName);
+        return new State<TUserState>(iter, newData);
     }
     public State<TUserState> AdvanceTo(CharStream.Iterator iter, long lineOffset, long newColumnMinus1) {
-        if (lineOffset > 0) {
-            var newData = new Data(data.Line + lineOffset, iter.Index - newColumnMinus1, data.UserState, data.StreamName);
-            return new State<TUserState>(iter, newData);
-        } else return AdvanceTo(iter);
+        var newData = new Data(data.Line + lineOffset, iter.Index - newColumnMinus1, data.UserState, data.StreamName);
+        return new State<TUserState>(iter, newData);
     }
     public State<TUserState> AdvanceTo(CharStream.Iterator iter, uint lineOffset, uint newColumnMinus1) {
-            var newData = new Data(data.Line + lineOffset, iter.Index - newColumnMinus1, data.UserState, data.StreamName);
-            return new State<TUserState>(iter, newData);
+        var newData = new Data(data.Line + lineOffset, iter.Index - newColumnMinus1, data.UserState, data.StreamName);
+        return new State<TUserState>(iter, newData);
     }
     public State<TUserState> AdvanceTo(CharStream.Iterator iter, int lineOffset, int newColumnMinus1, TUserState userState) {
-        if (lineOffset > 0) {
-            var newData = new Data(data.Line + lineOffset, iter.Index - newColumnMinus1,      userState, data.StreamName);
-            return new State<TUserState>(iter, newData);
-        } else return AdvanceTo(iter);
+        var newData = new Data(data.Line + lineOffset, iter.Index - newColumnMinus1,      userState, data.StreamName);
+        return new State<TUserState>(iter, newData);
     }
     public State<TUserState> AdvanceTo(CharStream.Iterator iter, long lineOffset, long newColumnMinus1, TUserState userState) {
-        if (lineOffset > 0) {
-            var newData = new Data(data.Line + lineOffset, iter.Index - newColumnMinus1,      userState, data.StreamName);
-            return new State<TUserState>(iter, newData);
-        } else return AdvanceTo(iter);
+        var newData = new Data(data.Line + lineOffset, iter.Index - newColumnMinus1,      userState, data.StreamName);
+        return new State<TUserState>(iter, newData);
     }
     public State<TUserState> AdvanceTo(CharStream.Iterator iter, uint lineOffset, uint newColumnMinus1, TUserState userState) {
-            var newData = new Data(data.Line + lineOffset, iter.Index - newColumnMinus1,      userState, data.StreamName);
-            return new State<TUserState>(iter, newData);
+        var newData = new Data(data.Line + lineOffset, iter.Index - newColumnMinus1,      userState, data.StreamName);
+        return new State<TUserState>(iter, newData);
     }
 
     public State<TUserState> WithUserState(TUserState userState) {
