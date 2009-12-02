@@ -3,6 +3,8 @@
 
 using System;
 using System.Runtime.InteropServices;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace FParsec {
 
@@ -18,7 +20,7 @@ internal static class CaseFoldTable {
     }
 
     private static char[] CreateFoldedCharsArray() {
-        System.Diagnostics.Debug.Assert(oneToOneMappings.Length%2 == 0);
+        Debug.Assert(oneToOneMappings.Length%2 == 0);
         var table = new char[0x10000];
         for (int i = 0; i < table.Length; ++i)
             table[i] = (char)i;
@@ -31,6 +33,8 @@ internal static class CaseFoldTable {
     public static char[] FoldedCharsArray;
     private static GCHandle FoldedCharsHandle;
 
+    [SuppressMessage("Microsoft.Reliability", "CA2002:DoNotLockOnObjectsWithWeakIdentity",
+                     Justification = "The string oneToOneMappings is private and obscure enough that we don't have to worry about a calling or called method locking the same string.")]
     public static unsafe char* Initialize() {
         if (FoldedChars != null) return FoldedChars;
         lock (oneToOneMappings) {
@@ -60,7 +64,7 @@ internal static class CaseFoldTable {
 
     private static unsafe char[] CreateFoldedCharsArray() {
         int n = oneToOneMappings.Length;
-        System.Diagnostics.Debug.Assert(n%2 == 0);
+        Debug.Assert(n%2 == 0);
         var tableArray = new char[0x10000];
         fixed (char* table = tableArray)
         fixed (char* mappings = oneToOneMappings) {
