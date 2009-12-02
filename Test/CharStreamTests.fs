@@ -21,30 +21,6 @@ exception NotSupported = System.NotSupportedException
 
 let EOS = CharStream.Iterator.EndOfStreamChar
 
-let testEncodingDetection() =
-    let s = "1234567890"
-    let gb18030 = System.Text.Encoding.GetEncoding(54936) // an encoding we can't detect
-
-    let test (e: System.Text.Encoding) =
-        let bs0 = e.GetPreamble()
-        use cs0 = new CharStream(new System.IO.MemoryStream(bs0, false), gb18030);
-        cs0.Encoding.CodePage |> Equal (e.CodePage)
-        let bs = Array.append (e.GetPreamble()) (e.GetBytes(s))
-        use cs = new CharStream(new System.IO.MemoryStream(bs, false), gb18030);
-        cs.Encoding.CodePage |> Equal (e.CodePage)
-        cs.Begin.Read(s.Length) |> Equal s
-        use cs2 = new CharStream(new System.IO.MemoryStream(bs, false), e);
-        cs2.Encoding |> ReferenceEqual e
-        cs2.Begin.Read(s.Length) |> Equal s
-        use cs3 = new CharStream(new System.IO.MemoryStream(bs, false), false, gb18030, false);
-        cs3.Encoding |> ReferenceEqual gb18030
-
-    test (System.Text.UTF32Encoding(false, true))
-    test (System.Text.UTF32Encoding(true, true))
-    test (System.Text.UnicodeEncoding(false, true))
-    test (System.Text.UnicodeEncoding(true, true))
-    test (System.Text.UTF8Encoding(true))
-
 let testNonStreamConstructors() =
      let s = "1234567890"
      let cs = s.ToCharArray()
@@ -52,6 +28,7 @@ let testNonStreamConstructors() =
      let regex = new System.Text.RegularExpressions.Regex(".*")
 
      let testStream (stream: CharStream) (index: int) (length: int) (indexOffset: int64) (supportsRegex: bool) =
+        stream.BeginIndex |> Equal indexOffset
         let iter = stream.Begin
         iter.Index |> Equal indexOffset
         if length > 0 then
@@ -141,6 +118,9 @@ let testNonStreamConstructors() =
          with ArgumentNull -> ()
          try new CharStream(cp, -1) |> ignore; Fail()
          with ArgumentOutOfRange -> ()
+         if sizeof<System.IntPtr> = 4 then
+            try new CharStream(cp, System.Int32.MaxValue) |> ignore; Fail()
+            with ArgumentOutOfRange -> ()
          try new CharStream(cp, 10, -1L) |> ignore; Fail()
          with ArgumentOutOfRange -> ()
          try new CharStream(cp, 10, (1L <<< 60)) |> ignore; Fail()
@@ -148,6 +128,321 @@ let testNonStreamConstructors() =
          handle.Free()
      testCharPointerStream()
     #endif
+
+let testStreamConstructorArgumentChecking() =
+    let encoding = System.Text.Encoding.UTF8
+    let str = "1234567890"
+    let streamBytes = Array.append (encoding.GetPreamble()) (encoding.GetBytes(str))
+    use stream = new System.IO.MemoryStream(streamBytes)
+    try new CharStream((null: System.IO.Stream), false, encoding) |> ignore
+    with :? System.ArgumentNullException -> ()
+    try new CharStream(stream, null) |> ignore
+    with :? System.ArgumentNullException -> ()
+
+    let tempFilePath = System.IO.Path.GetTempFileName()
+    use nonReadableStream = new System.IO.FileStream(tempFilePath, System.IO.FileMode.Open, System.IO.FileAccess.Write)
+    try new CharStream(nonReadableStream, encoding) |> ignore
+    with :? System.ArgumentException -> ()
+    nonReadableStream.Write(streamBytes, 0, streamBytes.Length)
+    nonReadableStream.Close()
+
+    try new CharStream((null: string), encoding) |> ignore
+    with :? System.ArgumentNullException -> ()
+    try new CharStream("", (null: System.Text.Encoding)) |> ignore
+    with :? System.ArgumentNullException -> ()
+
+    use charStream = new CharStream(tempFilePath, System.Text.Encoding.ASCII, true)
+    charStream.Begin.Read(str.Length + 1) |> Equal str
+    charStream.Dispose()
+
+    System.IO.File.Delete(tempFilePath)
+
+type CustomPreambleUTF8Encoding(preamble: byte[]) =
+    inherit System.Text.UTF8Encoding()
+    override t.GetPreamble() = preamble
+
+
+let testEncodingDetection() =
+    let s = "1234567890"
+    let gb18030 = System.Text.Encoding.GetEncoding(54936) // an encoding we can't detect
+
+    let test (e: System.Text.Encoding) =
+        let bs0 = e.GetPreamble()
+        use cs0 = new CharStream(new System.IO.MemoryStream(bs0, false), gb18030);
+        cs0.Encoding.CodePage |> Equal (e.CodePage)
+
+        bs0.[1] <- 33uy
+        use cs0 = new CharStream(new System.IO.MemoryStream(bs0, false), gb18030);
+        cs0.Encoding|> ReferenceEqual gb18030
+
+        let bs = Array.append (e.GetPreamble()) (e.GetBytes(s))
+        use cs = new CharStream(new System.IO.MemoryStream(bs, false), gb18030);
+        cs.Encoding.CodePage |> Equal (e.CodePage)
+        cs.Begin.Read(s.Length) |> Equal s
+        use cs2 = new CharStream(new System.IO.MemoryStream(bs, false), e);
+        cs2.Encoding |> ReferenceEqual e
+        cs2.Begin.Read(s.Length) |> Equal s
+        use cs3 = new CharStream(new System.IO.MemoryStream(bs, false), false, gb18030, false);
+        cs3.Encoding |> ReferenceEqual gb18030
+
+    test (System.Text.UTF32Encoding(false, true))
+    test (System.Text.UTF32Encoding(true, true))
+    test (System.Text.UnicodeEncoding(false, true))
+    test (System.Text.UnicodeEncoding(true, true))
+    test (System.Text.UTF8Encoding(true))
+
+    let e = CustomPreambleUTF8Encoding([|0uy;1uy;2uy;3uy;4uy|])
+    let bs = Array.append (e.GetPreamble()) (e.GetBytes(s))
+    use cs = new CharStream(new System.IO.MemoryStream(bs, false), e);
+    cs.Encoding.CodePage |> Equal (e.CodePage)
+    cs.Begin.Read(s.Length) |> Equal s
+
+/// creates a CharStream with block size 8 and block overlap 3
+let createMultiBlockTestStream byteStream encoding =
+    new CharStream(byteStream, false,
+                   encoding, true,
+                   #if LOW_TRUST
+                   #else
+                      8, 3, 3,
+                   #endif
+                      16);
+
+type NonSeekableMemoryStream(bytes: byte[]) =
+     inherit System.IO.MemoryStream(bytes)
+     override t.Seek(offset, origin) = raise (System.NotSupportedException())
+     override t.CanSeek = false
+
+#if LOW_TRUST
+#else
+
+let testStreamBuffer() =
+    let ty = typeof<FParsec.StringBuffer>
+    let getStaticField name = getStaticField ty name
+    let minChunkSize          = getStaticField "MinChunkSize" : int
+    let firstSegmentSmallSize = getStaticField "FirstSegmentSmallSize" : int
+    let firstSegmentLargeSize = getStaticField "FirstSegmentLargeSize" : int
+    let maxSegmentSize        = getStaticField "MaxSegmentSize" : int
+
+    let testConstructor() =
+        let buffer1 = FParsec.StringBuffer.Create(0)
+        buffer1.Dispose()
+        let buffer1 = FParsec.StringBuffer.Create(firstSegmentSmallSize)
+        buffer1.Dispose()
+        let buffer2 = FParsec.StringBuffer.Create(maxSegmentSize + 1)
+        buffer2.Dispose()
+        try FParsec.StringBuffer.Create(System.Int32.MaxValue) |> ignore; Fail()
+        with :? System.ArgumentOutOfRangeException -> ()
+        try FParsec.StringBuffer.Create(-1) |> ignore; Fail()
+        with :? System.ArgumentOutOfRangeException -> ()
+
+    testConstructor()
+
+    let rand = System.Random(1054754)
+    let maxBufferSize =  196608
+    let maxTotalSize = 1 <<< 22
+    let buffers = new ResizeArray<_>()
+    let mutable allocated = 0
+    let mutable maxReached = false
+    for i = 1 to 10000 do
+        if (not maxReached && rand.Next(2) = 0) || buffers.Count = 0 then
+            let maxSize = rand.Next(maxBufferSize + 1)
+            let n = rand.Next(1, 11)
+            for i = 1 to n do
+                let size = rand.Next(maxSize + 1)
+                if allocated + size < maxTotalSize then
+                    let buffer = FParsec.StringBuffer.Create(size)
+                    allocated <- allocated + buffer.Length
+                    buffers.Add(buffer)
+                else
+                    maxReached <- true
+        else
+            maxReached <- false
+            let n = rand.Next(1, buffers.Count + 1)
+            for i = 1 to n do
+                let idx = rand.Next(buffers.Count)
+                let buffer = buffers.[idx]
+                allocated <- allocated - buffer.Length
+                buffer.Dispose()
+                buffers.RemoveAt(idx)
+    buffers.Reverse()
+    for b in buffers do b.Dispose()
+
+// currently unused because ...
+type NonSerializableUTF8Decoder() =
+    inherit System.Text.Decoder()
+    let decoder = System.Text.Encoding.UTF8.GetDecoder()
+    override t.GetCharCount(bytes: byte[], index: int, count: int) : int =
+        raise (System.NotImplementedException())
+    override t.GetChars(bytes: byte[], byteIndex: int, byteCount: int, chars: char[], charIndex: int): int =
+        raise (System.NotImplementedException())
+    // ... the following method is not correctly compiled
+    override t.Convert(bytes, byteCount, chars, charCount, flush,  bytesUsed: byref<int>, charsUsed: byref<int>, completed: byref<bool>) =
+        decoder.Convert(bytes, byteCount, chars, charCount, flush, &bytesUsed, &charsUsed, &completed)
+
+type UTF8EncodingWithNonSerializableDecoder() =
+    inherit System.Text.UTF8Encoding()
+    override t.GetDecoder() = new NonSerializableUTF8Decoder() :> System.Text.Decoder
+
+let testNonSeekableCharStreamHandling() =
+    let str = "1234567890ABCDEFGHIJKLMNOPQ"
+    let streamBytes = Array.append (System.Text.Encoding.UTF8.GetPreamble()) (System.Text.Encoding.UTF8.GetBytes(str))
+
+    let testNonSeekableByteStream() =
+        let encoding = System.Text.Encoding.UTF8
+        use byteStream = new NonSeekableMemoryStream(streamBytes)
+        use stream = createMultiBlockTestStream byteStream System.Text.Encoding.Unicode
+        let mutable iter = stream.Begin
+        iter.Read(9) |> ignore
+        try iter.Read() |> ignore
+            Fail()
+        with :? System.NotSupportedException as e -> ()
+    testNonSeekableByteStream()
+
+    let testNonSerializableEncoding() =
+        let nsEncoding = FParsec.Helper.UTF8EncodingWithNonSerializableDecoder()
+        use byteStream = new System.IO.MemoryStream(streamBytes)
+        use stream = createMultiBlockTestStream byteStream nsEncoding
+        let mutable iter0 = stream.Begin
+        let mutable iter1 = iter0
+        iter1._Increment(8u) |> Equal str.[8]
+        let mutable iter2 = iter0
+        iter2._Increment(uint32 (str.Length - 1)) |> Equal str.[str.Length - 1]
+        // backtracking to the first block should work
+        iter0.Read() |> Equal str.[0]
+        // seeking forward should work too
+        iter2.Read() |> Equal str.[str.Length - 1]
+        try // but backtracking to a block other than the first should fail
+            iter1.Read() |> ignore
+            Fail()
+        with :? System.NotSupportedException as e -> ()
+    testNonSerializableEncoding()
+
+#endif
+
+let testDecoderFallbackExceptionHandling() =
+    let encoding = System.Text.Encoding.GetEncoding("utf-32", System.Text.EncoderFallback.ExceptionFallback, System.Text.DecoderFallback.ExceptionFallback)
+
+    let getStreamBytes bytes =
+        Array.concat [|[|0x00uy|]; encoding.GetPreamble(); bytes|]
+
+    let test (byteStream: System.IO.Stream) multiBlock (position: int64) =
+        try
+            use stream = if not multiBlock then new CharStream(byteStream, encoding)
+                         else createMultiBlockTestStream byteStream encoding
+            let iter = stream.Begin
+            iter.Read(int position + 4) |> ignore
+            Fail()
+        with :? System.Text.DecoderFallbackException as e ->
+            unbox (e.Data.["Stream.Position"]) |> Equal position
+
+    let shortStreamBytes = getStreamBytes (encoding.GetBytes("123\u00005"))
+    shortStreamBytes.[1 + 4 + 3*4 + 1] <- 0xd8uy
+
+    use shortByteStream = new System.IO.MemoryStream(shortStreamBytes)
+    shortByteStream.ReadByte() |> ignore
+    test shortByteStream false (int64 (1 + 4 + 3*4))
+    use nsShortByteStream = new NonSeekableMemoryStream(shortStreamBytes)
+    nsShortByteStream.ReadByte() |> ignore
+    test nsShortByteStream false (int64 (    4 + 3*4))
+
+    let longStreamBytes = getStreamBytes (encoding.GetBytes("12345678901\u00003"))
+    longStreamBytes.[1 + 4 + 11*4 + 1] <- 0xd8uy
+
+    use longByteStream = new System.IO.MemoryStream(longStreamBytes)
+    longByteStream.ReadByte() |> ignore
+    test longByteStream true (int64 (1 + 4 + 11*4))
+
+    use nsLongByteStream = new NonSeekableMemoryStream(longStreamBytes)
+    nsLongByteStream.ReadByte() |> ignore
+    test nsLongByteStream true (int64 (    4 + 11*4))
+
+let testEmptyStream (stream: CharStream) =
+    let iter0 = stream.Begin
+    let mutable iter = iter0
+    iter.IsBeginOfStream |> True
+    iter.IsEndOfStream |> True
+    stream.EndIndex |> Equal 0L
+    iter.Next |> Equal iter0
+    iter.Advance(1) |> Equal iter0
+    iter.Advance(System.Int32.MaxValue) |> Equal iter0
+    try iter.Advance(-1) |> ignore; Fail()
+    with ArgumentOutOfRange -> ()
+    iter.Advance(1L) |> Equal iter0
+    iter.Advance(System.Int64.MaxValue) |> Equal iter0
+    try iter.Advance(-1L) |> ignore; Fail()
+    with ArgumentOutOfRange -> ()
+    try iter.Advance(System.Int64.MinValue) |> ignore; Fail()
+    with ArgumentOutOfRange -> ()
+    iter._Increment() |> Equal EOS
+    iter |> Equal iter0
+    iter._Increment(0u) |> Equal EOS
+    iter |> Equal iter0
+    iter._Increment(1u) |> Equal EOS
+    iter |> Equal iter0
+    iter._Increment((uint32)System.Int32.MaxValue) |> Equal EOS
+    iter |> Equal iter0
+    iter._Increment((uint32)System.Int32.MinValue) |> Equal EOS
+    iter |> Equal iter0
+    iter._Increment((uint32)System.UInt32.MaxValue) |> Equal EOS
+    iter |> Equal iter0
+    iter._Decrement() |> Equal EOS
+    iter |> Equal iter0
+    iter._Decrement(0u) |> Equal EOS
+    iter |> Equal iter0
+    iter._Decrement(1u) |> Equal EOS
+    iter |> Equal iter0
+    iter._Decrement((uint32)System.Int32.MaxValue) |> Equal EOS
+    iter |> Equal iter0
+    iter._Decrement((uint32)System.Int32.MinValue) |> Equal EOS
+    iter |> Equal iter0
+    iter._Decrement((uint32)System.UInt32.MaxValue) |> Equal EOS
+    iter |> Equal iter0
+    iter.Peek(0) |> Equal EOS
+    iter.Peek(1) |> Equal EOS
+    iter.Peek(System.Int32.MaxValue) |> Equal EOS
+    iter.Peek(-1) |> Equal EOS
+    iter.Peek(System.Int32.MinValue) |> Equal EOS
+    iter.Peek(0u) |> Equal EOS
+    iter.Peek(1u) |> Equal EOS
+    iter.Peek((uint32)System.Int32.MaxValue) |> Equal EOS
+    iter.Peek((uint32)System.Int32.MinValue) |> Equal EOS
+    iter.Peek((uint32)System.UInt32.MaxValue) |> Equal EOS
+    iter.Match("")  |> True
+    iter.Match("x") |> False
+    iter.MatchCaseFolded("")  |> True
+    iter.MatchCaseFolded("x") |> False
+    iter.Match([||],0,0) |> True
+    iter.Match([|'x'|],0,1) |> False
+    #if LOW_TRUST
+    #else
+    let mutable c = 'x'
+    iter.Match(&&c, 0) |> True
+    iter.Match(&&c, 1) |> False
+    iter.MatchCaseFolded(&&c, 0) |> True
+    iter.MatchCaseFolded(&&c, 1) |> False
+    #endif
+    iter.Match(Regex("x")).Success |> False
+    iter.Read(0) |> Equal ""
+    iter.Read(0, false) |> Equal ""
+    iter.Read(0, true)  |> Equal ""
+    iter.Read(1) |> Equal ""
+    iter.Read(1, false) |> Equal ""
+    iter.Read(1, true)  |> Equal ""
+    iter.Read(System.Int32.MaxValue) |> Equal ""
+    iter.Read(System.Int32.MaxValue, false) |> Equal ""
+    iter.Read(System.Int32.MaxValue, true)  |> Equal ""
+    let c = [|'x'|]
+    iter.Read(c, 0, 1) |> Equal 0
+    c.[0] |> Equal 'x'
+    #if LOW_TRUST
+    #else
+    let mutable c = 'x'
+    iter.Read(&&c, 1) |> Equal 0
+    #endif
+    let cs = iter.Read2()
+    cs.Char0 |> Equal EOS
+    cs.Char1 |> Equal EOS
+    iter.ReadUntil(iter) |> Equal ""
 
 /// Tries to systematically test all code branches in CharStream.Iterator methods.
 let testStream (stream: CharStream) (refString: string) blockSize blockOverlap minRegexSpace =
@@ -206,6 +501,13 @@ let testStream (stream: CharStream) (refString: string) blockSize blockOverlap m
         iter3._Increment(uint32 i) |> Equal ci
         iter3.Index  |> Equal ii
         iter3.Read() |> Equal ci
+        if j = 0 then
+            let mutable iter4 = iter3
+            iter4._Decrement(uint32 -d + 1u) |> Equal EOS
+            iter4 |> Equal iter0
+            iter4 <- iter3
+            iter4._Decrement(System.UInt32.MaxValue) |> Equal EOS
+            iter4 |> Equal iter0
         if d >= 0 then
             if d = 1 then
                 let mutable iter4 = iter3
@@ -225,7 +527,7 @@ let testStream (stream: CharStream) (refString: string) blockSize blockOverlap m
                 let mutable iter4  = iter3
                 iter4._Decrement() |> Equal cj
                 iter4.Index  |> Equal jj
-                iter3.Read() |> Equal ci
+                iter4.Read() |> Equal cj
                 iter0.Read() |> Equal c0; iter3.Read() |> Equal ci; // restore state of stream before branch
             iter3._Decrement(uint32 -d) |> Equal cj
             iter3.Index  |> Equal jj
@@ -654,7 +956,9 @@ let testStream (stream: CharStream) (refString: string) blockSize blockOverlap m
         if d = 1 then
             getIter(i).Peek() |> Equal c
         if d > 0 then
-            getIter(i).Peek(uint32 d) |> Equal c
+            let iter = getIter(i)
+            let cc = iter.Peek(uint32 d)
+            Equal c cc
 
     for i = 0 to N + 2 do
         for j = 0 to N + 2 do
@@ -681,38 +985,38 @@ let testStream (stream: CharStream) (refString: string) blockSize blockOverlap m
 
     testPeekException()
 
-let rand = System.Random(43563456)
-
-let generateRandomUnicodeChars size =
-    let cs = Array.zeroCreate size
-    let mutable i = 0
-    while i < cs.Length do
-        let r = rand.Next()
-        // see http://www.unicode.org/Public/UNIDATA/Blocks.txt
-        if r &&& 0xffff < 0xfffe then
-            if r < (System.Int32.MaxValue/3)*2 then
-                // generate a char from the BMP with about a prob. of 2/3
-                let c = r % 0xffff
-                if (c < 0xd800 || c > 0xdfff) then
-                    cs.[i] <- char c
-                    i <- i + 1
-            else
-                let c_ = 0x10000 + (r % 0x25000)
-                let c = if c_ < 0x30000 then c_
-                        else 0xe0000 ||| (c_ &&& 0xfff)
-                let v = c - 0x10000
-                let h = char (0xd800 ||| (c >>> 10))
-                let l = char (0xdc00 ||| (c &&& 0x3ff))
-                if i + 1 < cs.Length then
-                    cs.[i]     <- h
-                    cs.[i + 1] <- l
-                    i <- i + 2
-    cs
-
 /// Cross verify the CharStream string wrapper version against the normal stream
 /// version. This is done by generating a random string and then checking
 /// randomly generated access sequences on CharStream instances with random parameters.
 let xTest() =
+    let rand = System.Random(43563456)
+
+    let generateRandomUnicodeChars size =
+        let cs = Array.zeroCreate size
+        let mutable i = 0
+        while i < cs.Length do
+            let r = rand.Next()
+            // see http://www.unicode.org/Public/UNIDATA/Blocks.txt
+            if r &&& 0xffff < 0xfffe then
+                if r < (System.Int32.MaxValue/3)*2 then
+                    // generate a char from the BMP with about a prob. of 2/3
+                    let c = r % 0xffff
+                    if (c < 0xd800 || c > 0xdfff) then
+                        cs.[i] <- char c
+                        i <- i + 1
+                else
+                    let c_ = 0x10000 + (r % 0x25000)
+                    let c = if c_ < 0x30000 then c_
+                            else 0xe0000 ||| (c_ &&& 0xfff)
+                    let v = c - 0x10000
+                    let h = char (0xd800 ||| (c >>> 10))
+                    let l = char (0xdc00 ||| (c &&& 0x3ff))
+                    if i + 1 < cs.Length then
+                        cs.[i]     <- h
+                        cs.[i + 1] <- l
+                        i <- i + 2
+        cs
+
     let maxBlockSize = 100 // extremely small size for testing purposes only
     let maxReadSize = 120
     let maxJumpSize = 200
@@ -913,72 +1217,19 @@ let testFoldCase() =
         j <- c + 1
     j |> Equal 0xff3b
 
-#if LOW_TRUST
-#else
-
-let testStreamBuffer() =
-    let ty = typeof<FParsec.StringBuffer>
-    let getStaticField name = getStaticField ty name
-    let minChunkSize          = getStaticField "MinChunkSize" : int
-    let firstSegmentSmallSize = getStaticField "FirstSegmentSmallSize" : int
-    let firstSegmentLargeSize = getStaticField "FirstSegmentLargeSize" : int
-    let maxSegmentSize        = getStaticField "MaxSegmentSize" : int
-
-    let testConstructor() =
-        let buffer1 = FParsec.StringBuffer.Create(0)
-        buffer1.Dispose()
-        let buffer1 = FParsec.StringBuffer.Create(firstSegmentSmallSize)
-        buffer1.Dispose()
-        let buffer2 = FParsec.StringBuffer.Create(maxSegmentSize + 1)
-        buffer2.Dispose()
-        try FParsec.StringBuffer.Create(System.Int32.MaxValue) |> ignore; Fail()
-        with :? System.ArgumentOutOfRangeException -> ()
-        try FParsec.StringBuffer.Create(-1) |> ignore; Fail()
-        with :? System.ArgumentOutOfRangeException -> ()
-
-    testConstructor()
-
-    let maxBufferSize =  196608
-    let maxTotalSize = 1 <<< 22
-    let buffers = new ResizeArray<_>()
-    let mutable allocated = 0
-    let mutable maxReached = false
-    for i = 1 to 10000 do
-        if (not maxReached && rand.Next(2) = 0) || buffers.Count = 0 then
-            let maxSize = rand.Next(maxBufferSize + 1)
-            let n = rand.Next(1, 11)
-            for i = 1 to n do
-                let size = rand.Next(maxSize + 1)
-                if allocated + size < maxTotalSize then
-                    let buffer = FParsec.StringBuffer.Create(size)
-                    allocated <- allocated + buffer.Length
-                    buffers.Add(buffer)
-                else
-                    maxReached <- true
-        else
-            maxReached <- false
-            let n = rand.Next(1, buffers.Count + 1)
-            for i = 1 to n do
-                let idx = rand.Next(buffers.Count)
-                let buffer = buffers.[idx]
-                allocated <- allocated - buffer.Length
-                buffer.Dispose()
-                buffers.RemoveAt(idx)
-    buffers.Reverse()
-    for b in buffers do b.Dispose()
-#endif
 
 let run() =
-    testFoldCase()
 #if LOW_TRUST
 #else
     testStreamBuffer()
     setStaticField typeof<FParsec.CharStream> "MinimumByteBufferLength" 10
     setStaticField typeof<FParsec.CharStream> "DoNotRoundUpBlockSizeToSimplifyTesting" true
+    testNonSeekableCharStreamHandling()
 #endif
-
-    testEncodingDetection()
     testNonStreamConstructors()
+    testStreamConstructorArgumentChecking()
+    testEncodingDetection()
+    testDecoderFallbackExceptionHandling()
 
     let testStreams() =
         let refString = "1234567890ABCDEF"
@@ -987,31 +1238,28 @@ let run() =
 
         let be = new System.Text.UTF32Encoding(true, true)
         let bs = Array.append (be.GetPreamble()) (be.GetBytes(refString))
-
-        let newCharStream byteStream = new CharStream(byteStream, false,
-                                                      System.Text.Encoding.Unicode, true,
-                                                                                         #if LOW_TRUST
-                                                                                         #else
-                                                                                             8, 3, 3,
-                                                                                         #endif
-                                                                                             16);
-
-        use fileStream = newCharStream (new System.IO.MemoryStream(bs, false))
+        use fileStream = createMultiBlockTestStream (new System.IO.MemoryStream(bs, false)) System.Text.Encoding.Unicode
         testStream fileStream refString 8 3 3
 
-        use emptyFileStream = newCharStream (new System.IO.MemoryStream(be.GetPreamble(), false))
-        emptyFileStream.Begin.IsBeginOfStream |> True
-        emptyFileStream.Begin.IsEndOfStream   |> True
-        emptyFileStream.Begin.Read(10) |> Equal ""
+        let refString2 = "1234567890ABCDEFGH" // exactly three blocks + 1 overlap
+        let bs2 = System.Text.Encoding.Unicode.GetBytes(refString2)
+        use fileStream = createMultiBlockTestStream (new System.IO.MemoryStream(bs2, false)) System.Text.Encoding.Unicode
+        testStream fileStream refString2 8 3 3
 
-        use emptyFileStream2 = newCharStream (new System.IO.MemoryStream([||], false))
-        emptyFileStream2.Begin.IsBeginOfStream |> True
-        emptyFileStream2.Begin.IsEndOfStream   |> True
-        emptyFileStream2.Begin.Read(10) |> Equal ""
+        use emptyStringStream = new CharStream("x", 1, 0)
+        testEmptyStream emptyStringStream
+
+        use emptyStringStream2 = new CharStream("")
+        testEmptyStream emptyStringStream2
+
+        use emptyFileStream = createMultiBlockTestStream (new System.IO.MemoryStream(be.GetPreamble(), false)) System.Text.Encoding.Unicode
+        testEmptyStream emptyFileStream
+
+        use emptyFileStream2 = createMultiBlockTestStream (new System.IO.MemoryStream([||], false)) System.Text.Encoding.Unicode
+        testEmptyStream emptyFileStream2
 
     testStreams()
     xTest()
     testNormalizeNewlines()
     testFoldCase()
-
 

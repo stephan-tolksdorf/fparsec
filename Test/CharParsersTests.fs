@@ -224,6 +224,10 @@ let testSpecialCharParsers() =
     | Success(c,_,pos) -> pos.Index |> Equal 9L; pos.Line |> Equal 5L; pos.Column |> Equal 2L
     | _ -> Fail()
 
+    eof |> ROk "" 0 ()
+    (pchar '1' >>. eof) |> ROk "1" 1 ()
+    eof |> RError "1" 0 (expectedError "end of file")
+
 
 let testStringParsers() =
     pstring "test"    |> RError "pest" 0 (expectedStringError "test")
@@ -246,6 +250,13 @@ let testStringParsers() =
     skipAnyString 3  |> RError "12" 0 (expectedError "any sequence of 3 chars")
     anyString 3      |> ROkNL "12\r\n4" 4 "12\n"
     skipAnyString 3  |> ROkNL "12\r\n4" 4 ()
+
+    skipped (skipAnyString 3) |> RError "12" 0 (expectedError "any sequence of 3 chars")
+    skipAnyString 3 |> withSkippedString (fun str () -> str) |> RError "12" 0 (expectedError "any sequence of 3 chars")
+    skipped (skipAnyString 3) |> ROk "123" 3 "123"
+    skipAnyString 3 |> withSkippedString (fun str () -> str) |> ROk "123" 3 "123"
+    skipped (skipAnyString 3) |> ROkNL "12\r\n4" 4 "12\n"
+    skipAnyString 3 |> withSkippedString (fun str () -> str) |> ROkNL "12\r\n4" 4 "12\n"
 
     restOfLine      |> ROk "" 0 ""
     skipRestOfLine  |> ROk "" 0 ()
@@ -1043,6 +1054,30 @@ let testFollowedBy() =
     (previousCharSatisfiesNot ((<>) '1'))  |> ROk "1" 0 ()
     (previousCharSatisfiesNot ((<>) '1'))  |> ROk "" 0 ()
 
+let testUserStateParsers() =
+    use stream = new CharStream("test")
+    let s0 = new State<_>(stream, 0, "stream")
+    let s1 = s0.WithUserState(1)
+    let reply = getUserState s0
+    reply.Status |> Equal Ok
+    reply.Error  |> Equal NoErrorMessages
+    reply.State  |> Equal s0
+    let reply = setUserState 1 s0
+    reply.Status |> Equal Ok
+    reply.Error  |> Equal NoErrorMessages
+    reply.State  |> Equal s1
+    let reply = updateUserState (fun i -> i + 1) s0
+    reply.Status |> Equal Ok
+    reply.Error  |> Equal NoErrorMessages
+    reply.State  |> Equal s1
+
+    let s2 = s1.Advance(3, 1, 0)
+    let reply = getPosition s2
+    reply.Result |> Equal (Position("stream", 3L, 2L, 1L))
+    reply.Status |> Equal Ok
+    reply.Error  |> Equal NoErrorMessages
+    reply.State  |> Equal s2
+
 let run() =
     testCharParsers()
     testAnyNoneOf()
@@ -1053,3 +1088,4 @@ let run() =
     testSkipToString()
     testNumberParsers()
     testFollowedBy()
+    testUserStateParsers()

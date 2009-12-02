@@ -19,6 +19,149 @@ let createTestStreamCharStream (content: char[]) =
                                                                                                      #endif
                                                                                                          16)
 
+let testEmptyStream() =
+    use stream = new CharStream("")
+    let s0 = new State<_>(stream, 'a')
+    s0.Next |> Equal s0
+
+    s0.Advance(0) |> Equal s0
+    s0.Advance(1) |> Equal s0
+    s0.Advance(System.Int32.MaxValue) |> Equal s0
+    try s0.Advance(-1) |> ignore; Fail()
+    with :? System.ArgumentOutOfRangeException -> ()
+    try s0.Advance(System.Int32.MinValue) |> ignore; Fail()
+    with :? System.ArgumentOutOfRangeException -> ()
+
+    let sb = new State<_>(stream, 'b')
+    s0.Advance(0, 'b') |> Equal sb
+    s0.Advance(1, 'b') |> Equal sb
+    s0.Advance(System.Int32.MaxValue, 'b') |> Equal sb
+    try s0.Advance(-1, 'b') |> ignore; Fail()
+    with :? System.ArgumentOutOfRangeException -> ()
+    try s0.Advance(System.Int32.MinValue, 'b') |> ignore; Fail()
+    with :? System.ArgumentOutOfRangeException -> ()
+
+    s0.SkipWhitespace() |> ReferenceEqual s0
+    s0.SkipNewline()|> ReferenceEqual s0
+    s0.SkipRestOfLine(false) |> ReferenceEqual s0
+    s0.SkipRestOfLine(true) |> ReferenceEqual s0
+    let mutable str = null
+    s0.SkipRestOfLine(false, &str) |> ReferenceEqual s0
+    s0.SkipRestOfLine(true, &str) |> ReferenceEqual s0
+    s0.SkipCharOrNewline()|> ReferenceEqual s0
+    s0.SkipCharsOrNewlines(1, &str)|> ReferenceEqual s0
+    s0.SkipCharsOrNewlines(System.Int32.MaxValue, &str)|> ReferenceEqual s0
+    let mutable n = 0
+    s0.SkipCharsOrNewlines(1, &n)|> ReferenceEqual s0
+    s0.SkipCharsOrNewlines(System.Int32.MaxValue, &n)|> ReferenceEqual s0
+    s0.SkipCharsOrNewlinesWhile((fun c -> true)) |> ReferenceEqual s0
+    s0.SkipCharsOrNewlinesWhile((fun c -> true), &str) |> ReferenceEqual s0
+    s0.SkipCharsOrNewlinesWhile((fun c -> true), 0, 1) |> ReferenceEqual s0
+    s0.SkipCharsOrNewlinesWhile((fun c -> true), 0, System.Int32.MaxValue) |> ReferenceEqual s0
+    s0.SkipCharsOrNewlinesWhile((fun c -> true), 0, 1, &str) |> ReferenceEqual s0
+    s0.SkipCharsOrNewlinesWhile((fun c -> true), 0, System.Int32.MaxValue, &str) |> ReferenceEqual s0
+    s0.SkipToString("1", 1, &str) |> ReferenceEqual s0
+    s0.SkipToString("1", System.Int32.MaxValue, &str) |> ReferenceEqual s0
+    s0.SkipToStringCI("1", 1, &str) |> ReferenceEqual s0
+    s0.SkipToStringCI("1", System.Int32.MaxValue, &str) |> ReferenceEqual s0
+    let mutable b = false
+    s0.SkipToString("1", 1, &b) |> ReferenceEqual s0
+    s0.SkipToString("1", System.Int32.MaxValue, &b) |> ReferenceEqual s0
+    s0.SkipToStringCI("1", 1, &b) |> ReferenceEqual s0
+    s0.SkipToStringCI("1", System.Int32.MaxValue, &b) |> ReferenceEqual s0
+
+let testAdvance() =
+    let refString = "1234567890ABCDEF"
+    let N = refString.Length
+    use stream = createTestStreamCharStream (refString.ToCharArray())
+    let s0 = new State<_>(stream, 0)
+
+    let test i j =
+        let c0 = refString.[0]
+        let ii = int64 (min i N)
+        let ci = if i < N then refString.[i] else EOS
+        let jj = int64 (min j N)
+        let cj = if j < N then refString.[j] else EOS
+        let d = j - min i N
+
+        s0.Index |> Equal 0L
+        s0.Iter.Read() |> Equal c0
+        let si = s0.Advance(i)
+        si.Index |> Equal ii
+        si.Iter.Read() |> Equal ci
+
+        let sj = si.Advance(d)
+        sj.Index |> Equal jj
+        sj.Iter.Read() |> Equal cj
+        if d = 1 then
+            si.Next |> Equal sj
+        let sj_2 = si.Advance(d, -1)
+        sj_2.Index |> Equal jj
+        sj_2.UserState |> Equal -1
+        sj_2.Iter.Read() |> Equal cj
+        let sj_3 = si.Advance(d, 1, 0)
+        sj_3.Index |> Equal jj
+        sj_3.Iter.Read() |> Equal cj
+        sj_3.Line   |> Equal 2L
+        sj_3.Column |> Equal 1L
+        let sj_4 = si.Advance(d, 1, 0, -1)
+        sj_4.Index |> Equal jj
+        sj_4.Iter.Read() |> Equal cj
+        sj_4.Line   |> Equal 2L
+        sj_4.Column |> Equal 1L
+        sj_2.UserState |> Equal -1
+
+    for i = 0 to N + 2 do
+        for j = 0 to N + 2 do
+            test i j
+
+    use stream = new CharStream("\n\n\n", 1, 2, 100L)
+    let s1 = new State<_>(stream, ())
+    s1.Index     |> Equal 100L
+    let s2 = s1.Advance(1, 1, 0)
+    s2.Index     |> Equal 101L
+    s2.LineBegin |> Equal 101L
+    let s2 = s1.Advance(1, 1, 0, ())
+    s2.Index     |> Equal 101L
+    s2.LineBegin |> Equal 101L
+
+    let testException() =
+        let sn = s0.Advance(N)
+        let sn_1 = s0.Advance(N, -1)
+        s0.Advance(System.Int32.MaxValue) |> Equal sn
+        s0.Advance(System.Int32.MaxValue, -1) |> Equal sn_1
+        sn.Advance(System.Int32.MaxValue) |> Equal sn
+        sn.Advance(System.Int32.MaxValue, -1) |> Equal sn_1
+        for i = 0 to N do
+            let si = s0.Advance(i)
+            try si.Advance(-i - 1) |> ignore; Fail()
+            with :? System.ArgumentOutOfRangeException -> ()
+            try si.Advance(-i - 1, -1) |> ignore; Fail()
+            with :? System.ArgumentOutOfRangeException -> ()
+            try si.Advance(System.Int32.MinValue) |> ignore; Fail()
+            with :? System.ArgumentOutOfRangeException -> ()
+            try si.Advance(System.Int32.MinValue, -1) |> ignore; Fail()
+            with :? System.ArgumentOutOfRangeException -> ()
+
+    testException()
+
+    let testAdvanceTo() =
+        let s1    = s0.Advance(1)
+        let s11   = s0.Advance(1, -1)
+        let s110  = s0.Advance(1, 1, 0)
+        let s1101 = s0.Advance(1, 1, 0, -1)
+        let iter1 = s0.Iter.Next
+        s0.AdvanceTo(iter1) |> Equal s1
+        s0.AdvanceTo(iter1, -1) |> Equal s11
+        s0.AdvanceTo(iter1, 1, 0) |> Equal s110
+        s0.AdvanceTo(iter1, 1, 0, -1) |> Equal s1101
+        s0.AdvanceTo(iter1, 1u, 0u) |> Equal s110
+        s0.AdvanceTo(iter1, 1u, 0u, -1) |> Equal s1101
+        s0.AdvanceTo(iter1, 1L, 0L) |> Equal s110
+        s0.AdvanceTo(iter1, 1L, 0L, -1) |> Equal s1101
+
+    testAdvanceTo()
+
 let testSkipWhitespace() =
     // check fast path
 
@@ -266,7 +409,7 @@ let testSkipRestOfLine() =
 let testSkipCharsOrNewlines() =
     let counter = ref 0
 
-    let check (sBegin: State<unit>) (cs: char[]) iBegin nMax =
+    let check (sBegin: State<int>) (cs: char[]) iBegin nMax =
         let stream = sBegin.Stream
         let indexOffset = int32 sBegin.Index - iBegin
         let mutable iter0 = stream.Begin
@@ -290,21 +433,21 @@ let testSkipCharsOrNewlines() =
                 | _ -> i <- i + 1
                 c <- c + 1
 
-            let line = line
-            let lineBegin = if line <> 1 then lineBegin + indexOffset else int32 sBegin.LineBegin
-            let i = i
-            let index = i + indexOffset
             let c = c
+            let sEndRef = if c = 0 then sBegin
+                          elif line = 1 then sBegin.Advance(i - iBegin)
+                          else sBegin.Advance(i - iBegin, line - 1, i - lineBegin)
 
-            let str = CharStream.NormalizeNewlines(sBegin.Iter.Read(i - iBegin))
-
-            let checkOutputState (sEnd: State<unit>) =
-                if c = 0 then sEnd |> ReferenceEqual sBegin
+            let checkOutputState (sEnd: State<int>) = // this function needs to be fast
+                if c = 0 then
+                    if not (System.Object.ReferenceEquals(sEnd, sEndRef)) then
+                        Fail()
                 else
-                    int32 sEnd.Index |> Equal index
-                    int32 sEnd.Line  |> Equal line
-                    int32 sEnd.LineBegin |> Equal lineBegin
-                    sEnd.Iter.Read() |> Equal (if i < cs.Length then cs.[i] else EOS)
+                    if not (sEnd.Equals(sEndRef)) then
+                        Fail()
+
+            let originalStr = sBegin.Iter.Read(i - iBegin)
+            let str = CharStream.NormalizeNewlines(originalStr)
 
             if n = 1 then
                 iter0.Read() |> ignore; iterBegin.Read() |> ignore
@@ -411,6 +554,31 @@ let testSkipCharsOrNewlines() =
             str12 |> Equal null
             checkOutputState sEnd12
 
+            if i < cs.Length && originalStr.IndexOf(cs.[i]) = -1 then
+                let ciStr = string (cs.[i])
+                iter0.Read() |> ignore; iterBegin.Read() |> ignore
+                let mutable foundString = false
+                let sEnd13 = sBegin.SkipToString(ciStr, nMax, &foundString)
+                foundString |> Equal true
+                checkOutputState sEnd13
+
+                iter0.Read() |> ignore; iterBegin.Read() |> ignore
+                let sEnd14 = sBegin.SkipToStringCI(ciStr, nMax, &foundString)
+                foundString |> Equal true
+                checkOutputState sEnd14
+
+                iter0.Read() |> ignore; iterBegin.Read() |> ignore
+                let mutable str15 = null : string
+                let sEnd15 = sBegin.SkipToString(ciStr, nMax, &str15)
+                str15 |> Equal str
+                checkOutputState sEnd15
+
+                iter0.Read() |> ignore; iterBegin.Read() |> ignore
+                let mutable str16 = null : string
+                let sEnd16 = sBegin.SkipToStringCI(ciStr, nMax, &str16)
+                str16 |> Equal str
+                checkOutputState sEnd16
+
     let testChars = [|'\n'; '\r'; '\t'; '\u000C'; '\u000E'|]
 
     let testFastPath() =
@@ -418,7 +586,7 @@ let testSkipCharsOrNewlines() =
     #if LOW_TRUST
     #else
         use stream = new CharStream(cs, 1, 10, 100L)
-        let s1 = new State<unit>(stream, ())
+        let s1 = new State<_>(stream, -1)
     #endif
         for c1 in testChars do
             cs.[1] <- c1
@@ -436,7 +604,7 @@ let testSkipCharsOrNewlines() =
                                     cs.[7] <- c7
                                 #if LOW_TRUST
                                     use stream = new CharStream(new string(cs), 1, 10, 100L)
-                                    let s1 = new State<unit>(stream, ())
+                                    let s1 = new State<_>(stream, -1)
                                 #endif
                                     check s1 cs 1 7
 
@@ -458,7 +626,7 @@ let testSkipCharsOrNewlines() =
                         cs.[10] <- c10
                     #if LOW_TRUST
                         use stream = new CharStream(new string(cs), 1, 10, 100L)
-                        let s1 = new State<unit>(stream, ())
+                        let s1 = new State<_>(stream, -1)
                         let s7  = s1.Advance(6)
                         let s8  = s1.Advance(7)
                         let s9  = s1.Advance(8)
@@ -470,7 +638,7 @@ let testSkipCharsOrNewlines() =
                         check s10 cs 10 2
     #if LOW_TRUST
         use stream = new CharStream(new string(cs), 1, 10, 100L)
-        let s1 = new State<unit>(stream, ())
+        let s1 = new State<_>(stream, -1)
     #endif
         let s11 = s1.Advance(10)
         check s11 cs 11 1
@@ -488,13 +656,11 @@ let testSkipCharsOrNewlines() =
                         cs.[7] <- c7
                         for c8 in testChars do
                             cs.[8] <- c8
-                            for c9 in testChars do
-                                cs.[9] <- c9
-                                use stream = createTestStreamCharStream cs
-                                let s0 = (new State<_>(stream, ()))
-                                check (s0.Advance(4)) cs 4 5
-                                check (s0.Advance(5)) cs 5 5
-                                check (s0.Advance(6)) cs 6 5
+                            use stream = createTestStreamCharStream cs
+                            let s0 = (new State<_>(stream, -1))
+                            check (s0.Advance(4)) cs 4 4
+                            check (s0.Advance(5)) cs 5 4
+                            check (s0.Advance(6)) cs 6 4
 
     let testArgumentChecking() =
         let N = 10
@@ -561,14 +727,16 @@ let testSkipCharsOrNewlines() =
 
     let testIndexOffset() =
         use stream = new CharStream("\n___", 0, 4, 100L)
-        let s0 = new State<_>(stream, ())
-        s0.Index     |> Equal 100L
-        s0.LineBegin |> Equal 100L
+        let s0 = new State<_>(stream, (), "test")
+        s0.Index      |> Equal 100L
+        s0.LineBegin  |> Equal 100L
+        s0.StreamName |> Equal "test"
         let s1 = s0.SkipNewline()
         s1.Index     |> Equal 101L
         s1.Line      |> Equal 2L
         s1.LineBegin |> Equal 101L
         s1.Column    |> Equal 1L
+        s1.Position  |> Equal (Position("test", 101L, 2L, 1L))
 
     testFastPath()
     testSlowPath()
@@ -590,13 +758,13 @@ let testSkipToString() =
                               elif maxChars < cs.Length - i0 then i0 + maxChars
                               else cs.Length
 
-                   stream.Seek(0L) |> ignore; si0.Iter.Read() |> ignore
+                   s0.Iter.Read() |> ignore; si0.Iter.Read() |> ignore
                    let mutable found = false
                    let s1 = si0.SkipToString(strToFind, maxChars, &found)
                    found |> Equal isPresent
                    int32 s1.Index |> Equal iEnd
 
-                   stream.Seek(0L) |> ignore; si0.Iter.Read() |> ignore
+                   s0.Iter.Read() |> ignore; si0.Iter.Read() |> ignore
                    let mutable str = null
                    let s2 = si0.SkipToString(strToFind, maxChars, &str)
                    if isPresent then
@@ -605,13 +773,13 @@ let testSkipToString() =
                        str |> Equal null
                    int32 s2.Index |> Equal iEnd
 
-                   stream.Seek(0L) |> ignore; si0.Iter.Read() |> ignore
+                   s0.Iter.Read() |> ignore; si0.Iter.Read() |> ignore
                    let strToFindCI = CharStream.FoldCase(strToFind)
                    let s3 = si0.SkipToStringCI(strToFindCI, maxChars, &found)
                    found |> Equal isPresent
                    int32 s3.Index |> Equal iEnd
 
-                   stream.Seek(0L) |> ignore; si0.Iter.Read() |> ignore
+                   s0.Iter.Read() |> ignore; si0.Iter.Read() |> ignore
                    let s4 = si0.SkipToStringCI(strToFindCI, maxChars, &str)
                    if isPresent then
                        str.Length |> Equal (iEnd  - i0)
@@ -629,6 +797,14 @@ let testSkipToString() =
                    let strToNotFind2 = strToFind.Substring(0, n - 1) + string (char (int strToFind.[n - 1] + 1))
                    check strToNotFind2 System.Int32.MaxValue false
 
+    let testRemainingBranch() =
+        use stream = new CharStream("1234567890")
+        let state0 = new State<_>(stream, ())
+        let mutable foundString = false
+        state0.SkipToString("12345", System.Int32.MaxValue, &foundString) |> ReferenceEqual state0
+        foundString |> Equal true
+
+    testRemainingBranch()
     let mutable found = false
     let mutable str = null
     try s0.SkipToString(null, 10, &found) |> ignore; Fail()
@@ -776,6 +952,8 @@ let run () =
 #else
     setStaticField typeof<FParsec.CharStream> "DoNotRoundUpBlockSizeToSimplifyTesting" true
 #endif
+    testEmptyStream()
+    testAdvance()
     testSkipWhitespace()
     testSkipRestOfLine()
     testSkipCharsOrNewlines()

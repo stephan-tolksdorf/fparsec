@@ -290,16 +290,6 @@ let testPrecAndAssoc() =
     opp.AddOperator(TernaryOp("t2r*",  ws, "tt2r*",  ws, 2, Assoc.Right, fun x y z -> T2(x,y,z)))
     opp.AddOperator(TernaryOp("t2n*",  ws, "tt2n*",  ws, 2, Assoc.None,  fun x y z -> T2(x,y,z)))
 
-    opp.AddOperator(PrefixOp("pre1",  ws, 1, true,  fun x -> Pre1(x)))
-    opp.AddOperator(PrefixOp("pre1n", ws, 1, false, fun x -> Pre1(x)))
-    opp.AddOperator(PrefixOp("pre2",  ws, 1, true,  fun x -> Pre2(x)))
-    opp.AddOperator(PrefixOp("pre2n", ws, 1, false, fun x -> Pre2(x)))
-
-    opp.AddOperator(PrefixOp("pre1*",  ws, 2, true,  fun x -> Pre1(x)))
-    opp.AddOperator(PrefixOp("pre1n*", ws, 2, false, fun x -> Pre1(x)))
-    opp.AddOperator(PrefixOp("pre2*",  ws, 2, true,  fun x -> Pre2(x)))
-    opp.AddOperator(PrefixOp("pre2n*", ws, 2, false, fun x -> Pre2(x)))
-
     opp.AddOperator(PostfixOp("po1",  ws, 1, true,  fun x -> Po1(x)))
     opp.AddOperator(PostfixOp("po1n", ws, 1, false, fun x -> Po1(x)))
     opp.AddOperator(PostfixOp("po2",  ws, 1, true,  fun x -> Po2(x)))
@@ -309,6 +299,32 @@ let testPrecAndAssoc() =
     opp.AddOperator(PostfixOp("po1n*", ws, 2, false, fun x -> Po1(x)))
     opp.AddOperator(PostfixOp("po2*",  ws, 2, true,  fun x -> Po2(x)))
     opp.AddOperator(PostfixOp("po2n*", ws, 2, false, fun x -> Po2(x)))
+
+    // do some tests without prefix operators defined (there's a separate code branch in OPP.ParseExpression)
+    let expectedInfixOrPostfix = expectedError "infix or postfix operator"
+    let ROk content result parser = ROkE content content.Length result expectedInfixOrPostfix parser
+
+    expr |> RError "" 0 (expectedError "integer number (32-bit, signed)")
+    expr |> ROk "1 o1l  2 o2l  3" (O2(O1(Val(1),Val(2)),Val(3)))
+    expr |> ROk "1 o1r* 2 o2r  3" (O2(O1(Val(1),Val(2)),Val(3)))
+    expr |> ROk "1 o1r  2 o2r  3" (O1(Val(1),O2(Val(2),Val(3))))
+    expr |> ROk "1 o1l  2 o2l* 3" (O1(Val(1),O2(Val(2),Val(3))))
+    expr |> ROk "1 o1n 2 po1n"    (O1(Val(1), Po1(Val(2))))
+
+    // add prefix operators
+
+    opp.AddOperator(PrefixOp("pre1",  ws, 1, true,  fun x -> Pre1(x)))
+
+    expr |> RError "po1" 0 (unexpectedError "postfix operator 'po1' (precedence: 1)")
+
+    opp.AddOperator(PrefixOp("pre1n", ws, 1, false, fun x -> Pre1(x)))
+    opp.AddOperator(PrefixOp("pre2",  ws, 1, true,  fun x -> Pre2(x)))
+    opp.AddOperator(PrefixOp("pre2n", ws, 1, false, fun x -> Pre2(x)))
+
+    opp.AddOperator(PrefixOp("pre1*",  ws, 2, true,  fun x -> Pre1(x)))
+    opp.AddOperator(PrefixOp("pre1n*", ws, 2, false, fun x -> Pre1(x)))
+    opp.AddOperator(PrefixOp("pre2*",  ws, 2, true,  fun x -> Pre2(x)))
+    opp.AddOperator(PrefixOp("pre2n*", ws, 2, false, fun x -> Pre2(x)))
 
     // add operators a second time with opposite fixity
 
@@ -342,16 +358,6 @@ let testPrecAndAssoc() =
     opp.AddOperator(PrefixOp("t2r*", ws, 2, true, fun x -> failwith "t2r*"))
     opp.AddOperator(PrefixOp("t2n*", ws, 2, true, fun x -> failwith "t2n*"))
 
-    opp.AddOperator(InfixOp("pre1",  ws, 1, Assoc.Left, fun x y -> failwith "pre1"))
-    opp.AddOperator(InfixOp("pre1n", ws, 1, Assoc.Left, fun x y -> failwith "pre1n"))
-    opp.AddOperator(PostfixOp("pre2",  ws, 1, true, fun x -> failwith "pre2"))
-    opp.AddOperator(PostfixOp("pre2n", ws, 1, true, fun x -> failwith "pre2n"))
-
-    opp.AddOperator(InfixOp("pre1*",  ws, 2, Assoc.Left, fun x y -> failwith "pre1*"))
-    opp.AddOperator(InfixOp("pre1n*", ws, 2, Assoc.Left, fun x y -> failwith "pre1n*"))
-    opp.AddOperator(PostfixOp("pre2*",  ws, 2, true, fun x -> failwith "pre2*"))
-    opp.AddOperator(PostfixOp("pre2n*", ws, 2, true, fun x -> failwith "pre2n"))
-
     opp.AddOperator(PrefixOp("po1",  ws, 1, true, fun x -> failwith "po1"))
     opp.AddOperator(PrefixOp("po1n", ws, 1, true, fun x -> failwith "po1n"))
     opp.AddOperator(PrefixOp("po2",  ws, 1, true, fun x -> failwith "po2"))
@@ -362,9 +368,16 @@ let testPrecAndAssoc() =
     opp.AddOperator(PrefixOp("po2*",  ws, 2, true, fun x -> failwith "po2*"))
     opp.AddOperator(PrefixOp("po2n*", ws, 2, true, fun x -> failwith "po2n*"))
 
-    let expectedInfixOrPostfix = expectedError "infix or postfix operator"
+    opp.AddOperator(InfixOp("pre1",  ws, 1, Assoc.Left, fun x y -> failwith "pre1"))
+    opp.AddOperator(InfixOp("pre1n", ws, 1, Assoc.Left, fun x y -> failwith "pre1n"))
+    opp.AddOperator(PostfixOp("pre2",  ws, 1, true, fun x -> failwith "pre2"))
+    opp.AddOperator(PostfixOp("pre2n", ws, 1, true, fun x -> failwith "pre2n"))
 
-    let ROk content result parser = ROkE content content.Length result expectedInfixOrPostfix parser
+    opp.AddOperator(InfixOp("pre1*",  ws, 2, Assoc.Left, fun x y -> failwith "pre1*"))
+    opp.AddOperator(InfixOp("pre1n*", ws, 2, Assoc.Left, fun x y -> failwith "pre1n*"))
+    opp.AddOperator(PostfixOp("pre2*",  ws, 2, true, fun x -> failwith "pre2*"))
+    opp.AddOperator(PostfixOp("pre2n*", ws, 2, true, fun x -> failwith "pre2n"))
+
 
     expr |> ROk "1 o1l  2 o2l  3" (O2(O1(Val(1),Val(2)),Val(3)))
     expr |> ROk "1 o1r* 2 o2r  3" (O2(O1(Val(1),Val(2)),Val(3)))

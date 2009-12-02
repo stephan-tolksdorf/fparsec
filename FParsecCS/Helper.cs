@@ -386,6 +386,31 @@ internal static int CountTextElements(string str) {
     return count;
 }
 
+#if !LOW_TRUST
+
+internal class UTF8EncodingWithNonSerializableDecoder : System.Text.UTF8Encoding {
+    /// <summary>Needed for Test.CharStreamTests and can't be implemented in F#.</summary>
+    private unsafe class NonSerializableUTF8Decoder : System.Text.Decoder {
+        System.Text.Decoder decoder;
+
+        public NonSerializableUTF8Decoder() {
+            decoder = System.Text.Encoding.UTF8.GetDecoder();
+        }
+
+        public override int GetCharCount(byte[] bytes, int index, int count) { throw new NotImplementedException(); }
+        public override int GetChars(byte[] bytes, int byteIndex, int byteCount, char[] chars, int charIndex) { throw new NotImplementedException(); }
+
+        public override void Reset() { decoder.Reset(); }
+        public override void Convert(byte* bytes, int byteCount, char* chars, int charCount, bool flush, out int bytesUsed, out int charsUsed, out bool completed) {
+             decoder.Convert(bytes, byteCount, chars, charCount, flush, out bytesUsed, out charsUsed, out completed);
+        }
+    }
+
+    public override Decoder GetDecoder() { return new NonSerializableUTF8Decoder(); }
+}
+
+#endif
+
 } // class Helper
 
 }
