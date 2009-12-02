@@ -35,7 +35,7 @@ public class Pos : IEquatable<Pos>, IComparable, IComparable<Pos> {
     public int CompareTo(Pos other) {
         if ((object)this == (object)other) return 0;
         if ((object)other == null) return 1;
-        int r = StreamName.CompareTo(other.StreamName);
+        int r = String.CompareOrdinal(StreamName, other.StreamName);
         if (r != 0) return r;
         r = Line.CompareTo(other.Line);
         if (r != 0) return r;
