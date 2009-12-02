@@ -21,8 +21,18 @@ public sealed class CharStream : IDisposable {
     internal int IndexEnd;
     internal long StreamIndexOffset;
 
-    public long IndexOffset { get { return StreamIndexOffset; } }
-    public long EndOfStream { get { return StreamIndexOffset + (IndexEnd - IndexBegin); } }
+    /// <summary>The index of the first char in the stream, i.e. Begin.Index.
+    /// This value is determined by the streamBeginIndex argument of some of the CharStream constructors.
+    /// By default this value is 0.</summary>
+    public long BeginIndex { get { return StreamIndexOffset; } }
+
+    /// <summary>The index of the last char of the stream plus 1.</summary>
+    public long EndIndex   { get { return StreamIndexOffset + (IndexEnd - IndexBegin); } }
+
+    [Obsolete("CharStream.IndexOffset has been renamed to CharStream.BeginIndex.")]
+    public long IndexOffset { get { return BeginIndex; } }
+    [Obsolete("CharStream.EndOfStream has been renamed to CharStream.EndIndex.")]
+    public long EndOfStream { get { return EndIndex; } }
 
     internal CharStream(string chars) {
         Debug.Assert(chars != null);
@@ -37,20 +47,20 @@ public sealed class CharStream : IDisposable {
     /// <exception cref="ArgumentOutOfRangeException">At least one of the following conditions is not satisfied: index ≥ 0, length ≥ 0 and index + length ≤ chars.Length.</exception>
     public CharStream(string chars, int index, int length) : this(chars, index, length, 0) {}
 
-    /// <summary>Constructs a CharStream from the chars in the string argument between the indices index (inclusive) and index + length (exclusive). The first char in the stream is assigned the index streamIndexOffset.</summary>
+    /// <summary>Constructs a CharStream from the chars in the string argument between the indices index (inclusive) and index + length (exclusive). The first char in the stream is assigned the index streamBeginIndex.</summary>
     /// <exception cref="ArgumentNullException">chars is null.</exception>
-    /// <exception cref="ArgumentOutOfRangeException">At least one of the following conditions is not satisfied: index ≥ 0, length ≥ 0, index + length ≤ chars.Length and 0 ≤ streamIndexOffset &lt; 2^60.</exception>
-    public CharStream(string chars, int index, int length, long streamIndexOffset) {
+    /// <exception cref="ArgumentOutOfRangeException">At least one of the following conditions is not satisfied: index ≥ 0, length ≥ 0, index + length ≤ chars.Length and 0 ≤ streamBeginIndex &lt; 2^60.</exception>
+    public CharStream(string chars, int index, int length, long streamBeginIndex) {
         if (chars == null) throw new ArgumentNullException("chars");
         if (index < 0) throw new ArgumentOutOfRangeException("index", "The index is negative.");
-        if (streamIndexOffset < 0 || streamIndexOffset >= (1L << 60)) throw new ArgumentOutOfRangeException("streamIndexOffset", "The index offset must be non-negative and less than 2^60.");
+        if (streamBeginIndex < 0 || streamBeginIndex >= (1L << 60)) throw new ArgumentOutOfRangeException("streamBeginIndex", "streamBeginIndex must be non-negative and less than 2^60.");
         int indexEnd = unchecked (index + length);
         if (indexEnd < index || indexEnd > chars.Length) throw new ArgumentOutOfRangeException("length", "The length is out of range.");
 
         String = chars;
         IndexBegin = index;
         IndexEnd = indexEnd;
-        StreamIndexOffset = streamIndexOffset;
+        StreamIndexOffset = streamBeginIndex;
     }
 
 
@@ -199,13 +209,13 @@ public sealed class CharStream : IDisposable {
 
     /// <summary>Returns an iterator pointing to the given index in the stream,
     /// or to the end of the stream if the indexed position lies beyond the last char in the stream.</summary>
-    /// <exception cref="ArgumentOutOfRangeException">The index is less than 0 (or less than the index offset specified when the CharStream was constructed).</exception>
+    /// <exception cref="ArgumentOutOfRangeException">The index is negative or less than the BeginIndex.</exception>
     public Iterator Seek(long index) {
         long idx = unchecked((uint)IndexBegin + index - StreamIndexOffset);
         if (idx >= IndexBegin && idx < IndexEnd)
             return new Iterator {Stream = this, Idx = (int)idx};
-        if (index < IndexOffset)
-            throw (new ArgumentOutOfRangeException("index", "The index is less than 0 or or less than the BeginIndex."));
+        if (index < BeginIndex)
+            throw (new ArgumentOutOfRangeException("index", "The index is negative or less than the BeginIndex."));
         return new Iterator {Stream = this, Idx = Int32.MinValue};
     }
 
@@ -215,8 +225,15 @@ public sealed class CharStream : IDisposable {
         /// The index in Stream.String, or Int32.MinValue if the Iterator has reached the end of the stream
         internal int Idx;
 
-        /// <summary>Indicates whether the Iterator has reached the end of the stream,
-        /// i.e. whether it points to one char beyond the last char in the stream.</summary>
+        /// <summary>Indicates whether the Iterator points to the beginning of the CharStream.
+        /// If the CharStream is empty, this property is always true.</summary>
+        public bool IsBeginOfStream { get {
+            var stream = Stream;
+            return Idx == stream.IndexBegin || (Idx < 0 && stream.IndexBegin == stream.IndexEnd);
+        } }
+
+        /// <summary>Indicates whether the Iterator points to the end of the CharStream,
+        /// i.e. whether it points to one char beyond the last char in the CharStream.</summary>
         public bool IsEndOfStream { get { return Idx < 0; } }
 
         /// <summary>The char returned by Read() if the iterator has
@@ -246,7 +263,7 @@ public sealed class CharStream : IDisposable {
         /// <summary>Returns an Iterator that is advanced by numberOfChars chars. The Iterator can't
         /// move past the end of the stream, i.e. any position beyond the last char
         /// in the stream is interpreted as precisely one char beyond the last char.</summary>
-        /// <exception cref="ArgumentOutOfRangeException">The new index is negative (or less than the index offset specified when the CharStream was constructed).</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The new position would lie before the beginning of the `CharStream`.</exception>
         public Iterator Advance(int numberOfChars) {
             var stream = Stream;
             int idx = unchecked(Idx + numberOfChars);
@@ -270,7 +287,7 @@ public sealed class CharStream : IDisposable {
         /// <summary>Returns an Iterator that is advanced by numberOfChars chars. The Iterator can't
         /// move past the end of the stream, i.e. any position beyond the last char
         /// in the stream is interpreted as precisely one char beyond the last char.</summary>
-        /// <exception cref="ArgumentOutOfRangeException">The new index is negative (or less than the index offset specified when the CharStream was constructed).</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The new position would lie before the beginning of the `CharStream`.</exception>
         public Iterator Advance(long numberOfChars) {
             if (unchecked((int)numberOfChars) != numberOfChars) goto LargeNumber;
             int idx = unchecked(Idx + (int)numberOfChars);
@@ -342,7 +359,7 @@ public sealed class CharStream : IDisposable {
 
         /// <summary>Advances the Iterator *in-place* by -1 char and returns the char on the new position,
         /// except if the Iterator already points to the beginning of the CharStream,
-        /// in which case the position does not change and the EndOfStreamChar ('\uFFFF') is returned.</summary>        
+        /// in which case the position does not change and the EndOfStreamChar ('\uFFFF') is returned.</summary>
         public char _Decrement() {
             int idx = Idx;
             var stream = Stream;
@@ -362,7 +379,7 @@ public sealed class CharStream : IDisposable {
 
         /// <summary>Advances the Iterator *in-place* by -numberOfChars chars and returns the char on the new position,
         /// except if the new position would lie before the beginning of the CharStream,
-        /// in which case the Iterator is advanced to the beginning of the stream and the EndOfStreamChar ('\uFFFF') is returned.</summary>        
+        /// in which case the Iterator is advanced to the beginning of the stream and the EndOfStreamChar ('\uFFFF') is returned.</summary>
         public char _Decrement(uint numberOfChars) {
             int idx = unchecked(Idx - (int)numberOfChars);
             var stream = Stream;

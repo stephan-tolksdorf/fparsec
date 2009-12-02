@@ -153,7 +153,7 @@ public unsafe sealed class CharStream : IDisposable {
         public long CharIndex;
         public long CharIndexPlusOffset;
         public long CharIndexOffset;
-        public long EndOfStream;
+        public long EndIndex;
         public int BlockSizeMinusOverlap;
 
         public static Anchor* Create(CharStream stream) {
@@ -224,15 +224,20 @@ public unsafe sealed class CharStream : IDisposable {
     /// <summary>The number of chars in BufferString.</summary>
     private int BufferCount { get { return PositiveDistance(anchor->BufferBegin, anchor->BufferEnd); } }
 
+    /// <summary>The index of the first char in the stream, i.e. Begin.Index.
+    /// This value is determined by the streamBeginIndex argument of some of the CharStream constructors.
+    /// By default this value is 0.</summary>
+    public long BeginIndex { get { return anchor->CharIndexOffset; } }
 
     /// <summary>The index of the last char of the stream plus 1,
     /// or Int64.MaxValue if the end of stream has not yet been detected.</summary>
-    public long EndOfStream { get { return anchor->EndOfStream; } }
+    public long EndIndex { get { return anchor->EndIndex; } }
 
-    /// <summary>The index of the first char in the stream, i.e. Begin.Index.
-    /// This value is determined by the streamIndexOffset argument of some of the CharStream constructors.
-    /// By default this value is 0.</summary>
-    public long IndexOffset { get { return anchor->CharIndexOffset; } }
+    [Obsolete("CharStream.IndexOffset has been renamed to CharStream.BeginIndex.")]
+    public long IndexOffset { get { return BeginIndex; } }
+
+    [Obsolete("CharStream.EndOfStream has been renamed to CharStream.EndIndex.")]
+    public long EndOfStream { get { return EndIndex; } }
 
     // we don't have a public constructor that only takes a string to avoid potential confusion with a filepath constructor
     internal CharStream(string chars) {
@@ -248,24 +253,24 @@ public unsafe sealed class CharStream : IDisposable {
     /// <exception cref="ArgumentOutOfRangeException">At least one of the following conditions is not satisfied: index ≥ 0, length ≥ 0 and index + length ≤ chars.Length.</exception>
     public CharStream(string chars, int index, int length) : this(chars, index, length, 0) {}
 
-    /// <summary>Constructs a CharStream from the chars in the string argument between the indices index (inclusive) and index + length (exclusive). The first char in the stream is assigned the index streamIndexOffset.</summary>
+    /// <summary>Constructs a CharStream from the chars in the string argument between the indices index (inclusive) and index + length (exclusive). The first char in the stream is assigned the index streamBeginIndex.</summary>
     /// <exception cref="ArgumentNullException">chars is null.</exception>
-    /// <exception cref="ArgumentOutOfRangeException">At least one of the following conditions is not satisfied: index ≥ 0, length ≥ 0, index + length ≤ chars.Length and 0 ≤ streamIndexOffset &lt; 2^60.</exception>
-    public CharStream(string chars, int index, int length, long streamIndexOffset) {
+    /// <exception cref="ArgumentOutOfRangeException">At least one of the following conditions is not satisfied: index ≥ 0, length ≥ 0, index + length ≤ chars.Length and 0 ≤ streamBeginIndex &lt; 2^60.</exception>
+    public CharStream(string chars, int index, int length, long streamBeginIndex) {
         if (chars == null) throw new ArgumentNullException("chars");
         if (index < 0) throw new ArgumentOutOfRangeException("index", "The index is negative.");
         if (length < 0 || length > chars.Length - index) throw new ArgumentOutOfRangeException("length", "The length is out of range.");
-        if (streamIndexOffset < 0 || streamIndexOffset >= (1L << 60)) throw new ArgumentOutOfRangeException("streamIndexOffset", "The index offset must be non-negative and less than 2^60.");
+        if (streamBeginIndex < 0 || streamBeginIndex >= (1L << 60)) throw new ArgumentOutOfRangeException("streamBeginIndex", "streamBeginIndex must be non-negative and less than 2^60.");
 
         BufferString = chars;
         ByteBufferIndex = index; // we recycle ByteBufferIndex for BufferStringIndex
         BufferHandle = GCHandle.Alloc(chars, GCHandleType.Pinned);
         char* bufferBegin = (char*)BufferHandle.AddrOfPinnedObject() + index;
 
-        CharConstructorContinue(bufferBegin, length, streamIndexOffset);
+        CharConstructorContinue(bufferBegin, length, streamBeginIndex);
     }
 
-    internal CharStream(string chars, char* pCharsPlusIndex, int index, int length, long streamIndexOffset) {
+    internal CharStream(string chars, char* pCharsPlusIndex, int index, int length, long streamBeginIndex) {
         Debug.Assert(index >= 0 && length <= chars.Length - index && pCharsPlusIndex != null && streamIndexOffset >= 0 && streamIndexOffset < (1L << 60));
         BufferString = chars;
         ByteBufferIndex = index; // we recycle ByteBufferIndex for BufferStringIndex
@@ -277,19 +282,19 @@ public unsafe sealed class CharStream : IDisposable {
     /// <exception cref="ArgumentOutOfRangeException">At least one of the following conditions is not satisfied: index ≥ 0, length ≥ 0 and index + length ≤ chars.Length.</exception>
     public CharStream(char[] chars, int index, int length) : this(chars, index, length, 0) { }
 
-    /// <summary>Constructs a CharStream from the chars in the char array argument between the indices index (inclusive) and index + length (exclusive). The first char in the stream is assigned the index streamIndexOffset.</summary>
+    /// <summary>Constructs a CharStream from the chars in the char array argument between the indices index (inclusive) and index + length (exclusive). The first char in the stream is assigned the index streamBeginIndex.</summary>
     /// <exception cref="NullReferenceException">chars is null.</exception>
-    /// <exception cref="ArgumentOutOfRangeException">At least one of the following conditions is not satisfied: index ≥ 0, length ≥ 0, index + length ≤ chars.Length and 0 ≤ streamIndexOffset &lt; 2^60.</exception>
-    public CharStream(char[] chars, int index, int length, long streamIndexOffset) {
+    /// <exception cref="ArgumentOutOfRangeException">At least one of the following conditions is not satisfied: index ≥ 0, length ≥ 0, index + length ≤ chars.Length and 0 ≤ streamBeginIndex &lt; 2^60.</exception>
+    public CharStream(char[] chars, int index, int length, long streamBeginIndex) {
         if (chars == null) throw new ArgumentNullException("chars");
         if (index < 0) throw new ArgumentOutOfRangeException("index", "The index is negative.");
         if (length < 0 || length > chars.Length - index) throw new ArgumentOutOfRangeException("length", "The length is out of range.");
-        if (streamIndexOffset < 0 || streamIndexOffset >= (1L << 60)) throw new ArgumentOutOfRangeException("streamIndexOffset", "The index offset must be non-negative and less than 2^60.");
+        if (streamBeginIndex < 0 || streamBeginIndex >= (1L << 60)) throw new ArgumentOutOfRangeException("streamBeginIndex", "streamBeginIndex must be non-negative and less than 2^60.");
 
         BufferHandle = GCHandle.Alloc(chars, GCHandleType.Pinned);
         char* bufferBegin = (char*)BufferHandle.AddrOfPinnedObject() + index;
 
-        CharConstructorContinue(bufferBegin, length, streamIndexOffset);
+        CharConstructorContinue(bufferBegin, length, streamBeginIndex);
     }
 
     /// <summary>Constructs a CharStream from the length chars at the pointer address.</summary>
@@ -297,37 +302,37 @@ public unsafe sealed class CharStream : IDisposable {
     /// <exception cref="ArgumentOutOfRangeException">length is negative.</exception>
     public CharStream(char* pchars, int length) : this(pchars, length, 0) {}
 
-    /// <summary>Constructs a CharStream from the length chars at the pointer address. The first char in the stream is assigned the index streamIndexOffset.</summary>
+    /// <summary>Constructs a CharStream from the length chars at the pointer address. The first char in the stream is assigned the index streamBeginIndex.</summary>
     /// <exception cref="ArgumentNullException">pchars is null.</exception>
-    /// <exception cref="ArgumentOutOfRangeException">At least one of the following conditions is not satisfied: length ≥ 0 and 0 ≤ streamIndexOffset &lt; 2^60.</exception>
-    public CharStream(char* pchars, int length, long streamIndexOffset) {
+    /// <exception cref="ArgumentOutOfRangeException">At least one of the following conditions is not satisfied: length ≥ 0 and 0 ≤ streamBeginIndex &lt; 2^60.</exception>
+    public CharStream(char* pchars, int length, long streamBeginIndex) {
         if (pchars == null) throw new ArgumentNullException("pchars");
         if (length < 0) throw new ArgumentOutOfRangeException("length", "The length is negative.");
         if (pchars > unchecked(pchars + length))
             throw new ArgumentOutOfRangeException("length", "The length is out of range.");
-        if (streamIndexOffset < 0 || streamIndexOffset >= (1L << 60)) throw new ArgumentOutOfRangeException("streamIndexOffset", "The index offset must be non-negative and less than 2^60.");
+        if (streamBeginIndex < 0 || streamBeginIndex >= (1L << 60)) throw new ArgumentOutOfRangeException("streamBeginIndex", "streamBeginIndex must be non-negative and less than 2^60.");
 
-        CharConstructorContinue(pchars, length, streamIndexOffset);
+        CharConstructorContinue(pchars, length, streamBeginIndex);
     }
 
-    internal CharStream(char* pchars, int length, long streamIndexOffset, int dummyArgumentForInternalConstructorWithoutParameterChecking) {
-        CharConstructorContinue(pchars, length, streamIndexOffset);
+    internal CharStream(char* pchars, int length, long streamBeginIndex, int dummyArgumentForInternalConstructorWithoutParameterChecking) {
+        CharConstructorContinue(pchars, length, streamBeginIndex);
     }
 
-    private void CharConstructorContinue(char* bufferBegin, int length, long streamIndexOffset) {
-        Debug.Assert(bufferBegin != null && length >= 0 && bufferBegin <= bufferBegin + length && streamIndexOffset >= 0 && streamIndexOffset < (1L << 60));
+    private void CharConstructorContinue(char* bufferBegin, int length, long streamBeginIndex) {
+        Debug.Assert(bufferBegin != null && length >= 0 && bufferBegin <= bufferBegin + length && streamBeginIndex >= 0 && streamBeginIndex < (1L << 60));
         Encoding = Encoding.Unicode;
         BlockSize = length;
         anchor = Anchor.Create(this);
         anchor->BlockSizeMinusOverlap = length;
-        anchor->EndOfStream = streamIndexOffset + length;
+        anchor->EndIndex = streamBeginIndex + length;
         anchor->BufferBegin = bufferBegin;
         anchor->BufferEnd = bufferBegin + length;
         anchor->Block = 0;
         anchor->LastBlock = 0;
         anchor->CharIndex = 0;
-        anchor->CharIndexPlusOffset = streamIndexOffset;
-        anchor->CharIndexOffset = streamIndexOffset;
+        anchor->CharIndexPlusOffset = streamBeginIndex;
+        anchor->CharIndexOffset = streamBeginIndex;
     }
 
     /// <summary>Constructs a CharStream from the file at the given path.<br/>Is equivalent to CharStream(new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.SequentialScan), false, encoding, true, defaultBlockSize, defaultBlockSize/3, ((defaultBlockSize/3)*2)/3, defaultByteBufferLength).</summary>
@@ -475,7 +480,7 @@ public unsafe sealed class CharStream : IDisposable {
                 anchor->CharIndexOffset = 0;
                 anchor->CharIndexPlusOffset = 0;
                 anchor->BufferEnd = bufferBegin + bufferCount;
-                anchor->EndOfStream = bufferCount;
+                anchor->EndIndex = bufferCount;
                 ByteBuffer = null; // we don't need the byte buffer anymore
                 if (!leaveOpen) stream.Close();
                 Stream = null;
@@ -486,7 +491,7 @@ public unsafe sealed class CharStream : IDisposable {
                 anchor->CharIndexOffset = 0;
                 anchor->CharIndexPlusOffset = 0;
                 anchor->BufferEnd = bufferBegin;
-                anchor->EndOfStream = Int64.MaxValue;
+                anchor->EndIndex = Int64.MaxValue;
                 Blocks = new List<BlockInfo>();
                 // the first block has no overlap with a previous block
                 Blocks.Add(new BlockInfo(ByteBufferIndex, ByteBufferIndex, 0, EOS, null, new DecoderState(), null, new DecoderState()));
@@ -719,9 +724,9 @@ public unsafe sealed class CharStream : IDisposable {
                                              overhangCharsAfterOverlapWithNextBlock, decoderStateAfterOverlapWithNextBlock));
                 } else { // we reached the end of the stream
                     anchor->LastBlock = block;
-                    anchor->EndOfStream = anchor->CharIndexOffset + charIndex + (buffer - bufferBegin);
+                    anchor->EndIndex = anchor->CharIndexOffset + charIndex + (buffer - bufferBegin);
                 }
-            } else if (anchor->EndOfStream != anchor->CharIndexOffset + charIndex + (buffer - bufferBegin)) {
+            } else if (anchor->EndIndex != anchor->CharIndexOffset + charIndex + (buffer - bufferBegin)) {
                 throw new IOException("CharStream: stream integrity error");
             }
         } else {
@@ -774,8 +779,9 @@ public unsafe sealed class CharStream : IDisposable {
     public Iterator Begin { get {
         Anchor* anchor = this.anchor;
         if (anchor == null) throw new ObjectDisposedException("CharStream");
-        if (anchor->EndOfStream != anchor->CharIndexOffset) {
-            return new Iterator(){Anchor = anchor, Ptr = anchor->BufferBegin, Block = 0};
+        char* bufferBegin = anchor->BufferBegin;
+        if (bufferBegin != anchor->BufferEnd) {
+            return new Iterator(){Anchor = anchor, Ptr = bufferBegin, Block = 0};
         } else {
             return new Iterator(){Anchor = anchor, Ptr = null, Block = -1};
         }
@@ -786,7 +792,7 @@ public unsafe sealed class CharStream : IDisposable {
 
     /// <summary>Returns an iterator pointing to the given index in the stream,
     /// or to the end of the stream if the indexed position lies beyond the last char in the stream.</summary>
-    /// <exception cref="ArgumentOutOfRangeException">The index is less than 0 (or less than the index offset specified when the CharStream was constructed).</exception>
+    /// <exception cref="ArgumentOutOfRangeException">The index is negative or less than the BeginIndex.</exception>
     /// <exception cref="NotSupportedException">Accessing the char with the given index requires seeking in the underlying byte stream, but the byte stream does not support seeking or the Encoding's Decoder is not serializable.</exception>
     /// <exception cref="IOException">An I/O error occured.</exception>
     /// <exception cref="ArgumentException">The input stream contains invalid bytes and the encoding was constructed with the throwOnInvalidBytes option.</exception>
@@ -800,8 +806,8 @@ public unsafe sealed class CharStream : IDisposable {
         long off = unchecked (index - anchor->CharIndexPlusOffset);
         if (0 <= off && off < PositiveDistance(anchor->BufferBegin, anchor->BufferEnd))
             return new Iterator(){Anchor = anchor, Ptr = anchor->BufferBegin + (int)off, Block = anchor->Block};
-        if (index >= anchor->EndOfStream) return new Iterator() {Anchor = anchor, Ptr = null, Block = -1};
-        if (index < anchor->CharIndexOffset) throw (new ArgumentOutOfRangeException("index", "The index is negative (or less than the char index offset specified at construction time)."));
+        if (index >= anchor->EndIndex) return new Iterator() {Anchor = anchor, Ptr = null, Block = -1};
+        if (index < anchor->CharIndexOffset) throw (new ArgumentOutOfRangeException("index", "The index is negative or less than the BeginIndex."));
         index -= anchor->CharIndexOffset;
         int blockSizeMinusOverlap = anchor->BlockSizeMinusOverlap;
         long idx_;
@@ -849,8 +855,14 @@ public unsafe sealed class CharStream : IDisposable {
         /// <summary>The CharStream over which the Iterator iterates.</summary>
         public CharStream Stream { get { return (CharStream) Anchor->StreamHandle.Target; } }
 
-        /// <summary>Indicates whether the Iterator has reached the end of the stream,
-        /// i.e. whether it points to one char beyond the last char in the stream.</summary>
+        /// <summary>Indicates whether the Iterator points to the beginning of the CharStream.
+        /// If the CharStream is empty, this property is always true.</summary>
+        public bool IsBeginOfStream { get {
+            return Ptr == Anchor->BufferBegin ? Block == 0 : (Ptr == null && Anchor->BufferBegin == Anchor->BufferEnd);
+        } }
+
+        /// <summary>Indicates whether the Iterator points to the end of the CharStream,
+        /// i.e. whether it points to one char beyond the last char in the CharStream.</summary>
         public bool IsEndOfStream { get { return Block == -1; } }
 
         /// <summary>The char returned by Read() if the iterator has
@@ -876,7 +888,7 @@ public unsafe sealed class CharStream : IDisposable {
             } else if (block == -1) {
                 // this is safe, as there can only be an end-of-stream iterator
                 // once the end of stream has been detected
-                return Anchor->EndOfStream;
+                return Anchor->EndIndex;
             } else {
                 long charIndexPlusOffset = anchor->CharIndexOffset + Math.BigMul(block, anchor->BlockSizeMinusOverlap);
                 return (uint)PositiveDistance(anchor->BufferBegin, Ptr) + charIndexPlusOffset;
@@ -904,7 +916,7 @@ public unsafe sealed class CharStream : IDisposable {
         /// <summary>Returns an Iterator that is advanced by numberOfChars chars. The Iterator can't
         /// move past the end of the stream, i.e. any position beyond the last char
         /// in the stream is interpreted as precisely one char beyond the last char.</summary>
-        /// <exception cref="ArgumentOutOfRangeException">The new index is negative (or less than the index offset specified when the CharStream was constructed).</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The new position would lie before the beginning of the `CharStream`.</exception>
         /// <exception cref="NotSupportedException">Seeking of the underlying byte stream is required, but the byte stream does not support seeking or the Encodings's Decoder is not serializable.</exception>
         /// <exception cref="IOException">An I/O error occured.</exception>
         /// <exception cref="ArgumentException">The input stream contains invalid bytes and the encoding was constructed with the throwOnInvalidBytes option.</exception>
@@ -920,13 +932,12 @@ public unsafe sealed class CharStream : IDisposable {
                 return new Iterator() {Anchor = anchor, Ptr = newPtr, Block = Block};
 
             return Stream.Seek(Index + numberOfChars);
-
         }
 
         /// <summary>Returns an Iterator that is advanced by numberOfChars chars. The Iterator can't
         /// move past the end of the stream, i.e. any position beyond the last char
         /// in the stream is interpreted as precisely one char beyond the last char.</summary>
-        /// <exception cref="ArgumentOutOfRangeException">The new index is negative (or less than the index offset specified when the CharStream was constructed).</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The new position would lie before the beginning of the `CharStream`.</exception>
         /// <exception cref="NotSupportedException">Seeking of the underlying byte stream is required, but the byte stream does not support seeking or the Encodings's Decoder is not serializable.</exception>
         /// <exception cref="IOException">An I/O error occured.</exception>
         /// <exception cref="ArgumentException">The input stream contains invalid bytes and the encoding was constructed with the throwOnInvalidBytes option.</exception>
@@ -1503,7 +1514,7 @@ public unsafe sealed class CharStream : IDisposable {
             if (length < 0) throw new ArgumentOutOfRangeException("length", "Length is negative.");
             if (length == 0 || Block == -1) return "";
             if (Anchor->LastBlock != Int32.MaxValue) {
-                long maxLength = Anchor->EndOfStream - Index;
+                long maxLength = Anchor->EndIndex - Index;
                 if (length > maxLength) {
                     if (allOrEmpty) return "";
                     length = (int)maxLength;

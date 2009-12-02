@@ -169,6 +169,7 @@ let testStream (stream: CharStream) (refString: string) blockSize blockOverlap m
         let iterj = stream.Seek(int64 j + beginIndex)
         iterj.Index  |> Equal jj
         iterj.Read() |> Equal cj
+        iterj.IsBeginOfStream |> Equal (j = 0)
         iterj.IsEndOfStream |> Equal (j >= N)
 
         let iter0 = stream.Begin
@@ -926,9 +927,13 @@ let run() =
         testStream fileStream refString 8 3 3
 
         use emptyFileStream = newCharStream (new System.IO.MemoryStream(be.GetPreamble(), false))
+        emptyFileStream.Begin.IsBeginOfStream |> True
+        emptyFileStream.Begin.IsEndOfStream   |> True
         emptyFileStream.Begin.Read(10) |> Equal ""
 
         use emptyFileStream2 = newCharStream (new System.IO.MemoryStream([||], false))
+        emptyFileStream2.Begin.IsBeginOfStream |> True
+        emptyFileStream2.Begin.IsEndOfStream   |> True
         emptyFileStream2.Begin.Read(10) |> Equal ""
 
     testStreams()
