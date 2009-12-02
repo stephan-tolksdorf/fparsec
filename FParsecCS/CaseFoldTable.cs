@@ -19,6 +19,10 @@ internal static class CaseFoldTable {
         return table;
     }
 
+    public static void Free() {
+        FoldedChars = null;
+    }
+
     private static char[] CreateFoldedCharsArray() {
         Debug.Assert(oneToOneMappings.Length%2 == 0);
         var table = new char[0x10000];
