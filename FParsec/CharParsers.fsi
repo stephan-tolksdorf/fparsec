@@ -694,9 +694,13 @@ val followedByChar:        char   -> Parser<unit,'u>
 /// `notFollowedByChar c` is an optimized implementation of `notFollowedByL (pchar c) ("'" + c.ToString() + "'")`.
 val notFollowedByChar:     char   -> Parser<unit,'u>
 /// `followedByString str` is an optimized implementation of `followedByL (pstring str) ("'" + str + "'")`.
-val followedByString:    string -> Parser<unit,'u>
+val followedByString:      string -> Parser<unit,'u>
+/// `followedByStringCI str` is an optimized implementation of `followedByL (pstringCI str) ("'" + str + "'")`.
+val followedByStringCI:    string -> Parser<unit,'u>
 /// `notFollowedByString str` is an optimized implementation of `notFollowedByL (pstring str) ("'" + str + "'")`.
-val notFollowedByString: string -> Parser<unit,'u>
+val notFollowedByString:   string -> Parser<unit,'u>
+/// `notFollowedByStringCI str` is an optimized implementation of `notFollowedByL (pstringCI str) ("'" + str + "'")`.
+val notFollowedByStringCI: string -> Parser<unit,'u>
 
 /// `nextCharSatisfies f` succeeds if the predicate function `f` returns `true`
 /// when applied to the char *after* the current char, otherwise it fails.

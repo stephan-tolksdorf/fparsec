@@ -1565,11 +1565,27 @@ let followedByString s : Parser<unit,'u> =
         if state.Iter.Match(s) then Reply((), state)
         else Reply(Error, error, state)
 
+let followedByStringCI s : Parser<unit,'u> =
+    checkStringContainsNoNewlineChar s "followedByStringCI"
+    let error = expectedStringCIError s
+    let cfs = foldCase s
+    fun state ->
+        if state.Iter.MatchCaseFolded(cfs) then Reply((), state)
+        else Reply(Error, error, state)
+
 let notFollowedByString s : Parser<unit,'u> =
     checkStringContainsNoNewlineChar s "notFollowedByString"
     let error = unexpectedStringError s
     fun state ->
         if not (state.Iter.Match(s)) then Reply((), state)
+        else Reply(Error, error, state)
+
+let notFollowedByStringCI s : Parser<unit,'u> =
+    checkStringContainsNoNewlineChar s "notFollowedByStringCI"
+    let error = unexpectedStringCIError s
+    let cfs = foldCase s
+    fun state ->
+        if not (state.Iter.MatchCaseFolded(cfs)) then Reply((), state)
         else Reply(Error, error, state)
 
 let inline charSatisfies c f =

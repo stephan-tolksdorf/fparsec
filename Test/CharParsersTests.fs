@@ -993,6 +993,16 @@ let testFollowedBy() =
     try notFollowedByString "13\r" |> ignore; Fail()
     with :? System.ArgumentException -> ()
 
+    followedByStringCI "aBc" |> ROk "AbC" 0 ()
+    followedByStringCI "aBc" |> RError "Abd" 0 (expectedStringCIError "aBc")
+    notFollowedByStringCI "aBc" |> ROk "Abd" 0 ()
+    notFollowedByStringCI "aBc" |> RError "AbC" 0 (unexpectedStringCIError "aBc")
+
+    try followedByStringCI "13\r" |> ignore; Fail()
+    with :? System.ArgumentException -> ()
+    try notFollowedByStringCI "13\r" |> ignore; Fail()
+    with :? System.ArgumentException -> ()
+
     nextCharSatisfies ((=) '2')  |> ROk    "12"  0 ()
     nextCharSatisfies ((=) '\n') |> ROk    "1\n" 0 ()
     nextCharSatisfies ((=) '\n') |> ROk    "1\r" 0 ()
