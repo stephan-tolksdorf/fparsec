@@ -195,9 +195,7 @@ public sealed class CharStream : IDisposable {
     /// <summary>The low trust version of the CharStream class implements the IDisposable
     /// interface only for API compatibility. The Dispose method does not need to be called on
     /// low trust CharStream instances, because the instances hold no resources that need to be disposed.</summary>
-    public void Dispose() {
-        String = null;
-    }
+    public void Dispose() {}
 
     /// <summary>An iterator pointing to the beginning of the stream (or to the end if the CharStream is empty).</summary>
     public Iterator Begin { get {

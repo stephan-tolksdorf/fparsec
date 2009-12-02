@@ -518,14 +518,8 @@ public unsafe sealed class CharStream : IDisposable {
         if (anchor == null) return;
         Anchor.Free(anchor);
         anchor = null;
-        Blocks = null;
-        ByteBuffer = null;
-        BufferString = null;
         if (BufferHandle.IsAllocated) BufferHandle.Free();
-        if (Stream != null && !LeaveOpen) {
-            Stream.Close();
-            Stream = null;
-        }
+        if (Stream != null && !LeaveOpen) Stream.Close();
     }
 
     /// <summary>an optimized version of end - begin, which assumes that 2^31 > end - begin >= 0. </summary>
