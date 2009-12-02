@@ -94,8 +94,8 @@
               <td class="nav-title n3"><a href="state.html">FParsec.State</a></td>
              </tr>
              <tr class="nav-entry n3 _7">
-              <td class="nav-number n3"><a href="pos.html"><span class="section-number">7</span><span class="nav-space"></span></a></td>
-              <td class="nav-title n3"><a href="pos.html">FParsec.Pos</a></td>
+              <td class="nav-number n3"><a href="position.html"><span class="section-number">7</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="position.html">FParsec.Position</a></td>
              </tr>
              <tr class="nav-entry n3 _8">
               <td class="nav-number n3"><a href="charstream.html"><span class="section-number">8</span><span class="nav-space"></span></a></td>
@@ -129,79 +129,97 @@
    <h2 class="title h3"><span class="section-number">2.5.1</span> Interface</h2>
    <div class="intro i3">
     <div class="para _1">
-<pre class="code fsharp"><span class="ck">module</span> <a href="#"><span class="ci">FParsec</span><span class="cp">.</span><span class="ci">Error</span></a>
+<pre class="code fsharp"><span class="ck">module</span> <span class="ci">FParsec</span><span class="cm">.</span><span class="ci">Error</span>
 
-<span class="ck">type</span> <a id="interface.ErrorMessage:B:" href="#members.ErrorMessage"><span class="interface-member-marker"><span class="ci">ErrorMessage</span></span></a> <span class="cp">=</span>
-     <span class="cp">|</span> <a id="interface.Expected:B:" href="#members.Expected"><span class="interface-member-marker"><span class="ci">Expected</span></span></a> <span class="ck">of</span> <span class="ci">string</span>
-     <span class="cp">|</span> <a id="interface.Unexpected:B:" href="#members.Unexpected"><span class="interface-member-marker"><span class="ci">Unexpected</span></span></a> <span class="ck">of</span> <span class="ci">string</span>
-     <span class="cp">|</span> <a id="interface.Message:B:" href="#members.Message"><span class="interface-member-marker"><span class="ci">Message</span></span></a> <span class="ck">of</span> <span class="ci">string</span>
-     <span class="cp">|</span> <a id="interface.CompoundError:B:" href="#members.CompoundError"><span class="interface-member-marker"><span class="ci">CompoundError</span></span></a> <span class="ck">of</span> <span class="ci">string</span> <span class="cp">*</span> <a href="#members.Pos"><span class="ci">Pos</span></a> <span class="cp">*</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
-     <span class="cp">|</span> <a id="interface.BacktrackPoint:B:" href="#members.BacktrackPoint"><span class="interface-member-marker"><span class="ci">BacktrackPoint</span></span></a> <span class="ck">of</span> <a href="#members.Pos"><span class="ci">Pos</span></a> <span class="cp">*</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
-     <span class="cp">|</span> <a id="interface.OtherError:B:" href="#members.OtherError"><span class="interface-member-marker"><span class="ci">OtherError</span></span></a> <span class="ck">of</span> <span class="ci">obj</span>
+<span class="ck">type</span> <a id="interface.ErrorMessage:B:" href="#members.ErrorMessage"><span class="interface-member-marker"><span class="ci">ErrorMessage</span></span></a> <span class="co">=</span>
+     <span class="cp">|</span> <a id="interface.Expected:B:" href="#members.Expected"><span class="interface-member-marker"><span class="ci">Expected</span></span></a>           <span class="ck">of</span> <span class="ci">string</span>
+     <span class="cp">|</span> <a id="interface.ExpectedString:B:" href="#members.ExpectedString"><span class="interface-member-marker"><span class="ci">ExpectedString</span></span></a>     <span class="ck">of</span> <span class="ci">string</span>
+     <span class="cp">|</span> <a id="interface.ExpectedStringCI:B:" href="#members.ExpectedStringCI"><span class="interface-member-marker"><span class="ci">ExpectedStringCI</span></span></a>   <span class="ck">of</span> <span class="ci">string</span>
+     <span class="cp">|</span> <a id="interface.Unexpected:B:" href="#members.Unexpected"><span class="interface-member-marker"><span class="ci">Unexpected</span></span></a>         <span class="ck">of</span> <span class="ci">string</span>
+     <span class="cp">|</span> <a id="interface.UnexpectedString:B:" href="#members.UnexpectedString"><span class="interface-member-marker"><span class="ci">UnexpectedString</span></span></a>   <span class="ck">of</span> <span class="ci">string</span>
+     <span class="cp">|</span> <a id="interface.UnexpectedStringCI:B:" href="#members.UnexpectedStringCI"><span class="interface-member-marker"><span class="ci">UnexpectedStringCI</span></span></a> <span class="ck">of</span> <span class="ci">string</span>
+     <span class="cp">|</span> <a id="interface.Message:B:" href="#members.Message"><span class="interface-member-marker"><span class="ci">Message</span></span></a>            <span class="ck">of</span> <span class="ci">string</span>
+     <span class="cp">|</span> <a id="interface.CompoundError:B:" href="#members.CompoundError"><span class="interface-member-marker"><span class="ci">CompoundError</span></span></a>      <span class="ck">of</span> <span class="ci">string</span> <span class="cp">*</span> <a href="position.html"><span class="ci">Position</span></a> <span class="cp">*</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
+     <span class="cp">|</span> <a id="interface.BacktrackPoint:B:" href="#members.BacktrackPoint"><span class="interface-member-marker"><span class="ci">BacktrackPoint</span></span></a>     <span class="ck">of</span> <a href="position.html"><span class="ci">Position</span></a> <span class="cp">*</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
+     <span class="cp">|</span> <a id="interface.OtherError:B:" href="#members.OtherError"><span class="interface-member-marker"><span class="ci">OtherError</span></span></a>         <span class="ck">of</span> <a href="http://msdn.microsoft.com/en-us/library/system.icomparable.aspx"><span class="ci">System</span><span class="cm">.</span><span class="ci">IComparable</span></a>
 
-<span class="cp">[&lt;</span><span class="ci">CompilationRepresentation</span><span class="cp">(</span><span class="ci">CompilationRepresentationFlags</span><span class="cp">.</span><span class="ci">UseNullAsTrueValue</span><span class="cp">)</span><span class="cp">;</span>
-  <span class="ci">StructuralEquality</span><span class="cp">(</span><span class="cb">false</span><span class="cp">)</span><span class="cp">;</span> <span class="ci">StructuralComparison</span><span class="cp">(</span><span class="cb">false</span><span class="cp">)</span><span class="cp">&gt;]</span>
-<span class="ck">type</span> <a id="interface.ErrorMessageList:B:" href="#members.ErrorMessageList"><span class="interface-member-marker"><span class="ci">ErrorMessageList</span></span></a> <span class="cp">=</span>
+<span class="cp">[&lt;</span><span class="ci">CompilationRepresentation</span><span class="cp">(</span><span class="ci">CompilationRepresentationFlags</span><span class="cm">.</span><span class="ci">UseNullAsTrueValue</span><span class="cp">)</span><span class="cp">;</span>
+  <span class="ci">CustomEquality</span><span class="cp">;</span> <span class="ci">CustomComparison</span><span class="cp">&gt;]</span>
+<span class="ck">type</span> <a id="interface.ErrorMessageList:B:" href="#members.ErrorMessageList"><span class="interface-member-marker"><span class="ci">ErrorMessageList</span></span></a> <span class="co">=</span>
     <span class="cp">|</span> <a id="interface.AddErrorMessage:B:" href="#members.AddErrorMessage"><span class="interface-member-marker"><span class="ci">AddErrorMessage</span></span></a> <span class="ck">of</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a> <span class="cp">*</span> <span class="ci">ErrorMessageList</span>
     <span class="cp">|</span> <a id="interface.NoErrorMessages:B:" href="#members.NoErrorMessages"><span class="interface-member-marker"><span class="ci">NoErrorMessages</span></span></a>
     <span class="ck">with</span>
-         <span class="ck">member</span> <a id="interface.ToSet:B:" href="#members.ToSet"><span class="interface-member-marker"><span class="ci">ToSet</span></span></a><span class="cp">:</span> <span class="ci">unit</span> <span class="cr">-&gt;</span> <span class="ci">Set</span><span class="co">&lt;</span><a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a><span class="cp">&gt;</span>
-         <span class="ck">static</span> <span class="ck">member</span> <a id="interface.OfSeq:B:" href="#members.OfSeq"><span class="interface-member-marker"><span class="ci">OfSeq</span></span></a><span class="cp">:</span> <span class="ci">seq</span><span class="co">&lt;</span><a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ci">ErrorMessageList</span>
+         <span class="ck">member</span> <a id="interface.ToSet:B:" href="#members.ToSet"><span class="interface-member-marker"><span class="ci">ToSet</span></span></a><span class="cp">:</span> <span class="ci">unit</span> <span class="cr">-&gt;</span> <span class="ci">Set</span><span class="cp">&lt;</span><a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a><span class="cp">&gt;</span>
+         <span class="ck">static</span> <span class="ck">member</span> <a id="interface.OfSeq:B:" href="#members.OfSeq"><span class="interface-member-marker"><span class="ci">OfSeq</span></span></a><span class="cp">:</span> <span class="ci">seq</span><span class="cp">&lt;</span><a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ci">ErrorMessageList</span>
 
          <span class="ck">override</span> <span class="ci">Equals</span><span class="cp">:</span> <span class="ci">obj</span> <span class="cr">-&gt;</span> <span class="ci">bool</span>
          <span class="ck">override</span> <span class="ci">GetHashCode</span><span class="cp">:</span> <span class="ci">unit</span> <span class="cr">-&gt;</span> <span class="ci">int</span>
-         <span class="ck">interface</span> <span class="ci">System</span><span class="cp">.</span><span class="ci">IComparable</span>
+         <span class="ck">interface</span> <a href="http://msdn.microsoft.com/en-us/library/system.icomparable.aspx"><span class="ci">System</span><span class="cm">.</span><span class="ci">IComparable</span></a>
 
-<span class="ck">val</span> <a id="interface.expectedError:B:" href="#members.expectedError"><span class="interface-member-marker"><span class="ci">expectedError</span></span></a><span class="cp">:</span>   <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
-<span class="ck">val</span> <a id="interface.unexpectedError:B:" href="#members.unexpectedError"><span class="interface-member-marker"><span class="ci">unexpectedError</span></span></a><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
-<span class="ck">val</span> <a id="interface.messageError:B:" href="#members.messageError"><span class="interface-member-marker"><span class="ci">messageError</span></span></a><span class="cp">:</span>    <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
-<span class="ck">val</span> <a id="interface.otherError:B:" href="#members.otherError"><span class="interface-member-marker"><span class="ci">otherError</span></span></a><span class="cp">:</span>      <span class="ci">obj</span>    <span class="cr">-&gt;</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
+<span class="ck">val</span> <a id="interface.expectedError:B:" href="#members.expectedError"><span class="interface-member-marker"><span class="ci">expectedError</span></span></a><span class="cp">:</span>           <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
+<span class="ck">val</span> <a id="interface.expectedStringError:B:" href="#members.expectedStringError"><span class="interface-member-marker"><span class="ci">expectedStringError</span></span></a><span class="cp">:</span>     <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
+<span class="ck">val</span> <a id="interface.expectedStringCIError:B:" href="#members.expectedStringCIError"><span class="interface-member-marker"><span class="ci">expectedStringCIError</span></span></a><span class="cp">:</span>   <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
+<span class="ck">val</span> <a id="interface.unexpectedError:B:" href="#members.unexpectedError"><span class="interface-member-marker"><span class="ci">unexpectedError</span></span></a><span class="cp">:</span>         <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
+<span class="ck">val</span> <a id="interface.unexpectedStringError:B:" href="#members.unexpectedStringError"><span class="interface-member-marker"><span class="ci">unexpectedStringError</span></span></a><span class="cp">:</span>   <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
+<span class="ck">val</span> <a id="interface.unexpectedStringCIError:B:" href="#members.unexpectedStringCIError"><span class="interface-member-marker"><span class="ci">unexpectedStringCIError</span></span></a><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
+<span class="ck">val</span> <a id="interface.messageError:B:" href="#members.messageError"><span class="interface-member-marker"><span class="ci">messageError</span></span></a><span class="cp">:</span>            <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
+<span class="ck">val</span> <a id="interface.otherError:B:" href="#members.otherError"><span class="interface-member-marker"><span class="ci">otherError</span></span></a><span class="cp">:</span>              <span class="ci">obj</span>    <span class="cr">-&gt;</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
 
-<span class="ck">val</span> <a id="interface.compoundError:B:" href="#members.compoundError"><span class="interface-member-marker"><span class="ci">compoundError</span></span></a><span class="cp">:</span>   <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="state.html"><span class="ci">State</span></a><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a> <span class="cr">-&gt;</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
-<span class="ck">val</span> <a id="interface.backtrackError:B:" href="#members.backtrackError"><span class="interface-member-marker"><span class="ci">backtrackError</span></span></a><span class="cp">:</span>            <a href="state.html"><span class="ci">State</span></a><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a> <span class="cr">-&gt;</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
+<span class="ck">val</span> <a id="interface.compoundError:B:" href="#members.compoundError"><span class="interface-member-marker"><span class="ci">compoundError</span></span></a><span class="cp">:</span>   <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="state.html"><span class="ci">State</span></a><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a> <span class="cr">-&gt;</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
+<span class="ck">val</span> <a id="interface.backtrackError:B:" href="#members.backtrackError"><span class="interface-member-marker"><span class="ci">backtrackError</span></span></a><span class="cp">:</span>            <a href="state.html"><span class="ci">State</span></a><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a> <span class="cr">-&gt;</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
 
 <span class="ck">val</span> <a id="interface.concatErrorMessages:B:" href="#members.concatErrorMessages"><span class="interface-member-marker"><span class="ci">concatErrorMessages</span></span></a><span class="cp">:</span>
         <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a> <span class="cr">-&gt;</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a> <span class="cr">-&gt;</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
-<span class="ck">val</span> <a id="interface.mergeErrors:B:" href="#members.mergeErrors"><span class="interface-member-marker"><span class="ci">mergeErrors</span></span></a><span class="cp">:</span>
+
+<span class="ck">val</span> <span class="ck">inline</span> <a id="interface.mergeErrors:B:" href="#members.mergeErrors"><span class="interface-member-marker"><span class="ci">mergeErrors</span></span></a><span class="cp">:</span>
         <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a> <span class="cr">-&gt;</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a> <span class="cr">-&gt;</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
 
 <span class="ck">val</span> <a id="interface.mergeErrorsIfNeeded:B:" href="#members.mergeErrorsIfNeeded"><span class="interface-member-marker"><span class="ci">mergeErrorsIfNeeded</span></span></a><span class="cp">:</span>
-        <span class="ci">oldState</span><span class="cp">:</span> <a href="state.html"><span class="ci">State</span></a><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ci">oldError</span><span class="cp">:</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
-     <span class="cr">-&gt;</span> <span class="ci">newState</span><span class="cp">:</span> <a href="state.html"><span class="ci">State</span></a><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ci">newError</span><span class="cp">:</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
+        <span class="ci">oldState</span><span class="cp">:</span> <a href="state.html"><span class="ci">State</span></a><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ci">oldError</span><span class="cp">:</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
+     <span class="cr">-&gt;</span> <span class="ci">newState</span><span class="cp">:</span> <a href="state.html"><span class="ci">State</span></a><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ci">newError</span><span class="cp">:</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
      <span class="cr">-&gt;</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
 
 <span class="ck">val</span> <a id="interface.mergeErrorsIfNeeded3:B:" href="#members.mergeErrorsIfNeeded3"><span class="interface-member-marker"><span class="ci">mergeErrorsIfNeeded3</span></span></a><span class="cp">:</span>
-        <span class="ci">oldestState</span><span class="cp">:</span> <a href="state.html"><span class="ci">State</span></a><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ci">oldestError</span><span class="cp">:</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
-     <span class="cr">-&gt;</span> <span class="ci">oldState</span><span class="cp">:</span>    <a href="state.html"><span class="ci">State</span></a><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ci">oldError</span><span class="cp">:</span>    <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
-     <span class="cr">-&gt;</span> <span class="ci">newState</span><span class="cp">:</span>    <a href="state.html"><span class="ci">State</span></a><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ci">newError</span><span class="cp">:</span>    <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
+        <span class="ci">oldestState</span><span class="cp">:</span> <a href="state.html"><span class="ci">State</span></a><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ci">oldestError</span><span class="cp">:</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
+     <span class="cr">-&gt;</span> <span class="ci">oldState</span><span class="cp">:</span>    <a href="state.html"><span class="ci">State</span></a><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ci">oldError</span><span class="cp">:</span>    <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
+     <span class="cr">-&gt;</span> <span class="ci">newState</span><span class="cp">:</span>    <a href="state.html"><span class="ci">State</span></a><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ci">newError</span><span class="cp">:</span>    <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
      <span class="cr">-&gt;</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
 
 <span class="cp">[&lt;</span><span class="ci">Sealed</span><span class="cp">&gt;]</span>
-<span class="ck">type</span> <a id="interface.ParserError:B:" href="#members.ParserError"><span class="interface-member-marker"><span class="ci">ParserError</span></span></a> <span class="cp">=</span>
-  <a id="interface.new:B:" href="#members.new"><span class="interface-member-marker"><span class="ck">new</span></span></a><span class="cp">:</span> <a href="#members.Pos"><span class="ci">Pos</span></a> <span class="cp">*</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a> <span class="cr">-&gt;</span> <span class="ci">ParserError</span>
+<span class="ck">type</span> <a id="interface.ParserError:B:" href="#members.ParserError"><span class="interface-member-marker"><span class="ci">ParserError</span></span></a> <span class="co">=</span>
+  <a id="interface.new:B:" href="#members.new"><span class="interface-member-marker"><span class="ck">new</span></span></a><span class="cp">:</span> <a href="position.html"><span class="ci">Position</span></a> <span class="cp">*</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a> <span class="cr">-&gt;</span> <span class="ci">ParserError</span>
 
-  <span class="ck">member</span> <a id="interface.Pos:B:" href="#members.Pos"><span class="interface-member-marker"><span class="ci">Pos</span></span></a><span class="cp">:</span> <a href="pos.html"><span class="ci">Pos</span></a>
+  <span class="ck">member</span> <a id="interface.Position:B:" href="#members.Position"><span class="interface-member-marker"><span class="ci">Position</span></span></a><span class="cp">:</span> <a href="position.html"><span class="ci">Position</span></a>
   <span class="ck">member</span> <a id="interface.member-ErrorMessageList:B:" href="#members.member-ErrorMessageList"><span class="interface-member-marker"><span class="ci">ErrorMessageList</span></span></a><span class="cp">:</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
-
+<a id="interface.ToString:47:WriteTo"></a>
   <span class="ck">override</span> <a id="interface.ToString:B:" href="#members.ToString"><span class="interface-member-marker"><span class="ci">ToString</span></span></a><span class="cp">:</span> <span class="ci">unit</span> <span class="cr">-&gt;</span> <span class="ci">string</span>
   <span class="ck">member</span> <a id="interface.ToString_CharStream:B:" href="#members.ToString_CharStream"><span class="interface-member-marker"><span class="ci">ToString</span></span></a><span class="cp">:</span> <span class="ci">streamWhereErrorOccurred</span><span class="cp">:</span> <a href="charstream.html"><span class="ci">CharStream</span></a> <span class="cr">-&gt;</span> <span class="ci">string</span>
 
+  <span class="ck">member</span> <a id="interface.WriteTo_stream:B:" href="#members.WriteTo_stream"><span class="interface-member-marker"><span class="ci">WriteTo</span></span></a><span class="cp">:</span>
+           <span class="ci">textWriter</span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.io.textwriter.aspx"><span class="ci">System</span><span class="cm">.</span><span class="ci">IO</span><span class="cm">.</span><span class="ci">TextWriter</span></a>
+         <span class="cp">*</span> <span class="ci">streamWhereErrorOccurred</span><span class="cp">:</span> <a href="charstream.html"><span class="ci">CharStream</span></a>
+         <span class="cp">*</span> <span class="cp">?</span><span class="ci">columnWidth</span><span class="cp">:</span> <span class="ci">int</span>
+         <span class="cp">*</span> <span class="cp">?</span><span class="ci">initialIndentation</span><span class="cp">:</span> <span class="ci">string</span> <span class="cp">*</span> <span class="cp">?</span><span class="ci">indentationIncrement</span><span class="cp">:</span> <span class="ci">string</span>
+         <span class="cr">-&gt;</span> <span class="ci">unit</span>
+
+  <span class="ck">member</span> <a id="interface.WriteTo_getStreamByName:B:" href="#members.WriteTo_getStreamByName"><span class="interface-member-marker"><span class="ci">WriteTo</span></span></a><span class="cp">:</span>
+           <span class="ci">textWriter</span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.io.textwriter.aspx"><span class="ci">System</span><span class="cm">.</span><span class="ci">IO</span><span class="cm">.</span><span class="ci">TextWriter</span></a>
+         <span class="cp">*</span> <span class="ci">getStreamByName</span><span class="cp">:</span> <span class="cp">(</span><span class="ci">string</span> <span class="cr">-&gt;</span> <a href="charstream.html"><span class="ci">CharStream</span></a><span class="cp">)</span>
+         <span class="cp">*</span> <span class="cp">?</span><span class="ci">columnWidth</span><span class="cp">:</span> <span class="ci">int</span>
+         <span class="cp">*</span> <span class="cp">?</span><span class="ci">initialIndentation</span><span class="cp">:</span> <span class="ci">string</span> <span class="cp">*</span> <span class="cp">?</span><span class="ci">indentationIncrement</span><span class="cp">:</span> <span class="ci">string</span>
+         <span class="cr">-&gt;</span> <span class="ci">unit</span>
+
   <span class="ck">member</span> <a id="interface.WriteTo:B:" href="#members.WriteTo"><span class="interface-member-marker"><span class="ci">WriteTo</span></span></a><span class="cp">:</span>
-           <span class="ci">textWriter</span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.io.textwriter.aspx"><span class="ci">System</span><span class="cp">.</span><span class="ci">IO</span><span class="cp">.</span><span class="ci">TextWriter</span></a>
-         <span class="co">*</span> <span class="cp">?</span><span class="ci">positionPrinter</span><span class="cp">:</span>
-              <span class="cp">(</span><a href="http://msdn.microsoft.com/en-us/library/system.io.textwriter.aspx"><span class="ci">System</span><span class="cp">.</span><span class="ci">IO</span><span class="cp">.</span><span class="ci">TextWriter</span></a> <span class="cr">-&gt;</span> <a href="#members.Pos"><span class="ci">Pos</span></a> <span class="cr">-&gt;</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">unit</span><span class="cp">)</span>
-         <span class="co">*</span> <span class="cp">?</span><span class="ci">streamWhereErrorOccurred</span><span class="cp">:</span> <a href="charstream.html"><span class="ci">CharStream</span></a>
-         <span class="co">*</span> <span class="cp">?</span><span class="ci">columnWidth</span><span class="cp">:</span> <span class="ci">int</span>
-         <span class="co">*</span> <span class="cp">?</span><span class="ci">initialIndention</span><span class="cp">:</span> <span class="ci">string</span> <span class="co">*</span> <span class="cp">?</span><span class="ci">indentionIncrement</span><span class="cp">:</span> <span class="ci">string</span>
+           <span class="ci">textWriter</span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.io.textwriter.aspx"><span class="ci">System</span><span class="cm">.</span><span class="ci">IO</span><span class="cm">.</span><span class="ci">TextWriter</span></a>
+         <span class="cp">*</span> <span class="cp">?</span><span class="ci">positionPrinter</span><span class="cp">:</span>
+             <span class="cp">(</span><a href="http://msdn.microsoft.com/en-us/library/system.io.textwriter.aspx"><span class="ci">System</span><span class="cm">.</span><span class="ci">IO</span><span class="cm">.</span><span class="ci">TextWriter</span></a> <span class="cr">-&gt;</span> <a href="position.html"><span class="ci">Position</span></a> <span class="cr">-&gt;</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">unit</span><span class="cp">)</span>
+         <span class="cp">*</span> <span class="cp">?</span><span class="ci">columnWidth</span><span class="cp">:</span> <span class="ci">int</span>
+         <span class="cp">*</span> <span class="cp">?</span><span class="ci">initialIndentation</span><span class="cp">:</span> <span class="ci">string</span> <span class="cp">*</span> <span class="cp">?</span><span class="ci">indentationIncrement</span><span class="cp">:</span> <span class="ci">string</span>
          <span class="cr">-&gt;</span> <span class="ci">unit</span>
 
   <span class="ck">override</span> <span class="ci">Equals</span><span class="cp">:</span> <span class="ci">obj</span> <span class="cr">-&gt;</span> <span class="ci">bool</span>
-  <span class="ck">override</span> <span class="ci">GetHashCode</span><span class="cp">()</span><span class="cp">:</span> <span class="ci">unit</span> <span class="cr">-&gt;</span> <span class="ci">int</span>
-  <span class="ck">interface</span> <span class="ci">System</span><span class="cp">.</span><span class="ci">IComparable</span>
-
-<span class="ck">val</span> <a id="interface.printErrorLine:B:" href="#members.printErrorLine"><span class="interface-member-marker"><span class="ci">printErrorLine</span></span></a><span class="cp">:</span>    <a href="charstream.html"><span class="ci">CharStream</span></a> <span class="cr">-&gt;</span> <span class="ci">index</span><span class="cp">:</span> <span class="ci">int64</span> <span class="cr">-&gt;</span> <a href="http://msdn.microsoft.com/en-us/library/system.io.textwriter.aspx"><span class="ci">System</span><span class="cp">.</span><span class="ci">IO</span><span class="cp">.</span><span class="ci">TextWriter</span></a>
-                    <span class="cr">-&gt;</span> <span class="ci">indentionString</span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <span class="ci">columnWidth</span><span class="cp">:</span> <span class="ci">int</span>
-                    <span class="cr">-&gt;</span> <span class="ci">unit</span>
+  <span class="ck">override</span> <span class="ci">GetHashCode</span><span class="cp">:</span> <span class="ci">unit</span> <span class="cr">-&gt;</span> <span class="ci">int</span>
+  <span class="ck">interface</span> <a href="http://msdn.microsoft.com/en-us/library/system.icomparable.aspx"><span class="ci">System</span><span class="cm">.</span><span class="ci">IComparable</span></a>
 </pre>
     </div>
    </div>
@@ -226,13 +244,13 @@
          <code class="fsharp"><span class="ci">ErrorMessage</span></code> values are always associated with a particular input stream position. For
          example, the error messages of the <code class="fsharp"><a href="#members.ErrorMessageList"><span
          class="ci">ErrorMessageList</span></a></code> stored in the <code class="fsharp"><a href="primitives.html#members.Reply"><span
-         class="ci">Reply</span></a><span class="co">&lt;</span><span class="ci">_</span><span class="cp">,</span><span class="ci">_</span><span
-         class="cp">&gt;</span><span class="cp">.</span><span class="ci">Error</span></code> field describe an error at the position of the <code
-         class="fsharp"><a href="primitives.html#members.Reply"><span class="ci">Reply</span></a><span class="co">&lt;</span><span
-         class="ci">_</span><span class="cp">,</span><span class="ci">_</span><span class="cp">&gt;</span><span class="cp">.</span><span
-         class="ci">State</span></code> value. The <code class="fsharp"><a href="#members.ParserError"><span class="ci">ParserError</span></a></code>
-         type is a convenient container type for binding together an <code class="fsharp"><a href="#members.ErrorMessageList"><span
-         class="ci">ErrorMessageList</span></a></code> with its associated position.
+         class="ci">Reply</span></a><span class="cp">&lt;</span><span class="ci">_</span><span class="cp">,</span><span class="ci">_</span><span
+         class="cp">&gt;</span><span class="cp">.</span><a href="primitives.html#members.Error"><span class="ci">Error</span></a></code> field
+         describe an error at the position of the <code class="fsharp"><a href="primitives.html#members.Reply"><span class="ci">Reply</span></a><span
+         class="cp">&lt;</span><span class="ci">_</span><span class="cp">,</span><span class="ci">_</span><span class="cp">&gt;</span><span
+         class="cp">.</span><a href="state.html"><span class="ci">State</span></a></code> value. The <code class="fsharp"><a
+         href="#members.ParserError"><span class="ci">ParserError</span></a></code> type is a convenient container type for binding together an <code
+         class="fsharp"><a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a></code> with its associated position.
         </p>
         <p class="para _3"><code class="fsharp"><span class="ci">ErrorMessage</span></code> has the following union cases:</p>
         <div class="para _4">
@@ -245,8 +263,8 @@
            </div>
            <div class="interface-member-description">
             <p class="para _1">
-             This <code class="fsharp"><span class="ci">ErrorMessage</span></code> is reported when some expected input could not be parsed. The
-             string argument describes the expected input.
+             Parsers report this <code class="fsharp"><span class="ci">ErrorMessage</span></code> when the input does not match the expected input.
+             The string argument describes the expected input.
             </p>
             <p class="para _2">
              This error message can be generated with the labeling operator <code class="fsharp"><a href="primitives.html#members.:60::63::62:"><span
@@ -254,7 +272,42 @@
             </p>
            </div>
           </div>
-          <div class="interface-member _2" id="members.Unexpected">
+          <div class="interface-member _2" id="members.ExpectedString">
+           <div class="interface-member-code">
+            <a class="interface-member-backlink" href="#interface.ExpectedString:B:">⇧</a>
+<pre class="code fsharp"><span class="cp">|</span> <span class="interface-member-marker"><span class="ci">ExpectedString</span></span> <span class="ck">of</span> <span class="ci">string</span>
+</pre>
+           </div>
+           <div class="interface-member-description">
+            <p class="para _1">
+             Parsers report this <code class="fsharp"><span class="ci">ErrorMessage</span></code> when the input does not match an expected string
+             constant. The constructor argument is the expected string constant.
+            </p>
+            <p class="para _2">
+             This <code class="fsharp"><span class="ci">ErrorMessage</span></code> is mainly generated by the <code class="fsharp"><a
+             href="charparsers.html#members.pchar"><span class="ci">pchar</span></a></code> and <code class="fsharp"><a
+             href="charparsers.html#members.pstring"><span class="ci">pstring</span></a></code> parsers and its variants.
+            </p>
+           </div>
+          </div>
+          <div class="interface-member _3" id="members.ExpectedStringCI">
+           <div class="interface-member-code">
+            <a class="interface-member-backlink" href="#interface.ExpectedStringCI:B:">⇧</a>
+<pre class="code fsharp"><span class="cp">|</span> <span class="interface-member-marker"><span class="ci">ExpectedStringCI</span></span> <span class="ck">of</span> <span class="ci">string</span>
+</pre>
+           </div>
+           <div class="interface-member-description">
+            <p class="para _1">
+             Parsers report this <code class="fsharp"><span class="ci">ErrorMessage</span></code> when the input does not match an expected
+             case‐insensitive string constant. The constructor argument is the expected string constant.
+            </p>
+            <p class="para _2">
+             This <code class="fsharp"><span class="ci">ErrorMessage</span></code> is mainly generated by the <code class="fsharp"><a
+             href="charparsers.html#members.pstringCI"><span class="ci">pstringCI</span></a></code> parsers and its variants.
+            </p>
+           </div>
+          </div>
+          <div class="interface-member _4" id="members.Unexpected">
            <div class="interface-member-code">
             <a class="interface-member-backlink" href="#interface.Unexpected:B:">⇧</a>
 <pre class="code fsharp"><span class="cp">|</span> <span class="interface-member-marker"><span class="ci">Unexpected</span></span> <span class="ck">of</span> <span class="ci">string</span>
@@ -262,18 +315,51 @@
            </div>
            <div class="interface-member-description">
             <p class="para _1">
-             This <code class="fsharp"><span class="ci">ErrorMessage</span></code> is reported when some unexpected input was encountered. The string
-             argument describes the unexpected input.
+             Parsers report this <code class="fsharp"><span class="ci">ErrorMessage</span></code> when they encounter some unexpected input. The
+             string argument describes the unexpected input.
             </p>
             <p class="para _2">
-             This error message is primarily generated by the <code class="fsharp"><a href="primitives.html#members.notFollowedByL"><span
-             class="ci">notFollowedByL</span></a></code>, <code class="fsharp"><a href="charparsers.html#members.notFollowedByChar"><span
-             class="ci">notFollowedByChar</span></a></code> and <code class="fsharp"><a href="charparsers.html#members.notFollowedByString"><span
-             class="ci">notFollowedByString</span></a></code> parser primitives.
+             This <code class="fsharp"><span class="ci">ErrorMessage</span></code> is mainly generated by the <code class="fsharp"><a
+             href="primitives.html#members.notFollowedByL"><span class="ci">notFollowedByL</span></a></code> primitive.
             </p>
            </div>
           </div>
-          <div class="interface-member _3" id="members.Message">
+          <div class="interface-member _5" id="members.UnexpectedString">
+           <div class="interface-member-code">
+            <a class="interface-member-backlink" href="#interface.UnexpectedString:B:">⇧</a>
+<pre class="code fsharp"><span class="cp">|</span> <span class="interface-member-marker"><span class="ci">UnexpectedString</span></span> <span class="ck">of</span> <span class="ci">string</span>
+</pre>
+           </div>
+           <div class="interface-member-description">
+            <p class="para _1">
+             Parsers report this <code class="fsharp"><span class="ci">ErrorMessage</span></code> when they encounter an unexpected string constant.
+             The constructor argument is the unexpected string.
+            </p>
+            <p class="para _2">
+             This <code class="fsharp"><span class="ci">ErrorMessage</span></code> is mainly generated by the <code class="fsharp"><a
+             href="charparsers.html#members.notFollowedByChar"><span class="ci">notFollowedByChar</span></a></code> and <code class="fsharp"><a
+             href="charparsers.html#members.notFollowedByString"><span class="ci">notFollowedByString</span></a></code> parsers.
+            </p>
+           </div>
+          </div>
+          <div class="interface-member _6" id="members.UnexpectedStringCI">
+           <div class="interface-member-code">
+            <a class="interface-member-backlink" href="#interface.UnexpectedStringCI:B:">⇧</a>
+<pre class="code fsharp"><span class="cp">|</span> <span class="interface-member-marker"><span class="ci">UnexpectedStringCI</span></span> <span class="ck">of</span> <span class="ci">string</span>
+</pre>
+           </div>
+           <div class="interface-member-description">
+            <p class="para _1">
+             Parsers report this <code class="fsharp"><span class="ci">ErrorMessage</span></code> when they encounter an unexpected case‐insensitive
+             string constant. The constructor argument is the unexpected string.
+            </p>
+            <p class="para _2">
+             This <code class="fsharp"><span class="ci">ErrorMessage</span></code> is mainly generated by the <code class="fsharp"><a
+             href="charparsers.html#members.notFollowedByStringCI"><span class="ci">notFollowedByStringCI</span></a></code> parsers.
+            </p>
+           </div>
+          </div>
+          <div class="interface-member _7" id="members.Message">
            <div class="interface-member-code">
             <a class="interface-member-backlink" href="#interface.Message:B:">⇧</a>
 <pre class="code fsharp"><span class="cp">|</span> <span class="interface-member-marker"><span class="ci">Message</span></span> <span class="ck">of</span> <span class="ci">string</span>
@@ -281,8 +367,8 @@
            </div>
            <div class="interface-member-description">
             <p class="para _1">
-             This <code class="fsharp"><span class="ci">ErrorMessage</span></code> is reported if the error does not fit into other error categories.
-             The string argument contains the error message.
+             Parsers report this <code class="fsharp"><span class="ci">ErrorMessage</span></code> when an the error does not fit into the other
+             categories. The string argument contains the error message.
             </p>
             <p class="para _2">
              This error message can be generated with the <code class="fsharp"><a href="primitives.html#members.fail"><span
@@ -291,74 +377,62 @@
             </p>
            </div>
           </div>
-          <div class="interface-member _4" id="members.CompoundError">
+          <div class="interface-member _8" id="members.CompoundError">
            <div class="interface-member-code">
             <a class="interface-member-backlink" href="#interface.CompoundError:B:">⇧</a>
-<pre class="code fsharp"><span class="cp">|</span> <span class="interface-member-marker"><span class="ci">CompoundError</span></span> <span class="ck">of</span> <span class="ci">string</span> <span class="cp">*</span> <a href="#members.Pos"><span class="ci">Pos</span></a> <span class="cp">*</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
+<pre class="code fsharp"><span class="cp">|</span> <span class="interface-member-marker"><span class="ci">CompoundError</span></span> <span class="ck">of</span> <span class="ci">string</span> <span class="cp">*</span> <a href="position.html"><span class="ci">Position</span></a> <span class="cp">*</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
 </pre>
            </div>
            <div class="interface-member-description">
             <p class="para _1">
-             This <code class="fsharp"><span class="ci">ErrorMessage</span></code> is reported if a &#x201C;compound&#x201D; failed to parse. The
-             constructor arguments are a label for the compound parser and the error (<code class="fsharp"><a href="#members.Pos"><span
-             class="ci">Pos</span></a></code> + <code class="fsharp"><a href="#members.ErrorMessageList"><span
+             Parsers report this <code class="fsharp"><span class="ci">ErrorMessage</span></code> when a &#x201C;compound&#x201D; failed to parse. The
+             constructor arguments are a label for the compound parser and the error (<code class="fsharp"><a href="#members.Position"><span
+             class="ci">Position</span></a></code> + <code class="fsharp"><a href="#members.ErrorMessageList"><span
              class="ci">ErrorMessageList</span></a></code>) that caused the compound to fail to parse.
             </p>
             <p class="para _2">
-             This error message is primarily generated by the compound‐labelling operator <code class="fsharp"><a
+             This error message is mainly generated by the compound‐labelling operator <code class="fsharp"><a
              href="primitives.html#members.:60::63::63::62:"><span class="co">&lt;??&gt;</span></a></code>.
             </p>
            </div>
           </div>
-          <div class="interface-member _5" id="members.BacktrackPoint">
+          <div class="interface-member _9" id="members.BacktrackPoint">
            <div class="interface-member-code">
             <a class="interface-member-backlink" href="#interface.BacktrackPoint:B:">⇧</a>
-<pre class="code fsharp"><span class="cp">|</span> <span class="interface-member-marker"><span class="ci">BacktrackPoint</span></span> <span class="ck">of</span> <a href="#members.Pos"><span class="ci">Pos</span></a> <span class="cp">*</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
+<pre class="code fsharp"><span class="cp">|</span> <span class="interface-member-marker"><span class="ci">BacktrackPoint</span></span> <span class="ck">of</span> <a href="position.html"><span class="ci">Position</span></a> <span class="cp">*</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
 </pre>
            </div>
            <div class="interface-member-description">
             <p class="para _1">
-             This <code class="fsharp"><span class="ci">ErrorMessage</span></code> is reported if a parser backtracked after an error occurred. The
-             constructor argument is the error (<code class="fsharp"><a href="#members.Pos"><span class="ci">Pos</span></a></code> + <code
+             Parsers report this <code class="fsharp"><span class="ci">ErrorMessage</span></code> when they backtracked after an error occurred. The
+             constructor argument is the error (<code class="fsharp"><a href="#members.Position"><span class="ci">Position</span></a></code> + <code
              class="fsharp"><a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a></code>) that occurred before the
              backtracking.
             </p>
             <p class="para _2">
-             This error message is primarily generated by the <code class="fsharp"><a href="primitives.html#members.attempt"><span
+             This error message is mainly generated by the <code class="fsharp"><a href="primitives.html#members.attempt"><span
              class="ci">attempt</span></a></code>, <code class="fsharp"><a href="primitives.html#members.:62::62::63:"><span
              class="co">&gt;&gt;?</span></a></code> and <code class="fsharp"><a href="primitives.html#members.:.::62::62::63:"><span
              class="co">.&gt;&gt;?</span></a></code> primitives.
             </p>
            </div>
           </div>
-          <div class="interface-member _6" id="members.OtherError">
+          <div class="interface-member _0" id="members.OtherError">
            <div class="interface-member-code">
             <a class="interface-member-backlink" href="#interface.OtherError:B:">⇧</a>
-<pre class="code fsharp"><span class="cp">|</span> <span class="interface-member-marker"><span class="ci">OtherError</span></span> <span class="ck">of</span> <span class="ci">obj</span>
+<pre class="code fsharp"><span class="cp">|</span> <span class="interface-member-marker"><span class="ci">OtherError</span></span> <span class="ck">of</span> <a href="http://msdn.microsoft.com/en-us/library/system.icomparable.aspx"><span class="ci">System</span><span class="cm">.</span><span class="ci">IComparable</span></a>
 </pre>
            </div>
            <div class="interface-member-description">
             <p class="para _1">
-             This <code class="fsharp"><span class="ci">ErrorMessage</span></code> can be used to report application specific error data. The object
-             argument contains the error data.
+             User‐defined parsers can return this <code class="fsharp"><span class="ci">ErrorMessage</span></code> to report application‐specific
+             error data. The object argument contains the error data.
             </p>
-            <div class="para _2">
-             <div class="admonition">
-              <div class="admonition-title">Important</div>
-              <div class="admonition-body">
-               <p class="para _1">
-                The object argument is expected to be comparable by F#’s <a
-                href="http://research.microsoft.com/en-us/um/cambridge/projects/fsharp/manual/spec.html#_Toc234055671">structural comparison</a>
-                function <code class="fsharp"><span class="ci">compare</span></code>. <code class="fsharp"><span class="ci">OtherError</span></code>
-                instances with arguments that are not comparable are ignored by the <code class="fsharp"><a href="#members.ErrorMessageList"><span
-                class="ci">ErrorMessageList</span></a></code> methods.
-               </p>
-              </div>
-             </div>
-            </div>
-            <p class="para _3">
+            <p class="para _2">
              To display <code class="fsharp"><span class="ci">OtherError</span></code> values in error messages, you will have to define your own
-             error printer, as the default printer ignores them.
+             error printer, as <code class="fsharp"><a href="#members.ParserError"><span class="ci">ParserError</span></a><span class="cm">.</span><a
+             href="#interface.ToString:47:WriteTo"><span class="ci">ToString</span><span class="co">/</span><span class="ci">WriteTo</span></a></code>
+             ignores them.
             </p>
            </div>
           </div>
@@ -381,17 +455,18 @@
          All <code class="fsharp"><a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a></code> values in an <code
          class="fsharp"><span class="ci">ErrorMessageList</span></code> are associated with the same input stream position. For example, the error
          messages stored in the <code class="fsharp"><a href="primitives.html#members.Reply"><span class="ci">Reply</span></a><span
-         class="co">&lt;</span><span class="ci">_</span><span class="cp">,</span><span class="ci">_</span><span class="cp">&gt;</span><span
-         class="cp">.</span><span class="ci">Error</span></code> field describe an error at the position of the <code class="fsharp"><a
-         href="primitives.html#members.Reply"><span class="ci">Reply</span></a><span class="co">&lt;</span><span class="ci">_</span><span
-         class="cp">,</span><span class="ci">_</span><span class="cp">&gt;</span><span class="cp">.</span><span class="ci">State</span></code> value.
-         The <code class="fsharp"><a href="#members.ParserError"><span class="ci">ParserError</span></a></code> type is a convenient container type
-         for binding together an <code class="fsharp"><span class="ci">ErrorMessageList</span></code> with its associated position.
+         class="cp">&lt;</span><span class="ci">_</span><span class="cp">,</span><span class="ci">_</span><span class="cp">&gt;</span><span
+         class="cp">.</span><a href="primitives.html#members.Error"><span class="ci">Error</span></a></code> field describe an error at the position
+         of the <code class="fsharp"><a href="primitives.html#members.Reply"><span class="ci">Reply</span></a><span class="cp">&lt;</span><span
+         class="ci">_</span><span class="cp">,</span><span class="ci">_</span><span class="cp">&gt;</span><span class="cp">.</span><a
+         href="state.html"><span class="ci">State</span></a></code> value. The <code class="fsharp"><a href="#members.ParserError"><span
+         class="ci">ParserError</span></a></code> type is a convenient container type for binding together an <code class="fsharp"><span
+         class="ci">ErrorMessageList</span></code> with its associated position.
         </p>
         <p class="para _3">
          The easiest way to process an <code class="fsharp"><span class="ci">ErrorMessageList</span></code> as a set is to convert it into an actual
          set by using the <code class="fsharp"><a href="#members.ToSet"><span class="ci">ToSet</span></a></code> member. For example, the <code
-         class="fsharp"><a href="#members.ParserError"><span class="ci">ParserError</span></a><span class="cp">.</span><a
+         class="fsharp"><a href="#members.ParserError"><span class="ci">ParserError</span></a><span class="cm">.</span><a
          href="#members.WriteTo"><span class="ci">WriteTo</span></a></code> method uses this method to filter out duplicates before printing out the
          messages.
         </p>
@@ -416,7 +491,7 @@
             <div class="para _2">
              <p>For example,</p>
 <pre class="code fsharp"><span class="ci">AddErrorMessage</span><span class="cp">(</span><a href="#members.Expected"><span class="ci">Expected</span></a> <span class="cs"><span class="left-delimiter">"</span>a<span class="right-delimiter">"</span></span><span class="cp">,</span>
-                <span class="cp">(</span><span class="ci">AddErrorMessage</span><span class="cp">(</span><a href="#members.Expected"><span class="ci">Expected</span></a> <span class="cs"><span class="left-delimiter">"</span>b<span class="right-delimiter">"</span></span><span class="cp">,</span> <a href="#members.NoErrorMessages"><span class="ci">NoErrorMessages</span></a><span class="cp">)</span><span class="cp">)</span>
+                <span class="ci">AddErrorMessage</span><span class="cp">(</span><a href="#members.Expected"><span class="ci">Expected</span></a> <span class="cs"><span class="left-delimiter">"</span>b<span class="right-delimiter">"</span></span><span class="cp">,</span> <a href="#members.NoErrorMessages"><span class="ci">NoErrorMessages</span></a><span class="cp">)</span><span class="cp">)</span>
 </pre>
              <p>creates an <code class="fsharp"><span class="ci">ErrorMessageList</span></code> with two error messages.</p>
             </div>
@@ -438,13 +513,13 @@
           <div class="interface-member _3" id="members.ToSet">
            <div class="interface-member-code">
             <a class="interface-member-backlink" href="#interface.ToSet:B:">⇧</a>
-<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">ToSet</span></span><span class="cp">:</span> <span class="ci">unit</span> <span class="cr">-&gt;</span> <span class="ci">Set</span><span class="co">&lt;</span><a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a><span class="cp">&gt;</span>
+<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">ToSet</span></span><span class="cp">:</span> <span class="ci">unit</span> <span class="cr">-&gt;</span> <span class="ci">Set</span><span class="cp">&lt;</span><a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a><span class="cp">&gt;</span>
 </pre>
            </div>
            <div class="interface-member-description">
             <p class="para _1">
              Converts the <code class="fsharp"><span class="ci">ErrorMessageList</span></code> to a <code class="fsharp"><span
-             class="ci">Set</span><span class="co">&lt;</span><span class="ci">ErrorMessageList</span><span class="cp">&gt;</span></code>. Duplicate
+             class="ci">Set</span><span class="cp">&lt;</span><span class="ci">ErrorMessageList</span><span class="cp">&gt;</span></code>. Duplicate
              error messages and empty <code class="fsharp"><a href="#members.Expected"><span class="ci">Expected</span></a></code>, <code
              class="fsharp"><a href="#members.Unexpected"><span class="ci">Unexpected</span></a></code> and <code class="fsharp"><a
              href="#members.Message"><span class="ci">Message</span></a></code> messages are filtered out when the list is converted to a set.
@@ -454,7 +529,7 @@
           <div class="interface-member _4" id="members.OfSeq">
            <div class="interface-member-code">
             <a class="interface-member-backlink" href="#interface.OfSeq:B:">⇧</a>
-<pre class="code fsharp"><span class="ck">static</span> <span class="ck">member</span> <span class="interface-member-marker"><span class="ci">OfSeq</span></span><span class="cp">:</span> <span class="ci">seq</span><span class="co">&lt;</span><a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ci">ErrorMessageList</span>
+<pre class="code fsharp"><span class="ck">static</span> <span class="ck">member</span> <span class="interface-member-marker"><span class="ci">OfSeq</span></span><span class="cp">:</span> <span class="ci">seq</span><span class="cp">&lt;</span><a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ci">ErrorMessageList</span>
 </pre>
            </div>
            <div class="interface-member-description">
@@ -482,7 +557,35 @@
         </p>
        </div>
       </div>
-      <div class="interface-member _4" id="members.unexpectedError">
+      <div class="interface-member _4" id="members.expectedStringError">
+       <div class="interface-member-code">
+        <a class="interface-member-backlink" href="#interface.expectedStringError:B:">⇧</a>
+<pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">expectedStringError</span></span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
+</pre>
+       </div>
+       <div class="interface-member-description">
+        <p class="para _1">
+         <code class="fsharp"><span class="ci">expectedStringError</span> <span class="ci">str</span></code> creates an <code class="fsharp"><a
+         href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a></code> with a single <code class="fsharp"><a
+         href="#members.ExpectedString"><span class="ci">ExpectedString</span></a> <span class="ci">str</span></code> message.
+        </p>
+       </div>
+      </div>
+      <div class="interface-member _5" id="members.expectedStringCIError">
+       <div class="interface-member-code">
+        <a class="interface-member-backlink" href="#interface.expectedStringCIError:B:">⇧</a>
+<pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">expectedStringCIError</span></span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
+</pre>
+       </div>
+       <div class="interface-member-description">
+        <p class="para _1">
+         <code class="fsharp"><span class="ci">expectedStringCIError</span> <span class="ci">str</span></code> creates an <code class="fsharp"><a
+         href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a></code> with a single <code class="fsharp"><a
+         href="#members.ExpectedStringCI"><span class="ci">ExpectedStringCI</span></a> <span class="ci">str</span></code> message.
+        </p>
+       </div>
+      </div>
+      <div class="interface-member _6" id="members.unexpectedError">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.unexpectedError:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">unexpectedError</span></span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
@@ -496,7 +599,35 @@
         </p>
        </div>
       </div>
-      <div class="interface-member _5" id="members.messageError">
+      <div class="interface-member _7" id="members.unexpectedStringError">
+       <div class="interface-member-code">
+        <a class="interface-member-backlink" href="#interface.unexpectedStringError:B:">⇧</a>
+<pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">unexpectedStringError</span></span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
+</pre>
+       </div>
+       <div class="interface-member-description">
+        <p class="para _1">
+         <code class="fsharp"><span class="ci">unexpectedStringError</span> <span class="ci">str</span></code> creates an <code class="fsharp"><a
+         href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a></code> with a single <code class="fsharp"><a
+         href="#members.UnexpectedString"><span class="ci">UnexpectedString</span></a> <span class="ci">str</span></code> message.
+        </p>
+       </div>
+      </div>
+      <div class="interface-member _8" id="members.unexpectedStringCIError">
+       <div class="interface-member-code">
+        <a class="interface-member-backlink" href="#interface.unexpectedStringCIError:B:">⇧</a>
+<pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">unexpectedStringCIError</span></span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
+</pre>
+       </div>
+       <div class="interface-member-description">
+        <p class="para _1">
+         <code class="fsharp"><span class="ci">unexpectedStringCIError</span> <span class="ci">str</span></code> creates an <code class="fsharp"><a
+         href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a></code> with a single <code class="fsharp"><a
+         href="#members.UnexpectedStringCI"><span class="ci">UnexpectedStringCI</span></a> <span class="ci">str</span></code> message.
+        </p>
+       </div>
+      </div>
+      <div class="interface-member _9" id="members.messageError">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.messageError:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">messageError</span></span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
@@ -510,7 +641,7 @@
         </p>
        </div>
       </div>
-      <div class="interface-member _6" id="members.otherError">
+      <div class="interface-member _0" id="members.otherError">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.otherError:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">otherError</span></span><span class="cp">:</span> <span class="ci">obj</span> <span class="cr">-&gt;</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
@@ -524,10 +655,10 @@
         </p>
        </div>
       </div>
-      <div class="interface-member _7" id="members.compoundError">
+      <div class="interface-member _1" id="members.compoundError">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.compoundError:B:">⇧</a>
-<pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">compoundError</span></span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="state.html"><span class="ci">State</span></a><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a> <span class="cr">-&gt;</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
+<pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">compoundError</span></span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="state.html"><span class="ci">State</span></a><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a> <span class="cr">-&gt;</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
 </pre>
        </div>
        <div class="interface-member-description">
@@ -535,27 +666,39 @@
          <code class="fsharp"><span class="ci">compoundError</span> <span class="ci">label</span> <span class="ci">state</span> <span
          class="ci">msgs</span></code> creates an <code class="fsharp"><a href="#members.ErrorMessageList"><span
          class="ci">ErrorMessageList</span></a></code> with a single <code class="fsharp"><a href="#members.CompoundError"><span
-         class="ci">CompoundError</span></a> <span class="ci">label</span> <span class="ci">state</span><span class="cp">.</span><a
-         href="#members.Pos"><span class="ci">Pos</span></a> <span class="ci">msgs</span></code>.
+         class="ci">CompoundError</span></a> <span class="ci">label</span> <span class="ci">state</span><span class="cm">.</span><a
+         href="#members.Position"><span class="ci">Position</span></a> <span class="ci">msgs</span></code> message, except if <code
+         class="fsharp"><span class="ci">msgs</span></code> is an <code class="fsharp"><a href="#members.ErrorMessageList"><span
+         class="ci">ErrorMessageList</span></a></code> with a single <code class="fsharp"><a href="#members.BacktrackPoint"><span
+         class="ci">BacktrackPoint</span></a><span class="cp">(</span><span class="ci">pos2</span><span class="cp">,</span> <span
+         class="ci">msgs2</span><span class="cp">)</span></code> message, in which case an <code class="fsharp"><a
+         href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a></code> with a single <code class="fsharp"><a
+         href="#members.CompoundError"><span class="ci">CompoundError</span></a> <span class="ci">label</span> <span class="ci">pos2</span> <span
+         class="ci">msgs2</span></code> message is returned instead.
         </p>
        </div>
       </div>
-      <div class="interface-member _8" id="members.backtrackError">
+      <div class="interface-member _2" id="members.backtrackError">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.backtrackError:B:">⇧</a>
-<pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">backtrackError</span></span><span class="cp">:</span> <a href="state.html"><span class="ci">State</span></a><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a> <span class="cr">-&gt;</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
+<pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">backtrackError</span></span><span class="cp">:</span> <a href="state.html"><span class="ci">State</span></a><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a> <span class="cr">-&gt;</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
 </pre>
        </div>
        <div class="interface-member-description">
         <p class="para _1">
          <code class="fsharp"><span class="ci">backtrackError</span> <span class="ci">state</span> <span class="ci">msgs</span></code> creates an
          <code class="fsharp"><a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a></code> with a single <code
-         class="fsharp"><a href="#members.BacktrackPoint"><span class="ci">BacktrackPoint</span></a> <span class="ci">state</span><span
-         class="cp">.</span><a href="#members.Pos"><span class="ci">Pos</span></a> <span class="ci">msgs</span></code>.
+         class="fsharp"><a href="#members.BacktrackPoint"><span class="ci">BacktrackPoint</span></a> <span class="ci">stat</span><span
+         class="cm">.</span><a href="#members.Position"><span class="ci">Position</span></a> <span class="ci">msgs</span></code> message, except if
+         <code class="fsharp"><span class="ci">msgs</span></code> is already an <code class="fsharp"><a href="#members.ErrorMessageList"><span
+         class="ci">ErrorMessageList</span></a></code> with a single <code class="fsharp"><a href="#members.BacktrackPoint"><span
+         class="ci">BacktrackPoint</span></a><span class="cp">(</span><span class="ci">_</span><span class="cp">,</span> <span
+         class="ci">_</span><span class="cp">)</span></code> message, in which case <code class="fsharp"><span class="ci">msgs</span></code> is
+         returned instead.
         </p>
        </div>
       </div>
-      <div class="interface-member _9" id="members.concatErrorMessages">
+      <div class="interface-member _3" id="members.concatErrorMessages">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.concatErrorMessages:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">concatErrorMessages</span></span><span class="cp">:</span>
@@ -570,10 +713,10 @@
         </p>
        </div>
       </div>
-      <div class="interface-member _0" id="members.mergeErrors">
+      <div class="interface-member _4" id="members.mergeErrors">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.mergeErrors:B:">⇧</a>
-<pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">mergeErrors</span></span><span class="cp">:</span>
+<pre class="code fsharp"><span class="ck">val</span> <span class="ck">inline</span> <span class="interface-member-marker"><span class="ci">mergeErrors</span></span><span class="cp">:</span>
         <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a> <span class="cr">-&gt;</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a> <span class="cr">-&gt;</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
 </pre>
        </div>
@@ -588,12 +731,12 @@
         </p>
        </div>
       </div>
-      <div class="interface-member _1" id="members.mergeErrorsIfNeeded">
+      <div class="interface-member _5" id="members.mergeErrorsIfNeeded">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.mergeErrorsIfNeeded:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">mergeErrorsIfNeeded</span></span><span class="cp">:</span>
-        <span class="ci">oldState</span><span class="cp">:</span> <a href="state.html"><span class="ci">State</span></a><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ci">oldError</span><span class="cp">:</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
-     <span class="cr">-&gt;</span> <span class="ci">newState</span><span class="cp">:</span> <a href="state.html"><span class="ci">State</span></a><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ci">newError</span><span class="cp">:</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
+        <span class="ci">oldState</span><span class="cp">:</span> <a href="state.html"><span class="ci">State</span></a><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ci">oldError</span><span class="cp">:</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
+     <span class="cr">-&gt;</span> <span class="ci">newState</span><span class="cp">:</span> <a href="state.html"><span class="ci">State</span></a><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ci">newError</span><span class="cp">:</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
      <span class="cr">-&gt;</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
 </pre>
        </div>
@@ -607,13 +750,13 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _2" id="members.mergeErrorsIfNeeded3">
+      <div class="interface-member _6" id="members.mergeErrorsIfNeeded3">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.mergeErrorsIfNeeded3:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">mergeErrorsIfNeeded3</span></span><span class="cp">:</span>
-        <span class="ci">oldestState</span><span class="cp">:</span> <a href="state.html"><span class="ci">State</span></a><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ci">oldestError</span><span class="cp">:</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
-     <span class="cr">-&gt;</span> <span class="ci">oldState</span><span class="cp">:</span>    <a href="state.html"><span class="ci">State</span></a><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ci">oldError</span><span class="cp">:</span>    <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
-     <span class="cr">-&gt;</span> <span class="ci">newState</span><span class="cp">:</span>    <a href="state.html"><span class="ci">State</span></a><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ci">newError</span><span class="cp">:</span>    <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
+        <span class="ci">oldestState</span><span class="cp">:</span> <a href="state.html"><span class="ci">State</span></a><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ci">oldestError</span><span class="cp">:</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
+     <span class="cr">-&gt;</span> <span class="ci">oldState</span><span class="cp">:</span>    <a href="state.html"><span class="ci">State</span></a><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ci">oldError</span><span class="cp">:</span>    <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
+     <span class="cr">-&gt;</span> <span class="ci">newState</span><span class="cp">:</span>    <a href="state.html"><span class="ci">State</span></a><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ci">newError</span><span class="cp">:</span>    <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
      <span class="cr">-&gt;</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a>
 </pre>
        </div>
@@ -632,7 +775,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _3" id="members.ParserError">
+      <div class="interface-member _7" id="members.ParserError">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.ParserError:B:">⇧</a>
 <pre class="code fsharp"><span class="cp">[&lt;</span><span class="ci">Sealed</span><span class="cp">&gt;]</span>
@@ -648,7 +791,7 @@
           <div class="interface-member _1" id="members.new">
            <div class="interface-member-code">
             <a class="interface-member-backlink" href="#interface.new:B:">⇧</a>
-<pre class="code fsharp"><span class="interface-member-marker"><span class="ck">new</span></span><span class="cp">:</span> <a href="#members.Pos"><span class="ci">Pos</span></a> <span class="cp">*</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a> <span class="cr">-&gt;</span> <span class="ci">ParserError</span>
+<pre class="code fsharp"><span class="interface-member-marker"><span class="ck">new</span></span><span class="cp">:</span> <a href="position.html"><span class="ci">Position</span></a> <span class="cp">*</span> <a href="#members.ErrorMessageList"><span class="ci">ErrorMessageList</span></a> <span class="cr">-&gt;</span> <span class="ci">ParserError</span>
 </pre>
            </div>
            <div class="interface-member-description">
@@ -658,10 +801,10 @@
             </p>
            </div>
           </div>
-          <div class="interface-member _2" id="members.Pos">
+          <div class="interface-member _2" id="members.Position">
            <div class="interface-member-code">
-            <a class="interface-member-backlink" href="#interface.Pos:B:">⇧</a>
-<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">Pos</span></span><span class="cp">:</span> <a href="pos.html"><span class="ci">Pos</span></a>
+            <a class="interface-member-backlink" href="#interface.Position:B:">⇧</a>
+<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">Position</span></span><span class="cp">:</span> <a href="position.html"><span class="ci">Position</span></a>
 </pre>
            </div>
            <div class="interface-member-description">
@@ -687,9 +830,9 @@
            <div class="interface-member-description">
             <div class="para _1">
              <p>Is equivalent to</p>
-<pre class="code fsharp"><span class="ck">use</span> <span class="ci">sw</span> <span class="cp">=</span> <span class="ck">new</span> <a href="http://msdn.microsoft.com/en-us/library/system.io.stringwriter.aspx"><span class="ci">System</span><span class="cp">.</span><span class="ci">IO</span><span class="cp">.</span><span class="ci">StringWriter</span></a><span class="cp">()</span>
+<pre class="code fsharp"><span class="ck">use</span> <span class="ci">sw</span> <span class="cp">=</span> <span class="ck">new</span> <a href="http://msdn.microsoft.com/en-us/library/system.io.stringwriter.aspx"><span class="ci">System</span><span class="cm">.</span><span class="ci">IO</span><span class="cm">.</span><span class="ci">StringWriter</span></a><span class="cp">()</span>
 <a href="#members.WriteTo"><span class="ci">WriteTo</span></a><span class="cp">(</span><span class="ci">sw</span><span class="cp">)</span>
-<span class="ci">sw</span><span class="cp">.</span><span class="ci">ToString</span><span class="cp">()</span>
+<span class="ci">sw</span><span class="cm">.</span><span class="ci">ToString</span><span class="cp">()</span>
 </pre>
             </div>
            </div>
@@ -703,23 +846,79 @@
            <div class="interface-member-description">
             <div class="para _1">
              <p>Is equivalent to</p>
-<pre class="code fsharp"><span class="ck">use</span> <span class="ci">sw</span> <span class="cp">=</span> <span class="ck">new</span> <a href="http://msdn.microsoft.com/en-us/library/system.io.stringwriter.aspx"><span class="ci">System</span><span class="cp">.</span><span class="ci">IO</span><span class="cp">.</span><span class="ci">StringWriter</span></a><span class="cp">()</span>
-<a href="#members.WriteTo"><span class="ci">WriteTo</span></a><span class="cp">(</span><span class="ci">sw</span><span class="cp">,</span> <span class="ci">streamWhereErrorOccurred</span> <span class="co">=</span> <span class="ci">streamWhereErrorOccurred</span><span class="cp">)</span>
-<span class="ci">sw</span><span class="cp">.</span><span class="ci">ToString</span><span class="cp">()</span>
+<pre class="code fsharp"><span class="ck">use</span> <span class="ci">sw</span> <span class="cp">=</span> <span class="ck">new</span> <a href="http://msdn.microsoft.com/en-us/library/system.io.stringwriter.aspx"><span class="ci">System</span><span class="cm">.</span><span class="ci">IO</span><span class="cm">.</span><span class="ci">StringWriter</span></a><span class="cp">()</span>
+<a href="#members.WriteTo_stream"><span class="ci">WriteTo</span></a><span class="cp">(</span><span class="ci">sw</span><span class="cp">,</span> <span class="ci">streamWhereErrorOccurred</span><span class="cp">)</span>
+<span class="ci">sw</span><span class="cm">.</span><span class="ci">ToString</span><span class="cp">()</span>
 </pre>
             </div>
            </div>
           </div>
-          <div class="interface-member _6" id="members.WriteTo">
+          <div class="interface-member _6" id="members.WriteTo_stream">
+           <div class="interface-member-code">
+            <a class="interface-member-backlink" href="#interface.WriteTo_stream:B:">⇧</a>
+<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">WriteTo</span></span><span class="cp">:</span>
+         <span class="ci">textWriter</span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.io.textwriter.aspx"><span class="ci">System</span><span class="cm">.</span><span class="ci">IO</span><span class="cm">.</span><span class="ci">TextWriter</span></a>
+       <span class="cp">*</span> <span class="ci">streamWhereErrorOccurred</span><span class="cp">:</span> <a href="charstream.html"><span class="ci">CharStream</span></a>
+       <span class="cp">*</span> <span class="cp">?</span><span class="ci">columnWidth</span><span class="cp">:</span> <span class="ci">int</span>
+       <span class="cp">*</span> <span class="cp">?</span><span class="ci">initialIndentation</span><span class="cp">:</span> <span class="ci">string</span> <span class="cp">*</span> <span class="cp">?</span><span class="ci">indentationIncrement</span><span class="cp">:</span> <span class="ci">string</span>
+       <span class="cr">-&gt;</span> <span class="ci">unit</span>
+</pre>
+           </div>
+           <div class="interface-member-description">
+            <div class="para _1">
+             <p>Is equivalent to</p>
+<pre class="code fsharp"><span class="ck">let</span> <span class="ci">getStreamByName</span> <span class="ci">streamName</span> <span class="cp">=</span>
+    <span class="ck">if</span> <span class="ci">streamName</span> <span class="co">=</span> <a href="#members.Position"><span class="ci">Position</span></a><span class="cm">.</span><span class="ci">StreamName</span> <span class="ck">then</span> <span class="ci">streamWhereErrorOccurred</span> <span class="ck">else</span> <span class="cnu">null</span>
+
+<a href="#members.WriteTo_getStreamByName"><span class="ci">WriteTo</span></a><span class="cp">(</span><span class="ci">textWriter</span><span class="cp">,</span> <span class="ci">getStreamByName</span><span class="cp">,</span>
+        <span class="cp">?</span><span class="ci">columWidth</span> <span class="co">=</span> <span class="ci">columnWidth</span><span class="cp">,</span>
+        <span class="cp">?</span><span class="ci">initialIndentation</span> <span class="co">=</span> <span class="ci">initialIndentation</span><span class="cp">,</span>
+        <span class="cp">?</span><span class="ci">indentationIncrement</span> <span class="co">=</span> <span class="ci">indentationIncrement</span><span class="cp">)</span>
+</pre>
+            </div>
+           </div>
+          </div>
+          <div class="interface-member _7" id="members.WriteTo_getStreamByName">
+           <div class="interface-member-code">
+            <a class="interface-member-backlink" href="#interface.WriteTo_getStreamByName:B:">⇧</a>
+<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">WriteTo</span></span><span class="cp">:</span>
+         <span class="ci">textWriter</span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.io.textwriter.aspx"><span class="ci">System</span><span class="cm">.</span><span class="ci">IO</span><span class="cm">.</span><span class="ci">TextWriter</span></a>
+       <span class="cp">*</span> <span class="ci">getStreamByName</span><span class="cp">:</span> <span class="cp">(</span><span class="ci">string</span> <span class="cr">-&gt;</span> <a href="charstream.html"><span class="ci">CharStream</span></a><span class="cp">)</span>
+       <span class="cp">*</span> <span class="cp">?</span><span class="ci">columnWidth</span><span class="cp">:</span> <span class="ci">int</span>
+       <span class="cp">*</span> <span class="cp">?</span><span class="ci">initialIndentation</span><span class="cp">:</span> <span class="ci">string</span> <span class="cp">*</span> <span class="cp">?</span><span class="ci">indentationIncrement</span><span class="cp">:</span> <span class="ci">string</span>
+       <span class="cr">-&gt;</span> <span class="ci">unit</span>
+</pre>
+           </div>
+           <div class="interface-member-description">
+            <p class="para _1">
+             Writes a string representation of the <code class="fsharp"><span class="ci">ParserError</span></code> to the given <code
+             class="fsharp"><a href="http://msdn.microsoft.com/en-us/library/system.io.textwriter.aspx"><span class="ci">TextWriter</span></a></code>
+             value.
+            </p>
+            <p class="para _2">
+             For each error position <code class="fsharp"><span class="ci">getStreamByName</span></code> is called with the <code class="fsharp"><span
+             class="ci">StreamName</span></code> of the <code class="fsharp"><a href="position.html"><span class="ci">Position</span></a></code>. The
+             returned <code class="fsharp"><a href="charstream.html"><span class="ci">CharStream</span></a></code> must be <code class="fsharp"><span
+             class="cnu">null</span></code> or contain the content of the <code class="fsharp"><a href="charstream.html"><span
+             class="ci">CharStream</span></a></code> for which the error was generated (at the original indices).
+            </p>
+            <p class="para _3">
+             If <code class="fsharp"><span class="ci">getStreamByName</span></code> returns a non‐null <code class="fsharp"><a
+             href="charstream.html"><span class="ci">CharStream</span></a></code>, the printed error position information is augmented with the line
+             of text surrounding the error position, together with a &#x2018;^&#x2019;‐marker pointing to the exact location of the error in the input
+             stream.
+            </p>
+           </div>
+          </div>
+          <div class="interface-member _8" id="members.WriteTo">
            <div class="interface-member-code">
             <a class="interface-member-backlink" href="#interface.WriteTo:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">WriteTo</span></span><span class="cp">:</span>
-         <span class="ci">textWriter</span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.io.textwriter.aspx"><span class="ci">System</span><span class="cp">.</span><span class="ci">IO</span><span class="cp">.</span><span class="ci">TextWriter</span></a>
-       <span class="co">*</span> <span class="cp">?</span><span class="ci">positionPrinter</span><span class="cp">:</span>
-            <span class="cp">(</span><a href="http://msdn.microsoft.com/en-us/library/system.io.textwriter.aspx"><span class="ci">System</span><span class="cp">.</span><span class="ci">IO</span><span class="cp">.</span><span class="ci">TextWriter</span></a> <span class="cr">-&gt;</span> <a href="#members.Pos"><span class="ci">Pos</span></a> <span class="cr">-&gt;</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">unit</span><span class="cp">)</span>
-       <span class="co">*</span> <span class="cp">?</span><span class="ci">streamWhereErrorOccurred</span><span class="cp">:</span> <a href="charstream.html"><span class="ci">CharStream</span></a>
-       <span class="co">*</span> <span class="cp">?</span><span class="ci">columnWidth</span><span class="cp">:</span> <span class="ci">int</span>
-       <span class="co">*</span> <span class="cp">?</span><span class="ci">initialIndention</span><span class="cp">:</span> <span class="ci">string</span> <span class="co">*</span> <span class="cp">?</span><span class="ci">indentionIncrement</span><span class="cp">:</span> <span class="ci">string</span>
+         <span class="ci">textWriter</span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.io.textwriter.aspx"><span class="ci">System</span><span class="cm">.</span><span class="ci">IO</span><span class="cm">.</span><span class="ci">TextWriter</span></a>
+       <span class="cp">*</span> <span class="cp">?</span><span class="ci">positionPrinter</span><span class="cp">:</span>
+           <span class="cp">(</span><a href="http://msdn.microsoft.com/en-us/library/system.io.textwriter.aspx"><span class="ci">System</span><span class="cm">.</span><span class="ci">IO</span><span class="cm">.</span><span class="ci">TextWriter</span></a> <span class="cr">-&gt;</span> <a href="position.html"><span class="ci">Position</span></a> <span class="cr">-&gt;</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">unit</span><span class="cp">)</span>
+       <span class="cp">*</span> <span class="cp">?</span><span class="ci">columnWidth</span><span class="cp">:</span> <span class="ci">int</span>
+       <span class="cp">*</span> <span class="cp">?</span><span class="ci">initialIndentation</span><span class="cp">:</span> <span class="ci">string</span> <span class="cp">*</span> <span class="cp">?</span><span class="ci">indentationIncrement</span><span class="cp">:</span> <span class="ci">string</span>
        <span class="cr">-&gt;</span> <span class="ci">unit</span>
 </pre>
            </div>
@@ -732,37 +931,15 @@
             <p class="para _2">
              The format of the position information can be customized by specifying the <code class="fsharp"><span
              class="ci">positionPrinter</span></code> argument. The given function is expected to print a representation of the passed <code
-             class="fsharp"><a href="#members.Pos"><span class="ci">Pos</span></a></code> value to the passed <code class="fsharp"><a
+             class="fsharp"><a href="position.html"><span class="ci">Position</span></a></code> value to the passed <code class="fsharp"><a
              href="http://msdn.microsoft.com/en-us/library/system.io.textwriter.aspx"><span class="ci">TextWriter</span></a></code> value. If
-             possible, it should indent text lines with the passed string and take into account the maximum column count (including indention) passed
-             as the last argument.
-            </p>
-            <p class="para _3">
-             If a value for the optional <code class="fsharp"><a href="charstream.html"><span class="ci">CharStream</span></a></code> argument is
-             given, the printed position information is augmented with the the line of text surrounding the error position, together with a
-             &#x2018;^&#x2019;‐marker pointing to the exact location of the error in the input stream. The given <code class="fsharp"><a
-             href="charstream.html"><span class="ci">CharStream</span></a></code> must contain the original input for which the parser error was
-             generated.
+             possible, it should indent text lines with the passed string and take into account the maximum column count (including indentation)
+             passed as the last argument.
             </p>
            </div>
           </div>
          </div>
         </div>
-       </div>
-      </div>
-      <div class="interface-member _4" id="members.printErrorLine">
-       <div class="interface-member-code">
-        <a class="interface-member-backlink" href="#interface.printErrorLine:B:">⇧</a>
-<pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">printErrorLine</span></span><span class="cp">:</span>    <a href="charstream.html"><span class="ci">CharStream</span></a> <span class="cr">-&gt;</span> <span class="ci">index</span><span class="cp">:</span> <span class="ci">int64</span> <span class="cr">-&gt;</span> <a href="http://msdn.microsoft.com/en-us/library/system.io.textwriter.aspx"><span class="ci">System</span><span class="cp">.</span><span class="ci">IO</span><span class="cp">.</span><span class="ci">TextWriter</span></a>
-                    <span class="cr">-&gt;</span> <span class="ci">indentionString</span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <span class="ci">columnWidth</span><span class="cp">:</span> <span class="ci">int</span>
-                    <span class="cr">-&gt;</span> <span class="ci">unit</span>
-</pre>
-       </div>
-       <div class="interface-member-description">
-        <p class="para _1">
-         Prints the line of text surrounding the given index in the stream and marks the position of the index with a caret (^) on a second line. The
-         output is indented with the given string and is restricted to the given column width (including the indention).
-        </p>
        </div>
       </div>
      </div>

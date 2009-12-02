@@ -75,8 +75,8 @@
               <td class="nav-title n3"><a href="state.html">FParsec.State</a></td>
              </tr>
              <tr class="nav-entry n3 _7">
-              <td class="nav-number n3"><a href="pos.html"><span class="section-number">7</span><span class="nav-space"></span></a></td>
-              <td class="nav-title n3"><a href="pos.html">FParsec.Pos</a></td>
+              <td class="nav-number n3"><a href="position.html"><span class="section-number">7</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="position.html">FParsec.Position</a></td>
              </tr>
              <tr class="nav-entry n3 _8">
               <td class="nav-number n3"><a href="charstream.html"><span class="section-number">8</span><span class="nav-space"></span></a></td>
@@ -187,8 +187,8 @@
          class="fsharp"><a href="charparsers.html#members.upper"><span class="ci">upper</span></a></code>)</span>
         </td>
         <td class="_2">
-         Parses any one unicode letter char identified by <code class="fsharp"><span class="ci">System</span><span class="cp">.</span><span
-         class="ci">Char</span><span class="cp">.</span><span class="ci">IsLetter</span></code>.
+         Parses any one unicode letter char identified by <code class="fsharp"><span class="ci">System</span><span class="cm">.</span><span
+         class="ci">Char</span><span class="cm">.</span><span class="ci">IsLetter</span></code>.
         </td>
        </tr>
        <tr class="_7">
@@ -519,8 +519,8 @@
        </tr>
        <tr class="_2">
         <td class="_1">
-         <strong><code class="fsharp"><span class="ci">p</span> <a href="primitives.html#members.:62::62::36:"><span
-         class="co">&gt;&gt;$</span></a> <span class="ci">x</span></code></strong>
+         <strong><code class="fsharp"><span class="ci">p</span> <a href="primitives.html#members.:62::62::37:"><span
+         class="co">&gt;&gt;%</span></a> <span class="ci">x</span></code></strong>
         </td>
         <td class="_2">
          Applies the parser <code class="fsharp"><span class="ci">p</span></code>. Returns <code class="fsharp"><span class="ci">x</span></code>.
@@ -630,7 +630,8 @@
          class="ci">p</span></code></strong> <br /><span class="small">(variants: <code class="fsharp"><a
          href="primitives.html#members.skipArray"><span class="ci">skipArray</span></a></code>)</span>
         </td>
-        <td class="_2">.</td>
+        <td class="_2">
+        </td>
         <td class="_3">
          Parses <code class="fsharp"><span class="ci">n</span></code> occurrences of <code class="fsharp"><span class="ci">p</span></code>. Returns
          the results in an array.
@@ -782,8 +783,8 @@
        </tr>
        <tr class="_3">
         <td class="_1">
-         <strong><code class="fsharp"><span class="ci">p</span> <a href="primitives.html#members.:60::124::62::36:"><span
-         class="co">&lt;|&gt;$</span></a> <span class="ci">x</span></code></strong>
+         <strong><code class="fsharp"><span class="ci">p</span> <a href="primitives.html#members.:60::124::62::37:"><span
+         class="co">&lt;|&gt;%</span></a> <span class="ci">x</span></code></strong>
         </td>
         <td class="_2">
          Parses <code class="fsharp"><span class="ci">p</span></code> or returns <code class="fsharp"><span class="ci">x</span></code>. Is equivalent
@@ -801,7 +802,7 @@
          Parses an optional occurrence of <code class="fsharp"><span class="ci">p</span></code> as an option value. Is equivalent to <code
          class="fsharp"><span class="cp">(</span><span class="ci">p</span> <a href="primitives.html#members.:124::62::62:"><span
          class="co">|&gt;&gt;</span></a> <span class="ci">Some</span><span class="cp">)</span> <a
-         href="primitives.html#members.:60::124::62::36:"><span class="co">&lt;|&gt;$</span></a> <span class="ci">None</span></code>
+         href="primitives.html#members.:60::124::62::37:"><span class="co">&lt;|&gt;%</span></a> <span class="ci">None</span></code>
         </td>
        </tr>
        <tr class="_5">
@@ -881,15 +882,16 @@
          class="ci">c</span></code></strong> <br /><span class="small">(variants: <code class="fsharp"><a
          href="charparsers.html#interface.followedByChar-parsers"><span class="cp">(</span><span class="ci">notF</span><span class="cp">|</span><span
          class="ci">f</span><span class="cp">)</span><span class="ci">ollowedBy</span><span class="cp">(</span><span class="ci">Char</span><span
-         class="cp">|</span><span class="ci">String</span><span class="cp">)</span></a></code>)</span>
+         class="cp">|</span><span class="ci">String</span><span class="cp">[</span><span class="ci">CI</span><span class="cp">]</span><span
+         class="cp">)</span></a></code>)</span>
         </td>
         <td class="_2">
          Is equivalent to <code class="fsharp"><a href="primitives.html#members.followedByL"><span class="ci">followedByL</span></a> <span
          class="cp">(</span><a href="charparsers.html#members.pchar"><span class="ci">pchar</span></a> <span class="ci">c</span><span
          class="cp">)</span> <span class="cp">(</span><span class="cs"><span class="left-delimiter">"</span>'<span
-         class="right-delimiter">"</span></span> <span class="co">+</span> <span class="ci">string</span> <span class="ci">c</span><span
-         class="cp">)</span> <span class="co">+</span> <span class="cs"><span class="left-delimiter">"</span>'<span
-         class="right-delimiter">"</span></span><span class="cp">)</span></code>.
+         class="right-delimiter">"</span></span> <span class="co">+</span> <span class="ci">string</span> <span class="ci">c</span> <span
+         class="co">+</span> <span class="cs"><span class="left-delimiter">"</span>'<span class="right-delimiter">"</span></span><span
+         class="cp">)</span></code>.
         </td>
        </tr>
        <tr class="_4">

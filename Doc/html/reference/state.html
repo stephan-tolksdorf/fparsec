@@ -98,8 +98,8 @@
             </tbody>
             <tbody class="nav-after-open n3">
              <tr class="nav-entry n3 _7">
-              <td class="nav-number n3"><a href="pos.html"><span class="section-number">7</span><span class="nav-space"></span></a></td>
-              <td class="nav-title n3"><a href="pos.html">FParsec.Pos</a></td>
+              <td class="nav-number n3"><a href="position.html"><span class="section-number">7</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="position.html">FParsec.Position</a></td>
              </tr>
              <tr class="nav-entry n3 _8">
               <td class="nav-number n3"><a href="charstream.html"><span class="section-number">8</span><span class="nav-space"></span></a></td>
@@ -131,7 +131,7 @@
   <h1 class="title h2"><span class="section-number">2.6</span> FParsec.State</h1>
   <div class="intro i2">
    <p class="para _1">
-    The <code class="fsharp"><span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'UserState</span><span
+    The <code class="fsharp"><span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'UserState</span><span
     class="cp">&gt;</span></code> class represents the parser state for <code class="fsharp"><a href="primitives.html#members.Parser"><span
     class="ci">Parser</span></a></code> functions.
    </p>
@@ -143,20 +143,19 @@
 <pre class="code fsharp"><span class="ck">namespace</span> <span class="ci">FParsec</span>
 
 <span class="cp">[&lt;</span><span class="ci">Sealed</span><span class="cp">&gt;]</span>
-<span class="ck">type</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cp">=</span>  <span class="clc"><span class="left-delimiter">//</span> 'u is the UserState type</span>
-  <span class="ck">interface</span> <a href="http://msdn.microsoft.com/en-us/library/ms131187.aspx"><span class="ci">System</span><span class="cp">.</span><span class="ci">IEquatable</span></a><span class="co">&lt;</span><span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span><span class="cp">&gt;</span>
-  <span class="ck">interface</span> <a href="http://msdn.microsoft.com/en-us/library/system.collections.istructuralequatable(VS.100).aspx"><span class="ci">System</span><span class="cp">.</span><span class="ci">Collections</span><span class="cp">.</span><span class="ci">IStructuralEquatable</span></a>
+<span class="ck">type</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cp">=</span>  <span class="clc"><span class="left-delimiter">//</span> 'u is the UserState type</span>
+  <span class="ck">interface</span> <a href="http://msdn.microsoft.com/en-us/library/ms131187.aspx"><span class="ci">System</span><span class="cm">.</span><span class="ci">IEquatable</span></a><span class="cp">&lt;</span><span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span><span class="cp">&gt;</span>
 
-  <a id="interface.new:B:" href="#members.new"><span class="interface-member-marker"><span class="ck">new</span></span></a><span class="cp">:</span> <a href="charstream.html"><span class="ci">CharStream</span></a> <span class="cp">*</span> <span class="ctv">'u</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
-  <a id="interface.new_streamName:B:" href="#members.new_streamName"><span class="interface-member-marker"><span class="ck">new</span></span></a><span class="cp">:</span> <a href="charstream.html"><span class="ci">CharStream</span></a> <span class="cp">*</span> <span class="ctv">'u</span> <span class="co">*</span> <span class="ci">streamName</span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+  <a id="interface.new:B:" href="#members.new"><span class="interface-member-marker"><span class="ck">new</span></span></a><span class="cp">:</span> <a href="charstream.html"><span class="ci">CharStream</span></a> <span class="cp">*</span> <span class="ctv">'u</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+  <a id="interface.new_streamName:B:" href="#members.new_streamName"><span class="interface-member-marker"><span class="ck">new</span></span></a><span class="cp">:</span> <a href="charstream.html"><span class="ci">CharStream</span></a> <span class="cp">*</span> <span class="ctv">'u</span> <span class="cp">*</span> <span class="ci">streamName</span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
 
-  <a id="interface.new_Pos:B:" href="#members.new_Pos"><span class="interface-member-marker"><span class="ck">new</span></span></a><span class="cp">:</span> <a href="charstream.html"><span class="ci">CharStream</span></a> <span class="cp">*</span> <a href="#members.Pos"><span class="ci">Pos</span></a> <span class="cp">*</span> <span class="ctv">'u</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+  <a id="interface.new_Pos:B:" href="#members.new_Pos"><span class="interface-member-marker"><span class="ck">new</span></span></a><span class="cp">:</span> <a href="charstream.html"><span class="ci">CharStream</span></a> <span class="cp">*</span> <a href="position.html"><span class="ci">Position</span></a> <span class="cp">*</span> <span class="ctv">'u</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
 
-  <a id="interface.new_ln_col:B:" href="#members.new_ln_col"><span class="interface-member-marker"><span class="ck">new</span></span></a><span class="cp">:</span> <a href="charstream.html#Iterator"><span class="ci">CharStream</span><span class="cp">.</span><span class="ci">Iterator</span></a> <span class="co">*</span> <span class="ci">line</span><span class="cp">:</span> <span class="ci">int64</span> <span class="co">*</span> <span class="ci">column</span><span class="cp">:</span> <span class="ci">int64</span> <span class="cp">*</span> <span class="ctv">'u</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
-  <a id="interface.new_ln_col_streamName:B:" href="#members.new_ln_col_streamName"><span class="interface-member-marker"><span class="ck">new</span></span></a><span class="cp">:</span> <a href="charstream.html#Iterator"><span class="ci">CharStream</span><span class="cp">.</span><span class="ci">Iterator</span></a> <span class="co">*</span> <span class="ci">line</span><span class="cp">:</span> <span class="ci">int64</span> <span class="co">*</span> <span class="ci">column</span><span class="cp">:</span> <span class="ci">int64</span> <span class="cp">*</span> <span class="ctv">'u</span>
-       <span class="co">*</span> <span class="ci">streamName</span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+  <a id="interface.new_ln_col:B:" href="#members.new_ln_col"><span class="interface-member-marker"><span class="ck">new</span></span></a><span class="cp">:</span> <a href="charstream.html#Iterator"><span class="ci">CharStream</span><span class="cm">.</span><span class="ci">Iterator</span></a> <span class="cp">*</span> <span class="ci">line</span><span class="cp">:</span> <span class="ci">int64</span> <span class="cp">*</span> <span class="ci">column</span><span class="cp">:</span> <span class="ci">int64</span> <span class="cp">*</span> <span class="ctv">'u</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+  <a id="interface.new_ln_col_streamName:B:" href="#members.new_ln_col_streamName"><span class="interface-member-marker"><span class="ck">new</span></span></a><span class="cp">:</span> <a href="charstream.html#Iterator"><span class="ci">CharStream</span><span class="cm">.</span><span class="ci">Iterator</span></a> <span class="cp">*</span> <span class="ci">line</span><span class="cp">:</span> <span class="ci">int64</span> <span class="cp">*</span> <span class="ci">column</span><span class="cp">:</span> <span class="ci">int64</span> <span class="cp">*</span> <span class="ctv">'u</span>
+       <span class="cp">*</span> <span class="ci">streamName</span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
 
-  <span class="ck">val</span> <a id="interface.Iter:B:" href="#members.Iter"><span class="interface-member-marker"><span class="ci">Iter</span></span></a><span class="cp">:</span> <a href="charstream.html#Iterator"><span class="ci">CharStream</span><span class="cp">.</span><span class="ci">Iterator</span></a>
+  <span class="ck">val</span> <a id="interface.Iter:B:" href="#members.Iter"><span class="interface-member-marker"><span class="ci">Iter</span></span></a><span class="cp">:</span> <a href="charstream.html#Iterator"><span class="ci">CharStream</span><span class="cm">.</span><span class="ci">Iterator</span></a>
 
   <span class="ck">member</span> <a id="interface.Stream:B:" href="#members.Stream"><span class="interface-member-marker"><span class="ci">Stream</span></span></a><span class="cp">:</span> <a href="charstream.html"><span class="ci">CharStream</span></a> <span class="clc"><span class="left-delimiter">//</span> abbreviation for Iter.Stream</span>
   <span class="ck">member</span> <a id="interface.StreamName:B:" href="#members.StreamName"><span class="interface-member-marker"><span class="ci">StreamName</span></span></a><span class="cp">:</span> <span class="ci">string</span>
@@ -164,73 +163,82 @@
   <span class="ck">member</span> <a id="interface.Line:B:" href="#members.Line"><span class="interface-member-marker"><span class="ci">Line</span></span></a><span class="cp">:</span> <span class="ci">int64</span>
   <span class="ck">member</span> <a id="interface.LineBegin:B:" href="#members.LineBegin"><span class="interface-member-marker"><span class="ci">LineBegin</span></span></a><span class="cp">:</span> <span class="ci">int64</span>
   <span class="ck">member</span> <a id="interface.Column:B:" href="#members.Column"><span class="interface-member-marker"><span class="ci">Column</span></span></a><span class="cp">:</span> <span class="ci">int64</span>
-  <span class="ck">member</span> <a id="interface.Pos:B:" href="#members.Pos"><span class="interface-member-marker"><span class="ci">Pos</span></span></a><span class="cp">:</span> <a href="pos.html"><span class="ci">Pos</span></a>
+  <span class="ck">member</span> <a id="interface.Position:B:" href="#members.Position"><span class="interface-member-marker"><span class="ci">Position</span></span></a><span class="cp">:</span> <a href="position.html"><span class="ci">Position</span></a>
   <span class="ck">member</span> <a id="interface.UserState:B:" href="#members.UserState"><span class="interface-member-marker"><span class="ci">UserState</span></span></a><span class="cp">:</span> <span class="ctv">'u</span>
 
-  <span class="ck">member</span> <a id="interface.WithUserState:B:" href="#members.WithUserState"><span class="interface-member-marker"><span class="ci">WithUserState</span></span></a><span class="cp">:</span> <span class="ctv">'u</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+  <span class="ck">member</span> <a id="interface.WithUserState:B:" href="#members.WithUserState"><span class="interface-member-marker"><span class="ci">WithUserState</span></span></a><span class="cp">:</span> <span class="ctv">'u</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
   <a id="interface.advanceto-methods"></a>
-  <span class="ck">member</span> <a id="interface.Next:B:" href="#members.Next"><span class="interface-member-marker"><span class="ci">Next</span></span></a><span class="cp">:</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="clc"><span class="left-delimiter">//</span> equivalent to Advance(1)</span>
-  <span class="ck">member</span> <a id="interface.Advance:B:" href="#members.Advance"><span class="interface-member-marker"><span class="ci">Advance</span></span></a><span class="cp">:</span> <span class="ci">nChars</span><span class="cp">:</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
-  <span class="ck">member</span> <a id="interface.Advance_UserState:B:" href="#members.Advance_UserState"><span class="interface-member-marker"><span class="ci">Advance</span></span></a><span class="cp">:</span> <span class="ci">nChars</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ctv">'u</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+  <span class="ck">member</span> <a id="interface.Next:B:" href="#members.Next"><span class="interface-member-marker"><span class="ci">Next</span></span></a><span class="cp">:</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="clc"><span class="left-delimiter">//</span> equivalent to Advance(1)</span>
+  <span class="ck">member</span> <a id="interface.Advance:B:" href="#members.Advance"><span class="interface-member-marker"><span class="ci">Advance</span></span></a><span class="cp">:</span> <span class="ci">charOffset</span><span class="cp">:</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+  <span class="ck">member</span> <a id="interface.Advance_UserState:B:" href="#members.Advance_UserState"><span class="interface-member-marker"><span class="ci">Advance</span></span></a><span class="cp">:</span> <span class="ci">charOffset</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ctv">'u</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
 
-  <span class="ck">member</span> <a id="interface.Advance_nLines:B:" href="#members.Advance_nLines"><span class="interface-member-marker"><span class="ci">Advance</span></span></a><span class="cp">:</span>
-      <span class="ci">nChars</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">nLines</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">nCharsAfterLastNL</span><span class="cp">:</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
-  <span class="ck">member</span> <a id="interface.Advance_nLines_UserState:B:" href="#members.Advance_nLines_UserState"><span class="interface-member-marker"><span class="ci">Advance</span></span></a><span class="cp">:</span>
-      <span class="ci">nChars</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">nLines</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">nCharsAfterLastNL</span><span class="cp">:</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ctv">'u</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+  <span class="ck">member</span> <a id="interface.Advance_lineOffset:B:" href="#members.Advance_lineOffset"><span class="interface-member-marker"><span class="ci">Advance</span></span></a><span class="cp">:</span>
+    <span class="ci">charOffset</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">lineOffset</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">newColumnMinus1</span><span class="cp">:</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+  <span class="ck">member</span> <a id="interface.Advance_lineOffset_UserState:B:" href="#members.Advance_lineOffset_UserState"><span class="interface-member-marker"><span class="ci">Advance</span></span></a><span class="cp">:</span>
+    <span class="ci">charOffset</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">lineOffset</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">newColumnMinus1</span><span class="cp">:</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ctv">'u</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
 
-  <span class="ck">member</span> <a id="interface.AdvanceTo:B:" href="#members.AdvanceTo"><span class="interface-member-marker"><span class="ci">AdvanceTo</span></span></a><span class="cp">:</span> <a href="charstream.html#Iterator"><span class="ci">CharStream</span><span class="cp">.</span><span class="ci">Iterator</span></a> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
-  <span class="ck">member</span> <a id="interface.AdvanceTo_UserState:B:" href="#members.AdvanceTo_UserState"><span class="interface-member-marker"><span class="ci">AdvanceTo</span></span></a><span class="cp">:</span> <a href="charstream.html#Iterator"><span class="ci">CharStream</span><span class="cp">.</span><span class="ci">Iterator</span></a> <span class="cp">*</span> <span class="ctv">'u</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+  <span class="ck">member</span> <a id="interface.AdvanceTo:B:" href="#members.AdvanceTo"><span class="interface-member-marker"><span class="ci">AdvanceTo</span></span></a><span class="cp">:</span> <a href="charstream.html#Iterator"><span class="ci">CharStream</span><span class="cm">.</span><span class="ci">Iterator</span></a> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+  <span class="ck">member</span> <a id="interface.AdvanceTo_UserState:B:" href="#members.AdvanceTo_UserState"><span class="interface-member-marker"><span class="ci">AdvanceTo</span></span></a><span class="cp">:</span> <a href="charstream.html#Iterator"><span class="ci">CharStream</span><span class="cm">.</span><span class="ci">Iterator</span></a> <span class="cp">*</span> <span class="ctv">'u</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
 
   <span class="ck">member</span> <a id="interface.AdvanceTo_int:B:" href="#members.AdvanceTo_int"><span class="interface-member-marker"><span class="ci">AdvanceTo</span></span></a><span class="cp">:</span>
-      <a href="charstream.html#Iterator"><span class="ci">CharStream</span><span class="cp">.</span><span class="ci">Iterator</span></a> <span class="co">*</span> <span class="ci">nLines</span><span class="cp">:</span> <span class="ci">int</span>   <span class="co">*</span> <span class="ci">nCharsAfterLastNL</span><span class="cp">:</span> <span class="ci">int</span>   <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+    <a href="charstream.html#Iterator"><span class="ci">CharStream</span><span class="cm">.</span><span class="ci">Iterator</span></a> <span class="cp">*</span> <span class="ci">lineOffset</span><span class="cp">:</span> <span class="ci">int</span>   <span class="cp">*</span> <span class="ci">newColumnMinus1</span><span class="cp">:</span> <span class="ci">int</span>   <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
   <span class="ck">member</span> <a id="interface.AdvanceTo_uint:B:" href="#members.AdvanceTo_uint"><span class="interface-member-marker"><span class="ci">AdvanceTo</span></span></a><span class="cp">:</span>
-      <a href="charstream.html#Iterator"><span class="ci">CharStream</span><span class="cp">.</span><span class="ci">Iterator</span></a> <span class="co">*</span> <span class="ci">nLines</span><span class="cp">:</span> <span class="ci">uint</span>  <span class="co">*</span> <span class="ci">nCharsAfterLastNL</span><span class="cp">:</span> <span class="ci">uint</span>  <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+    <a href="charstream.html#Iterator"><span class="ci">CharStream</span><span class="cm">.</span><span class="ci">Iterator</span></a> <span class="cp">*</span> <span class="ci">lineOffset</span><span class="cp">:</span> <span class="ci">uint</span>  <span class="cp">*</span> <span class="ci">newColumnMinus1</span><span class="cp">:</span> <span class="ci">uint</span>  <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
   <span class="ck">member</span> <a id="interface.AdvanceTo_int64:B:" href="#members.AdvanceTo_int64"><span class="interface-member-marker"><span class="ci">AdvanceTo</span></span></a><span class="cp">:</span>
-      <a href="charstream.html#Iterator"><span class="ci">CharStream</span><span class="cp">.</span><span class="ci">Iterator</span></a> <span class="co">*</span> <span class="ci">nLines</span><span class="cp">:</span> <span class="ci">int64</span> <span class="co">*</span> <span class="ci">nCharsAfterLastNL</span><span class="cp">:</span> <span class="ci">int64</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+    <a href="charstream.html#Iterator"><span class="ci">CharStream</span><span class="cm">.</span><span class="ci">Iterator</span></a> <span class="cp">*</span> <span class="ci">lineOffset</span><span class="cp">:</span> <span class="ci">int64</span> <span class="cp">*</span> <span class="ci">newColumnMinus1</span><span class="cp">:</span> <span class="ci">int64</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
 
   <span class="ck">member</span> <a id="interface.AdvanceTo_int_UserState:B:" href="#members.AdvanceTo_int_UserState"><span class="interface-member-marker"><span class="ci">AdvanceTo</span></span></a><span class="cp">:</span>
-      <a href="charstream.html#Iterator"><span class="ci">CharStream</span><span class="cp">.</span><span class="ci">Iterator</span></a> <span class="co">*</span> <span class="ci">nLines</span><span class="cp">:</span> <span class="ci">int</span>   <span class="co">*</span> <span class="ci">nCharsAfterLastNL</span><span class="cp">:</span> <span class="ci">int</span>   <span class="cp">*</span> <span class="ctv">'u</span>
-      <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+    <a href="charstream.html#Iterator"><span class="ci">CharStream</span><span class="cm">.</span><span class="ci">Iterator</span></a> <span class="cp">*</span> <span class="ci">lineOffset</span><span class="cp">:</span> <span class="ci">int</span>   <span class="cp">*</span> <span class="ci">newColumnMinus1</span><span class="cp">:</span> <span class="ci">int</span>   <span class="cp">*</span> <span class="ctv">'u</span>
+    <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
   <span class="ck">member</span> <a id="interface.AdvanceTo_uint_UserState:B:" href="#members.AdvanceTo_uint_UserState"><span class="interface-member-marker"><span class="ci">AdvanceTo</span></span></a><span class="cp">:</span>
-      <a href="charstream.html#Iterator"><span class="ci">CharStream</span><span class="cp">.</span><span class="ci">Iterator</span></a> <span class="co">*</span> <span class="ci">nLines</span><span class="cp">:</span> <span class="ci">uint</span>  <span class="co">*</span> <span class="ci">nCharsAfterLastNL</span><span class="cp">:</span> <span class="ci">uint</span>  <span class="co">*</span> <span class="ctv">'u</span>
-      <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+    <a href="charstream.html#Iterator"><span class="ci">CharStream</span><span class="cm">.</span><span class="ci">Iterator</span></a> <span class="cp">*</span> <span class="ci">lineOffset</span><span class="cp">:</span> <span class="ci">uint</span>  <span class="cp">*</span> <span class="ci">newColumnMinus1</span><span class="cp">:</span> <span class="ci">uint</span>  <span class="cp">*</span> <span class="ctv">'u</span>
+    <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
   <span class="ck">member</span> <a id="interface.AdvanceTo_int64_UserState:B:" href="#members.AdvanceTo_int64_UserState"><span class="interface-member-marker"><span class="ci">AdvanceTo</span></span></a><span class="cp">:</span>
-      <a href="charstream.html#Iterator"><span class="ci">CharStream</span><span class="cp">.</span><span class="ci">Iterator</span></a> <span class="co">*</span> <span class="ci">nLines</span><span class="cp">:</span> <span class="ci">int64</span> <span class="co">*</span> <span class="ci">nCharsAfterLastNL</span><span class="cp">:</span> <span class="ci">int64</span> <span class="cp">*</span> <span class="ctv">'u</span>
-      <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+    <a href="charstream.html#Iterator"><span class="ci">CharStream</span><span class="cm">.</span><span class="ci">Iterator</span></a> <span class="cp">*</span> <span class="ci">lineOffset</span><span class="cp">:</span> <span class="ci">int64</span> <span class="cp">*</span> <span class="ci">newColumnMinus1</span><span class="cp">:</span> <span class="ci">int64</span> <span class="cp">*</span> <span class="ctv">'u</span>
+    <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
 
   <span class="clc"><span class="left-delimiter">//</span> the following methods automatically detect</span>
   <span class="clc"><span class="left-delimiter">//</span> standard newlines ("\n", "\r\n" or "\r")</span>
 
-  <span class="ck">member</span> <a id="interface.ReadUntil:B:" href="#members.ReadUntil"><span class="interface-member-marker"><span class="ci">ReadUntil</span></span></a><span class="cp">:</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ci">string</span>
+  <span class="ck">member</span> <a id="interface.ReadUntil:B:" href="#members.ReadUntil"><span class="interface-member-marker"><span class="ci">ReadUntil</span></span></a><span class="cp">:</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ci">string</span>
   <a id="interface.skip-methods"></a>
-  <span class="ck">member</span> <a id="interface.SkipWhitespace:B:" href="#members.SkipWhitespace"><span class="interface-member-marker"><span class="ci">SkipWhitespace</span></span></a><span class="cp">:</span> <span class="ci">unit</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+  <span class="ck">member</span> <a id="interface.SkipWhitespace:B:" href="#members.SkipWhitespace"><span class="interface-member-marker"><span class="ci">SkipWhitespace</span></span></a><span class="cp">:</span> <span class="ci">unit</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
 
-  <span class="ck">member</span> <a id="interface.SkipNewline:B:" href="#members.SkipNewline"><span class="interface-member-marker"><span class="ci">SkipNewline</span></span></a><span class="cp">:</span> <span class="ci">unit</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+  <span class="ck">member</span> <a id="interface.SkipNewline:B:" href="#members.SkipNewline"><span class="interface-member-marker"><span class="ci">SkipNewline</span></span></a><span class="cp">:</span> <span class="ci">unit</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
 
-  <span class="ck">member</span> <a id="interface.SkipRestOfLine:B:" href="#members.SkipRestOfLine"><span class="interface-member-marker"><span class="ci">SkipRestOfLine</span></span></a><span class="cp">:</span> <span class="ci">skipNewline</span><span class="cp">:</span> <span class="ci">bool</span>              <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
-  <span class="ck">member</span> <a id="interface.SkipRestOfLine_string:B:" href="#members.SkipRestOfLine_string"><span class="interface-member-marker"><span class="ci">SkipRestOfLine</span></span></a><span class="cp">:</span> <span class="ci">skipNewline</span><span class="cp">:</span> <span class="ci">bool</span> <span class="co">*</span> <span class="ci">string</span> <span class="ci">out</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+  <span class="ck">member</span> <a id="interface.SkipRestOfLine:B:" href="#members.SkipRestOfLine"><span class="interface-member-marker"><span class="ci">SkipRestOfLine</span></span></a><span class="cp">:</span> <span class="ci">skipNewline</span><span class="cp">:</span> <span class="ci">bool</span>              <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+  <span class="ck">member</span> <a id="interface.SkipRestOfLine_string:B:" href="#members.SkipRestOfLine_string"><span class="interface-member-marker"><span class="ci">SkipRestOfLine</span></span></a><span class="cp">:</span> <span class="ci">skipNewline</span><span class="cp">:</span> <span class="ci">bool</span> <span class="cp">*</span> <span class="ci">string</span> <span class="ci">out</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
 
-  <span class="ck">member</span> <a id="interface.SkipCharOrNewline:B:" href="#members.SkipCharOrNewline"><span class="interface-member-marker"><span class="ci">SkipCharOrNewline</span></span></a><span class="cp">:</span> <span class="ci">unit</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
-  <span class="ck">member</span> <a id="interface.SkipCharsOrNewlines:B:" href="#members.SkipCharsOrNewlines"><span class="interface-member-marker"><span class="ci">SkipCharsOrNewlines</span></span></a><span class="cp">:</span> <span class="ci">nMax</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">string</span> <span class="ci">out</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
-  <span class="ck">member</span> <a id="interface.SkipCharsOrNewlines_int:B:" href="#members.SkipCharsOrNewlines_int"><span class="interface-member-marker"><span class="ci">SkipCharsOrNewlines</span></span></a><span class="cp">:</span> <span class="ci">nMax</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">int</span>    <span class="ci">out</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+  <span class="ck">member</span> <a id="interface.SkipCharOrNewline:B:" href="#members.SkipCharOrNewline"><span class="interface-member-marker"><span class="ci">SkipCharOrNewline</span></span></a><span class="cp">:</span> <span class="ci">unit</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+  <span class="ck">member</span> <a id="interface.SkipCharsOrNewlines:B:" href="#members.SkipCharsOrNewlines"><span class="interface-member-marker"><span class="ci">SkipCharsOrNewlines</span></span></a><span class="cp">:</span> <span class="ci">nMax</span><span class="cp">:</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+  <span class="ck">member</span> <a id="interface.SkipCharsOrNewlines_string:B:" href="#members.SkipCharsOrNewlines_string"><span class="interface-member-marker"><span class="ci">SkipCharsOrNewlines</span></span></a><span class="cp">:</span> <span class="ci">nMax</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">string</span> <span class="ci">out</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+  <span class="ck">member</span> <a id="interface.SkipCharsOrNewlines_int:B:" href="#members.SkipCharsOrNewlines_int"><span class="interface-member-marker"><span class="ci">SkipCharsOrNewlines</span></span></a><span class="cp">:</span> <span class="ci">nMax</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">int</span>    <span class="ci">out</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
 
   <span class="ck">member</span> <a id="interface.SkipCharsOrNewlinesWhile:B:" href="#members.SkipCharsOrNewlinesWhile"><span class="interface-member-marker"><span class="ci">SkipCharsOrNewlinesWhile</span></span></a><span class="cp">:</span>
-      <span class="ci">f1</span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="co">*</span> <span class="ci">f</span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+      <span class="ci">f</span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
   <span class="ck">member</span> <a id="interface.SkipCharsOrNewlinesWhile_string:B:" href="#members.SkipCharsOrNewlinesWhile_string"><span class="interface-member-marker"><span class="ci">SkipCharsOrNewlinesWhile</span></span></a><span class="cp">:</span>
-      <span class="ci">f1</span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="co">*</span> <span class="ci">f</span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="co">*</span> <span class="ci">string</span> <span class="ci">out</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+      <span class="ci">f</span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="cp">*</span> <span class="ci">string</span> <span class="ci">out</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
   <span class="ck">member</span> <a id="interface.SkipCharsOrNewlinesWhile_int_int:B:" href="#members.SkipCharsOrNewlinesWhile_int_int"><span class="interface-member-marker"><span class="ci">SkipCharsOrNewlinesWhile</span></span></a><span class="cp">:</span>
-      <span class="ci">f1</span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="co">*</span> <span class="ci">f</span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="co">*</span> <span class="ci">nMin</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">nMax</span><span class="cp">:</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+      <span class="ci">f</span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="cp">*</span> <span class="ci">nMin</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">nMax</span><span class="cp">:</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
   <span class="ck">member</span> <a id="interface.SkipCharsOrNewlinesWhile_int_int_string:B:" href="#members.SkipCharsOrNewlinesWhile_int_int_string"><span class="interface-member-marker"><span class="ci">SkipCharsOrNewlinesWhile</span></span></a><span class="cp">:</span>
-      <span class="ci">f1</span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="co">*</span> <span class="ci">f</span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="co">*</span> <span class="ci">nMin</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">nMax</span><span class="cp">:</span> <span class="ci">int</span>
-    <span class="co">*</span> <span class="ci">string</span> <span class="ci">out</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+      <span class="ci">f</span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="cp">*</span> <span class="ci">nMin</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">nMax</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">string</span> <span class="ci">out</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+  <span class="ck">member</span> <a id="interface.SkipCharsOrNewlinesWhile2:B:" href="#members.SkipCharsOrNewlinesWhile2"><span class="interface-member-marker"><span class="ci">SkipCharsOrNewlinesWhile</span></span></a><span class="cp">:</span>
+      <span class="ci">f1</span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="cp">*</span> <span class="ci">f</span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+  <span class="ck">member</span> <a id="interface.SkipCharsOrNewlinesWhile2_string:B:" href="#members.SkipCharsOrNewlinesWhile2_string"><span class="interface-member-marker"><span class="ci">SkipCharsOrNewlinesWhile</span></span></a><span class="cp">:</span>
+      <span class="ci">f1</span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="cp">*</span> <span class="ci">f</span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="cp">*</span> <span class="ci">string</span> <span class="ci">out</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+  <span class="ck">member</span> <a id="interface.SkipCharsOrNewlinesWhile2_int_int:B:" href="#members.SkipCharsOrNewlinesWhile2_int_int"><span class="interface-member-marker"><span class="ci">SkipCharsOrNewlinesWhile</span></span></a><span class="cp">:</span>
+      <span class="ci">f1</span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="cp">*</span> <span class="ci">f</span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="cp">*</span> <span class="ci">nMin</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">nMax</span><span class="cp">:</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+  <span class="ck">member</span> <a id="interface.SkipCharsOrNewlinesWhile2_int_int_string:B:" href="#members.SkipCharsOrNewlinesWhile2_int_int_string"><span class="interface-member-marker"><span class="ci">SkipCharsOrNewlinesWhile</span></span></a><span class="cp">:</span>
+      <span class="ci">f1</span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="cp">*</span> <span class="ci">f</span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="cp">*</span> <span class="ci">nMin</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">nMax</span><span class="cp">:</span> <span class="ci">int</span>
+    <span class="cp">*</span> <span class="ci">string</span> <span class="ci">out</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
 
-  <span class="ck">member</span> <a id="interface.SkipToString:B:" href="#members.SkipToString"><span class="interface-member-marker"><span class="ci">SkipToString</span></span></a><span class="cp">:</span> <span class="ci">str</span><span class="cp">:</span> <span class="ci">string</span> <span class="co">*</span> <span class="ci">nMax</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">bool</span>   <span class="ci">out</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
-  <span class="ck">member</span> <a id="interface.SkipToString_string:B:" href="#members.SkipToString_string"><span class="interface-member-marker"><span class="ci">SkipToString</span></span></a><span class="cp">:</span> <span class="ci">str</span><span class="cp">:</span> <span class="ci">string</span> <span class="co">*</span> <span class="ci">nMax</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">string</span> <span class="ci">out</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+  <span class="ck">member</span> <a id="interface.SkipToString:B:" href="#members.SkipToString"><span class="interface-member-marker"><span class="ci">SkipToString</span></span></a><span class="cp">:</span> <span class="ci">str</span><span class="cp">:</span> <span class="ci">string</span> <span class="cp">*</span> <span class="ci">nMax</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">bool</span>   <span class="ci">out</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+  <span class="ck">member</span> <a id="interface.SkipToString_string:B:" href="#members.SkipToString_string"><span class="interface-member-marker"><span class="ci">SkipToString</span></span></a><span class="cp">:</span> <span class="ci">str</span><span class="cp">:</span> <span class="ci">string</span> <span class="cp">*</span> <span class="ci">nMax</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">string</span> <span class="ci">out</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
 
   <span class="ck">member</span> <a id="interface.SkipToStringCI:B:" href="#members.SkipToStringCI"><span class="interface-member-marker"><span class="ci">SkipToStringCI</span></span></a><span class="cp">:</span>
-      <span class="ci">caseFoldedString</span><span class="cp">:</span> <span class="ci">string</span> <span class="co">*</span> <span class="ci">nMax</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">bool</span>   <span class="ci">out</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+      <span class="ci">caseFoldedString</span><span class="cp">:</span> <span class="ci">string</span> <span class="cp">*</span> <span class="ci">nMax</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">bool</span>   <span class="ci">out</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
   <span class="ck">member</span> <a id="interface.SkipToStringCI_string:B:" href="#members.SkipToStringCI_string"><span class="interface-member-marker"><span class="ci">SkipToStringCI</span></span></a><span class="cp">:</span>
-      <span class="ci">caseFoldedString</span><span class="cp">:</span> <span class="ci">string</span> <span class="co">*</span> <span class="ci">nMax</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">string</span> <span class="ci">out</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+      <span class="ci">caseFoldedString</span><span class="cp">:</span> <span class="ci">string</span> <span class="cp">*</span> <span class="ci">nMax</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">string</span> <span class="ci">out</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
 </pre>
     </div>
    </div>
@@ -239,9 +247,9 @@
    <h2 class="title h3"><span class="section-number">2.6.2</span> Remarks</h2>
    <div class="intro i3">
     <p class="para _1">
-     The <code class="fsharp"><span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'UserState</span><span
+     The <code class="fsharp"><span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'UserState</span><span
      class="cp">&gt;</span></code> class represents the parser state for <code class="fsharp"><a href="primitives.html#members.Parser"><span
-     class="ci">Parser</span></a><span class="co">&lt;</span><span class="ctv">'Result</span><span class="cp">,</span><span
+     class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ctv">'Result</span><span class="cp">,</span><span
      class="ctv">'UserState</span><span class="cp">&gt;</span></code> functions.
     </p>
     <div class="para _2">
@@ -249,7 +257,7 @@
      <ul class="l1">
       <li class="_1">
        the input stream position, represented in the form of a <code class="fsharp"><a href="charstream.html#Iterator"><span
-       class="ci">CharStream</span><span class="cp">.</span><span class="ci">Iterator</span></a></code> instance, a line and column count and a stream
+       class="ci">CharStream</span><span class="cm">.</span><span class="ci">Iterator</span></a></code> instance, a line and column count and a stream
        name, and
       </li>
       <li class="_2">a value of the freely definable <code class="fsharp"><span class="ctv">'UserState</span></code> type.</li>
@@ -280,7 +288,7 @@
       <div class="interface-member _1" id="members.new">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.new:B:">⇧</a>
-<pre class="code fsharp"><span class="interface-member-marker"><span class="ck">new</span></span><span class="cp">:</span> <a href="charstream.html"><span class="ci">CharStream</span></a> <span class="cp">*</span> <span class="ctv">'u</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+<pre class="code fsharp"><span class="interface-member-marker"><span class="ck">new</span></span><span class="cp">:</span> <a href="charstream.html"><span class="ci">CharStream</span></a> <span class="cp">*</span> <span class="ctv">'u</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
 </pre>
        </div>
        <div class="interface-member-description">
@@ -288,17 +296,17 @@
          <code class="fsharp"><span class="ck">new</span> <span class="ci">State</span><span class="cp">(</span><span class="ci">stream</span><span
          class="cp">,</span> <span class="ci">userState</span><span class="cp">)</span></code> is equivalent to <code class="fsharp"><a
          href="#members.new_ln_col_streamName"><span class="ck">new</span> <span class="ci">State</span></a><span class="cp">(</span><span
-         class="ci">stream</span><span class="cp">.</span><a href="charstream.html#members.Begin"><span class="ci">Begin</span></a><span
+         class="ci">stream</span><span class="cm">.</span><a href="charstream.html#members.Begin"><span class="ci">Begin</span></a><span
          class="cp">,</span> <span class="cn">1L</span><span class="cp">,</span> <span class="cn">1L</span><span class="cp">,</span> <span
          class="ci">userState</span><span class="cp">,</span> <span class="cs"><span class="left-delimiter">"</span><span
-         class="right-delimiter">"</span></span><span class="cp">)</span><span class="cp">.</span></code>
+         class="right-delimiter">"</span></span><span class="cp">)</span><span class="cm">.</span></code>
         </p>
        </div>
       </div>
       <div class="interface-member _2" id="members.new_streamName">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.new_streamName:B:">⇧</a>
-<pre class="code fsharp"><span class="interface-member-marker"><span class="ck">new</span></span><span class="cp">:</span> <a href="charstream.html"><span class="ci">CharStream</span></a> <span class="cp">*</span> <span class="ctv">'u</span> <span class="co">*</span> <span class="ci">streamName</span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+<pre class="code fsharp"><span class="interface-member-marker"><span class="ck">new</span></span><span class="cp">:</span> <a href="charstream.html"><span class="ci">CharStream</span></a> <span class="cp">*</span> <span class="ctv">'u</span> <span class="cp">*</span> <span class="ci">streamName</span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
 </pre>
        </div>
        <div class="interface-member-description">
@@ -306,17 +314,17 @@
          <code class="fsharp"><span class="ck">new</span> <span class="ci">State</span><span class="cp">(</span><span class="ci">stream</span><span
          class="cp">,</span> <span class="ci">userState</span><span class="cp">,</span> <span class="ci">streamName</span><span
          class="cp">)</span></code> is equivalent to <code class="fsharp"><a href="#members.new_ln_col_streamName"><span class="ck">new</span> <span
-         class="ci">State</span></a><span class="cp">(</span><span class="ci">stream</span><span class="cp">.</span><a
+         class="ci">State</span></a><span class="cp">(</span><span class="ci">stream</span><span class="cm">.</span><a
          href="charstream.html#members.Begin"><span class="ci">Begin</span></a><span class="cp">,</span> <span class="cn">1L</span><span
          class="cp">,</span> <span class="cn">1L</span><span class="cp">,</span> <span class="ci">userState</span><span class="cp">,</span> <span
-         class="ci">streamName</span><span class="cp">)</span><span class="cp">.</span></code>
+         class="ci">streamName</span><span class="cp">)</span><span class="cm">.</span></code>
         </p>
        </div>
       </div>
       <div class="interface-member _3" id="members.new_Pos">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.new_Pos:B:">⇧</a>
-<pre class="code fsharp"><span class="interface-member-marker"><span class="ck">new</span></span><span class="cp">:</span> <a href="charstream.html"><span class="ci">CharStream</span></a> <span class="cp">*</span> <a href="#members.Pos"><span class="ci">Pos</span></a> <span class="cp">*</span> <span class="ctv">'u</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+<pre class="code fsharp"><span class="interface-member-marker"><span class="ck">new</span></span><span class="cp">:</span> <a href="charstream.html"><span class="ci">CharStream</span></a> <span class="cp">*</span> <a href="position.html"><span class="ci">Position</span></a> <span class="cp">*</span> <span class="ctv">'u</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
 </pre>
        </div>
        <div class="interface-member-description">
@@ -324,19 +332,19 @@
          <code class="fsharp"><span class="ck">new</span> <span class="ci">State</span><span class="cp">(</span><span class="ci">stream</span><span
          class="cp">,</span> <span class="ci">pos</span><span class="cp">,</span> <span class="ci">userState</span><span class="cp">)</span></code> is
          equivalent to <code class="fsharp"><a href="#members.new_ln_col_streamName"><span class="ck">new</span> <span
-         class="ci">State</span></a><span class="cp">(</span><span class="ci">stream</span><span class="cp">.</span><a
+         class="ci">State</span></a><span class="cp">(</span><span class="ci">stream</span><span class="cm">.</span><a
          href="charstream.html#members.Begin"><span class="ci">Begin</span></a><span class="cp">,</span> <span class="ci">pos</span><span
-         class="cp">.</span><a href="#members.Line"><span class="ci">Line</span></a><span class="cp">,</span> <span class="ci">pos</span><span
-         class="cp">.</span><a href="#members.Column"><span class="ci">Column</span></a><span class="cp">,</span> <span
+         class="cm">.</span><a href="#members.Line"><span class="ci">Line</span></a><span class="cp">,</span> <span class="ci">pos</span><span
+         class="cm">.</span><a href="#members.Column"><span class="ci">Column</span></a><span class="cp">,</span> <span
          class="ci">userState</span><span class="cp">,</span> <span class="cs"><span class="left-delimiter">"</span><span
-         class="right-delimiter">"</span></span><span class="cp">)</span><span class="cp">.</span></code>
+         class="right-delimiter">"</span></span><span class="cp">)</span><span class="cm">.</span></code>
         </p>
        </div>
       </div>
       <div class="interface-member _4" id="members.new_ln_col">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.new_ln_col:B:">⇧</a>
-<pre class="code fsharp"><span class="interface-member-marker"><span class="ck">new</span></span><span class="cp">:</span> <a href="charstream.html#Iterator"><span class="ci">CharStream</span><span class="cp">.</span><span class="ci">Iterator</span></a> <span class="co">*</span> <span class="ci">line</span><span class="cp">:</span> <span class="ci">int64</span> <span class="co">*</span> <span class="ci">column</span><span class="cp">:</span> <span class="ci">int64</span> <span class="cp">*</span> <span class="ctv">'u</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+<pre class="code fsharp"><span class="interface-member-marker"><span class="ck">new</span></span><span class="cp">:</span> <a href="charstream.html#Iterator"><span class="ci">CharStream</span><span class="cm">.</span><span class="ci">Iterator</span></a> <span class="cp">*</span> <span class="ci">line</span><span class="cp">:</span> <span class="ci">int64</span> <span class="cp">*</span> <span class="ci">column</span><span class="cp">:</span> <span class="ci">int64</span> <span class="cp">*</span> <span class="ctv">'u</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
 </pre>
        </div>
        <div class="interface-member-description">
@@ -347,15 +355,15 @@
          href="#members.new_ln_col_streamName"><span class="ck">new</span> <span class="ci">State</span></a><span class="cp">(</span><span
          class="ci">iter</span><span class="cp">,</span> <span class="ci">line</span><span class="cp">,</span> <span class="ci">column</span><span
          class="cp">,</span> <span class="ci">userState</span><span class="cp">,</span> <span class="cs"><span class="left-delimiter">"</span><span
-         class="right-delimiter">"</span></span><span class="cp">)</span><span class="cp">.</span></code>
+         class="right-delimiter">"</span></span><span class="cp">)</span><span class="cm">.</span></code>
         </p>
        </div>
       </div>
       <div class="interface-member _5" id="members.new_ln_col_streamName">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.new_ln_col_streamName:B:">⇧</a>
-<pre class="code fsharp"><span class="interface-member-marker"><span class="ck">new</span></span><span class="cp">:</span> <a href="charstream.html#Iterator"><span class="ci">CharStream</span><span class="cp">.</span><span class="ci">Iterator</span></a> <span class="co">*</span> <span class="ci">line</span><span class="cp">:</span> <span class="ci">int64</span> <span class="co">*</span> <span class="ci">column</span><span class="cp">:</span> <span class="ci">int64</span> <span class="cp">*</span> <span class="ctv">'u</span>
-     <span class="co">*</span> <span class="ci">streamName</span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+<pre class="code fsharp"><span class="interface-member-marker"><span class="ck">new</span></span><span class="cp">:</span> <a href="charstream.html#Iterator"><span class="ci">CharStream</span><span class="cm">.</span><span class="ci">Iterator</span></a> <span class="cp">*</span> <span class="ci">line</span><span class="cp">:</span> <span class="ci">int64</span> <span class="cp">*</span> <span class="ci">column</span><span class="cp">:</span> <span class="ci">int64</span> <span class="cp">*</span> <span class="ctv">'u</span>
+     <span class="cp">*</span> <span class="ci">streamName</span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
 </pre>
        </div>
        <div class="interface-member-description">
@@ -371,7 +379,7 @@
       <div class="interface-member _6" id="members.Iter">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.Iter:B:">⇧</a>
-<pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">Iter</span></span><span class="cp">:</span> <a href="charstream.html#Iterator"><span class="ci">CharStream</span><span class="cp">.</span><span class="ci">Iterator</span></a>
+<pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">Iter</span></span><span class="cp">:</span> <a href="charstream.html#Iterator"><span class="ci">CharStream</span><span class="cm">.</span><span class="ci">Iterator</span></a>
 </pre>
        </div>
        <div class="interface-member-description">
@@ -404,7 +412,7 @@
        </div>
        <div class="interface-member-description">
         <p class="para _1">
-         Is equivalent to <code class="fsharp"><a href="#members.Iter"><span class="ci">Iter</span></a><span class="cp">.</span><a
+         Is equivalent to <code class="fsharp"><a href="#members.Iter"><span class="ci">Iter</span></a><span class="cm">.</span><a
          href="charstream.html#Iterator.members.Stream"><span class="ci">Stream</span></a></code>.
         </p>
        </div>
@@ -429,7 +437,7 @@
        </div>
        <div class="interface-member-description">
         <p class="para _1">
-         Returns <code class="fsharp"><a href="#members.Iter"><span class="ci">Iter</span></a><span class="cp">.</span><a
+         Returns <code class="fsharp"><a href="#members.Iter"><span class="ci">Iter</span></a><span class="cm">.</span><a
          href="charstream.html#Iterator.members.Index"><span class="ci">Index</span></a></code>, the stream index of the char the iterator is pointing
          to.
         </p>
@@ -453,8 +461,8 @@
        </div>
        <div class="interface-member-description">
         <p class="para _1">
-         Is equivalent to <code class="fsharp"><a href="#members.Index"><span class="ci">Index</span></a></code> ‐ <code class="fsharp"><a
-         href="#members.Column"><span class="ci">Column</span></a></code> + 1.
+         The stream index of the first char of the current line, i.e. <code class="fsharp"><a href="#members.Index"><span
+         class="ci">Index</span></a></code> ‐ <code class="fsharp"><a href="#members.Column"><span class="ci">Column</span></a></code> + 1.
         </p>
        </div>
       </div>
@@ -465,18 +473,22 @@
 </pre>
        </div>
        <div class="interface-member-description">
-        <p class="para _1">The current column number, or to be technically precise, a 1‐based index of the current UTF‐16 char in the line.</p>
+        <p class="para _1">
+         The current column number, or, to be technically precise, the 1‐based index of the current UTF‐16 char in the line, i.e. <code
+         class="fsharp"><a href="#members.Index"><span class="ci">Index</span></a></code> ‐ <code class="fsharp"><a href="#members.LineBegin"><span
+         class="ci">LineBegin</span></a></code> + 1.
+        </p>
        </div>
       </div>
-      <div class="interface-member _3" id="members.Pos">
+      <div class="interface-member _3" id="members.Position">
        <div class="interface-member-code">
-        <a class="interface-member-backlink" href="#interface.Pos:B:">⇧</a>
-<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">Pos</span></span><span class="cp">:</span> <a href="pos.html"><span class="ci">Pos</span></a>
+        <a class="interface-member-backlink" href="#interface.Position:B:">⇧</a>
+<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">Position</span></span><span class="cp">:</span> <a href="position.html"><span class="ci">Position</span></a>
 </pre>
        </div>
        <div class="interface-member-description">
         <p class="para _1">
-         Is equivalent to <code class="fsharp"><span class="ck">new</span> <a href="pos.html"><span class="ci">Pos</span></a><span
+         Is equivalent to <code class="fsharp"><span class="ck">new</span> <a href="position.html"><span class="ci">Position</span></a><span
          class="cp">(</span><a href="#members.StreamName"><span class="ci">StreamName</span></a><span class="cp">,</span> <a
          href="#members.Index"><span class="ci">Index</span></a><span class="cp">,</span> <a href="#members.Line"><span
          class="ci">Line</span></a><span class="cp">,</span> <a href="#members.Column"><span class="ci">Column</span></a><span
@@ -511,7 +523,7 @@
       <div class="interface-member _5" id="members.WithUserState">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.WithUserState:B:">⇧</a>
-<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">WithUserState</span></span><span class="cp">:</span> <span class="ctv">'u</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">WithUserState</span></span><span class="cp">:</span> <span class="ctv">'u</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
 </pre>
        </div>
        <div class="interface-member-description">
@@ -523,8 +535,7 @@
       <div class="interface-member _6" id="members.Next">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.Next:B:">⇧</a>
-<pre class="code fsharp">
-<span class="ck">member</span> <span class="interface-member-marker"><span class="ci">Next</span></span><span class="cp">:</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span></pre>
+<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">Next</span></span><span class="cp">:</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span></pre>
        </div>
        <div class="interface-member-description">
         <p class="para _1">
@@ -536,63 +547,64 @@
       <div class="interface-member _7" id="members.Advance">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.Advance:B:">⇧</a>
-<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">Advance</span></span><span class="cp">:</span> <span class="ci">nChars</span><span class="cp">:</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">Advance</span></span><span class="cp">:</span> <span class="ci">charOffset</span><span class="cp">:</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
 </pre>
        </div>
        <div class="interface-member-description">
         <p class="para _1">
-         Returns a new <code class="fsharp"><span class="ci">State</span></code> instance with the iterator advanced by the given number of chars.
+         Returns a new <code class="fsharp"><span class="ci">State</span></code> instance with the iterator advanced by <code class="fsharp"><span
+         class="ci">charOffset</span></code>.
         </p>
        </div>
       </div>
       <div class="interface-member _8" id="members.Advance_UserState">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.Advance_UserState:B:">⇧</a>
-<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">Advance</span></span><span class="cp">:</span> <span class="ci">nChars</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ctv">'u</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">Advance</span></span><span class="cp">:</span> <span class="ci">charOffset</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ctv">'u</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
 </pre>
        </div>
        <div class="interface-member-description">
         <p class="para _1">
-         Returns a new <code class="fsharp"><span class="ci">State</span></code> instance with the iterator advanced by the given number of chars and
-         the user state set to the given <code class="fsharp"><span class="ctv">'u</span></code> value.
+         Returns a new <code class="fsharp"><span class="ci">State</span></code> instance with the iterator advanced <code class="fsharp"><span
+         class="ci">charOffset</span></code> and the user state set to the given <code class="fsharp"><span class="ctv">'u</span></code> value.
         </p>
        </div>
       </div>
-      <div class="interface-member _9" id="members.Advance_nLines">
+      <div class="interface-member _9" id="members.Advance_lineOffset">
        <div class="interface-member-code">
-        <a class="interface-member-backlink" href="#interface.Advance_nLines:B:">⇧</a>
+        <a class="interface-member-backlink" href="#interface.Advance_lineOffset:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">Advance</span></span><span class="cp">:</span>
-    <span class="ci">nChars</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">nLines</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">nCharsAfterLastNL</span><span class="cp">:</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+  <span class="ci">charOffset</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">lineOffset</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">newColumnMinus1</span><span class="cp">:</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
 </pre>
        </div>
        <div class="interface-member-description">
         <p class="para _1">
-         Returns a new <code class="fsharp"><span class="ci">State</span></code> instance with the iterator advanced by the given number of chars, the
-         line count incremented by <code class="fsharp"><span class="ci">nLines</span></code> and the column number set to <code class="fsharp"><span
-         class="ci">nCharsAfterLastNL</span> <span class="co">+</span> <span class="cn">1</span></code>.
+         Returns a new <code class="fsharp"><span class="ci">State</span></code> instance with the iterator advanced by <code class="fsharp"><span
+         class="ci">charOffset</span></code>, the line count incremented by <code class="fsharp"><span class="ci">lineOffset</span></code> and the
+         column set to <code class="fsharp"><span class="ci">newColumnMinus1</span> <span class="co">+</span> <span class="cn">1</span></code>.
         </p>
        </div>
       </div>
-      <div class="interface-member _0" id="members.Advance_nLines_UserState">
+      <div class="interface-member _0" id="members.Advance_lineOffset_UserState">
        <div class="interface-member-code">
-        <a class="interface-member-backlink" href="#interface.Advance_nLines_UserState:B:">⇧</a>
+        <a class="interface-member-backlink" href="#interface.Advance_lineOffset_UserState:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">Advance</span></span><span class="cp">:</span>
-    <span class="ci">nChars</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">nLines</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">nCharsAfterLastNL</span><span class="cp">:</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ctv">'u</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+  <span class="ci">charOffset</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">lineOffset</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">newColumnMinus1</span><span class="cp">:</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ctv">'u</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
 </pre>
        </div>
        <div class="interface-member-description">
         <p class="para _1">
-         Returns a new <code class="fsharp"><span class="ci">State</span></code> instance with the iterator advanced by the given number of chars, the
-         line count incremented by <code class="fsharp"><span class="ci">nLines</span></code>, the column number set to <code class="fsharp"><span
-         class="ci">nCharsAfterLastNL</span> <span class="co">+</span> <span class="cn">1</span></code> and the user state set to the given <code
-         class="fsharp"><span class="ctv">'u</span></code> value.
+         Returns a new <code class="fsharp"><span class="ci">State</span></code> instance with the iterator advanced by <code class="fsharp"><span
+         class="ci">charOffset</span></code>, the line count incremented by <code class="fsharp"><span class="ci">lineOffset</span></code>, the column
+         set to <code class="fsharp"><span class="ci">newColumnMinus1</span> <span class="co">+</span> <span class="cn">1</span></code> and the user
+         state set to the given <code class="fsharp"><span class="ctv">'u</span></code> value.
         </p>
        </div>
       </div>
       <div class="interface-member _1" id="members.AdvanceTo">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.AdvanceTo:B:">⇧</a>
-<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">AdvanceTo</span></span><span class="cp">:</span> <a href="charstream.html#Iterator"><span class="ci">CharStream</span><span class="cp">.</span><span class="ci">Iterator</span></a> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">AdvanceTo</span></span><span class="cp">:</span> <a href="charstream.html#Iterator"><span class="ci">CharStream</span><span class="cm">.</span><span class="ci">Iterator</span></a> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
 </pre>
        </div>
        <div class="interface-member-description">
@@ -604,7 +616,7 @@
       <div class="interface-member _2" id="members.AdvanceTo_UserState">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.AdvanceTo_UserState:B:">⇧</a>
-<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">AdvanceTo</span></span><span class="cp">:</span> <a href="charstream.html#Iterator"><span class="ci">CharStream</span><span class="cp">.</span><span class="ci">Iterator</span></a> <span class="cp">*</span> <span class="ctv">'u</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">AdvanceTo</span></span><span class="cp">:</span> <a href="charstream.html#Iterator"><span class="ci">CharStream</span><span class="cm">.</span><span class="ci">Iterator</span></a> <span class="cp">*</span> <span class="ctv">'u</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
 </pre>
        </div>
        <div class="interface-member-description">
@@ -618,14 +630,14 @@
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.AdvanceTo_int:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">AdvanceTo</span></span><span class="cp">:</span>
-    <a href="charstream.html#Iterator"><span class="ci">CharStream</span><span class="cp">.</span><span class="ci">Iterator</span></a> <span class="co">*</span> <span class="ci">nLines</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">nCharsAfterLastNL</span><span class="cp">:</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+  <a href="charstream.html#Iterator"><span class="ci">CharStream</span><span class="cm">.</span><span class="ci">Iterator</span></a> <span class="cp">*</span> <span class="ci">lineOffset</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">newColumnMinus1</span><span class="cp">:</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
 </pre>
        </div>
        <div class="interface-member-description">
         <p class="para _1">
          Returns a new <code class="fsharp"><span class="ci">State</span></code> instance with the iterator set to the given iterator value, the line
-         count incremented by <code class="fsharp"><span class="ci">nLines</span></code> and the column number set to <code class="fsharp"><span
-         class="ci">nCharsAfterLastNL</span></code> + 1.
+         count incremented by <code class="fsharp"><span class="ci">lineOffset</span></code> and the column number set to <code class="fsharp"><span
+         class="ci">newColumnMinus1</span></code> + 1.
         </p>
        </div>
       </div>
@@ -633,14 +645,14 @@
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.AdvanceTo_uint:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">AdvanceTo</span></span><span class="cp">:</span>
-    <a href="charstream.html#Iterator"><span class="ci">CharStream</span><span class="cp">.</span><span class="ci">Iterator</span></a> <span class="co">*</span> <span class="ci">nLines</span><span class="cp">:</span> <span class="ci">uint</span> <span class="co">*</span> <span class="ci">nCharsAfterLastNL</span><span class="cp">:</span> <span class="ci">uint</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+  <a href="charstream.html#Iterator"><span class="ci">CharStream</span><span class="cm">.</span><span class="ci">Iterator</span></a> <span class="cp">*</span> <span class="ci">lineOffset</span><span class="cp">:</span> <span class="ci">uint</span> <span class="cp">*</span> <span class="ci">newColumnMinus1</span><span class="cp">:</span> <span class="ci">uint</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
 </pre>
        </div>
        <div class="interface-member-description">
         <p class="para _1">
          Returns a new <code class="fsharp"><span class="ci">State</span></code> instance with the iterator set to the given iterator value, the line
-         count incremented by <code class="fsharp"><span class="ci">nLines</span></code> and the column number set to <code class="fsharp"><span
-         class="ci">nCharsAfterLastNL</span></code> + 1.
+         count incremented by <code class="fsharp"><span class="ci">lineOffset</span></code> and the column number set to <code class="fsharp"><span
+         class="ci">newColumnMinus1</span></code> + 1.
         </p>
        </div>
       </div>
@@ -648,14 +660,14 @@
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.AdvanceTo_int64:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">AdvanceTo</span></span><span class="cp">:</span>
-    <a href="charstream.html#Iterator"><span class="ci">CharStream</span><span class="cp">.</span><span class="ci">Iterator</span></a> <span class="co">*</span> <span class="ci">nLines</span><span class="cp">:</span> <span class="ci">int64</span> <span class="co">*</span> <span class="ci">nCharsAfterLastNL</span><span class="cp">:</span> <span class="ci">int64</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+  <a href="charstream.html#Iterator"><span class="ci">CharStream</span><span class="cm">.</span><span class="ci">Iterator</span></a> <span class="cp">*</span> <span class="ci">lineOffset</span><span class="cp">:</span> <span class="ci">int64</span> <span class="cp">*</span> <span class="ci">newColumnMinus1</span><span class="cp">:</span> <span class="ci">int64</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
 </pre>
        </div>
        <div class="interface-member-description">
         <p class="para _1">
          Returns a new <code class="fsharp"><span class="ci">State</span></code> instance with the iterator set to the given iterator value, the line
-         count incremented by <code class="fsharp"><span class="ci">nLines</span></code> and the column number set to <code class="fsharp"><span
-         class="ci">nCharsAfterLastNL</span></code> + 1.
+         count incremented by <code class="fsharp"><span class="ci">lineOffset</span></code> and the column number set to <code class="fsharp"><span
+         class="ci">newColumnMinus1</span></code> + 1.
         </p>
        </div>
       </div>
@@ -663,15 +675,15 @@
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.AdvanceTo_int_UserState:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">AdvanceTo</span></span><span class="cp">:</span>
-    <a href="charstream.html#Iterator"><span class="ci">CharStream</span><span class="cp">.</span><span class="ci">Iterator</span></a> <span class="co">*</span> <span class="ci">nLines</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">nCharsAfterLastNL</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ctv">'u</span>
-    <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+  <a href="charstream.html#Iterator"><span class="ci">CharStream</span><span class="cm">.</span><span class="ci">Iterator</span></a> <span class="cp">*</span> <span class="ci">lineOffset</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">newColumnMinus1</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ctv">'u</span>
+  <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
 </pre>
        </div>
        <div class="interface-member-description">
         <p class="para _1">
          Returns a new <code class="fsharp"><span class="ci">State</span></code> instance with the iterator set to the given iterator value, the line
-         count incremented by <code class="fsharp"><span class="ci">nLines</span></code>, the column number set to <code class="fsharp"><span
-         class="ci">nCharsAfterLastNL</span></code> + 1 and the user state set to the given <code class="fsharp"><span class="ctv">'u</span></code>
+         count incremented by <code class="fsharp"><span class="ci">lineOffset</span></code>, the column number set to <code class="fsharp"><span
+         class="ci">newColumnMinus1</span></code> + 1 and the user state set to the given <code class="fsharp"><span class="ctv">'u</span></code>
          value.
         </p>
        </div>
@@ -680,15 +692,15 @@
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.AdvanceTo_uint_UserState:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">AdvanceTo</span></span><span class="cp">:</span>
-    <a href="charstream.html#Iterator"><span class="ci">CharStream</span><span class="cp">.</span><span class="ci">Iterator</span></a> <span class="co">*</span> <span class="ci">nLines</span><span class="cp">:</span> <span class="ci">uint</span> <span class="co">*</span> <span class="ci">nCharsAfterLastNL</span><span class="cp">:</span> <span class="ci">uint</span> <span class="co">*</span> <span class="ctv">'u</span>
-    <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+  <a href="charstream.html#Iterator"><span class="ci">CharStream</span><span class="cm">.</span><span class="ci">Iterator</span></a> <span class="cp">*</span> <span class="ci">lineOffset</span><span class="cp">:</span> <span class="ci">uint</span> <span class="cp">*</span> <span class="ci">newColumnMinus1</span><span class="cp">:</span> <span class="ci">uint</span> <span class="cp">*</span> <span class="ctv">'u</span>
+  <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
 </pre>
        </div>
        <div class="interface-member-description">
         <p class="para _1">
          Returns a new <code class="fsharp"><span class="ci">State</span></code> instance with the iterator set to the given iterator value, the line
-         count incremented by <code class="fsharp"><span class="ci">nLines</span></code>, the column number set to <code class="fsharp"><span
-         class="ci">nCharsAfterLastNL</span></code> + 1 and the user state set to the given <code class="fsharp"><span class="ctv">'u</span></code>
+         count incremented by <code class="fsharp"><span class="ci">lineOffset</span></code>, the column number set to <code class="fsharp"><span
+         class="ci">newColumnMinus1</span></code> + 1 and the user state set to the given <code class="fsharp"><span class="ctv">'u</span></code>
          value.
         </p>
        </div>
@@ -697,15 +709,15 @@
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.AdvanceTo_int64_UserState:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">AdvanceTo</span></span><span class="cp">:</span>
-    <a href="charstream.html#Iterator"><span class="ci">CharStream</span><span class="cp">.</span><span class="ci">Iterator</span></a> <span class="co">*</span> <span class="ci">nLines</span><span class="cp">:</span> <span class="ci">int64</span> <span class="co">*</span> <span class="ci">nCharsAfterLastNL</span><span class="cp">:</span> <span class="ci">int64</span> <span class="cp">*</span> <span class="ctv">'u</span>
-    <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+  <a href="charstream.html#Iterator"><span class="ci">CharStream</span><span class="cm">.</span><span class="ci">Iterator</span></a> <span class="cp">*</span> <span class="ci">lineOffset</span><span class="cp">:</span> <span class="ci">int64</span> <span class="cp">*</span> <span class="ci">newColumnMinus1</span><span class="cp">:</span> <span class="ci">int64</span> <span class="cp">*</span> <span class="ctv">'u</span>
+  <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
 </pre>
        </div>
        <div class="interface-member-description">
         <p class="para _1">
          Returns a new <code class="fsharp"><span class="ci">State</span></code> instance with the iterator set to the given iterator value, the line
-         count incremented by <code class="fsharp"><span class="ci">nLines</span></code>, the column number set to <code class="fsharp"><span
-         class="ci">nCharsAfterLastNL</span></code> + 1 and the user state set to the given <code class="fsharp"><span class="ctv">'u</span></code>
+         count incremented by <code class="fsharp"><span class="ci">lineOffset</span></code>, the column number set to <code class="fsharp"><span
+         class="ci">newColumnMinus1</span></code> + 1 and the user state set to the given <code class="fsharp"><span class="ctv">'u</span></code>
          value.
         </p>
        </div>
@@ -713,7 +725,7 @@
       <div class="interface-member _9" id="members.ReadUntil">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.ReadUntil:B:">⇧</a>
-<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">ReadUntil</span></span><span class="cp">:</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ci">string</span>
+<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">ReadUntil</span></span><span class="cp">:</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ci">string</span>
 </pre>
        </div>
        <div class="interface-member-description">
@@ -740,8 +752,7 @@
       <div class="interface-member _0" id="members.SkipWhitespace">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.SkipWhitespace:B:">⇧</a>
-<pre class="code fsharp">
-<span class="ck">member</span> <span class="interface-member-marker"><span class="ci">SkipWhitespace</span></span><span class="cp">:</span> <span class="ci">unit</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">SkipWhitespace</span></span><span class="cp">:</span> <span class="ci">unit</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
 </pre>
        </div>
        <div class="interface-member-description">
@@ -761,7 +772,7 @@
       <div class="interface-member _1" id="members.SkipNewline">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.SkipNewline:B:">⇧</a>
-<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">SkipNewline</span></span><span class="cp">:</span> <span class="ci">unit</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">SkipNewline</span></span><span class="cp">:</span> <span class="ci">unit</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
 </pre>
        </div>
        <div class="interface-member-description">
@@ -778,7 +789,7 @@
       <div class="interface-member _2" id="members.SkipRestOfLine">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.SkipRestOfLine:B:">⇧</a>
-<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">SkipRestOfLine</span></span><span class="cp">:</span> <span class="ci">skipNewline</span><span class="cp">:</span> <span class="ci">bool</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">SkipRestOfLine</span></span><span class="cp">:</span> <span class="ci">skipNewline</span><span class="cp">:</span> <span class="ci">bool</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
 </pre>
        </div>
        <div class="interface-member-description">
@@ -797,7 +808,7 @@
       <div class="interface-member _3" id="members.SkipRestOfLine_string">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.SkipRestOfLine_string:B:">⇧</a>
-<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">SkipRestOfLine</span></span><span class="cp">:</span> <span class="ci">skipNewline</span><span class="cp">:</span> <span class="ci">bool</span> <span class="co">*</span> <span class="ci">string</span> <span class="ci">out</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">SkipRestOfLine</span></span><span class="cp">:</span> <span class="ci">skipNewline</span><span class="cp">:</span> <span class="ci">bool</span> <span class="cp">*</span> <span class="ci">string</span> <span class="ci">out</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
 </pre>
        </div>
        <div class="interface-member-description">
@@ -811,7 +822,7 @@
       <div class="interface-member _4" id="members.SkipCharOrNewline">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.SkipCharOrNewline:B:">⇧</a>
-<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">SkipCharOrNewline</span></span><span class="cp">:</span> <span class="ci">unit</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">SkipCharOrNewline</span></span><span class="cp">:</span> <span class="ci">unit</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
 </pre>
        </div>
        <div class="interface-member-description">
@@ -829,61 +840,77 @@
       <div class="interface-member _5" id="members.SkipCharsOrNewlines">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.SkipCharsOrNewlines:B:">⇧</a>
-<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">SkipCharsOrNewlines</span></span><span class="cp">:</span> <span class="ci">nMax</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">string</span> <span class="ci">out</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">SkipCharsOrNewlines</span></span><span class="cp">:</span> <span class="ci">nMax</span><span class="cp">:</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
 </pre>
        </div>
        <div class="interface-member-description">
         <p class="para _1">
-         Skips over up to <code class="fsharp"><span class="ci">nMax</span></code> chars. Assigns a string with the skipped chars to the output
-         parameter. Returns a new <code class="fsharp"><span class="ci">State</span></code> positioned after the skipped chars, or the old <code
-         class="fsharp"><span class="ci">State</span></code> (<code class="fsharp"><span class="ci">this</span></code>) if the stream has already
-         reached the end.
+         Skips over up to <code class="fsharp"><span class="ci">nMax</span></code> chars. Returns a new <code class="fsharp"><span
+         class="ci">State</span></code> positioned after the skipped chars, or the old <code class="fsharp"><span class="ci">State</span></code>
+         (<code class="fsharp"><span class="ci">this</span></code>) if the stream has already reached the end.
         </p>
         <p class="para _2">
+         Note that the number of actually skipped chars can be less than <code class="fsharp"><span class="ci">nMax</span></code> if the end of the
+         stream is reached after less than <code class="fsharp"><span class="ci">nMax</span></code> chars.
+        </p>
+        <p class="para _3">
          This method treats all newlines (<code class="fsharp"><span class="cs"><span class="left-delimiter">"</span><span class="ce">\n</span><span
          class="right-delimiter">"</span></span></code>, <code class="fsharp"><span class="cs"><span class="left-delimiter">"</span><span
          class="ce">\r</span><span class="ce">\n</span><span class="right-delimiter">"</span></span></code> or <code class="fsharp"><span
-         class="cs"><span class="left-delimiter">"</span><span class="ce">\r</span><span class="right-delimiter">"</span></span></code>) in the input
-         as a single char <code class="fsharp"><span class="cc"><span class="left-delimiter">'</span><span class="ce">\n</span><span
-         class="right-delimiter">'</span></span></code>.
+         class="cs"><span class="left-delimiter">"</span><span class="ce">\r</span><span class="right-delimiter">"</span></span></code>) as a single
+         char.
         </p>
-        <p class="para _3">
+        <p class="para _4">
          An <code class="fsharp"><a href="http://msdn.microsoft.com/en-us/library/system.argumentoutofrangeexception.aspx"><span
          class="ci">ArgumentOutOfRangeException</span></a></code> is thrown if <code class="fsharp"><span class="ci">nMax</span></code> is negative.
         </p>
        </div>
       </div>
-      <div class="interface-member _6" id="members.SkipCharsOrNewlines_int">
+      <div class="interface-member _6" id="members.SkipCharsOrNewlines_string">
        <div class="interface-member-code">
-        <a class="interface-member-backlink" href="#interface.SkipCharsOrNewlines_int:B:">⇧</a>
-<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">SkipCharsOrNewlines</span></span><span class="cp">:</span> <span class="ci">nMax</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">int</span> <span class="ci">out</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+        <a class="interface-member-backlink" href="#interface.SkipCharsOrNewlines_string:B:">⇧</a>
+<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">SkipCharsOrNewlines</span></span><span class="cp">:</span> <span class="ci">nMax</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">string</span> <span class="ci">out</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
 </pre>
        </div>
        <div class="interface-member-description">
         <p class="para _1">
          Behaves like <code class="fsharp"><a href="#members.SkipCharsOrNewlines"><span class="ci">SkipCharsOrNewlines</span></a><span
-         class="cp">(</span><span class="ci">nMax</span><span class="cp">,</span> <span class="ci">outString</span><span class="cp">)</span></code>,
-         except that only the number of skipped chars is assigned to the the output parameter (with all newlines counted as a single char).
+         class="cp">(</span><span class="ci">nMax</span><span class="cp">)</span></code>, except that a string with the skipped chars is assigned to
+         the additional output parameter (with all newlines normalized to <code class="fsharp"><span class="cc"><span
+         class="left-delimiter">'</span><span class="ce">\n</span><span class="right-delimiter">'</span></span></code>).
         </p>
        </div>
       </div>
-      <div class="interface-member _7" id="members.SkipCharsOrNewlinesWhile">
+      <div class="interface-member _7" id="members.SkipCharsOrNewlines_int">
        <div class="interface-member-code">
-        <a class="interface-member-backlink" href="#interface.SkipCharsOrNewlinesWhile:B:">⇧</a>
-<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">SkipCharsOrNewlinesWhile</span></span><span class="cp">:</span>
-    <span class="ci">f1</span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="co">*</span> <span class="ci">f</span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+        <a class="interface-member-backlink" href="#interface.SkipCharsOrNewlines_int:B:">⇧</a>
+<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">SkipCharsOrNewlines</span></span><span class="cp">:</span> <span class="ci">nMax</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">int</span> <span class="ci">out</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
 </pre>
        </div>
        <div class="interface-member-description">
         <p class="para _1">
-         Skips over the current char if <code class="fsharp"><span class="ci">f1</span></code> returns <code class="fsharp"><span
-         class="cb">true</span></code> for the char and then skips over all the following chars for which <code class="fsharp"><span
-         class="ci">f</span></code> returns true. Returns a new <code class="fsharp"><span class="ci">State</span></code> positioned after the skipped
-         chars.
+         Behaves like <code class="fsharp"><a href="#members.SkipCharsOrNewlines"><span class="ci">SkipCharsOrNewlines</span></a><span
+         class="cp">(</span><span class="ci">nMax</span><span class="cp">)</span></code>, except that the number of skipped chars is assigned to the
+         additional output parameter (with all newlines counted as a single char).
+        </p>
+       </div>
+      </div>
+      <div class="interface-member _8" id="members.SkipCharsOrNewlinesWhile">
+       <div class="interface-member-code">
+        <a class="interface-member-backlink" href="#interface.SkipCharsOrNewlinesWhile:B:">⇧</a>
+<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">SkipCharsOrNewlinesWhile</span></span><span class="cp">:</span>
+    <span class="ci">f</span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+</pre>
+       </div>
+       <div class="interface-member-description">
+        <p class="para _1">
+         Skips over a sequence of chars that satisfy the predicate function <code class="fsharp"><span class="ci">f</span></code>. Stops at the first
+         char for which <code class="fsharp"><span class="ci">f</span></code> returns <code class="fsharp"><span class="cb">false</span></code>.
+         Returns a new <code class="fsharp"><span class="ci">State</span></code> positioned after the skipped chars.
         </p>
         <p class="para _2">
-         If <code class="fsharp"><span class="ci">f1</span></code> returns <code class="fsharp"><span class="cb">false</span></code> or if the stream
-         has already reached the end, the old <code class="fsharp"><span class="ci">State</span></code> (<code class="fsharp"><span
+         If <code class="fsharp"><span class="ci">f</span></code> returns <code class="fsharp"><span class="cb">false</span></code> for the first char
+         or if the stream has already reached the end, the old <code class="fsharp"><span class="ci">State</span></code> (<code class="fsharp"><span
          class="ci">this</span></code>) is returned.
         </p>
         <p class="para _3">
@@ -894,46 +921,53 @@
          as a single char <code class="fsharp"><span class="cc"><span class="left-delimiter">'</span><span class="ce">\n</span><span
          class="right-delimiter">'</span></span></code>.
         </p>
+        <div class="para _4">
+         <div class="admonition">
+          <div class="admonition-title">Caution</div>
+          <div class="admonition-body">
+           <p class="para _1">
+            The function predicate <code class="fsharp"><span class="ci">f</span></code> must not access the underlying <code class="fsharp"><a
+            href="charstream.html"><span class="ci">CharStream</span></a></code> (i.e. <code class="fsharp"><span class="ci">State</span><span
+            class="cm">.</span><a href="#members.Stream"><span class="ci">Stream</span></a></code>) itself, because <code class="fsharp"><span
+            class="ci">SkipCharsOrNewlinesWhile</span></code> relies on <code class="fsharp"><span class="ci">f</span></code> not having any
+            side‐effect on the internal state of the stream.
+           </p>
+          </div>
+         </div>
+        </div>
        </div>
       </div>
-      <div class="interface-member _8" id="members.SkipCharsOrNewlinesWhile_string">
+      <div class="interface-member _9" id="members.SkipCharsOrNewlinesWhile_string">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.SkipCharsOrNewlinesWhile_string:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">SkipCharsOrNewlinesWhile</span></span><span class="cp">:</span>
-    <span class="ci">f1</span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="co">*</span> <span class="ci">f</span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="co">*</span> <span class="ci">string</span> <span class="ci">out</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+    <span class="ci">f</span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="cp">*</span> <span class="ci">string</span> <span class="ci">out</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
 </pre>
        </div>
        <div class="interface-member-description">
         <p class="para _1">
          Behaves like <code class="fsharp"><a href="#members.SkipCharsOrNewlinesWhile"><span class="ci">SkipCharsOrNewlinesWhile</span></a><span
-         class="cp">(</span><span class="ci">f1</span><span class="cp">,</span> <span class="ci">f</span><span class="cp">)</span></code>, except that
-         a string with the skipped chars is assigned to the additional output parameter (with all newlines normalized to <code class="fsharp"><span
-         class="cc"><span class="left-delimiter">'</span><span class="ce">\n</span><span class="right-delimiter">'</span></span></code>).
+         class="cp">(</span><span class="ci">f</span><span class="cp">)</span></code>, except that a string with the skipped chars is assigned to the
+         additional output parameter (with all newlines normalized to <code class="fsharp"><span class="cc"><span class="left-delimiter">'</span><span
+         class="ce">\n</span><span class="right-delimiter">'</span></span></code>).
         </p>
        </div>
       </div>
-      <div class="interface-member _9" id="members.SkipCharsOrNewlinesWhile_int_int">
+      <div class="interface-member _0" id="members.SkipCharsOrNewlinesWhile_int_int">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.SkipCharsOrNewlinesWhile_int_int:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">SkipCharsOrNewlinesWhile</span></span><span class="cp">:</span>
-    <span class="ci">f1</span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="co">*</span> <span class="ci">f</span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="co">*</span> <span class="ci">nMin</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">nMax</span><span class="cp">:</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+    <span class="ci">f</span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="cp">*</span> <span class="ci">nMin</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">nMax</span><span class="cp">:</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
 </pre>
        </div>
        <div class="interface-member-description">
         <p class="para _1">
-         Skips over the current char if <code class="fsharp"><span class="ci">f1</span></code> returns <code class="fsharp"><span
-         class="cb">true</span></code> for the char and then skips over all the following chars for which <code class="fsharp"><span
-         class="ci">f</span></code> returns true, but not over more than than <code class="fsharp"><span class="ci">nMax</span></code> chars in total.
-         If in total not less than <code class="fsharp"><span class="ci">nMin</span></code> chars were skipped, a new <code class="fsharp"><span
-         class="ci">State</span></code> positioned after the skipped chars is returned. Otherwise the old <code class="fsharp"><span
-         class="ci">State</span></code> (<code class="fsharp"><span class="ci">this</span></code>) is returned.
+         Skips over a sequence of up to <code class="fsharp"><span class="ci">nMax</span></code> chars that satisfy the predicate function <code
+         class="fsharp"><span class="ci">f</span></code>. If in total not less than <code class="fsharp"><span class="ci">nMin</span></code> chars
+         were skipped, a new <code class="fsharp"><span class="ci">State</span></code> positioned after the skipped chars is returned. Otherwise the
+         old <code class="fsharp"><span class="ci">State</span></code> (<code class="fsharp"><span class="ci">this</span></code>) is returned.
         </p>
         <p class="para _2">
-         If <code class="fsharp"><span class="ci">f1</span></code> returns <code class="fsharp"><span class="cb">false</span></code>, if the stream
-         has already reached the end or if <code class="fsharp"><span class="ci">nMax</span></code> is 0, the old <code class="fsharp"><span
-         class="ci">State</span></code> (<code class="fsharp"><span class="ci">this</span></code>) is returned.
-        </p>
-        <p class="para _3">
          This method treats all newlines (<code class="fsharp"><span class="cs"><span class="left-delimiter">"</span><span class="ce">\n</span><span
          class="right-delimiter">"</span></span></code>, <code class="fsharp"><span class="cs"><span class="left-delimiter">"</span><span
          class="ce">\r</span><span class="ce">\n</span><span class="right-delimiter">"</span></span></code> or <code class="fsharp"><span
@@ -941,23 +975,102 @@
          as a single char <code class="fsharp"><span class="cc"><span class="left-delimiter">'</span><span class="ce">\n</span><span
          class="right-delimiter">'</span></span></code>.
         </p>
-        <p class="para _4">
+        <p class="para _3">
          An <code class="fsharp"><a href="http://msdn.microsoft.com/en-us/library/system.argumentoutofrangeexception.aspx"><span
          class="ci">ArgumentOutOfRangeException</span></a></code> is thrown if <code class="fsharp"><span class="ci">nMax</span></code> is negative.
         </p>
+        <div class="para _4">
+         <div class="admonition">
+          <div class="admonition-title">Caution</div>
+          <div class="admonition-body">
+           <p class="para _1">
+            The function predicate <code class="fsharp"><span class="ci">f</span></code> must not access the underlying <code class="fsharp"><a
+            href="charstream.html"><span class="ci">CharStream</span></a></code> (i.e. <code class="fsharp"><span class="ci">State</span><span
+            class="cm">.</span><a href="#members.Stream"><span class="ci">Stream</span></a></code>) itself, because <code class="fsharp"><span
+            class="ci">SkipCharsOrNewlinesWhile</span></code> relies on <code class="fsharp"><span class="ci">f</span></code> not having any
+            side‐effect on the internal state of the stream.
+           </p>
+          </div>
+         </div>
+        </div>
        </div>
       </div>
-      <div class="interface-member _0" id="members.SkipCharsOrNewlinesWhile_int_int_string">
+      <div class="interface-member _1" id="members.SkipCharsOrNewlinesWhile_int_int_string">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.SkipCharsOrNewlinesWhile_int_int_string:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">SkipCharsOrNewlinesWhile</span></span><span class="cp">:</span>
-    <span class="ci">f1</span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="co">*</span> <span class="ci">f</span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="co">*</span> <span class="ci">nMin</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">nMax</span><span class="cp">:</span> <span class="ci">int</span>
-  <span class="co">*</span> <span class="ci">string</span> <span class="ci">out</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+    <span class="ci">f</span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="cp">*</span> <span class="ci">nMin</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">nMax</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">string</span> <span class="ci">out</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
 </pre>
        </div>
        <div class="interface-member-description">
         <p class="para _1">
          Behaves like <code class="fsharp"><a href="#members.SkipCharsOrNewlinesWhile_int_int"><span
+         class="ci">SkipCharsOrNewlinesWhile</span></a><span class="cp">(</span><span class="ci">f</span><span class="cp">,</span> <span
+         class="ci">nMin</span><span class="cp">,</span> <span class="ci">nMax</span><span class="cp">)</span></code>, except that a string with the
+         skipped chars is assigned to the additional output parameter (with all newlines normalized to <code class="fsharp"><span class="cc"><span
+         class="left-delimiter">'</span><span class="ce">\n</span><span class="right-delimiter">'</span></span></code>).
+        </p>
+       </div>
+      </div>
+      <div class="interface-member _2" id="members.SkipCharsOrNewlinesWhile2">
+       <div class="interface-member-code">
+        <a class="interface-member-backlink" href="#interface.SkipCharsOrNewlinesWhile2:B:">⇧</a>
+<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">SkipCharsOrNewlinesWhile</span></span><span class="cp">:</span>
+    <span class="ci">f1</span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="cp">*</span> <span class="ci">f</span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+</pre>
+       </div>
+       <div class="interface-member-description">
+        <p class="para _1">
+         Behaves like <code class="fsharp"><a href="#members.SkipCharsOrNewlinesWhile"><span class="ci">SkipCharsOrNewlinesWhile</span></a><span
+         class="cp">(</span><span class="ci">f</span><span class="cp">)</span></code>, except that the first char of the skipped string must satisfy
+         <code class="fsharp"><span class="ci">f1</span></code> instead of <code class="fsharp"><span class="ci">f</span></code>.
+        </p>
+       </div>
+      </div>
+      <div class="interface-member _3" id="members.SkipCharsOrNewlinesWhile2_string">
+       <div class="interface-member-code">
+        <a class="interface-member-backlink" href="#interface.SkipCharsOrNewlinesWhile2_string:B:">⇧</a>
+<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">SkipCharsOrNewlinesWhile</span></span><span class="cp">:</span>
+    <span class="ci">f1</span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="cp">*</span> <span class="ci">f</span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="cp">*</span> <span class="ci">string</span> <span class="ci">out</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+</pre>
+       </div>
+       <div class="interface-member-description">
+        <p class="para _1">
+         Behaves like <code class="fsharp"><a href="#members.SkipCharsOrNewlinesWhile2"><span class="ci">SkipCharsOrNewlinesWhile</span></a><span
+         class="cp">(</span><span class="ci">f1</span><span class="cp">,</span> <span class="ci">f</span><span class="cp">)</span></code>, except that
+         a string with the skipped chars is assigned to the additional output parameter (with all newlines normalized to <code class="fsharp"><span
+         class="cc"><span class="left-delimiter">'</span><span class="ce">\n</span><span class="right-delimiter">'</span></span></code>).
+        </p>
+       </div>
+      </div>
+      <div class="interface-member _4" id="members.SkipCharsOrNewlinesWhile2_int_int">
+       <div class="interface-member-code">
+        <a class="interface-member-backlink" href="#interface.SkipCharsOrNewlinesWhile2_int_int:B:">⇧</a>
+<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">SkipCharsOrNewlinesWhile</span></span><span class="cp">:</span>
+    <span class="ci">f1</span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="cp">*</span> <span class="ci">f</span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="cp">*</span> <span class="ci">nMin</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">nMax</span><span class="cp">:</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+</pre>
+       </div>
+       <div class="interface-member-description">
+        <p class="para _1">
+         Behaves like <code class="fsharp"><a href="#members.SkipCharsOrNewlinesWhile_int_int"><span
+         class="ci">SkipCharsOrNewlinesWhile</span></a><span class="cp">(</span><span class="ci">f</span><span class="cp">,</span> <span
+         class="ci">nMin</span><span class="cp">,</span> <span class="ci">nMax</span><span class="cp">)</span></code>, except that the first char of
+         the skipped string must satisfy <code class="fsharp"><span class="ci">f1</span></code> instead of <code class="fsharp"><span
+         class="ci">f</span></code>.
+        </p>
+       </div>
+      </div>
+      <div class="interface-member _5" id="members.SkipCharsOrNewlinesWhile2_int_int_string">
+       <div class="interface-member-code">
+        <a class="interface-member-backlink" href="#interface.SkipCharsOrNewlinesWhile2_int_int_string:B:">⇧</a>
+<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">SkipCharsOrNewlinesWhile</span></span><span class="cp">:</span>
+    <span class="ci">f1</span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="cp">*</span> <span class="ci">f</span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="cp">*</span> <span class="ci">nMin</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">nMax</span><span class="cp">:</span> <span class="ci">int</span>
+  <span class="cp">*</span> <span class="ci">string</span> <span class="ci">out</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+</pre>
+       </div>
+       <div class="interface-member-description">
+        <p class="para _1">
+         Behaves like <code class="fsharp"><a href="#members.SkipCharsOrNewlinesWhile2_int_int"><span
          class="ci">SkipCharsOrNewlinesWhile</span></a><span class="cp">(</span><span class="ci">f1</span><span class="cp">,</span> <span
          class="ci">f</span><span class="cp">,</span> <span class="ci">nMin</span><span class="cp">,</span> <span class="ci">nMax</span><span
          class="cp">)</span></code>, except that a string with the skipped chars is assigned to the additional output parameter (with all newlines
@@ -966,10 +1079,10 @@
         </p>
        </div>
       </div>
-      <div class="interface-member _1" id="members.SkipToString">
+      <div class="interface-member _6" id="members.SkipToString">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.SkipToString:B:">⇧</a>
-<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">SkipToString</span></span><span class="cp">:</span> <span class="ci">str</span><span class="cp">:</span> <span class="ci">string</span> <span class="co">*</span> <span class="ci">nMax</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">bool</span> <span class="ci">out</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">SkipToString</span></span><span class="cp">:</span> <span class="ci">str</span><span class="cp">:</span> <span class="ci">string</span> <span class="cp">*</span> <span class="ci">nMax</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">bool</span> <span class="ci">out</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
 </pre>
        </div>
        <div class="interface-member-description">
@@ -1003,10 +1116,10 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _2" id="members.SkipToString_string">
+      <div class="interface-member _7" id="members.SkipToString_string">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.SkipToString_string:B:">⇧</a>
-<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">SkipToString</span></span><span class="cp">:</span> <span class="ci">str</span><span class="cp">:</span> <span class="ci">string</span> <span class="co">*</span> <span class="ci">nMax</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">string</span> <span class="ci">out</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">SkipToString</span></span><span class="cp">:</span> <span class="ci">str</span><span class="cp">:</span> <span class="ci">string</span> <span class="cp">*</span> <span class="ci">nMax</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">string</span> <span class="ci">out</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
 </pre>
        </div>
        <div class="interface-member-description">
@@ -1021,11 +1134,11 @@
         </p>
        </div>
       </div>
-      <div class="interface-member _3" id="members.SkipToStringCI">
+      <div class="interface-member _8" id="members.SkipToStringCI">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.SkipToStringCI:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">SkipToStringCI</span></span><span class="cp">:</span>
-    <span class="ci">caseFoldedString</span><span class="cp">:</span> <span class="ci">string</span> <span class="co">*</span> <span class="ci">nMax</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">bool</span> <span class="ci">out</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+    <span class="ci">caseFoldedString</span><span class="cp">:</span> <span class="ci">string</span> <span class="cp">*</span> <span class="ci">nMax</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">bool</span> <span class="ci">out</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
 </pre>
        </div>
        <div class="interface-member-description">
@@ -1073,11 +1186,11 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _4" id="members.SkipToStringCI_string">
+      <div class="interface-member _9" id="members.SkipToStringCI_string">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.SkipToStringCI_string:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">SkipToStringCI</span></span><span class="cp">:</span>
-    <span class="ci">caseFoldedString</span><span class="cp">:</span> <span class="ci">string</span> <span class="co">*</span> <span class="ci">nMax</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">string</span> <span class="ci">out</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="co">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+    <span class="ci">caseFoldedString</span><span class="cp">:</span> <span class="ci">string</span> <span class="cp">*</span> <span class="ci">nMax</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">string</span> <span class="ci">out</span> <span class="cr">-&gt;</span> <span class="ci">State</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span>
 </pre>
        </div>
        <div class="interface-member-description">

@@ -73,8 +73,8 @@
               <td class="nav-title n3"><a href="state.html">FParsec.State</a></td>
              </tr>
              <tr class="nav-entry n3 _7">
-              <td class="nav-number n3"><a href="pos.html"><span class="section-number">7</span><span class="nav-space"></span></a></td>
-              <td class="nav-title n3"><a href="pos.html">FParsec.Pos</a></td>
+              <td class="nav-number n3"><a href="position.html"><span class="section-number">7</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="position.html">FParsec.Position</a></td>
              </tr>
             </tbody>
             <tbody class="nav-open selected n3">
@@ -106,6 +106,27 @@
                  <tr class="nav-entry n4 _5">
                   <td class="nav-number n4"><a href="#Iterator"><span class="section-number">5</span><span class="nav-space"></span></a></td>
                   <td class="nav-title n4"><a href="#Iterator">CharStream.Iterator</a></td>
+                 </tr>
+                 <tr class="nav-sub-entries n4 _5">
+                  <td class="nav-sub-entries-number n4"></td>
+                  <td class="nav-sub-entries n4">
+                   <table class="nav n5">
+                    <tbody class="nav-before-open n5">
+                     <tr class="nav-entry n5 _1">
+                      <td class="nav-number n5">
+                       <a href="#Iterator.interface"><span class="section-number">1</span><span class="nav-space"></span></a>
+                      </td>
+                      <td class="nav-title n5"><a href="#Iterator.interface">Interface</a></td>
+                     </tr>
+                     <tr class="nav-entry n5 _2">
+                      <td class="nav-number n5">
+                       <a href="#Iterator.members"><span class="section-number">2</span><span class="nav-space"></span></a>
+                      </td>
+                      <td class="nav-title n5"><a href="#Iterator.members">Members</a></td>
+                     </tr>
+                    </tbody>
+                   </table>
+                  </td>
                  </tr>
                 </tbody>
                </table>
@@ -147,49 +168,48 @@
     <div class="para _1">
 <pre class="code fsharp"><span class="ck">namespace</span> <span class="ci">FParsec</span>
 
-
 <span class="cp">[&lt;</span><span class="ci">Sealed</span><span class="cp">&gt;]</span>
 <span class="ck">type</span> <span class="ci">CharStream</span> <span class="cp">=</span>
-  <span class="ck">interface</span> <span class="ci">System</span><span class="cp">.</span><span class="ci">IDisposable</span>
+  <span class="ck">interface</span> <span class="ci">System</span><span class="cm">.</span><span class="ci">IDisposable</span>
 
-  <a id="interface.new_string:B:" href="#members.new_string"><span class="interface-member-marker"><span class="ck">new</span></span></a><span class="cp">:</span>    <span class="ci">chars</span><span class="cp">:</span> <span class="ci">string</span> <span class="co">*</span> <span class="ci">index</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span>
+  <a id="interface.new_string:B:" href="#members.new_string"><span class="interface-member-marker"><span class="ck">new</span></span></a><span class="cp">:</span>    <span class="ci">chars</span><span class="cp">:</span> <span class="ci">string</span> <span class="cp">*</span> <span class="ci">index</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span>
        <span class="cr">-&gt;</span> <span class="ci">CharStream</span>
-  <a id="interface.new_string_offset:B:" href="#members.new_string_offset"><span class="interface-member-marker"><span class="ck">new</span></span></a><span class="cp">:</span>    <span class="ci">chars</span><span class="cp">:</span> <span class="ci">string</span> <span class="co">*</span> <span class="ci">index</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">streamIndexOffset</span><span class="cp">:</span> <span class="ci">int64</span>
-       <span class="cr">-&gt;</span> <span class="ci">CharStream</span>
-
-  <a id="interface.new_char-array:B:" href="#members.new_char-array"><span class="interface-member-marker"><span class="ck">new</span></span></a><span class="cp">:</span>    <span class="ci">chars</span><span class="cp">:</span> <span class="ci">char</span><span class="cp">[]</span> <span class="co">*</span> <span class="ci">index</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span>
-       <span class="cr">-&gt;</span> <span class="ci">CharStream</span>
-  <a id="interface.new_char-array_offset:B:" href="#members.new_char-array_offset"><span class="interface-member-marker"><span class="ck">new</span></span></a><span class="cp">:</span>    <span class="ci">chars</span><span class="cp">:</span> <span class="ci">char</span><span class="cp">[]</span> <span class="co">*</span> <span class="ci">index</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">streamIndexOffset</span><span class="cp">:</span> <span class="ci">int64</span>
+  <a id="interface.new_string_offset:B:" href="#members.new_string_offset"><span class="interface-member-marker"><span class="ck">new</span></span></a><span class="cp">:</span>    <span class="ci">chars</span><span class="cp">:</span> <span class="ci">string</span> <span class="cp">*</span> <span class="ci">index</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">streamBeginIndex</span><span class="cp">:</span> <span class="ci">int64</span>
        <span class="cr">-&gt;</span> <span class="ci">CharStream</span>
 
-  <a id="interface.new_char-pointer:B:" href="#members.new_char-pointer"><span class="interface-member-marker"><span class="ck">new</span></span></a><span class="cp">:</span>    <span class="ci">pchars</span><span class="cp">:</span> <span class="ci">NativePtr</span><span class="co">&lt;</span><span class="ci">char</span><span class="cp">&gt;</span> <span class="co">*</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span>
+  <a id="interface.new_char-array:B:" href="#members.new_char-array"><span class="interface-member-marker"><span class="ck">new</span></span></a><span class="cp">:</span>    <span class="ci">chars</span><span class="cp">:</span> <span class="ci">char</span><span class="cp">[]</span> <span class="cp">*</span> <span class="ci">index</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span>
        <span class="cr">-&gt;</span> <span class="ci">CharStream</span>
-  <a id="interface.new_char-pointer_offset:B:" href="#members.new_char-pointer_offset"><span class="interface-member-marker"><span class="ck">new</span></span></a><span class="cp">:</span>    <span class="ci">pchars</span><span class="cp">:</span> <span class="ci">NativePtr</span><span class="co">&lt;</span><span class="ci">char</span><span class="cp">&gt;</span> <span class="co">*</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">streamIndexOffset</span><span class="cp">:</span> <span class="ci">int64</span>
+  <a id="interface.new_char-array_offset:B:" href="#members.new_char-array_offset"><span class="interface-member-marker"><span class="ck">new</span></span></a><span class="cp">:</span>    <span class="ci">chars</span><span class="cp">:</span> <span class="ci">char</span><span class="cp">[]</span> <span class="cp">*</span> <span class="ci">index</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">streamBeginIndex</span><span class="cp">:</span> <span class="ci">int64</span>
        <span class="cr">-&gt;</span> <span class="ci">CharStream</span>
 
-  <a id="interface.new_file-path:B:" href="#members.new_file-path"><span class="interface-member-marker"><span class="ck">new</span></span></a><span class="cp">:</span>    <span class="ci">path</span><span class="cp">:</span> <span class="ci">string</span> <span class="co">*</span> <span class="ci">encoding</span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx"><span class="ci">System</span><span class="cp">.</span><span class="ci">Text</span><span class="cp">.</span><span class="ci">Encoding</span></a>
+  <a id="interface.new_char-pointer:B:" href="#members.new_char-pointer"><span class="interface-member-marker"><span class="ck">new</span></span></a><span class="cp">:</span>    <span class="ci">chars</span><span class="cp">:</span> <span class="ci">NativePtr</span><span class="cp">&lt;</span><span class="ci">char</span><span class="cp">&gt;</span> <span class="cp">*</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span>
+       <span class="cr">-&gt;</span> <span class="ci">CharStream</span>
+  <a id="interface.new_char-pointer_offset:B:" href="#members.new_char-pointer_offset"><span class="interface-member-marker"><span class="ck">new</span></span></a><span class="cp">:</span>    <span class="ci">chars</span><span class="cp">:</span> <span class="ci">NativePtr</span><span class="cp">&lt;</span><span class="ci">char</span><span class="cp">&gt;</span> <span class="cp">*</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">streamBeginIndex</span><span class="cp">:</span> <span class="ci">int64</span>
+       <span class="cr">-&gt;</span> <span class="ci">CharStream</span>
+
+  <a id="interface.new_file-path:B:" href="#members.new_file-path"><span class="interface-member-marker"><span class="ck">new</span></span></a><span class="cp">:</span>    <span class="ci">path</span><span class="cp">:</span> <span class="ci">string</span> <span class="cp">*</span> <span class="ci">encoding</span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx"><span class="ci">System</span><span class="cm">.</span><span class="ci">Text</span><span class="cm">.</span><span class="ci">Encoding</span></a>
        <span class="cr">-&gt;</span> <span class="ci">CharStream</span>
   <a id="interface.new_file-path_2:B:" href="#members.new_file-path_2"><span class="interface-member-marker"><span class="ck">new</span></span></a><span class="cp">:</span>    <span class="ci">path</span><span class="cp">:</span> <span class="ci">string</span>
-        <span class="co">*</span> <span class="ci">encoding</span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx"><span class="ci">System</span><span class="cp">.</span><span class="ci">Text</span><span class="cp">.</span><span class="ci">Encoding</span></a> <span class="co">*</span> <span class="ci">detectEncodingFromByteOrderMarks</span><span class="cp">:</span> <span class="ci">bool</span>
+        <span class="cp">*</span> <span class="ci">encoding</span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx"><span class="ci">System</span><span class="cm">.</span><span class="ci">Text</span><span class="cm">.</span><span class="ci">Encoding</span></a> <span class="cp">*</span> <span class="ci">detectEncodingFromByteOrderMarks</span><span class="cp">:</span> <span class="ci">bool</span>
        <span class="cr">-&gt;</span> <span class="ci">CharStream</span>
   <a id="interface.new_file-path_3:B:" href="#members.new_file-path_3"><span class="interface-member-marker"><span class="ck">new</span></span></a><span class="cp">:</span>    <span class="ci">path</span><span class="cp">:</span> <span class="ci">string</span>
-        <span class="co">*</span> <span class="ci">encoding</span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx"><span class="ci">System</span><span class="cp">.</span><span class="ci">Text</span><span class="cp">.</span><span class="ci">Encoding</span></a> <span class="co">*</span> <span class="ci">detectEncodingFromByteOrderMarks</span><span class="cp">:</span> <span class="ci">bool</span>
-        <span class="co">*</span> <span class="ci">blockSize</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">blockOverlap</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">minRegexSpace</span><span class="cp">:</span> <span class="ci">int</span>
-        <span class="co">*</span> <span class="ci">byteBufferLength</span><span class="cp">:</span> <span class="ci">int</span>
+        <span class="cp">*</span> <span class="ci">encoding</span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx"><span class="ci">System</span><span class="cm">.</span><span class="ci">Text</span><span class="cm">.</span><span class="ci">Encoding</span></a> <span class="cp">*</span> <span class="ci">detectEncodingFromByteOrderMarks</span><span class="cp">:</span> <span class="ci">bool</span>
+        <span class="cp">*</span> <span class="ci">blockSize</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">blockOverlap</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">minRegexSpace</span><span class="cp">:</span> <span class="ci">int</span>
+        <span class="cp">*</span> <span class="ci">byteBufferLength</span><span class="cp">:</span> <span class="ci">int</span>
        <span class="cr">-&gt;</span> <span class="ci">CharStream</span>
 
-  <a id="interface.new_stream:B:" href="#members.new_stream"><span class="interface-member-marker"><span class="ck">new</span></span></a><span class="cp">:</span>    <span class="ci">stream</span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.io.stream.aspx"><span class="ci">System</span><span class="cp">.</span><span class="ci">IO</span><span class="cp">.</span><span class="ci">Stream</span></a> <span class="co">*</span> <span class="ci">encoding</span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx"><span class="ci">System</span><span class="cp">.</span><span class="ci">Text</span><span class="cp">.</span><span class="ci">Encoding</span></a>
+  <a id="interface.new_stream:B:" href="#members.new_stream"><span class="interface-member-marker"><span class="ck">new</span></span></a><span class="cp">:</span>    <span class="ci">stream</span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.io.stream.aspx"><span class="ci">System</span><span class="cm">.</span><span class="ci">IO</span><span class="cm">.</span><span class="ci">Stream</span></a> <span class="cp">*</span> <span class="ci">encoding</span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx"><span class="ci">System</span><span class="cm">.</span><span class="ci">Text</span><span class="cm">.</span><span class="ci">Encoding</span></a>
        <span class="cr">-&gt;</span> <span class="ci">CharStream</span>
-  <a id="interface.new_stream_2:B:" href="#members.new_stream_2"><span class="interface-member-marker"><span class="ck">new</span></span></a><span class="cp">:</span>    <span class="ci">stream</span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.io.stream.aspx"><span class="ci">System</span><span class="cp">.</span><span class="ci">IO</span><span class="cp">.</span><span class="ci">Stream</span></a> <span class="co">*</span> <span class="ci">leaveOpen</span><span class="cp">:</span> <span class="ci">bool</span>
-        <span class="co">*</span> <span class="ci">encoding</span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx"><span class="ci">System</span><span class="cp">.</span><span class="ci">Text</span><span class="cp">.</span><span class="ci">Encoding</span></a>
+  <a id="interface.new_stream_2:B:" href="#members.new_stream_2"><span class="interface-member-marker"><span class="ck">new</span></span></a><span class="cp">:</span>    <span class="ci">stream</span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.io.stream.aspx"><span class="ci">System</span><span class="cm">.</span><span class="ci">IO</span><span class="cm">.</span><span class="ci">Stream</span></a> <span class="cp">*</span> <span class="ci">leaveOpen</span><span class="cp">:</span> <span class="ci">bool</span>
+        <span class="cp">*</span> <span class="ci">encoding</span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx"><span class="ci">System</span><span class="cm">.</span><span class="ci">Text</span><span class="cm">.</span><span class="ci">Encoding</span></a>
        <span class="cr">-&gt;</span> <span class="ci">CharStream</span>
-  <a id="interface.new_stream_3:B:" href="#members.new_stream_3"><span class="interface-member-marker"><span class="ck">new</span></span></a><span class="cp">:</span>    <span class="ci">stream</span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.io.stream.aspx"><span class="ci">System</span><span class="cp">.</span><span class="ci">IO</span><span class="cp">.</span><span class="ci">Stream</span></a> <span class="co">*</span> <span class="ci">leaveOpen</span><span class="cp">:</span> <span class="ci">bool</span>
-        <span class="co">*</span> <span class="ci">encoding</span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx"><span class="ci">System</span><span class="cp">.</span><span class="ci">Text</span><span class="cp">.</span><span class="ci">Encoding</span></a> <span class="co">*</span> <span class="ci">detectEncodingFromByteOrderMarks</span><span class="cp">:</span> <span class="ci">bool</span>
+  <a id="interface.new_stream_3:B:" href="#members.new_stream_3"><span class="interface-member-marker"><span class="ck">new</span></span></a><span class="cp">:</span>    <span class="ci">stream</span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.io.stream.aspx"><span class="ci">System</span><span class="cm">.</span><span class="ci">IO</span><span class="cm">.</span><span class="ci">Stream</span></a> <span class="cp">*</span> <span class="ci">leaveOpen</span><span class="cp">:</span> <span class="ci">bool</span>
+        <span class="cp">*</span> <span class="ci">encoding</span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx"><span class="ci">System</span><span class="cm">.</span><span class="ci">Text</span><span class="cm">.</span><span class="ci">Encoding</span></a> <span class="cp">*</span> <span class="ci">detectEncodingFromByteOrderMarks</span><span class="cp">:</span> <span class="ci">bool</span>
        <span class="cr">-&gt;</span> <span class="ci">CharStream</span>
-  <a id="interface.new_stream_4:B:" href="#members.new_stream_4"><span class="interface-member-marker"><span class="ck">new</span></span></a><span class="cp">:</span>    <span class="ci">stream</span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.io.stream.aspx"><span class="ci">System</span><span class="cp">.</span><span class="ci">IO</span><span class="cp">.</span><span class="ci">Stream</span></a> <span class="co">*</span> <span class="ci">leaveOpen</span><span class="cp">:</span> <span class="ci">bool</span>
-        <span class="co">*</span> <span class="ci">encoding</span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx"><span class="ci">System</span><span class="cp">.</span><span class="ci">Text</span><span class="cp">.</span><span class="ci">Encoding</span></a> <span class="co">*</span> <span class="ci">detectEncodingFromByteOrderMarks</span><span class="cp">:</span> <span class="ci">bool</span>
-        <span class="co">*</span> <span class="ci">blockSize</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">blockOverlap</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">minRegexSpace</span><span class="cp">:</span> <span class="ci">int</span>
-        <span class="co">*</span> <span class="ci">byteBufferLength</span><span class="cp">:</span> <span class="ci">int</span>
+  <a id="interface.new_stream_4:B:" href="#members.new_stream_4"><span class="interface-member-marker"><span class="ck">new</span></span></a><span class="cp">:</span>    <span class="ci">stream</span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.io.stream.aspx"><span class="ci">System</span><span class="cm">.</span><span class="ci">IO</span><span class="cm">.</span><span class="ci">Stream</span></a> <span class="cp">*</span> <span class="ci">leaveOpen</span><span class="cp">:</span> <span class="ci">bool</span>
+        <span class="cp">*</span> <span class="ci">encoding</span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx"><span class="ci">System</span><span class="cm">.</span><span class="ci">Text</span><span class="cm">.</span><span class="ci">Encoding</span></a> <span class="cp">*</span> <span class="ci">detectEncodingFromByteOrderMarks</span><span class="cp">:</span> <span class="ci">bool</span>
+        <span class="cp">*</span> <span class="ci">blockSize</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">blockOverlap</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">minRegexSpace</span><span class="cp">:</span> <span class="ci">int</span>
+        <span class="cp">*</span> <span class="ci">byteBufferLength</span><span class="cp">:</span> <span class="ci">int</span>
        <span class="cr">-&gt;</span> <span class="ci">CharStream</span>
 
   <span class="ck">member</span> <a id="interface.Dispose:B:" href="#members.Dispose"><span class="interface-member-marker"><span class="ci">Dispose</span></span></a><span class="cp">:</span> <span class="ci">unit</span> <span class="cr">-&gt;</span> <span class="ci">unit</span>
@@ -197,8 +217,8 @@
   <span class="ck">member</span> <a id="interface.Begin:B:" href="#members.Begin"><span class="interface-member-marker"><span class="ci">Begin</span></span></a><span class="cp">:</span> <a href="#Iterator"><span class="ci">Iterator</span></a>
   <span class="ck">member</span> <a id="interface.Seek:B:" href="#members.Seek"><span class="interface-member-marker"><span class="ci">Seek</span></span></a><span class="cp">:</span> <span class="ci">int64</span> <span class="cr">-&gt;</span> <a href="#Iterator"><span class="ci">Iterator</span></a>
 
-  <span class="ck">member</span> <a id="interface.IndexOffset:B:" href="#members.IndexOffset"><span class="interface-member-marker"><span class="ci">IndexOffset</span></span></a><span class="cp">:</span> <span class="ci">int64</span>
-  <span class="ck">member</span> <a id="interface.EndOfStream:B:" href="#members.EndOfStream"><span class="interface-member-marker"><span class="ci">EndOfStream</span></span></a><span class="cp">:</span> <span class="ci">int64</span>
+  <span class="ck">member</span> <a id="interface.BeginIndex:B:" href="#members.BeginIndex"><span class="interface-member-marker"><span class="ci">BeginIndex</span></span></a><span class="cp">:</span> <span class="ci">int64</span>
+  <span class="ck">member</span> <a id="interface.EndIndex:B:" href="#members.EndIndex"><span class="interface-member-marker"><span class="ci">EndIndex</span></span></a><span class="cp">:</span> <span class="ci">int64</span>
 
   <span class="ck">static</span> <span class="ck">member</span> <a id="interface.FoldCase:B:" href="#members.FoldCase"><span class="interface-member-marker"><span class="ci">FoldCase</span></span></a><span class="cp">:</span>          <span class="ci">string</span> <span class="cr">-&gt;</span> <span class="ci">string</span>
   <span class="ck">static</span> <span class="ck">member</span> <a id="interface.NormalizeNewlines:B:" href="#members.NormalizeNewlines"><span class="interface-member-marker"><span class="ci">NormalizeNewlines</span></span></a><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <span class="ci">string</span>
@@ -221,8 +241,8 @@
     </p>
     <p class="para _2">
      A <code class="fsharp"><span class="ci">CharStream</span></code> constructed from a <code class="fsharp"><a
-     href="http://msdn.microsoft.com/en-us/library/system.io.stream.aspx"><span class="ci">System</span><span class="cp">.</span><span
-     class="ci">IO</span><span class="cp">.</span><span class="ci">Stream</span></a></code> or a file path reads the stream block‐wise and only holds
+     href="http://msdn.microsoft.com/en-us/library/system.io.stream.aspx"><span class="ci">System</span><span class="cm">.</span><span
+     class="ci">IO</span><span class="cm">.</span><span class="ci">Stream</span></a></code> or a file path reads the stream block‐wise and only holds
      the most recently accessed block in memory. The blocks overlap in order to provide efficient access on the boundary between blocks.
     </p>
     <p class="para _3">
@@ -232,19 +252,46 @@
     </p>
     <p class="para _4">
      You can access the content of a <code class="fsharp"><span class="ci">CharStream</span></code> only through its <code class="fsharp"><a
-     href="#Iterator"><span class="ci">Iterator</span></a></code>s. The <code class="fsharp"><a href="#members.Begin"><span
+     href="#Iterator"><span class="ci">Iterator</span></a></code> instances. The <code class="fsharp"><a href="#members.Begin"><span
      class="ci">Begin</span></a></code> property returns an iterator pointing to the first char in the stream. The <code class="fsharp"><a
      href="#members.Seek"><span class="ci">Seek</span></a></code> method returns an iterator pointing to the char with a given index.
     </p>
     <div class="para _5">
      <div class="dl multi-para">
       <dl class="dl multi-para">
-       <dt class="_1"><a id="remarks.non-sequential-access"></a>Non‐sequential access</dt>
+       <dt class="_1"><a id="remarks.low-trust-version"></a>Low‐Trust version</dt>
        <dd class="_1">
+        <div class="para _1">
+         <p>
+          If you compile FParsec with the <code class="fsharp"><span class="ci">LOW_TRUST</span></code> conditional compiler symbol, the <code
+          class="fsharp"><span class="ci">CharStream</span></code> class differs from the normal version as follows:
+         </p>
+         <ul class="l1">
+          <li class="_1">
+           No <a href="http://msdn.microsoft.com/en-us/library/t2yzs44b.aspx">unverifiable code</a> involving pointers is used. <em>This allows
+           FParsec to be executed in an environment with reduced trust</em>, such as medium trust ASP.NET applications.
+          </li>
+          <li class="_2">
+           A <code class="fsharp"><span class="ci">CharStream</span></code> that is constructed from a <code class="fsharp"><a
+           href="http://msdn.microsoft.com/en-us/library/system.io.stream.aspx"><span class="ci">System</span><span class="cm">.</span><span
+           class="ci">IO</span><span class="cm">.</span><span class="ci">Stream</span></a></code> or a file path reads the complete file into a single
+           string during construction. <em>This severely limits the maximum practical stream size.</em>
+          </li>
+          <li class="_3">
+           Although the <code class="fsharp"><span class="ci">CharStream</span></code> class still supports the <code class="fsharp"><span
+           class="ci">IDisposable</span></code> interface, disposing the <code class="fsharp"><span class="ci">CharStream</span></code> instances is
+           no longer necessary, since no resources are hold that need to be explicitly released.
+          </li>
+         </ul>
+        </div>
+       </dd>
+       <dt class="_2"><a id="remarks.non-sequential-access"></a>Non‐sequential access</dt>
+       <dd class="_2">
         <p class="para _1">
-         If you construct a <code class="fsharp"><span class="ci">CharStream</span></code> from a <code class="fsharp"><a
-         href="http://msdn.microsoft.com/en-us/library/system.io.stream.aspx"><span class="ci">System</span><span class="cp">.</span><span
-         class="ci">IO</span><span class="cp">.</span><span class="ci">Stream</span></a></code> or a file path and you backtrack over a distance long
+         <span class="small"><span class="italic">This note does not apply to the <a href="#remarks.low-trust-version">Low‐Trust version</a> of
+         FParsec.</span></span><br /> If you construct a <code class="fsharp"><span class="ci">CharStream</span></code> from a <code class="fsharp"><a
+         href="http://msdn.microsoft.com/en-us/library/system.io.stream.aspx"><span class="ci">System</span><span class="cm">.</span><span
+         class="ci">IO</span><span class="cm">.</span><span class="ci">Stream</span></a></code> or a file path and you backtrack over a distance long
          enough to require the <code class="fsharp"><span class="ci">CharStream</span></code> to reread a previous block, then the underlying
          <strong>byte stream needs to support seeking</strong>, otherwise a <code class="fsharp"><a
          href="http://msdn.microsoft.com/en-us/library/system.notsupportedexception.aspx"><span class="ci">NotSupportedException</span></a></code> is
@@ -256,23 +303,23 @@
          decoder are not available.
         </p>
        </dd>
-       <dt class="_2">Decoder errors</dt>
-       <dd class="_2">
+       <dt class="_3">Decoder errors</dt>
+       <dd class="_3">
         <p class="para _1">
          A <code class="fsharp"><span class="ci">CharStream</span></code> constructed from a binary input stream decodes the input data with the help
          of a <code class="fsharp"><a href="http://msdn.microsoft.com/en-us/library/system.text.decoder.aspx"><span
          class="ci">Decoder</span></a></code> instance obtained via the <code class="fsharp"><span class="ci">Encodings</span></code>’s <code
          class="fsharp"><span class="ci">GetDecoder</span></code> method. Depending on the configuration of the encoding the decoder might throw an
          exception if it encounters invalid byte sequences, usually a <code class="fsharp"><span class="ci">System</span><span
-         class="cp">.</span><span class="ci">Text</span><span class="cp">.</span><a
+         class="cm">.</span><span class="ci">Text</span><span class="cm">.</span><a
          href="http://msdn.microsoft.com/en-us/library/system.text.decoderfallbackexception.aspx"><span
-         class="ci">DecoderFallbackException</span></a></code> or a <code class="fsharp"><span class="ci">System</span><span class="cp">.</span><span
-         class="ci">IO</span><span class="cp">.</span><a href="http://msdn.microsoft.com/en-us/library/system.argumentexception.aspx"><span
+         class="ci">DecoderFallbackException</span></a></code> or a <code class="fsharp"><span class="ci">System</span><span class="cm">.</span><span
+         class="ci">IO</span><span class="cm">.</span><a href="http://msdn.microsoft.com/en-us/library/system.argumentexception.aspx"><span
          class="ci">ArgumentException</span></a></code>. <sup class="fn-mark"><a id="remarks.:FN:1:B:" href="#remarks.:FN:1">[1]</a></sup>
         </p>
        </dd>
-       <dt class="_3"><a id="remarks.case-insensitive-matching"></a>Case‐insensitive matching</dt>
-       <dd class="_3">
+       <dt class="_4"><a id="remarks.case-insensitive-matching"></a>Case‐insensitive matching</dt>
+       <dd class="_4">
         <p class="para _1">
          The <code class="fsharp"><a href="#Iterator.members.MatchCaseFolded"><span class="ci">MatchCaseFolded</span></a></code> member matches the
          content of the stream &#x201C;case‐insensitively&#x201D; with a reference string. In this instance &#x201C;case‐insensitive&#x201D; means
@@ -286,8 +333,8 @@
          href="http://unicode.org/reports/tr15/">normalization</a>.
         </p>
        </dd>
-       <dt class="_4">Newlines</dt>
-       <dd class="_4">
+       <dt class="_5">Newlines</dt>
+       <dd class="_5">
         <p class="para _1">
          The <code class="fsharp"><span class="ci">CharStream</span></code> class itself does not apply any automatic newline conversion to the
          processed input. A useful helper function for this purpose is <code class="fsharp"><a href="#members.NormalizeNewlines"><span
@@ -299,39 +346,32 @@
          class="left-delimiter">"</span><span class="ce">\n</span><span class="right-delimiter">"</span></span></code>.
         </p>
        </dd>
-       <dt class="_5">Disposable interface</dt>
-       <dd class="_5">
-        <p class="para _1">
-         A <code class="fsharp"><span class="ci">CharStream</span></code> holds managed and unmanaged resources that need to be explicitly released.
-         Hence, it is very important that <code class="fsharp"><span class="ci">CharStream</span></code> objects are promptly disposed after use.
-         Where possible <code class="fsharp"><span class="ci">CharStream</span></code> objects should only be used within a &#x201C;using&#x201D;
-         block (C#), a &#x201C;use&#x201D; expression( F#) or similar constructs in other languages. Members of <code class="fsharp"><a
-         href="#Iterator"><span class="ci">CharStream</span><span class="cp">.</span><span class="ci">Iterator</span></a></code> instances must not be
-         accessed after the corresponding <code class="fsharp"><span class="ci">CharStream</span></code> has been disposed, of course.
-        </p>
-       </dd>
-       <dt class="_6">Pinned buffer</dt>
+       <dt class="_6">Disposable interface</dt>
        <dd class="_6">
         <p class="para _1">
-         For optimization purposes a <code class="fsharp"><span class="ci">CharStream</span></code> object &#x201C;pins&#x201D; its internal buffer,
-         so that the buffer can’t be moved by the GC during its lifetime. For large streams, that is <code class="fsharp"><span
-         class="ci">CharStream</span></code> objects constructed from large enough byte streams/strings and with block sizes greater than about 50000
-         chars (the default is much higher), the pinning has no effect because the buffer will be allocated on the Large Object Heap and the GC won’t
-         try to move it anyway. However, <strong>if you allocate a large number of small <code class="fsharp"><span
-         class="ci">CharStream</span></code> instances over an extended period of time, you could seriously compromise the operation of the
-         GC.</strong>
+         <span class="small"><span class="italic">This note does not apply to the <a href="#remarks.low-trust-version">Low‐Trust version</a> of
+         FParsec.</span></span><br /> A <code class="fsharp"><span class="ci">CharStream</span></code> holds managed and unmanaged resources that need
+         to be explicitly released. Hence, it is very important that <code class="fsharp"><span class="ci">CharStream</span></code> objects are
+         promptly disposed after use. Where possible <code class="fsharp"><span class="ci">CharStream</span></code> objects should only be used within
+         a &#x201C;using&#x201D; block (C#), a &#x201C;use&#x201D; expression( F#) or similar constructs in other languages. Members of <code
+         class="fsharp"><a href="#Iterator"><span class="ci">CharStream</span><span class="cm">.</span><span class="ci">Iterator</span></a></code>
+         instances must not be accessed after the corresponding <code class="fsharp"><span class="ci">CharStream</span></code> has been disposed, of
+         course.
         </p>
        </dd>
        <dt class="_7">Thread safety</dt>
        <dd class="_7">
         <p class="para _1">
          A <code class="fsharp"><span class="ci">CharStream</span></code> constructed from a <code class="fsharp"><a
-         href="http://msdn.microsoft.com/en-us/library/system.io.stream.aspx"><span class="ci">System</span><span class="cp">.</span><span
-         class="ci">IO</span><span class="cp">.</span><span class="ci">Stream</span></a></code> or a file path is not thread safe; its members may not
-         be accessed by multiple threads. A <code class="fsharp"><span class="ci">CharStream</span></code> constructed directly from a string, char
-         array or char pointer can be safely accessed concurrently, provided that it is disposed by only one thread, of course.
+         href="http://msdn.microsoft.com/en-us/library/system.io.stream.aspx"><span class="ci">System</span><span class="cm">.</span><span
+         class="ci">IO</span><span class="cm">.</span><span class="ci">Stream</span></a></code> or a file path is not thread safe and its members may
+         not be accessed by multiple threads, except in the <a href="#remarks.low-trust-version">Low‐Trust version</a> of FParsec. A <code
+         class="fsharp"><span class="ci">CharStream</span></code> constructed directly from a string, char array or char pointer can always be safely
+         accessed concurrently using different <code class="fsharp"><span class="ci">Iterators</span></code> (provided that the <code
+         class="fsharp"><span class="ci">CharStream</span></code> is disposed by only one thread, of course). <span class="italic"><code
+         class="fsharp"><a href="#Iterator"><span class="ci">CharStream</span><span class="cm">.</span><span class="ci">Iterator</span></a></code>
+         instances are never thread safe.</span>
         </p>
-        <p class="para _2"><code class="fsharp"><a href="#Iterator"><span class="ci">Iterator</span></a></code> instances are never thread safe.</p>
        </dd>
       </dl>
      </div>
@@ -343,18 +383,21 @@
    <div class="intro i3">
     <p class="para _1">
      If you construct a <code class="fsharp"><span class="ci">CharStream</span></code> from a <code class="fsharp"><a
-     href="http://msdn.microsoft.com/en-us/library/system.io.stream.aspx"><span class="ci">System</span><span class="cp">.</span><span
-     class="ci">IO</span><span class="cp">.</span><span class="ci">Stream</span></a></code> or a file path, any <code class="fsharp"><span
+     href="http://msdn.microsoft.com/en-us/library/system.io.stream.aspx"><span class="ci">System</span><span class="cm">.</span><span
+     class="ci">IO</span><span class="cm">.</span><span class="ci">Stream</span></a></code> or a file path, any <code class="fsharp"><span
      class="ci">CharStream</span></code> operation that requires reading chars from the underlying byte stream may throw one of the following
-     exceptions:
+     exceptions.
     </p>
-    <div class="para _2">
+    <p class="para _2">
+     In general it is <em>not</em> safe to continue to use a <code class="fsharp"><span class="ci">CharStream</span></code> instance after one of
+     these exceptions was thrown. Calling <code class="fsharp"><a href="#members.Dispose"><span class="ci">Dispose</span></a><span
+     class="cp">()</span></code> on an <code class="fsharp"><span class="ci">CharStream</span></code> instance after the instance or one of its
+     iterators has thrown an exception is always safe.
+    </p>
+    <div class="para _3">
      <div class="dl multi-para">
       <dl class="dl multi-para">
-       <dt class="_1">
-        <code class="fsharp"><a href="http://msdn.microsoft.com/en-us/library/system.notsupportedexception.aspx"><span
-        class="ci">NotSupportedException</span></a></code>
-       </dt>
+       <dt class="_1"><code class="fsharp"><span class="ci">NotSupportedException</span></code></dt>
        <dd class="_1">
         <p class="para _1">
          Seeking of the underlying byte stream is required, but the byte stream does not support seeking or the <code class="fsharp"><a
@@ -363,17 +406,11 @@
          serializable. See also the remarks above on <a href="#remarks.non-sequential-access">non‐sequential access</a>.
         </p>
        </dd>
-       <dt class="_2">
-        <code class="fsharp"><a href="http://msdn.microsoft.com/en-us/library/system.io.ioexception.aspx"><span
-        class="ci">IOException</span></a></code>
-       </dt>
+       <dt class="_2"><code class="fsharp"><span class="ci">IOException</span></code></dt>
        <dd class="_2">
         <p class="para _1">An I/O occured while reading data from the underlying byte stream.</p>
        </dd>
-       <dt class="_3">
-        <code class="fsharp"><a href="http://msdn.microsoft.com/en-us/library/system.argumentexception.aspx"><span
-        class="ci">ArgumentException</span></a></code>
-       </dt>
+       <dt class="_3"><code class="fsharp"><span class="ci">ArgumentException</span></code></dt>
        <dd class="_3">
         <p class="para _1">
          The underlying byte stream contains invalid bytes and the <code class="fsharp"><a
@@ -381,15 +418,12 @@
          <code class="fsharp"><span class="ci">throwOnInvalidBytes</span></code> option.
         </p>
        </dd>
-       <dt class="_4">
-        <code class="fsharp"><a href="http://msdn.microsoft.com/en-us/library/system.text.decoderfallbackexception.aspx"><span
-        class="ci">DecoderFallbackException</span></a></code>
-       </dt>
+       <dt class="_4"><code class="fsharp"><span class="ci">DecoderFallbackException</span></code></dt>
        <dd class="_4">
         <p class="para _1">The underlying byte stream contains invalid bytes for which the decoder fallback threw this exception.</p>
         <p class="para _2">
          The byte index of the invalid bytes in the stream is stored as a boxed <code class="fsharp"><span class="ci">System</span><span
-         class="cp">.</span><span class="ci">Int64</span></code> in the <code class="fsharp"><span class="cs"><span
+         class="cm">.</span><span class="ci">Int64</span></code> in the <code class="fsharp"><span class="cs"><span
          class="left-delimiter">"</span>Stream.Position<span class="right-delimiter">"</span></span></code> entry of the <code class="fsharp"><a
          href="http://msdn.microsoft.com/en-us/library/system.exception.data.aspx"><span class="ci">Data</span></a></code> member of the exception
          instance. The precision of the index depends on the precision of the <code class="fsharp"><a
@@ -397,7 +431,7 @@
          class="ci">DecoderFallbackException</span></a></code>’s <code class="fsharp"><a
          href="http://msdn.microsoft.com/en-us/library/system.text.decoderfallbackexception.index.aspx"><span class="ci">Index</span></a></code>
          member. If the underlying <code class="fsharp"><a href="http://msdn.microsoft.com/en-us/library/system.io.stream.aspx"><span
-         class="ci">System</span><span class="cp">.</span><span class="ci">IO</span><span class="cp">.</span><span class="ci">Stream</span></a></code>
+         class="ci">System</span><span class="cm">.</span><span class="ci">IO</span><span class="cm">.</span><span class="ci">Stream</span></a></code>
          is not seekable, the byte index only takes into account the bytes read by the <code class="fsharp"><span class="ci">CharStream</span></code>,
          but not any bytes read before the <code class="fsharp"><span class="ci">CharStream</span></code> was constructed.
         </p>
@@ -415,7 +449,7 @@
       <div class="interface-member _1" id="members.new_string">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.new_string:B:">⇧</a>
-<pre class="code fsharp"><span class="interface-member-marker"><span class="ck">new</span></span><span class="cp">:</span>    <span class="ci">chars</span><span class="cp">:</span> <span class="ci">string</span> <span class="co">*</span> <span class="ci">index</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span>
+<pre class="code fsharp"><span class="interface-member-marker"><span class="ck">new</span></span><span class="cp">:</span>    <span class="ci">chars</span><span class="cp">:</span> <span class="ci">string</span> <span class="cp">*</span> <span class="ci">index</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span>
      <span class="cr">-&gt;</span> <span class="ci">CharStream</span>
 </pre>
        </div>
@@ -431,7 +465,7 @@
       <div class="interface-member _2" id="members.new_string_offset">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.new_string_offset:B:">⇧</a>
-<pre class="code fsharp"><span class="interface-member-marker"><span class="ck">new</span></span><span class="cp">:</span>    <span class="ci">chars</span><span class="cp">:</span> <span class="ci">string</span> <span class="co">*</span> <span class="ci">index</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">streamIndexOffset</span><span class="cp">:</span> <span class="ci">int64</span>
+<pre class="code fsharp"><span class="interface-member-marker"><span class="ck">new</span></span><span class="cp">:</span>    <span class="ci">chars</span><span class="cp">:</span> <span class="ci">string</span> <span class="cp">*</span> <span class="ci">index</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">streamBeginIndex</span><span class="cp">:</span> <span class="ci">int64</span>
      <span class="cr">-&gt;</span> <span class="ci">CharStream</span>
 </pre>
        </div>
@@ -443,7 +477,10 @@
          avoids any copy of the string content.
         </p>
         <p class="para _2">
-         The first char in the stream is assigned the index <code class="fsharp"><span class="ci">streamIndexOffset</span></code>.
+         The first char in the stream is assigned the index <code class="fsharp"><span class="ci">streamBeginIndex</span></code>. A positive <code
+         class="fsharp"><span class="ci">streamBeginIndex</span></code> allows you for example to create a substream of another <code
+         class="fsharp"><span class="ci">CharStream</span></code>, i.e. a <code class="fsharp"><span class="ci">CharStream</span></code> instance that
+         only contains a sub‐segment of another char stream but is accessible through the same char indices.
         </p>
         <div class="para _3">
          <p>
@@ -455,22 +492,45 @@
           <li class="_1">
            <code class="fsharp"><span class="ci">index</span></code> ≥ 0, <code class="fsharp"><span class="ci">length</span></code> ≥ 0, <code
            class="fsharp"><span class="ci">index</span></code> + <code class="fsharp"><span class="ci">length</span></code> ≤ <code
-           class="fsharp"><span class="ci">chars</span><span class="cp">.</span><span class="ci">Length</span></code> and
+           class="fsharp"><span class="ci">chars</span><span class="cm">.</span><span class="ci">Length</span></code> and
           </li>
-          <li class="_2">0 ≤ <code class="fsharp"><span class="ci">streamIndexOffset</span></code> &lt; 2<sup>60</sup>.</li>
+          <li class="_2">0 ≤ <code class="fsharp"><span class="ci">streamBeginIndex</span></code> &lt; 2<sup>60</sup>.</li>
          </ul>
+        </div>
+        <div class="para _4">
+         <div class="admonition">
+          <div class="admonition-title">Important</div>
+          <div class="admonition-body">
+           <p class="para _1">
+            <span class="small"><span class="italic">This note does not apply to the <a href="#remarks.low-trust-version">Low‐Trust version</a> of
+            FParsec.</span></span><br /> The given string is &#x201C;<a
+            href="http://msdn.microsoft.com/en-us/library/83y4ak54.aspx">pinned</a>&#x201D; until the <code class="fsharp"><span
+            class="ci">CharStream</span></code> is disposed. Pinning the string prevents the GC from moving it around in memory during garbage
+            collection. On .NET (at least in versions up to and including 4.0) the pinning has no effect if the string is large enough to be allocated
+            on the Large Object Heap, i.e. has a length of about 42500 chars or more. However, pinning smaller strings does constrain the normal
+            operations of the GC. Thus, <strong>to minimize the negative impact on the GC, you should dispose <code class="fsharp"><span
+            class="ci">CharStream</span></code> instances constructed from small strings as soon as you’re done parsing it</strong>. If you keep a
+            large number of <code class="fsharp"><span class="ci">CharStream</span></code> instances constructed from small strings around for an
+            extended period of time, you risk fragmenting the heap.
+           </p>
+          </div>
+         </div>
         </div>
        </div>
       </div>
       <div class="interface-member _3" id="members.new_char-array">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.new_char-array:B:">⇧</a>
-<pre class="code fsharp"><span class="interface-member-marker"><span class="ck">new</span></span><span class="cp">:</span>    <span class="ci">chars</span><span class="cp">:</span> <span class="ci">char</span><span class="cp">[]</span> <span class="co">*</span> <span class="ci">index</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span>
+<pre class="code fsharp"><span class="interface-member-marker"><span class="ck">new</span></span><span class="cp">:</span>    <span class="ci">chars</span><span class="cp">:</span> <span class="ci">char</span><span class="cp">[]</span> <span class="cp">*</span> <span class="ci">index</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span>
      <span class="cr">-&gt;</span> <span class="ci">CharStream</span>
 </pre>
        </div>
        <div class="interface-member-description">
         <p class="para _1">
+         <span class="small"><span class="italic">This constructor is not available in the <a href="#remarks.low-trust-version">Low‐Trust version</a>
+         of FParsec.</span></span>
+        </p>
+        <p class="para _2">
          Is equivalent to <code class="fsharp"><a href="#members.new_char-array_offset"><span class="ck">new</span> <span
          class="ci">CharStream</span></a><span class="cp">(</span><span class="ci">chars</span><span class="cp">,</span> <span
          class="ci">index</span><span class="cp">,</span> <span class="ci">length</span><span class="cp">,</span> <span class="cn">0L</span><span
@@ -481,32 +541,27 @@
       <div class="interface-member _4" id="members.new_char-array_offset">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.new_char-array_offset:B:">⇧</a>
-<pre class="code fsharp"><span class="interface-member-marker"><span class="ck">new</span></span><span class="cp">:</span>    <span class="ci">chars</span><span class="cp">:</span> <span class="ci">char</span><span class="cp">[]</span> <span class="co">*</span> <span class="ci">index</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">streamIndexOffset</span><span class="cp">:</span> <span class="ci">int64</span>
+<pre class="code fsharp"><span class="interface-member-marker"><span class="ck">new</span></span><span class="cp">:</span>    <span class="ci">chars</span><span class="cp">:</span> <span class="ci">char</span><span class="cp">[]</span> <span class="cp">*</span> <span class="ci">index</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">streamBeginIndex</span><span class="cp">:</span> <span class="ci">int64</span>
      <span class="cr">-&gt;</span> <span class="ci">CharStream</span>
 </pre>
        </div>
        <div class="interface-member-description">
         <p class="para _1">
+         <span class="small"><span class="italic">This constructor is not available in the <a href="#remarks.low-trust-version">Low‐Trust version</a>
+         of FParsec.</span></span>
+        </p>
+        <p class="para _2">
          Constructs a <code class="fsharp"><span class="ci">CharStream</span></code> from the chars in the char array argument between the indices
          <code class="fsharp"><span class="ci">index</span></code> (inclusive) and <code class="fsharp"><span class="ci">index</span> <span
          class="co">+</span> <span class="ci">length</span></code> (exclusive). By directly referencing the chars in the char array this constructor
          avoids any copy of the char array content.
         </p>
-        <p class="para _2">
-         The first char in the stream is assigned the index <code class="fsharp"><span class="ci">streamIndexOffset</span></code>.
+        <p class="para _3">
+         The first char in the stream is assigned the index <code class="fsharp"><span class="ci">streamBeginIndex</span></code>. A positive <code
+         class="fsharp"><span class="ci">streamBeginIndex</span></code> allows you for example to create a substream of another <code
+         class="fsharp"><span class="ci">CharStream</span></code>, i.e. a <code class="fsharp"><span class="ci">CharStream</span></code> instance that
+         only contains a sub‐segment of another char stream but is accessible through the same char indices.
         </p>
-        <div class="para _3">
-         <div class="admonition">
-          <div class="admonition-title">Note</div>
-          <div class="admonition-body">
-           <p class="para _1">
-            A <code class="fsharp"><span class="ci">CharStream</span></code> constructed from a char array does not support .NET regex matching via
-            the <code class="fsharp"><a href="#Iterator.members.Match_Regex"><span class="ci">Iterator</span><span class="cp">.</span><span
-            class="ci">Match</span></a></code> member.
-           </p>
-          </div>
-         </div>
-        </div>
         <div class="para _4">
          <p>
           <code class="fsharp"><span class="ci">chars</span></code> must not be null. An <code class="fsharp"><a
@@ -517,24 +572,57 @@
           <li class="_1">
            <code class="fsharp"><span class="ci">index</span></code> ≥ 0, <code class="fsharp"><span class="ci">length</span></code> ≥ 0, <code
            class="fsharp"><span class="ci">index</span></code> + <code class="fsharp"><span class="ci">length</span></code> ≤ <code
-           class="fsharp"><span class="ci">chars</span><span class="cp">.</span><span class="ci">Length</span></code> and
+           class="fsharp"><span class="ci">chars</span><span class="cm">.</span><span class="ci">Length</span></code> and
           </li>
-          <li class="_2">0 ≤ <code class="fsharp"><span class="ci">streamIndexOffset</span></code> &lt; 2<sup>60</sup>.</li>
+          <li class="_2">0 ≤ <code class="fsharp"><span class="ci">streamBeginIndex</span></code> &lt; 2<sup>60</sup>.</li>
          </ul>
+        </div>
+        <div class="para _5">
+         <div class="admonition">
+          <div class="admonition-title">Note</div>
+          <div class="admonition-body">
+           <p class="para _1">
+            A <code class="fsharp"><span class="ci">CharStream</span></code> constructed from a char array does not support .NET regex matching via
+            the <code class="fsharp"><a href="#Iterator.members.Match_Regex"><span class="ci">Iterator</span><span class="cm">.</span><span
+            class="ci">Match</span></a></code> member.
+           </p>
+          </div>
+         </div>
+        </div>
+        <div class="para _6">
+         <div class="admonition">
+          <div class="admonition-title">Important</div>
+          <div class="admonition-body">
+           <p class="para _1">
+            The given char array is &#x201C;<a href="http://msdn.microsoft.com/en-us/library/83y4ak54.aspx">pinned</a>&#x201D; until the <code
+            class="fsharp"><span class="ci">CharStream</span></code> is disposed. Pinning the char array prevents the GC from moving it around in
+            memory during garbage collection. On .NET (at least in versions up to and including 4.0) the pinning has no effect if the char array is
+            large enough to be allocated on the Large Object Heap, i.e. has a length of about 42500 chars or more. However, pinning smaller char
+            arrays does constrain the normal operations of the GC. Thus, <strong>to minimize the negative impact on the GC, you should dispose <code
+            class="fsharp"><span class="ci">CharStream</span></code> instances constructed from small char arrays as soon as you’re done parsing
+            it</strong>. If you keep a large number of <code class="fsharp"><span class="ci">CharStream</span></code> instances constructed from small
+            char arrays around for an extended period of time, you risk fragmenting the heap.
+           </p>
+          </div>
+         </div>
         </div>
        </div>
       </div>
       <div class="interface-member _5" id="members.new_char-pointer">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.new_char-pointer:B:">⇧</a>
-<pre class="code fsharp"><span class="interface-member-marker"><span class="ck">new</span></span><span class="cp">:</span>    <span class="ci">pchars</span><span class="cp">:</span> <span class="ci">NativePtr</span><span class="co">&lt;</span><span class="ci">char</span><span class="cp">&gt;</span> <span class="co">*</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span>
+<pre class="code fsharp"><span class="interface-member-marker"><span class="ck">new</span></span><span class="cp">:</span>    <span class="ci">chars</span><span class="cp">:</span> <span class="ci">NativePtr</span><span class="cp">&lt;</span><span class="ci">char</span><span class="cp">&gt;</span> <span class="cp">*</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span>
      <span class="cr">-&gt;</span> <span class="ci">CharStream</span>
 </pre>
        </div>
        <div class="interface-member-description">
         <p class="para _1">
+         <span class="small"><span class="italic">This constructor is not available in the <a href="#remarks.low-trust-version">Low‐Trust version</a>
+         of FParsec.</span></span><br />
+        </p>
+        <p class="para _2">
          Is equivalent to <code class="fsharp"><a href="#members.new_char-pointer_offset"><span class="ck">new</span> <span
-         class="ci">CharStream</span></a><span class="cp">(</span><span class="ci">pchars</span><span class="cp">,</span> <span
+         class="ci">CharStream</span></a><span class="cp">(</span><span class="ci">chars</span><span class="cp">,</span> <span
          class="ci">length</span><span class="cp">,</span> <span class="cn">0L</span><span class="cp">)</span></code>.
         </p>
        </div>
@@ -542,52 +630,58 @@
       <div class="interface-member _6" id="members.new_char-pointer_offset">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.new_char-pointer_offset:B:">⇧</a>
-<pre class="code fsharp"><span class="interface-member-marker"><span class="ck">new</span></span><span class="cp">:</span>    <span class="ci">pchars</span><span class="cp">:</span> <span class="ci">NativePtr</span><span class="co">&lt;</span><span class="ci">char</span><span class="cp">&gt;</span> <span class="co">*</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">streamIndexOffset</span><span class="cp">:</span> <span class="ci">int64</span>
+<pre class="code fsharp"><span class="interface-member-marker"><span class="ck">new</span></span><span class="cp">:</span>    <span class="ci">chars</span><span class="cp">:</span> <span class="ci">NativePtr</span><span class="cp">&lt;</span><span class="ci">char</span><span class="cp">&gt;</span> <span class="cp">*</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">streamBeginIndex</span><span class="cp">:</span> <span class="ci">int64</span>
      <span class="cr">-&gt;</span> <span class="ci">CharStream</span>
 </pre>
        </div>
        <div class="interface-member-description">
         <p class="para _1">
+         <span class="small"><span class="italic">This constructor is not available in the <a href="#remarks.low-trust-version">Low‐Trust version</a>
+         of FParsec.</span></span>
+        </p>
+        <p class="para _2">
          Constructs a <code class="fsharp"><span class="ci">CharStream</span></code> from the <code class="fsharp"><span
          class="ci">length</span></code> chars at the pointer address. By directly referencing the chars at the pointer address this constructor
          avoids any copy of the char buffer.
         </p>
-        <p class="para _2">
-         The first char in the stream is assigned the index <code class="fsharp"><span class="ci">streamIndexOffset</span></code>.
+        <p class="para _3">
+         The first char in the stream is assigned the index <code class="fsharp"><span class="ci">streamBeginIndex</span></code>. A positive <code
+         class="fsharp"><span class="ci">streamBeginIndex</span></code> allows you for example to create a substream of another <code
+         class="fsharp"><span class="ci">CharStream</span></code>, i.e. a <code class="fsharp"><span class="ci">CharStream</span></code> instance that
+         only contains a sub‐segment of another char stream but is accessible through the same char indices.
         </p>
-        <div class="para _3">
-         <div class="admonition">
-          <div class="admonition-title">Note</div>
-          <div class="admonition-body">
-           <p class="para _1">
-            A <code class="fsharp"><span class="ci">CharStream</span></code> constructed from a pointer does not support .NET regex matching via the
-            <code class="fsharp"><a href="#Iterator.members.Match_Regex"><span class="ci">Iterator</span><span class="cp">.</span><span
-            class="ci">Match</span></a></code> member.
-           </p>
-          </div>
-         </div>
-        </div>
         <div class="para _4">
          <p>
-          <code class="fsharp"><span class="ci">pchars</span></code> must not be null. An <code class="fsharp"><a
+          <code class="fsharp"><span class="ci">chars</span></code> must not be null. An <code class="fsharp"><a
           href="http://msdn.microsoft.com/en-us/library/system.argumentoutofrangeexception.aspx"><span
           class="ci">ArgumentOutOfRangeException</span></a></code> is thrown if the arguments do not satisfy the following conditions:
          </p>
          <ul class="l1">
           <li class="_1">
-           <code class="fsharp"><span class="ci">length</span></code> ≥ 0, <code class="fsharp"><span class="ci">pchars</span> <span
-           class="co">+</span> <span class="ci">length</span></code> ≥ <code class="fsharp"><span class="ci">pchars</span></code> (i.e. the sum does
-           not overflow) and
+           <code class="fsharp"><span class="ci">length</span></code> ≥ 0, <code class="fsharp"><span class="ci">chars</span> <span
+           class="co">+</span> <span class="ci">length</span></code> must not overflow and
           </li>
-          <li class="_2">0 ≤ <code class="fsharp"><span class="ci">streamIndexOffset</span></code> &lt; 2<sup>60</sup>.</li>
+          <li class="_2">0 ≤ <code class="fsharp"><span class="ci">streamBeginIndex</span></code> &lt; 2<sup>60</sup>.</li>
          </ul>
+        </div>
+        <div class="para _5">
+         <div class="admonition">
+          <div class="admonition-title">Note</div>
+          <div class="admonition-body">
+           <p class="para _1">
+            A <code class="fsharp"><span class="ci">CharStream</span></code> constructed from a pointer does not support .NET regex matching via the
+            <code class="fsharp"><a href="#Iterator.members.Match_Regex"><span class="ci">Iterator</span><span class="cm">.</span><span
+            class="ci">Match</span></a></code> member.
+           </p>
+          </div>
+         </div>
         </div>
        </div>
       </div>
       <div class="interface-member _7" id="members.new_file-path">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.new_file-path:B:">⇧</a>
-<pre class="code fsharp"><span class="interface-member-marker"><span class="ck">new</span></span><span class="cp">:</span>    <span class="ci">path</span><span class="cp">:</span> <span class="ci">string</span> <span class="co">*</span> <span class="ci">encoding</span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx"><span class="ci">System</span><span class="cp">.</span><span class="ci">Text</span><span class="cp">.</span><span class="ci">Encoding</span></a>
+<pre class="code fsharp"><span class="interface-member-marker"><span class="ck">new</span></span><span class="cp">:</span>    <span class="ci">path</span><span class="cp">:</span> <span class="ci">string</span> <span class="cp">*</span> <span class="ci">encoding</span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx"><span class="ci">System</span><span class="cm">.</span><span class="ci">Text</span><span class="cm">.</span><span class="ci">Encoding</span></a>
      <span class="cr">-&gt;</span> <span class="ci">CharStream</span>
 </pre>
        </div>
@@ -603,7 +697,7 @@
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.new_file-path_2:B:">⇧</a>
 <pre class="code fsharp"><span class="interface-member-marker"><span class="ck">new</span></span><span class="cp">:</span>    <span class="ci">path</span><span class="cp">:</span> <span class="ci">string</span>
-      <span class="co">*</span> <span class="ci">encoding</span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx"><span class="ci">System</span><span class="cp">.</span><span class="ci">Text</span><span class="cp">.</span><span class="ci">Encoding</span></a> <span class="co">*</span> <span class="ci">detectEncodingFromByteOrderMarks</span><span class="cp">:</span> <span class="ci">bool</span>
+      <span class="cp">*</span> <span class="ci">encoding</span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx"><span class="ci">System</span><span class="cm">.</span><span class="ci">Text</span><span class="cm">.</span><span class="ci">Encoding</span></a> <span class="cp">*</span> <span class="ci">detectEncodingFromByteOrderMarks</span><span class="cp">:</span> <span class="ci">bool</span>
      <span class="cr">-&gt;</span> <span class="ci">CharStream</span>
 </pre>
        </div>
@@ -612,10 +706,10 @@
          <p>Is equivalent to</p>
 <pre class="code fsharp"><a href="#members.new_file-path_3"><span class="ck">new</span> <span class="ci">CharStream</span></a><span class="cp">(</span>
     <span class="ci">path</span><span class="cp">,</span> <span class="ci">encoding</span><span class="cp">,</span> <span class="ci">detectEncodingFromByteOrderMarks</span><span class="cp">,</span>
-    <span class="ci">blockSize</span> <span class="co">=</span> <span class="ci">DefaultBlockSize</span> <span class="cbc"><span class="left-delimiter">(*</span> = 3*2^16 ≈ 200k <span class="right-delimiter">*)</span></span><span class="cp">,</span>
-    <span class="ci">blockOverlap</span> <span class="co">=</span> <span class="ci">DefaultBlockSize</span><span class="co">/</span><span class="cn">3</span><span class="cp">,</span>
-    <span class="ci">minRegexSpace</span> <span class="co">=</span> <span class="cp">(</span><span class="cp">(</span><span class="ci">DefaultBlockSize</span><span class="co">/</span><span class="cn">3</span><span class="cp">)</span><span class="co">*</span><span class="cn">2</span><span class="cp">)</span><span class="co">/</span><span class="cn">3</span><span class="cp">,</span>
-    <span class="ci">byteBufferLength</span> <span class="co">=</span> <span class="ci">DefaultByteBufferLength</span>
+    <span class="ci">blockSize</span> <span class="cp">=</span> <span class="ci">DefaultBlockSize</span> <span class="cbc"><span class="left-delimiter">(*</span> = 3*2^16 ≈ 200k <span class="right-delimiter">*)</span></span><span class="cp">,</span>
+    <span class="ci">blockOverlap</span> <span class="cp">=</span> <span class="ci">DefaultBlockSize</span><span class="co">/</span><span class="cn">3</span><span class="cp">,</span>
+    <span class="ci">minRegexSpace</span> <span class="cp">=</span> <span class="cp">(</span><span class="cp">(</span><span class="ci">DefaultBlockSize</span><span class="co">/</span><span class="cn">3</span><span class="cp">)</span><span class="co">*</span><span class="cn">2</span><span class="cp">)</span><span class="co">/</span><span class="cn">3</span><span class="cp">,</span>
+    <span class="ci">byteBufferLength</span> <span class="cp">=</span> <span class="ci">DefaultByteBufferLength</span>
 <span class="cp">)</span>
 </pre>
         </div>
@@ -625,9 +719,9 @@
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.new_file-path_3:B:">⇧</a>
 <pre class="code fsharp"><span class="interface-member-marker"><span class="ck">new</span></span><span class="cp">:</span>    <span class="ci">path</span><span class="cp">:</span> <span class="ci">string</span>
-      <span class="co">*</span> <span class="ci">encoding</span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx"><span class="ci">System</span><span class="cp">.</span><span class="ci">Text</span><span class="cp">.</span><span class="ci">Encoding</span></a> <span class="co">*</span> <span class="ci">detectEncodingFromByteOrderMarks</span><span class="cp">:</span> <span class="ci">bool</span>
-      <span class="co">*</span> <span class="ci">blockSize</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">blockOverlap</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">minRegexSpace</span><span class="cp">:</span> <span class="ci">int</span>
-      <span class="co">*</span> <span class="ci">byteBufferLength</span><span class="cp">:</span> <span class="ci">int</span>
+      <span class="cp">*</span> <span class="ci">encoding</span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx"><span class="ci">System</span><span class="cm">.</span><span class="ci">Text</span><span class="cm">.</span><span class="ci">Encoding</span></a> <span class="cp">*</span> <span class="ci">detectEncodingFromByteOrderMarks</span><span class="cp">:</span> <span class="ci">bool</span>
+      <span class="cp">*</span> <span class="ci">blockSize</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">blockOverlap</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">minRegexSpace</span><span class="cp">:</span> <span class="ci">int</span>
+      <span class="cp">*</span> <span class="ci">byteBufferLength</span><span class="cp">:</span> <span class="ci">int</span>
      <span class="cr">-&gt;</span> <span class="ci">CharStream</span>
 </pre>
        </div>
@@ -638,15 +732,15 @@
           href="http://msdn.microsoft.com/en-us/library/system.io.filestream.aspx"><span class="ci">FileStream</span></a></code> as if by calling
          </p>
 <pre class="code fsharp"><a href="#members.new_stream_4"><span class="ck">new</span> <span class="ci">CharStream</span></a><span class="cp">(</span>
-    <span class="ck">new</span> <a href="http://msdn.microsoft.com/en-us/library/system.io.filestream.aspx"><span class="ci">FileStream</span></a><span class="cp">(</span><span class="ci">path</span><span class="cp">,</span> <span class="ci">FileMode</span><span class="cp">.</span><span class="ci">Open</span><span class="cp">,</span> <span class="ci">FileAccess</span><span class="cp">.</span><a href="#Iterator.members.Read"><span class="ci">Read</span></a><span class="cp">,</span> <span class="ci">FileShare</span><span class="cp">.</span><a href="#Iterator.members.Read"><span class="ci">Read</span></a><span class="cp">,</span> <span class="cn">4096</span><span class="cp">,</span>
-                   <span class="ci">FileOptions</span><span class="cp">.</span><span class="ci">SequentialScan</span><span class="cp">)</span><span class="cp">,</span>
-    <span class="ci">leaveOpen</span> <span class="co">=</span> <span class="cb">false</span><span class="cp">,</span>
-    <span class="ci">encoding</span> <span class="co">=</span> <span class="ci">encoding</span><span class="cp">,</span>
-    <span class="ci">detectEncoding</span> <span class="co">=</span> <span class="cb">true</span><span class="cp">,</span>
-    <span class="ci">blockSize</span> <span class="co">=</span> <span class="ci">DefaultBlockSize</span> <span class="cbc"><span class="left-delimiter">(*</span> = 3*2^16 ≈ 200k <span class="right-delimiter">*)</span></span><span class="cp">,</span>
-    <span class="ci">blockOverlap</span> <span class="co">=</span> <span class="ci">DefaultBlockSize</span><span class="co">/</span><span class="cn">3</span><span class="cp">,</span>
-    <span class="ci">minRegexSpace</span> <span class="co">=</span> <span class="cp">(</span><span class="cp">(</span><span class="ci">DefaultBlockSize</span><span class="co">/</span><span class="cn">3</span><span class="cp">)</span><span class="co">*</span><span class="cn">2</span><span class="cp">)</span><span class="co">/</span><span class="cn">3</span><span class="cp">,</span>
-    <span class="ci">byteBufferLength</span> <span class="co">=</span> <span class="ci">DefaultByteBufferLength</span>
+    <span class="ck">new</span> <a href="http://msdn.microsoft.com/en-us/library/system.io.filestream.aspx"><span class="ci">FileStream</span></a><span class="cp">(</span><span class="ci">path</span><span class="cp">,</span> <span class="ci">FileMode</span><span class="cm">.</span><span class="ci">Open</span><span class="cp">,</span> <span class="ci">FileAccess</span><span class="cm">.</span><a href="#Iterator.members.Read"><span class="ci">Read</span></a><span class="cp">,</span> <span class="ci">FileShare</span><span class="cm">.</span><a href="#Iterator.members.Read"><span class="ci">Read</span></a><span class="cp">,</span> <span class="cn">4096</span><span class="cp">,</span>
+                   <span class="ci">FileOptions</span><span class="cm">.</span><span class="ci">SequentialScan</span><span class="cp">)</span><span class="cp">,</span>
+    <span class="ci">leaveOpen</span> <span class="cp">=</span> <span class="cb">false</span><span class="cp">,</span>
+    <span class="ci">encoding</span> <span class="cp">=</span> <span class="ci">encoding</span><span class="cp">,</span>
+    <span class="ci">detectEncoding</span> <span class="cp">=</span> <span class="cb">true</span><span class="cp">,</span>
+    <span class="ci">blockSize</span> <span class="cp">=</span> <span class="ci">DefaultBlockSize</span> <span class="cbc"><span class="left-delimiter">(*</span> = 3*2^16 ≈ 200k <span class="right-delimiter">*)</span></span><span class="cp">,</span>
+    <span class="ci">blockOverlap</span> <span class="cp">=</span> <span class="ci">DefaultBlockSize</span><span class="co">/</span><span class="cn">3</span><span class="cp">,</span>
+    <span class="ci">minRegexSpace</span> <span class="cp">=</span> <span class="cp">(</span><span class="cp">(</span><span class="ci">DefaultBlockSize</span><span class="co">/</span><span class="cn">3</span><span class="cp">)</span><span class="co">*</span><span class="cn">2</span><span class="cp">)</span><span class="co">/</span><span class="cn">3</span><span class="cp">,</span>
+    <span class="ci">byteBufferLength</span> <span class="cp">=</span> <span class="ci">DefaultByteBufferLength</span>
 <span class="cp">)</span>
 </pre>
         </div>
@@ -672,7 +766,7 @@
       <div class="interface-member _0" id="members.new_stream">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.new_stream:B:">⇧</a>
-<pre class="code fsharp"><span class="interface-member-marker"><span class="ck">new</span></span><span class="cp">:</span>    <span class="ci">stream</span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.io.stream.aspx"><span class="ci">System</span><span class="cp">.</span><span class="ci">IO</span><span class="cp">.</span><span class="ci">Stream</span></a> <span class="co">*</span> <span class="ci">encoding</span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx"><span class="ci">System</span><span class="cp">.</span><span class="ci">Text</span><span class="cp">.</span><span class="ci">Encoding</span></a>
+<pre class="code fsharp"><span class="interface-member-marker"><span class="ck">new</span></span><span class="cp">:</span>    <span class="ci">stream</span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.io.stream.aspx"><span class="ci">System</span><span class="cm">.</span><span class="ci">IO</span><span class="cm">.</span><span class="ci">Stream</span></a> <span class="cp">*</span> <span class="ci">encoding</span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx"><span class="ci">System</span><span class="cm">.</span><span class="ci">Text</span><span class="cm">.</span><span class="ci">Encoding</span></a>
      <span class="cr">-&gt;</span> <span class="ci">CharStream</span>
 </pre>
        </div>
@@ -687,8 +781,8 @@
       <div class="interface-member _1" id="members.new_stream_2">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.new_stream_2:B:">⇧</a>
-<pre class="code fsharp"><span class="interface-member-marker"><span class="ck">new</span></span><span class="cp">:</span>    <span class="ci">stream</span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.io.stream.aspx"><span class="ci">System</span><span class="cp">.</span><span class="ci">IO</span><span class="cp">.</span><span class="ci">Stream</span></a> <span class="co">*</span> <span class="ci">leaveOpen</span><span class="cp">:</span> <span class="ci">bool</span>
-      <span class="co">*</span> <span class="ci">encoding</span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx"><span class="ci">System</span><span class="cp">.</span><span class="ci">Text</span><span class="cp">.</span><span class="ci">Encoding</span></a>
+<pre class="code fsharp"><span class="interface-member-marker"><span class="ck">new</span></span><span class="cp">:</span>    <span class="ci">stream</span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.io.stream.aspx"><span class="ci">System</span><span class="cm">.</span><span class="ci">IO</span><span class="cm">.</span><span class="ci">Stream</span></a> <span class="cp">*</span> <span class="ci">leaveOpen</span><span class="cp">:</span> <span class="ci">bool</span>
+      <span class="cp">*</span> <span class="ci">encoding</span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx"><span class="ci">System</span><span class="cm">.</span><span class="ci">Text</span><span class="cm">.</span><span class="ci">Encoding</span></a>
      <span class="cr">-&gt;</span> <span class="ci">CharStream</span>
 </pre>
        </div>
@@ -703,8 +797,8 @@
       <div class="interface-member _2" id="members.new_stream_3">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.new_stream_3:B:">⇧</a>
-<pre class="code fsharp"><span class="interface-member-marker"><span class="ck">new</span></span><span class="cp">:</span>    <span class="ci">stream</span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.io.stream.aspx"><span class="ci">System</span><span class="cp">.</span><span class="ci">IO</span><span class="cp">.</span><span class="ci">Stream</span></a> <span class="co">*</span> <span class="ci">leaveOpen</span><span class="cp">:</span> <span class="ci">bool</span>
-      <span class="co">*</span> <span class="ci">encoding</span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx"><span class="ci">System</span><span class="cp">.</span><span class="ci">Text</span><span class="cp">.</span><span class="ci">Encoding</span></a> <span class="co">*</span> <span class="ci">detectEncodingFromByteOrderMarks</span><span class="cp">:</span> <span class="ci">bool</span>
+<pre class="code fsharp"><span class="interface-member-marker"><span class="ck">new</span></span><span class="cp">:</span>    <span class="ci">stream</span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.io.stream.aspx"><span class="ci">System</span><span class="cm">.</span><span class="ci">IO</span><span class="cm">.</span><span class="ci">Stream</span></a> <span class="cp">*</span> <span class="ci">leaveOpen</span><span class="cp">:</span> <span class="ci">bool</span>
+      <span class="cp">*</span> <span class="ci">encoding</span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx"><span class="ci">System</span><span class="cm">.</span><span class="ci">Text</span><span class="cm">.</span><span class="ci">Encoding</span></a> <span class="cp">*</span> <span class="ci">detectEncodingFromByteOrderMarks</span><span class="cp">:</span> <span class="ci">bool</span>
      <span class="cr">-&gt;</span> <span class="ci">CharStream</span>
 </pre>
        </div>
@@ -713,10 +807,10 @@
          <p>Is equivalent to</p>
 <pre class="code fsharp"><a href="#members.new_stream_4"><span class="ck">new</span> <span class="ci">CharStream</span></a><span class="cp">(</span>
     <span class="ci">stream</span><span class="cp">,</span> <span class="ci">leaveOpen</span><span class="cp">,</span> <span class="ci">encoding</span><span class="cp">,</span> <span class="ci">detectEncodingFromByteOrderMarks</span><span class="cp">,</span>
-    <span class="ci">blockSize</span> <span class="co">=</span> <span class="ci">DefaultBlockSize</span> <span class="cbc"><span class="left-delimiter">(*</span> = 3*2^16 ≈ 200k <span class="right-delimiter">*)</span></span><span class="cp">,</span>
-    <span class="ci">blockOverlap</span> <span class="co">=</span> <span class="ci">DefaultBlockSize</span><span class="co">/</span><span class="cn">3</span><span class="cp">,</span>
-    <span class="ci">minRegexSpace</span> <span class="co">=</span> <span class="cp">(</span><span class="cp">(</span><span class="ci">DefaultBlockSize</span><span class="co">/</span><span class="cn">3</span><span class="cp">)</span><span class="co">*</span><span class="cn">2</span><span class="cp">)</span><span class="co">/</span><span class="cn">3</span><span class="cp">,</span>
-    <span class="ci">byteBufferLength</span> <span class="co">=</span> <span class="ci">DefaultByteBufferLength</span>
+    <span class="ci">blockSize</span> <span class="cp">=</span> <span class="ci">DefaultBlockSize</span> <span class="cbc"><span class="left-delimiter">(*</span> = 3*2^16 ≈ 200k <span class="right-delimiter">*)</span></span><span class="cp">,</span>
+    <span class="ci">blockOverlap</span> <span class="cp">=</span> <span class="ci">DefaultBlockSize</span><span class="co">/</span><span class="cn">3</span><span class="cp">,</span>
+    <span class="ci">minRegexSpace</span> <span class="cp">=</span> <span class="cp">(</span><span class="cp">(</span><span class="ci">DefaultBlockSize</span><span class="co">/</span><span class="cn">3</span><span class="cp">)</span><span class="co">*</span><span class="cn">2</span><span class="cp">)</span><span class="co">/</span><span class="cn">3</span><span class="cp">,</span>
+    <span class="ci">byteBufferLength</span> <span class="cp">=</span> <span class="ci">DefaultByteBufferLength</span>
 <span class="cp">)</span>
 </pre>
         </div>
@@ -725,22 +819,25 @@
       <div class="interface-member _3" id="members.new_stream_4">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.new_stream_4:B:">⇧</a>
-<pre class="code fsharp"><span class="interface-member-marker"><span class="ck">new</span></span><span class="cp">:</span>    <span class="ci">stream</span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.io.stream.aspx"><span class="ci">System</span><span class="cp">.</span><span class="ci">IO</span><span class="cp">.</span><span class="ci">Stream</span></a> <span class="co">*</span> <span class="ci">leaveOpen</span><span class="cp">:</span> <span class="ci">bool</span>
-      <span class="co">*</span> <span class="ci">encoding</span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx"><span class="ci">System</span><span class="cp">.</span><span class="ci">Text</span><span class="cp">.</span><span class="ci">Encoding</span></a> <span class="co">*</span> <span class="ci">detectEncodingFromByteOrderMarks</span><span class="cp">:</span> <span class="ci">bool</span>
-      <span class="co">*</span> <span class="ci">blockSize</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">blockOverlap</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">minRegexSpace</span><span class="cp">:</span> <span class="ci">int</span>
-      <span class="co">*</span> <span class="ci">byteBufferLength</span><span class="cp">:</span> <span class="ci">int</span>
+<pre class="code fsharp"><span class="interface-member-marker"><span class="ck">new</span></span><span class="cp">:</span>    <span class="ci">stream</span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.io.stream.aspx"><span class="ci">System</span><span class="cm">.</span><span class="ci">IO</span><span class="cm">.</span><span class="ci">Stream</span></a> <span class="cp">*</span> <span class="ci">leaveOpen</span><span class="cp">:</span> <span class="ci">bool</span>
+      <span class="cp">*</span> <span class="ci">encoding</span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx"><span class="ci">System</span><span class="cm">.</span><span class="ci">Text</span><span class="cm">.</span><span class="ci">Encoding</span></a> <span class="cp">*</span> <span class="ci">detectEncodingFromByteOrderMarks</span><span class="cp">:</span> <span class="ci">bool</span>
+      <span class="cp">*</span> <span class="ci">blockSize</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">blockOverlap</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">minRegexSpace</span><span class="cp">:</span> <span class="ci">int</span>
+      <span class="cp">*</span> <span class="ci">byteBufferLength</span><span class="cp">:</span> <span class="ci">int</span>
      <span class="cr">-&gt;</span> <span class="ci">CharStream</span>
 </pre>
        </div>
        <div class="interface-member-description">
         <p class="para _1">
          Constructs a <code class="fsharp"><span class="ci">CharStream</span></code> from a <code class="fsharp"><a
-         href="http://msdn.microsoft.com/en-us/library/system.io.stream.aspx"><span class="ci">System</span><span class="cp">.</span><span
-         class="ci">IO</span><span class="cp">.</span><span class="ci">Stream</span></a></code>.
+         href="http://msdn.microsoft.com/en-us/library/system.io.stream.aspx"><span class="ci">System</span><span class="cm">.</span><span
+         class="ci">IO</span><span class="cm">.</span><span class="ci">Stream</span></a></code>.
         </p>
         <p class="para _2">
-         The maximum supported stream size is approximately (2<sup>31</sup>/p)×(<code class="fsharp"><span class="ci">blockSize</span></code> ‐ <code
-         class="fsharp"><span class="ci">blockOverlap</span></code>) chars, where p is 4 on a 32‐bit CLR and 8 on a 64‐bit CLR.
+         The normal version of the <code class="fsharp"><span class="ci">CharStream</span></code> class supports stream sizes up to approximately
+         (2<sup>31</sup>/p)×(<code class="fsharp"><span class="ci">blockSize</span></code> ‐ <code class="fsharp"><span
+         class="ci">blockOverlap</span></code>) chars, where p is 4 on a 32‐bit CLR and 8 on a 64‐bit CLR.<br />The <a
+         href="#remarks.low-trust-version">Low‐Trust version</a> only supports streams small enough that the complete content can be read into a
+         single string.
         </p>
         <div class="para _3">
          <div class="admonition">
@@ -760,7 +857,7 @@
            <dt class="_1"><code class="fsharp"><span class="ci">stream</span></code></dt>
            <dd class="_1">
             <p class="para _1">
-             The byte stream providing the input. If <code class="fsharp"><span class="ci">stream</span><span class="cp">.</span><a
+             The byte stream providing the input. If <code class="fsharp"><span class="ci">stream</span><span class="cm">.</span><a
              href="http://msdn.microsoft.com/en-us/library/system.io.stream.canread.aspx"><span class="ci">CanRead</span></a></code> returns <code
              class="fsharp"><span class="cb">false</span></code>, an <code class="fsharp"><a
              href="http://msdn.microsoft.com/en-us/library/system.argumentexception.aspx"><span class="ci">ArgumentException</span></a></code> is
@@ -781,7 +878,7 @@
              class="ci">Encoding</span></a></code> used for decoding the byte stream into chars.
             </p>
             <p class="para _2">
-             If the preamble returned by <code class="fsharp"><span class="ci">encoding</span><span class="cp">.</span><a
+             If the preamble returned by <code class="fsharp"><span class="ci">encoding</span><span class="cm">.</span><a
              href="http://msdn.microsoft.com/en-us/library/system.text.encoding.getpreamble.aspx"><span class="ci">GetPreamble</span></a><span
              class="cp">()</span></code> is present at the beginning of the stream, the <code class="fsharp"><span class="ci">CharStream</span></code>
              will skip over it.
@@ -798,16 +895,18 @@
            </dd>
            <dt class="_5"><code class="fsharp"><span class="ci">blockSize</span></code></dt>
            <dd class="_5">
-            <p class="para _1">The number of chars per block. The default is 3×2<sup>16</sup> ≈ 200k.</p>
+            <p class="para _1">
+             The number of chars per block. The value is rounded up to the first positive multiple of 1536. The default is 3×2<sup>16</sup> ≈ 200k.
+            </p>
            </dd>
            <dt class="_6"><code class="fsharp"><span class="ci">blockOverlap</span></code></dt>
            <dd class="_6">
             <p class="para _1">
-             The number of chars at the end of a block that are preserved when reading the next block into the char buffer. It must be less than <code
-             class="fsharp"><span class="ci">blockSize</span><span class="co">/</span><span class="cn">2</span></code>, but not less than <code
-             class="fsharp"><span class="ci">encoding</span><span class="cp">.</span><span class="ci">GetMaxCharCount</span><span
-             class="cp">(</span><span class="cn">1</span><span class="cp">)</span></code>. The default is <code class="fsharp"><span
-             class="ci">blockSize</span><span class="co">/</span><span class="cn">3</span></code>.
+             The number of chars at the end of a block that are preserved when reading the next block into the char buffer. If this value is less than
+             <code class="fsharp"><span class="ci">encoding</span><span class="cm">.</span><span class="ci">GetMaxCharCount</span><span
+             class="cp">(</span><span class="cn">1</span><span class="cp">)</span></code> or not less than <code class="fsharp"><span
+             class="ci">blockSize</span><span class="co">/</span><span class="cn">2</span></code>, the default value is used instead. The default is
+             <code class="fsharp"><span class="ci">blockSize</span><span class="co">/</span><span class="cn">3</span></code>.
             </p>
            </dd>
            <dt class="_7"><code class="fsharp"><a id="members.minRegexSpace"></a><span class="ci">minRegexSpace</span></code></dt>
@@ -815,8 +914,8 @@
             <p class="para _1">
              The number of chars that are guaranteed to be visible to a regular expression when it is matched by <code class="fsharp"><a
              href="#Iterator.members.Match_Regex"><span class="ci">Match</span></a></code> (assuming there are enough chars remaining in the stream).
-             It must not be greater than <code class="fsharp"><span class="ci">blockOverlap</span></code>. The default is 2/3 of <code
-             class="fsharp"><span class="ci">blockOverlap</span></code>.
+             If this value is negative or greater than <code class="fsharp"><span class="ci">blockOverlap</span></code>, the default value is used
+             instead. The default value is 2/3 of <code class="fsharp"><span class="ci">blockOverlap</span></code>.
             </p>
            </dd>
            <dt class="_8">byteBufferLength</dt>
@@ -838,9 +937,9 @@
         <p class="para _1">
          Releases all resources used by the <code class="fsharp"><span class="ci">CharStream</span></code>. If the <code class="fsharp"><span
          class="ci">CharStream</span></code> was constructed from a <code class="fsharp"><a
-         href="http://msdn.microsoft.com/en-us/library/system.io.stream.aspx"><span class="ci">System</span><span class="cp">.</span><span
-         class="ci">IO</span><span class="cp">.</span><span class="ci">Stream</span></a></code> or a file path and the constructor was not called with
-         <code class="fsharp"><span class="ci">leaveOpen</span> <span class="cp">=</span> <span class="cb">true</span></code>, the byte stream is
+         href="http://msdn.microsoft.com/en-us/library/system.io.stream.aspx"><span class="ci">System</span><span class="cm">.</span><span
+         class="ci">IO</span><span class="cm">.</span><span class="ci">Stream</span></a></code> or a file path and the constructor was not called with
+         <code class="fsharp"><span class="ci">leaveOpen</span> <span class="co">=</span> <span class="cb">true</span></code>, the byte stream is
          closed.
         </p>
        </div>
@@ -877,42 +976,42 @@
         </p>
         <p class="para _3">
          The index is zero‐based, except if the <code class="fsharp"><span class="ci">CharStream</span></code> was constructed with a positive <code
-         class="fsharp"><span class="ci">streamIndexOffset</span></code> argument, in which case the index of the first char equals <code
-         class="fsharp"><span class="ci">streamIndexOffset</span></code> and <code class="fsharp"><a href="#members.IndexOffset"><span
-         class="ci">IndexOffset</span></a></code>.
+         class="fsharp"><span class="ci">streamBeginIndex</span></code> argument, in which case the index of the first char equals <code
+         class="fsharp"><span class="ci">streamBeginIndex</span></code> and <code class="fsharp"><a href="#members.BeginIndex"><span
+         class="ci">BeginIndex</span></a></code>.
         </p>
         <p class="para _4">
          An <code class="fsharp"><a href="http://msdn.microsoft.com/en-us/library/system.argumentoutofrangeexception.aspx"><span
-         class="ci">ArgumentOutOfRangeException</span></a></code> is thrown if the index is negative (or less than the <code class="fsharp"><span
-         class="ci">streamIndexOffset</span></code> specified when the <code class="fsharp"><span class="ci">CharStream</span></code> was
-         constructed). This method may also throw any of the <a href="#exceptions">I/O related exceptions</a> detailed above.
+         class="ci">ArgumentOutOfRangeException</span></a></code> is thrown if the index is less than the <code class="fsharp"><a
+         href="#members.BeginIndex"><span class="ci">BeginIndex</span></a></code>. This method may also throw any of the <a href="#exceptions">I/O
+         related exceptions</a> detailed above.
         </p>
        </div>
       </div>
-      <div class="interface-member _7" id="members.IndexOffset">
+      <div class="interface-member _7" id="members.BeginIndex">
        <div class="interface-member-code">
-        <a class="interface-member-backlink" href="#interface.IndexOffset:B:">⇧</a>
-<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">IndexOffset</span></span><span class="cp">:</span> <span class="ci">int64</span>
+        <a class="interface-member-backlink" href="#interface.BeginIndex:B:">⇧</a>
+<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">BeginIndex</span></span><span class="cp">:</span> <span class="ci">int64</span>
 </pre>
        </div>
        <div class="interface-member-description">
         <p class="para _1">
          The index of the first char in the stream, i.e. <code class="fsharp"><a href="#members.Begin"><span class="ci">Begin</span></a><span
-         class="cp">.</span><a href="#Iterator.members.Index"><span class="ci">Index</span></a></code>. This value is determined by the <code
-         class="fsharp"><span class="ci">streamIndexOffset</span></code> argument of some of the <code class="fsharp"><span
-         class="ci">CharStream</span></code> constructors. The default index offset is 0.
+         class="cm">.</span><a href="#Iterator.members.Index"><span class="ci">Index</span></a></code>. This value is determined by the <code
+         class="fsharp"><span class="ci">streamBeginIndex</span></code> argument of some of the <code class="fsharp"><span
+         class="ci">CharStream</span></code> constructors. By default this value is 0.
         </p>
        </div>
       </div>
-      <div class="interface-member _8" id="members.EndOfStream">
+      <div class="interface-member _8" id="members.EndIndex">
        <div class="interface-member-code">
-        <a class="interface-member-backlink" href="#interface.EndOfStream:B:">⇧</a>
-<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">EndOfStream</span></span><span class="cp">:</span> <span class="ci">int64</span>
+        <a class="interface-member-backlink" href="#interface.EndIndex:B:">⇧</a>
+<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">EndIndex</span></span><span class="cp">:</span> <span class="ci">int64</span>
 </pre>
        </div>
        <div class="interface-member-description">
         <p class="para _1">
-         The index of the last char of the stream plus 1, or <code class="fsharp"><span class="ci">Int64</span><span class="cp">.</span><span
+         The index of the last char of the stream plus 1, or <code class="fsharp"><span class="ci">Int64</span><span class="cm">.</span><span
          class="ci">MaxValue</span></code> if the end of the stream has not yet been detected.
         </p>
        </div>
@@ -927,12 +1026,12 @@
         <p class="para _1">
          Returns a case‐folded copy of the string argument. All chars are mapped using the (non‐Turkic) 1‐to‐1 <a
          href="http://unicode.org/Public/UNIDATA/CaseFolding.txt">case folding mappings</a> (v. 5.1) for Unicode code points in the Basic Multilingual
-         Plane, i.e. code points below 0x10000. If the case‐folded string is identical with the argument string, the original argument is returned (to
-         preserve its reference identity). If the argument is <code class="fsharp"><span class="cnu">null</span></code>, <code class="fsharp"><span
+         Plane, i.e. code points below 0x10000. If the case‐folded string equals the argument string, the original argument is returned (to preserve
+         its reference identity). If the argument is <code class="fsharp"><span class="cnu">null</span></code>, <code class="fsharp"><span
          class="cnu">null</span></code> is returned.
         </p>
         <p class="para _2">
-         <code class="fsharp"><span class="ci">CharParsers</span><span class="cp">.</span><a href="charparsers.html#members.foldCase"><span
+         <code class="fsharp"><span class="ci">CharParsers</span><span class="cm">.</span><a href="charparsers.html#members.foldCase"><span
          class="ci">foldCase</span></a></code> is a convenient helper function that forwards all calls to this method.
         </p>
        </div>
@@ -949,11 +1048,12 @@
          class="ce">\r</span><span class="ce">\n</span><span class="right-delimiter">"</span></span></code> and <code class="fsharp"><span
          class="cs"><span class="left-delimiter">"</span><span class="ce">\r</span><span class="right-delimiter">"</span></span></code> replaced by
          <code class="fsharp"><span class="cs"><span class="left-delimiter">"</span><span class="ce">\n</span><span
-         class="right-delimiter">"</span></span></code>. If the argument is <code class="fsharp"><span class="cnu">null</span></code>, <code
-         class="fsharp"><span class="cnu">null</span></code> is returned.
+         class="right-delimiter">"</span></span></code>. If the normalized string equals the argument string, the original argument is returned (to
+         preserve its reference identity). If the argument is <code class="fsharp"><span class="cnu">null</span></code>, <code class="fsharp"><span
+         class="cnu">null</span></code> is returned.
         </p>
         <p class="para _2">
-         <code class="fsharp"><span class="ci">CharParsers</span><span class="cp">.</span><a href="charparsers.html#members.normalizeNewlines"><span
+         <code class="fsharp"><span class="ci">CharParsers</span><span class="cm">.</span><a href="charparsers.html#members.normalizeNewlines"><span
          class="ci">normalizeNewlines</span></a></code> is a convenient helper function that forwards all calls to this method.
         </p>
        </div>
@@ -986,11 +1086,12 @@
 
   <span class="cp">[&lt;</span><span class="ci">Struct</span><span class="cp">&gt;]</span>
   <span class="ck">type</span> <span class="ci">Iterator</span> <span class="cp">=</span>
-    <span class="ck">interface</span> <a href="http://msdn.microsoft.com/en-us/library/ms131187.aspx"><span class="ci">System</span><span class="cp">.</span><span class="ci">IEquatable</span></a><span class="co">&lt;</span><span class="ci">Iterator</span><span class="cp">&gt;</span>
+    <span class="ck">interface</span> <a href="http://msdn.microsoft.com/en-us/library/ms131187.aspx"><span class="ci">System</span><span class="cm">.</span><span class="ci">IEquatable</span></a><span class="cp">&lt;</span><span class="ci">Iterator</span><span class="cp">&gt;</span>
 
     <span class="ck">member</span> <a id="Iterator.interface.Stream:B:" href="#Iterator.members.Stream"><span class="interface-member-marker"><span class="ci">Stream</span></span></a><span class="cp">:</span> <a href="#"><span class="ci">CharStream</span></a>
 
     <span class="ck">member</span> <a id="Iterator.interface.Index:B:" href="#Iterator.members.Index"><span class="interface-member-marker"><span class="ci">Index</span></span></a><span class="cp">:</span> <span class="ci">int64</span>
+    <span class="ck">member</span> <a id="Iterator.interface.IsBeginOfStream:B:" href="#Iterator.members.IsBeginOfStream"><span class="interface-member-marker"><span class="ci">IsBeginOfStream</span></span></a><span class="cp">:</span> <span class="ci">bool</span>
     <span class="ck">member</span> <a id="Iterator.interface.IsEndOfStream:B:" href="#Iterator.members.IsEndOfStream"><span class="interface-member-marker"><span class="ci">IsEndOfStream</span></span></a><span class="cp">:</span> <span class="ci">bool</span>
 
     <span class="ck">member</span> <a id="Iterator.interface.Next:B:" href="#Iterator.members.Next"><span class="interface-member-marker"><span class="ci">Next</span></span></a><span class="cp">:</span> <span class="ci">Iterator</span>
@@ -1000,30 +1101,30 @@
 
     <span class="ck">member</span> <a id="Iterator.interface.Match:B:" href="#Iterator.members.Match"><span class="interface-member-marker"><span class="ci">Match</span></span></a><span class="cp">:</span> <span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span>
     <span class="ck">member</span> <a id="Iterator.interface.Match_string:B:" href="#Iterator.members.Match_string"><span class="interface-member-marker"><span class="ci">Match</span></span></a><span class="cp">:</span> <span class="ci">chars</span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <span class="ci">bool</span>
-    <span class="ck">member</span> <a id="Iterator.interface.Match_substring:B:" href="#Iterator.members.Match_substring"><span class="interface-member-marker"><span class="ci">Match</span></span></a><span class="cp">:</span> <span class="ci">chars</span><span class="cp">:</span> <span class="ci">string</span> <span class="co">*</span> <span class="ci">charsIndex</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">bool</span>
-    <span class="ck">member</span> <a id="Iterator.interface.Match_char-array:B:" href="#Iterator.members.Match_char-array"><span class="interface-member-marker"><span class="ci">Match</span></span></a><span class="cp">:</span> <span class="ci">chars</span><span class="cp">:</span> <span class="ci">char</span><span class="cp">[]</span> <span class="co">*</span> <span class="ci">charsIndex</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">bool</span>
-    <span class="ck">member</span> <a id="Iterator.interface.Match_char-pointer:B:" href="#Iterator.members.Match_char-pointer"><span class="interface-member-marker"><span class="ci">Match</span></span></a><span class="cp">:</span> <span class="ci">pchars</span><span class="cp">:</span> <span class="ci">NativePtr</span><span class="co">&lt;</span><span class="ci">char</span><span class="cp">&gt;</span> <span class="co">*</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">bool</span>
+    <span class="ck">member</span> <a id="Iterator.interface.Match_substring:B:" href="#Iterator.members.Match_substring"><span class="interface-member-marker"><span class="ci">Match</span></span></a><span class="cp">:</span> <span class="ci">chars</span><span class="cp">:</span> <span class="ci">string</span> <span class="cp">*</span> <span class="ci">charsIndex</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">bool</span>
+    <span class="ck">member</span> <a id="Iterator.interface.Match_char-array:B:" href="#Iterator.members.Match_char-array"><span class="interface-member-marker"><span class="ci">Match</span></span></a><span class="cp">:</span> <span class="ci">chars</span><span class="cp">:</span> <span class="ci">char</span><span class="cp">[]</span> <span class="cp">*</span> <span class="ci">charsIndex</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">bool</span>
+    <span class="ck">member</span> <a id="Iterator.interface.Match_char-pointer:B:" href="#Iterator.members.Match_char-pointer"><span class="interface-member-marker"><span class="ci">Match</span></span></a><span class="cp">:</span> <span class="ci">chars</span><span class="cp">:</span> <span class="ci">NativePtr</span><span class="cp">&lt;</span><span class="ci">char</span><span class="cp">&gt;</span> <span class="cp">*</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">bool</span>
 
-    <span class="ck">member</span> <a id="Iterator.interface.MatchCaseFolded:B:" href="#Iterator.members.MatchCaseFolded"><span class="interface-member-marker"><span class="ci">MatchCaseFolded</span></span></a><span class="cp">:</span> <span class="ci">caseFoldedStr</span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <span class="ci">bool</span>
-    <span class="ck">member</span> <a id="Iterator.interface.MatchCaseFolded_char-pointer:B:" href="#Iterator.members.MatchCaseFolded_char-pointer"><span class="interface-member-marker"><span class="ci">MatchCaseFolded</span></span></a><span class="cp">:</span> <span class="ci">pcaseFoldedChars</span><span class="cp">:</span><span class="ci">NativePtr</span><span class="co">&lt;</span><span class="ci">char</span><span class="cp">&gt;</span> <span class="co">*</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">bool</span>
+    <span class="ck">member</span> <a id="Iterator.interface.MatchCaseFolded:B:" href="#Iterator.members.MatchCaseFolded"><span class="interface-member-marker"><span class="ci">MatchCaseFolded</span></span></a><span class="cp">:</span> <span class="ci">caseFoldedChars</span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <span class="ci">bool</span>
+    <span class="ck">member</span> <a id="Iterator.interface.MatchCaseFolded_char-pointer:B:" href="#Iterator.members.MatchCaseFolded_char-pointer"><span class="interface-member-marker"><span class="ci">MatchCaseFolded</span></span></a><span class="cp">:</span> <span class="ci">caseFoldedChars</span><span class="cp">:</span> <span class="ci">NativePtr</span><span class="cp">&lt;</span><span class="ci">char</span><span class="cp">&gt;</span> <span class="cp">*</span> <span class="ci">length</span><span class="cp">:</span><span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">bool</span>
 
-    <span class="ck">member</span> <a id="Iterator.interface.Match_Regex:B:" href="#Iterator.members.Match_Regex"><span class="interface-member-marker"><span class="ci">Match</span></span></a><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.text.regularexpressions.regex.aspx"><span class="ci">System</span><span class="cp">.</span><span class="ci">Text</span><span class="cp">.</span><span class="ci">RegularExpressions</span><span class="cp">.</span><span class="ci">Regex</span></a>
-                  <span class="cr">-&gt;</span> <a href="http://msdn.microsoft.com/en-us/library/system.text.regularexpressions.match.aspx"><span class="ci">System</span><span class="cp">.</span><span class="ci">Text</span><span class="cp">.</span><span class="ci">RegularExpressions</span><span class="cp">.</span><span class="ci">Match</span></a>
+    <span class="ck">member</span> <a id="Iterator.interface.Match_Regex:B:" href="#Iterator.members.Match_Regex"><span class="interface-member-marker"><span class="ci">Match</span></span></a><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.text.regularexpressions.regex.aspx"><span class="ci">System</span><span class="cm">.</span><span class="ci">Text</span><span class="cm">.</span><span class="ci">RegularExpressions</span><span class="cm">.</span><span class="ci">Regex</span></a>
+                  <span class="cr">-&gt;</span> <a href="http://msdn.microsoft.com/en-us/library/system.text.regularexpressions.match.aspx"><span class="ci">System</span><span class="cm">.</span><span class="ci">Text</span><span class="cm">.</span><span class="ci">RegularExpressions</span><span class="cm">.</span><span class="ci">Match</span></a>
 
     <span class="ck">member</span> <a id="Iterator.interface.Read:B:" href="#Iterator.members.Read"><span class="interface-member-marker"><span class="ci">Read</span></span></a><span class="cp">:</span> <span class="ci">unit</span> <span class="cr">-&gt;</span> <span class="ci">char</span>
     <span class="ck">static</span> <span class="ck">val</span> <a id="Iterator.interface.EndOfStreamChar:B:" href="#Iterator.members.EndOfStreamChar"><span class="interface-member-marker"><span class="ci">EndOfStreamChar</span></span></a><span class="cp">:</span> <span class="ci">char</span>
-    
+
     <span class="ck">type</span> <a id="Iterator.interface.TwoChars"></a><span class="ci">TwoChars</span> <span class="cp">=</span> <span class="ck">struct</span>
-        <span class="ck">new</span><span class="cp">:</span> <span class="ci">char</span><span class="cp">*</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">TwoChars</span>
+        <span class="ck">new</span><span class="cp">:</span> <span class="ci">char</span> <span class="cp">*</span> <span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">TwoChars</span>
         <span class="ck">val</span> <span class="ci">Char0</span><span class="cp">:</span> <span class="ci">char</span>
         <span class="ck">val</span> <span class="ci">Char1</span><span class="cp">:</span> <span class="ci">char</span>
     <span class="ck">end</span>
     <span class="ck">member</span> <a id="Iterator.interface.Read2:B:" href="#Iterator.members.Read2"><span class="interface-member-marker"><span class="ci">Read2</span></span></a><span class="cp">:</span> <span class="ci">unit</span> <span class="cr">-&gt;</span> <a href="#Iterator.interface.TwoChars"><span class="ci">TwoChars</span></a>
 
     <span class="ck">member</span> <a id="Iterator.interface.Read_int:B:" href="#Iterator.members.Read_int"><span class="interface-member-marker"><span class="ci">Read</span></span></a><span class="cp">:</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">string</span>
-    <span class="ck">member</span> <a id="Iterator.interface.Read_int_bool:B:" href="#Iterator.members.Read_int_bool"><span class="interface-member-marker"><span class="ci">Read</span></span></a><span class="cp">:</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">allOrEmpty</span><span class="cp">:</span> <span class="ci">bool</span> <span class="cr">-&gt;</span> <span class="ci">string</span>
-    <span class="ck">member</span> <a id="Iterator.interface.Read_char-array:B:" href="#Iterator.members.Read_char-array"><span class="interface-member-marker"><span class="ci">Read</span></span></a><span class="cp">:</span> <span class="ci">dest</span><span class="cp">:</span> <span class="ci">char</span><span class="cp">[]</span> <span class="co">*</span> <span class="ci">destIndex</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">int</span>
-    <span class="ck">member</span> <a id="Iterator.interface.Read_char-pointer:B:" href="#Iterator.members.Read_char-pointer"><span class="interface-member-marker"><span class="ci">Read</span></span></a><span class="cp">:</span> <span class="ci">dest</span><span class="cp">:</span> <span class="ci">NativePtr</span><span class="co">&lt;</span><span class="ci">char</span><span class="cp">&gt;</span> <span class="co">*</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">int</span>
+    <span class="ck">member</span> <a id="Iterator.interface.Read_int_bool:B:" href="#Iterator.members.Read_int_bool"><span class="interface-member-marker"><span class="ci">Read</span></span></a><span class="cp">:</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">allOrEmpty</span><span class="cp">:</span> <span class="ci">bool</span> <span class="cr">-&gt;</span> <span class="ci">string</span>
+    <span class="ck">member</span> <a id="Iterator.interface.Read_char-array:B:" href="#Iterator.members.Read_char-array"><span class="interface-member-marker"><span class="ci">Read</span></span></a><span class="cp">:</span> <span class="ci">buffer</span><span class="cp">:</span> <span class="ci">char</span><span class="cp">[]</span> <span class="cp">*</span> <span class="ci">bufferIndex</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">int</span>
+    <span class="ck">member</span> <a id="Iterator.interface.Read_char-pointer:B:" href="#Iterator.members.Read_char-pointer"><span class="interface-member-marker"><span class="ci">Read</span></span></a><span class="cp">:</span> <span class="ci">buffer</span><span class="cp">:</span> <span class="ci">NativePtr</span><span class="cp">&lt;</span><span class="ci">char</span><span class="cp">&gt;</span> <span class="cp">*</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">int</span>
 
     <span class="ck">member</span> <a id="Iterator.interface.ReadUntil:B:" href="#Iterator.members.ReadUntil"><span class="interface-member-marker"><span class="ci">ReadUntil</span></span></a><span class="cp">:</span> <span class="ci">iterToCharAfterLastInString</span><span class="cp">:</span> <span class="ci">Iterator</span> <span class="cr">-&gt;</span> <span class="ci">string</span>
 
@@ -1068,13 +1169,27 @@
          <p class="para _1">The index of the stream char pointed to by the <code class="fsharp"><span class="ci">Iterator</span></code>.</p>
          <p class="para _2">
           The index is zero‐based, except if the <code class="fsharp"><a href="#"><span class="ci">CharStream</span></a></code> was constructed with a
-          positive <code class="fsharp"><span class="ci">streamIndexOffset</span></code> argument, in which case the index of the first char equals
-          <code class="fsharp"><span class="ci">streamIndexOffset</span></code> and <code class="fsharp"><a href="#Iterator.members.Stream"><span
-          class="ci">Stream</span></a><span class="cp">.</span><a href="#members.IndexOffset"><span class="ci">IndexOffset</span></a></code>.
+          positive <code class="fsharp"><span class="ci">streamBeginIndex</span></code> argument, in which case the index of the first char equals
+          <code class="fsharp"><span class="ci">streamBeginIndex</span></code> and <code class="fsharp"><a href="#Iterator.members.Stream"><span
+          class="ci">Stream</span></a><span class="cm">.</span><a href="#members.BeginIndex"><span class="ci">BeginIndex</span></a></code>.
          </p>
         </div>
        </div>
-       <div class="interface-member _3" id="Iterator.members.IsEndOfStream">
+       <div class="interface-member _3" id="Iterator.members.IsBeginOfStream">
+        <div class="interface-member-code">
+         <a class="interface-member-backlink" href="#Iterator.interface.IsBeginOfStream:B:">⇧</a>
+<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">IsBeginOfStream</span></span><span class="cp">:</span> <span class="ci">bool</span>
+</pre>
+        </div>
+        <div class="interface-member-description">
+         <p class="para _1">
+          Indicates whether the <code class="fsharp"><span class="ci">Iterator</span></code> points to the first char in the <code class="fsharp"><a
+          href="#"><span class="ci">CharStream</span></a></code>. If the <code class="fsharp"><a href="#"><span
+          class="ci">CharStream</span></a></code> is empty, this property is always <code class="fsharp"><span class="cb">true</span></code>.
+         </p>
+        </div>
+       </div>
+       <div class="interface-member _4" id="Iterator.members.IsEndOfStream">
         <div class="interface-member-code">
          <a class="interface-member-backlink" href="#Iterator.interface.IsEndOfStream:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">IsEndOfStream</span></span><span class="cp">:</span> <span class="ci">bool</span>
@@ -1082,12 +1197,13 @@
         </div>
         <div class="interface-member-description">
          <p class="para _1">
-          Indicates whether the <code class="fsharp"><span class="ci">Iterator</span></code> has reached the end of the stream, i.e. whether it points
-          to one char beyond the last char in the stream.
+          Indicates whether the <code class="fsharp"><span class="ci">Iterator</span></code> points to the end of the <code class="fsharp"><a
+          href="#"><span class="ci">CharStream</span></a></code>, i.e. whether it points to one char beyond the last char in the <code
+          class="fsharp"><a href="#"><span class="ci">CharStream</span></a></code>.
          </p>
         </div>
        </div>
-       <div class="interface-member _4" id="Iterator.members.Next">
+       <div class="interface-member _5" id="Iterator.members.Next">
         <div class="interface-member-code">
          <a class="interface-member-backlink" href="#Iterator.interface.Next:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">Next</span></span><span class="cp">:</span> <span class="ci">Iterator</span>
@@ -1102,7 +1218,7 @@
          <p class="para _2">This method may throw any of the <a href="#exceptions">I/O related exceptions</a> detailed above.</p>
         </div>
        </div>
-       <div class="interface-member _5" id="Iterator.members.Advance_int">
+       <div class="interface-member _6" id="Iterator.members.Advance_int">
         <div class="interface-member-code">
          <a class="interface-member-backlink" href="#Iterator.interface.Advance_int:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">Advance</span></span><span class="cp">:</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">Iterator</span>
@@ -1115,7 +1231,7 @@
          </p>
         </div>
        </div>
-       <div class="interface-member _6" id="Iterator.members.Advance_uint">
+       <div class="interface-member _7" id="Iterator.members.Advance_uint">
         <div class="interface-member-code">
          <a class="interface-member-backlink" href="#Iterator.interface.Advance_uint:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">Advance</span></span><span class="cp">:</span> <span class="ci">uint</span> <span class="cr">-&gt;</span> <span class="ci">Iterator</span>
@@ -1128,7 +1244,7 @@
          </p>
         </div>
        </div>
-       <div class="interface-member _7" id="Iterator.members.Advance">
+       <div class="interface-member _8" id="Iterator.members.Advance">
         <div class="interface-member-code">
          <a class="interface-member-backlink" href="#Iterator.interface.Advance:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">Advance</span></span><span class="cp">:</span> <span class="ci">int64</span> <span class="cr">-&gt;</span> <span class="ci">Iterator</span>
@@ -1142,13 +1258,15 @@
          </p>
          <p class="para _3">
           An <code class="fsharp"><a href="http://msdn.microsoft.com/en-us/library/system.argumentoutofrangeexception.aspx"><span
-          class="ci">ArgumentOutOfRangeException</span></a></code> is thrown if the new index is negative (or less than the index offset specified
-          when the <code class="fsharp"><a href="#"><span class="ci">CharStream</span></a></code> was constructed). This method may also throw any of
-          the <a href="#exceptions">I/O related exceptions</a> detailed above.
+          class="ci">ArgumentOutOfRangeException</span></a></code> is thrown if the new position would lie before the beginning of the <code
+          class="fsharp"><a href="#"><span class="ci">CharStream</span></a></code>, i.e. if the new index would be less than the <code
+          class="fsharp"><a href="#Iterator.members.Stream"><span class="ci">Stream</span></a><span class="cm">.</span><a
+          href="#members.BeginIndex"><span class="ci">BeginIndex</span></a></code>. This method may also throw any of the <a href="#exceptions">I/O
+          related exceptions</a> detailed above.
          </p>
         </div>
        </div>
-       <div class="interface-member _8" id="Iterator.members.Match">
+       <div class="interface-member _9" id="Iterator.members.Match">
         <div class="interface-member-code">
          <a class="interface-member-backlink" href="#Iterator.interface.Match:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">Match</span></span><span class="cp">:</span> <span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span>
@@ -1163,7 +1281,7 @@
          <p class="para _2">This method may throw any of the <a href="#exceptions">I/O related exceptions</a> detailed above.</p>
         </div>
        </div>
-       <div class="interface-member _9" id="Iterator.members.Match_string">
+       <div class="interface-member _0" id="Iterator.members.Match_string">
         <div class="interface-member-code">
          <a class="interface-member-backlink" href="#Iterator.interface.Match_string:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">Match</span></span><span class="cp">:</span> <span class="ci">chars</span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <span class="ci">bool</span>
@@ -1180,16 +1298,16 @@
          <p class="para _2">This method may throw any of the <a href="#exceptions">I/O related exceptions</a> detailed above.</p>
         </div>
        </div>
-       <div class="interface-member _0" id="Iterator.members.Match_substring">
+       <div class="interface-member _1" id="Iterator.members.Match_substring">
         <div class="interface-member-code">
          <a class="interface-member-backlink" href="#Iterator.interface.Match_substring:B:">⇧</a>
-<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">Match</span></span><span class="cp">:</span> <span class="ci">chars</span><span class="cp">:</span> <span class="ci">string</span> <span class="co">*</span> <span class="ci">charsIndex</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">bool</span>
+<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">Match</span></span><span class="cp">:</span> <span class="ci">chars</span><span class="cp">:</span> <span class="ci">string</span> <span class="cp">*</span> <span class="ci">charsIndex</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">bool</span>
 </pre>
         </div>
         <div class="interface-member-description">
          <p class="para _1">
           Returns <code class="fsharp"><span class="cb">true</span></code> if <code class="fsharp"><span class="ci">chars</span><span
-          class="cp">.</span><span class="cp">[</span><span class="ci">charsIndex</span><span class="co">..</span><span class="cp">(</span><span
+          class="cm">.</span><span class="cp">[</span><span class="ci">charsIndex</span><span class="cra">..</span><span class="cp">(</span><span
           class="ci">charsIndex</span> <span class="co">+</span> <span class="ci">length</span> <span class="co">-</span> <span
           class="cn">1</span><span class="cp">)</span><span class="cp">]</span></code> matches the chars in the stream beginning with the char pointed
           to by the <code class="fsharp"><span class="ci">Iterator</span></code>. If the chars do not match or if there are not enough chars remaining
@@ -1202,21 +1320,21 @@
           class="ci">ArgumentOutOfRangeException</span></a></code> is thrown if the arguments do not satisfy the following conditions: <code
           class="fsharp"><span class="ci">charsIndex</span></code> ≥ 0, <code class="fsharp"><span class="ci">length</span></code> ≥ 0 and <code
           class="fsharp"><span class="ci">charsIndex</span></code> + <code class="fsharp"><span class="ci">length</span></code> ≤ <code
-          class="fsharp"><span class="ci">chars</span><span class="cp">.</span><span class="ci">Length</span></code>. This method may also throw any
+          class="fsharp"><span class="ci">chars</span><span class="cm">.</span><span class="ci">Length</span></code>. This method may also throw any
           of the <a href="#exceptions">I/O related exceptions</a> detailed above.
          </p>
         </div>
        </div>
-       <div class="interface-member _1" id="Iterator.members.Match_char-array">
+       <div class="interface-member _2" id="Iterator.members.Match_char-array">
         <div class="interface-member-code">
          <a class="interface-member-backlink" href="#Iterator.interface.Match_char-array:B:">⇧</a>
-<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">Match</span></span><span class="cp">:</span> <span class="ci">chars</span><span class="cp">:</span> <span class="ci">char</span><span class="cp">[]</span> <span class="co">*</span> <span class="ci">charsIndex</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">bool</span>
+<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">Match</span></span><span class="cp">:</span> <span class="ci">chars</span><span class="cp">:</span> <span class="ci">char</span><span class="cp">[]</span> <span class="cp">*</span> <span class="ci">charsIndex</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">bool</span>
 </pre>
         </div>
         <div class="interface-member-description">
          <p class="para _1">
           Returns <code class="fsharp"><span class="cb">true</span></code> if <code class="fsharp"><span class="ci">chars</span><span
-          class="cp">.</span><span class="cp">[</span><span class="ci">charsIndex</span><span class="co">..</span><span class="cp">(</span><span
+          class="cm">.</span><span class="cp">[</span><span class="ci">charsIndex</span><span class="cra">..</span><span class="cp">(</span><span
           class="ci">charsIndex</span> <span class="co">+</span> <span class="ci">length</span> <span class="co">-</span> <span
           class="cn">1</span><span class="cp">)</span><span class="cp">]</span></code> matches the chars in the stream beginning with the char pointed
           to by the <code class="fsharp"><span class="ci">Iterator</span></code>. If the chars do not match or if there are not enough chars remaining
@@ -1229,26 +1347,30 @@
           class="ci">ArgumentOutOfRangeException</span></a></code> is thrown if the arguments do not satisfy the following conditions: <code
           class="fsharp"><span class="ci">charsIndex</span></code> ≥ 0, <code class="fsharp"><span class="ci">length</span></code> ≥ 0 and <code
           class="fsharp"><span class="ci">charsIndex</span></code> + <code class="fsharp"><span class="ci">length</span></code> ≤ <code
-          class="fsharp"><span class="ci">chars</span><span class="cp">.</span><span class="ci">Length</span></code>. This method may also throw any
+          class="fsharp"><span class="ci">chars</span><span class="cm">.</span><span class="ci">Length</span></code>. This method may also throw any
           of the <a href="#exceptions">I/O related exceptions</a> detailed above.
          </p>
         </div>
        </div>
-       <div class="interface-member _2" id="Iterator.members.Match_char-pointer">
+       <div class="interface-member _3" id="Iterator.members.Match_char-pointer">
         <div class="interface-member-code">
          <a class="interface-member-backlink" href="#Iterator.interface.Match_char-pointer:B:">⇧</a>
-<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">Match</span></span><span class="cp">:</span> <span class="ci">pchars</span><span class="cp">:</span> <span class="ci">NativePtr</span><span class="co">&lt;</span><span class="ci">char</span><span class="cp">&gt;</span> <span class="co">*</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">bool</span>
+<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">Match</span></span><span class="cp">:</span> <span class="ci">chars</span><span class="cp">:</span> <span class="ci">NativePtr</span><span class="cp">&lt;</span><span class="ci">char</span><span class="cp">&gt;</span> <span class="cp">*</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">bool</span>
 </pre>
         </div>
         <div class="interface-member-description">
          <p class="para _1">
+          <span class="small"><span class="italic">This method is not available in the <a href="#remarks.low-trust-version">Low‐Trust version</a> of
+          FParsec.</span></span>
+         </p>
+         <p class="para _2">
           Returns <code class="fsharp"><span class="cb">true</span></code> if the <code class="fsharp"><span class="ci">length</span></code> chars at
           the pointer address match the chars in the stream beginning with the char pointed to by the <code class="fsharp"><span
           class="ci">Iterator</span></code>. If the chars do not match or if there are not enough chars remaining in the stream, <code
           class="fsharp"><span class="cb">false</span></code> is returned. If <code class="fsharp"><span class="ci">length</span></code> is 0, <code
           class="fsharp"><span class="cb">true</span></code> is returned.
          </p>
-         <p class="para _2">
+         <p class="para _3">
           If <code class="fsharp"><span class="ci">length</span></code> is negative, an <code class="fsharp"><a
           href="http://msdn.microsoft.com/en-us/library/system.argumentoutofrangeexception.aspx"><span
           class="ci">ArgumentOutOfRangeException</span></a></code> is thrown. This method may also throw any of the <a href="#exceptions">I/O related
@@ -1256,33 +1378,37 @@
          </p>
         </div>
        </div>
-       <div class="interface-member _3" id="Iterator.members.MatchCaseFolded">
+       <div class="interface-member _4" id="Iterator.members.MatchCaseFolded">
         <div class="interface-member-code">
          <a class="interface-member-backlink" href="#Iterator.interface.MatchCaseFolded:B:">⇧</a>
-<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">MatchCaseFolded</span></span><span class="cp">:</span> <span class="ci">caseFoldedStr</span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <span class="ci">bool</span>
+<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">MatchCaseFolded</span></span><span class="cp">:</span> <span class="ci">caseFoldedChars</span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <span class="ci">bool</span>
 </pre>
         </div>
         <div class="interface-member-description">
          <p class="para _1">
-          Returns <code class="fsharp"><span class="cb">true</span></code> if <code class="fsharp"><span class="ci">caseFoldedStr</span></code>
+          Returns <code class="fsharp"><span class="cb">true</span></code> if <code class="fsharp"><span class="ci">caseFoldedChars</span></code>
           matches the chars in the stream beginning with the char pointed to by the <code class="fsharp"><span class="ci">Iterator</span></code>. The
           chars in the stream are case‐folded before they are matched, while the chars in the string argument are assumed to already be case‐folded
           (e.g. with the help of <code class="fsharp"><a href="#members.FoldCase"><span class="ci">FoldCase</span></a></code>). If the chars do not
           match or if there are not enough chars remaining in the stream, <code class="fsharp"><span class="cb">false</span></code> is returned. <code
-          class="fsharp"><span class="ci">caseFoldedStr</span></code> must not be <code class="fsharp"><span class="cnu">null</span></code>.
+          class="fsharp"><span class="ci">caseFoldedChars</span></code> must not be <code class="fsharp"><span class="cnu">null</span></code>.
          </p>
          <p class="para _2">This method may throw any of the <a href="#exceptions">I/O related exceptions</a> detailed above.</p>
          <p class="para _3">Please also see the above remarks on <a href="#remarks.case-insensitive-matching">case‐insensitive matching</a>.</p>
         </div>
        </div>
-       <div class="interface-member _4" id="Iterator.members.MatchCaseFolded_char-pointer">
+       <div class="interface-member _5" id="Iterator.members.MatchCaseFolded_char-pointer">
         <div class="interface-member-code">
          <a class="interface-member-backlink" href="#Iterator.interface.MatchCaseFolded_char-pointer:B:">⇧</a>
-<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">MatchCaseFolded</span></span><span class="cp">:</span> <span class="ci">pcaseFoldedChars</span><span class="cp">:</span><span class="ci">NativePtr</span><span class="co">&lt;</span><span class="ci">char</span><span class="cp">&gt;</span> <span class="co">*</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">bool</span>
+<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">MatchCaseFolded</span></span><span class="cp">:</span> <span class="ci">caseFoldedChars</span><span class="cp">:</span> <span class="ci">NativePtr</span><span class="cp">&lt;</span><span class="ci">char</span><span class="cp">&gt;</span> <span class="cp">*</span> <span class="ci">length</span><span class="cp">:</span><span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">bool</span>
 </pre>
         </div>
         <div class="interface-member-description">
          <p class="para _1">
+          <span class="small"><span class="italic">This method is not available in the <a href="#remarks.low-trust-version">Low‐Trust version</a> of
+          FParsec.</span></span>
+         </p>
+         <p class="para _2">
           Returns <code class="fsharp"><span class="cb">true</span></code> if the <code class="fsharp"><span class="ci">length</span></code> chars at
           the pointer address match the chars in the stream beginning with the char pointed to by the <code class="fsharp"><span
           class="ci">Iterator</span></code>. The chars in the stream are case‐folded before they are matched, while the chars at the pointer address
@@ -1290,20 +1416,20 @@
           class="ci">FoldCase</span></a></code>). If the chars do not match or if there are not enough chars remaining in the stream, <code
           class="fsharp"><span class="cb">false</span></code> is returned.
          </p>
-         <p class="para _2">
+         <p class="para _3">
           If <code class="fsharp"><span class="ci">length</span></code> is negative, an <code class="fsharp"><a
           href="http://msdn.microsoft.com/en-us/library/system.argumentoutofrangeexception.aspx"><span
           class="ci">ArgumentOutOfRangeException</span></a></code> is thrown. This method may also throw any of the <a href="#exceptions">I/O related
           exceptions</a> detailed above.
          </p>
-         <p class="para _3">Please also see the above remarks on <a href="#remarks.case-insensitive-matching">case‐insensitive matching</a>.</p>
+         <p class="para _4">Please also see the above remarks on <a href="#remarks.case-insensitive-matching">case‐insensitive matching</a>.</p>
         </div>
        </div>
-       <div class="interface-member _5" id="Iterator.members.Match_Regex">
+       <div class="interface-member _6" id="Iterator.members.Match_Regex">
         <div class="interface-member-code">
          <a class="interface-member-backlink" href="#Iterator.interface.Match_Regex:B:">⇧</a>
-<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">Match</span></span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.text.regularexpressions.regex.aspx"><span class="ci">System</span><span class="cp">.</span><span class="ci">Text</span><span class="cp">.</span><span class="ci">RegularExpressions</span><span class="cp">.</span><span class="ci">Regex</span></a>
-              <span class="cr">-&gt;</span> <a href="http://msdn.microsoft.com/en-us/library/system.text.regularexpressions.match.aspx"><span class="ci">System</span><span class="cp">.</span><span class="ci">Text</span><span class="cp">.</span><span class="ci">RegularExpressions</span><span class="cp">.</span><span class="ci">Match</span></a>
+<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">Match</span></span><span class="cp">:</span> <a href="http://msdn.microsoft.com/en-us/library/system.text.regularexpressions.regex.aspx"><span class="ci">System</span><span class="cm">.</span><span class="ci">Text</span><span class="cm">.</span><span class="ci">RegularExpressions</span><span class="cm">.</span><span class="ci">Regex</span></a>
+              <span class="cr">-&gt;</span> <a href="http://msdn.microsoft.com/en-us/library/system.text.regularexpressions.match.aspx"><span class="ci">System</span><span class="cm">.</span><span class="ci">Text</span><span class="cm">.</span><span class="ci">RegularExpressions</span><span class="cm">.</span><span class="ci">Match</span></a>
 </pre>
         </div>
         <div class="interface-member-description">
@@ -1311,33 +1437,54 @@
           Applies the given regular expression to the stream chars beginning with the char pointed to by the <code class="fsharp"><span
           class="ci">Iterator</span></code>. Returns the resulting <code class="fsharp"><span class="ci">Match</span></code> object.
          </p>
-         <div class="para _2">
-          <div class="admonition">
-           <div class="admonition-title">Important</div>
-           <div class="admonition-body">
-            <p class="para _1">
-             This method is not supported by <code class="fsharp"><a href="#"><span class="ci">CharStream</span></a></code> instances constructed from
-             char arrays or pointers.
-            </p>
-           </div>
-          </div>
-         </div>
-         <p class="para _3">
+         <p class="para _2">
           For performance reasons you should specify the regular expression such that it can only match at the beginning of a string, for example by
-          prepending <code class="fsharp"><span class="cs"><span class="left-delimiter">"</span><span class="ce">\A</span><span
+          prepending <code class="fsharp"><span class="cs"><span class="left-delimiter">"</span><span class="ce">\\</span>A<span
           class="right-delimiter">"</span></span></code>.
          </p>
-         <p class="para _4">
-          For <code class="fsharp"><a href="#"><span class="ci">CharStream</span></a></code> instances constructed from large binary streams the
-          regular expression is not applied to a string containing all the remaining chars in the stream. The <code class="fsharp"><a
+         <p class="para _3">
+          For <code class="fsharp"><a href="#"><span class="ci">CharStream</span></a></code> instances constructed from large streams the regular
+          expression is not applied to a string containing all the remaining chars in the stream. The <code class="fsharp"><a
           href="#members.minRegexSpace"><span class="ci">minRegexSpace</span></a></code> parameter of the <code class="fsharp"><a href="#"><span
           class="ci">CharStream</span></a></code> constructors determines the minimum number of chars that are guaranteed to be visible to the regular
           expression.
          </p>
-         <p class="para _5">This method may throw any of the <a href="#exceptions">I/O related exceptions</a> detailed above.</p>
+         <p class="para _4">This method may throw any of the <a href="#exceptions">I/O related exceptions</a> detailed above.</p>
+         <div class="para _5">
+          <div class="admonition">
+           <div class="admonition-title">Important</div>
+           <div class="admonition-body">
+            <p class="para _1">
+             <span class="small"><span class="italic">This note does not apply to the <a href="#remarks.low-trust-version">Low‐Trust version</a> of
+             FParsec.</span></span><br /> This method is not supported by <code class="fsharp"><a href="#"><span
+             class="ci">CharStream</span></a></code> instances constructed directly from char arrays or pointers. A <code class="fsharp"><a
+             href="http://msdn.microsoft.com/en-us/library/system.notsupportedexception.aspx"><span class="ci">NotSupportedException</span></a></code>
+             is thrown if this method is called on such a <code class="fsharp"><a href="#"><span class="ci">CharStream</span></a></code> instance.
+            </p>
+           </div>
+          </div>
+         </div>
+         <div class="para _6">
+          <div class="admonition">
+           <div class="admonition-title">Important</div>
+           <div class="admonition-body">
+            <p class="para _1">
+             <span class="small"><span class="italic">This note does not apply to the <a href="#remarks.low-trust-version">Low‐Trust version</a> of
+             FParsec.</span></span><br /> If the <code class="fsharp"><a href="#"><span class="ci">CharStream</span></a></code> was constructed from a
+             <code class="fsharp"><a href="http://msdn.microsoft.com/en-us/library/system.io.stream.aspx"><span class="ci">System</span><span
+             class="cm">.</span><span class="ci">IO</span><span class="cm">.</span><span class="ci">Stream</span></a></code> or a file path, the
+             regular expression is applied to an internal <em>mutable</em> buffer. Since the <code class="fsharp"><span class="ci">Match</span></code>
+             object may work lazily, i.e. compute return values not before they are needed, you need to <em>retrieve all the required information from
+             the <code class="fsharp"><span class="ci">Match</span></code> object before you continue to access the <code class="fsharp"><a
+             href="#"><span class="ci">CharStream</span></a></code></em>, otherwise you might get back invalid match results. Note that all strings
+             returned by the <code class="fsharp"><span class="ci">Match</span></code> object are, of course, immutable.
+            </p>
+           </div>
+          </div>
+         </div>
         </div>
        </div>
-       <div class="interface-member _6" id="Iterator.members.Read">
+       <div class="interface-member _7" id="Iterator.members.Read">
         <div class="interface-member-code">
          <a class="interface-member-backlink" href="#Iterator.interface.Read:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">Read</span></span><span class="cp">:</span> <span class="ci">unit</span> <span class="cr">-&gt;</span> <span class="ci">char</span>
@@ -1354,7 +1501,7 @@
          <p class="para _2">This method may throw any of the <a href="#exceptions">I/O related exceptions</a> detailed above.</p>
         </div>
        </div>
-       <div class="interface-member _7" id="Iterator.members.EndOfStreamChar">
+       <div class="interface-member _8" id="Iterator.members.EndOfStreamChar">
         <div class="interface-member-code">
          <a class="interface-member-backlink" href="#Iterator.interface.EndOfStreamChar:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">static</span> <span class="ck">val</span> <span class="interface-member-marker"><span class="ci">EndOfStreamChar</span></span><span class="cp">:</span> <span class="ci">char</span>
@@ -1369,7 +1516,7 @@
          </p>
         </div>
        </div>
-       <div class="interface-member _8" id="Iterator.members.Read2">
+       <div class="interface-member _9" id="Iterator.members.Read2">
         <div class="interface-member-code">
          <a class="interface-member-backlink" href="#Iterator.interface.Read2:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">Read2</span></span><span class="cp">:</span> <span class="ci">unit</span> <span class="cr">-&gt;</span> <a href="#Iterator.interface.TwoChars"><span class="ci">TwoChars</span></a>
@@ -1380,13 +1527,13 @@
           <code class="fsharp"><span class="ci">Read2</span><span class="cp">()</span></code> is an optimized implementation of <code
           class="fsharp"><a href="#Iterator.interface.TwoChars"><span class="ci">TwoChars</span></a><span class="cp">(</span><a
           href="#Iterator.members.Read"><span class="ci">Read</span></a><span class="cp">()</span><span class="cp">,</span> <a
-          href="#Iterator.members.Next"><span class="ci">Next</span></a><span class="cp">.</span><a href="#Iterator.members.Read"><span
+          href="#Iterator.members.Next"><span class="ci">Next</span></a><span class="cm">.</span><a href="#Iterator.members.Read"><span
           class="ci">Read</span></a><span class="cp">()</span><span class="cp">)</span></code>.
          </p>
          <p class="para _2">This method may throw any of the <a href="#exceptions">I/O related exceptions</a> detailed above.</p>
         </div>
        </div>
-       <div class="interface-member _9" id="Iterator.members.Read_int">
+       <div class="interface-member _0" id="Iterator.members.Read_int">
         <div class="interface-member-code">
          <a class="interface-member-backlink" href="#Iterator.interface.Read_int:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">Read</span></span><span class="cp">:</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">string</span>
@@ -1399,10 +1546,10 @@
          </p>
         </div>
        </div>
-       <div class="interface-member _0" id="Iterator.members.Read_int_bool">
+       <div class="interface-member _1" id="Iterator.members.Read_int_bool">
         <div class="interface-member-code">
          <a class="interface-member-backlink" href="#Iterator.interface.Read_int_bool:B:">⇧</a>
-<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">Read</span></span><span class="cp">:</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">allOrEmpty</span><span class="cp">:</span> <span class="ci">bool</span> <span class="cr">-&gt;</span> <span class="ci">string</span>
+<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">Read</span></span><span class="cp">:</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">allOrEmpty</span><span class="cp">:</span> <span class="ci">bool</span> <span class="cr">-&gt;</span> <span class="ci">string</span>
 </pre>
         </div>
         <div class="interface-member-description">
@@ -1417,10 +1564,12 @@
            <div class="admonition-title">Note</div>
            <div class="admonition-body">
             <p class="para _1">
-             If <code class="fsharp"><span class="ci">length</span></code> is greater than the number of remaining chars in the stream, a temporary
-             string with <code class="fsharp"><span class="ci">length</span></code> chars may be allocated. For very large <code class="fsharp"><span
-             class="ci">length</span></code> values this might lead to an <code class="fsharp"><span class="ci">OutOfMemoryException</span></code>
-             even though a string with only the remaining chars in the stream would comfortably fit into memory.
+             <span class="small"><span class="italic">This note does not apply to the <a href="#remarks.low-trust-version">Low‐Trust version</a> of
+             FParsec.</span></span><br /> If <code class="fsharp"><span class="ci">length</span></code> is greater than the number of remaining chars
+             in the stream, a temporary string with <code class="fsharp"><span class="ci">length</span></code> chars may be allocated. For very large
+             <code class="fsharp"><span class="ci">length</span></code> values this might lead to an <code class="fsharp"><span
+             class="ci">OutOfMemoryException</span></code> even though a string with only the remaining chars in the stream would comfortably fit into
+             memory.
             </p>
             <p class="para _2">
              Please also note that the maximum length of a CLR string is less than 2<sup>30</sup>. Allocating a string larger than the maximum length
@@ -1438,45 +1587,49 @@
          </p>
         </div>
        </div>
-       <div class="interface-member _1" id="Iterator.members.Read_char-array">
+       <div class="interface-member _2" id="Iterator.members.Read_char-array">
         <div class="interface-member-code">
          <a class="interface-member-backlink" href="#Iterator.interface.Read_char-array:B:">⇧</a>
-<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">Read</span></span><span class="cp">:</span> <span class="ci">dest</span><span class="cp">:</span> <span class="ci">char</span><span class="cp">[]</span> <span class="co">*</span> <span class="ci">destIndex</span><span class="cp">:</span> <span class="ci">int</span> <span class="co">*</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">int</span>
+<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">Read</span></span><span class="cp">:</span> <span class="ci">buffer</span><span class="cp">:</span> <span class="ci">char</span><span class="cp">[]</span> <span class="cp">*</span> <span class="ci">bufferIndex</span><span class="cp">:</span> <span class="ci">int</span> <span class="cp">*</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">int</span>
 </pre>
         </div>
         <div class="interface-member-description">
          <p class="para _1">
           Copies the <code class="fsharp"><span class="ci">length</span></code> stream chars beginning with the char pointed to by the <code
-          class="fsharp"><span class="ci">Iterator</span></code> into <code class="fsharp"><span class="ci">dest</span></code>. The chars are written
-          into <code class="fsharp"><span class="ci">dest</span></code> beginning at the index <code class="fsharp"><span
-          class="ci">destIndex</span></code>. If less than <code class="fsharp"><span class="ci">length</span></code> chars are remaining in the
+          class="fsharp"><span class="ci">Iterator</span></code> into <code class="fsharp"><span class="ci">buffer</span></code>. The chars are
+          written into <code class="fsharp"><span class="ci">buffer</span></code> beginning at the index <code class="fsharp"><span
+          class="ci">bufferIndex</span></code>. If less than <code class="fsharp"><span class="ci">length</span></code> chars are remaining in the
           stream, only the remaining chars are copied. Returns the actual number of chars copied.
          </p>
          <p class="para _2">
-          <code class="fsharp"><span class="ci">dest</span></code> must not be <code class="fsharp"><span class="cnu">null</span></code>. An <code
+          <code class="fsharp"><span class="ci">buffer</span></code> must not be <code class="fsharp"><span class="cnu">null</span></code>. An <code
           class="fsharp"><a href="http://msdn.microsoft.com/en-us/library/system.argumentoutofrangeexception.aspx"><span
           class="ci">ArgumentOutOfRangeException</span></a></code> is thrown if the arguments do not satisfy the following conditions: <code
-          class="fsharp"><span class="ci">destIndex</span></code> ≥ 0, <code class="fsharp"><span class="ci">length</span></code> ≥ 0 and <code
-          class="fsharp"><span class="ci">destIndex</span></code> + <code class="fsharp"><span class="ci">length</span></code> ≤ <code
-          class="fsharp"><span class="ci">dest</span><span class="cp">.</span><span class="ci">Length</span></code>. This method may also throw any of
-          the <a href="#exceptions">I/O related exceptions</a> detailed above.
+          class="fsharp"><span class="ci">bufferIndex</span></code> ≥ 0, <code class="fsharp"><span class="ci">length</span></code> ≥ 0 and <code
+          class="fsharp"><span class="ci">bufferIndex</span></code> + <code class="fsharp"><span class="ci">length</span></code> ≤ <code
+          class="fsharp"><span class="ci">buffer</span><span class="cm">.</span><span class="ci">Length</span></code>. This method may also throw any
+          of the <a href="#exceptions">I/O related exceptions</a> detailed above.
          </p>
         </div>
        </div>
-       <div class="interface-member _2" id="Iterator.members.Read_char-pointer">
+       <div class="interface-member _3" id="Iterator.members.Read_char-pointer">
         <div class="interface-member-code">
          <a class="interface-member-backlink" href="#Iterator.interface.Read_char-pointer:B:">⇧</a>
-<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">Read</span></span><span class="cp">:</span> <span class="ci">dest</span><span class="cp">:</span> <span class="ci">NativePtr</span><span class="co">&lt;</span><span class="ci">char</span><span class="cp">&gt;</span> <span class="co">*</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">int</span>
+<pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">Read</span></span><span class="cp">:</span> <span class="ci">buffer</span><span class="cp">:</span> <span class="ci">NativePtr</span><span class="cp">&lt;</span><span class="ci">char</span><span class="cp">&gt;</span> <span class="cp">*</span> <span class="ci">length</span><span class="cp">:</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">int</span>
 </pre>
         </div>
         <div class="interface-member-description">
          <p class="para _1">
+          <span class="small"><span class="italic">This method is not available in the <a href="#remarks.low-trust-version">Low‐Trust version</a> of
+          FParsec.</span></span>
+         </p>
+         <p class="para _2">
           Copies the <code class="fsharp"><span class="ci">length</span></code> stream chars beginning with the char pointed to by the <code
           class="fsharp"><span class="ci">Iterator</span></code> into the buffer at the given pointer address. If less than <code class="fsharp"><span
           class="ci">length</span></code> chars are remaining in the stream, only the remaining chars are copied. Returns the actual number of chars
           copied.
          </p>
-         <p class="para _2">
+         <p class="para _3">
           If <code class="fsharp"><span class="ci">length</span></code> is negative, an <code class="fsharp"><a
           href="http://msdn.microsoft.com/en-us/library/system.argumentoutofrangeexception.aspx"><span
           class="ci">ArgumentOutOfRangeException</span></a></code> is thrown. This method may also throw any of the <a href="#exceptions">I/O related
@@ -1484,7 +1637,7 @@
          </p>
         </div>
        </div>
-       <div class="interface-member _3" id="Iterator.members.ReadUntil">
+       <div class="interface-member _4" id="Iterator.members.ReadUntil">
         <div class="interface-member-code">
          <a class="interface-member-backlink" href="#Iterator.interface.ReadUntil:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">ReadUntil</span></span><span class="cp">:</span> <span class="ci">iterToCharAfterLastInString</span><span class="cp">:</span> <span class="ci">Iterator</span> <span class="cr">-&gt;</span> <span class="ci">string</span>
@@ -1506,7 +1659,7 @@
          </p>
         </div>
        </div>
-       <div class="interface-member _4" id="Iterator.members.Peek">
+       <div class="interface-member _5" id="Iterator.members.Peek">
         <div class="interface-member-code">
          <a class="interface-member-backlink" href="#Iterator.interface.Peek:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">Peek</span></span><span class="cp">:</span> <span class="ci">unit</span> <span class="cr">-&gt;</span> <span class="ci">char</span>
@@ -1515,12 +1668,12 @@
         <div class="interface-member-description">
          <p class="para _1">
           <code class="fsharp"><span class="ci">Peek</span><span class="cp">()</span></code> is an optimized implementation of <code class="fsharp"><a
-          href="#Iterator.members.Next"><span class="ci">Next</span></a><span class="cp">.</span><a href="#Iterator.members.Read"><span
+          href="#Iterator.members.Next"><span class="ci">Next</span></a><span class="cm">.</span><a href="#Iterator.members.Read"><span
           class="ci">Read</span></a><span class="cp">()</span></code>.
          </p>
         </div>
        </div>
-       <div class="interface-member _5" id="Iterator.members.Peek_int">
+       <div class="interface-member _6" id="Iterator.members.Peek_int">
         <div class="interface-member-code">
          <a class="interface-member-backlink" href="#Iterator.interface.Peek_int:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">Peek</span></span><span class="cp">:</span> <span class="ci">int</span> <span class="cr">-&gt;</span> <span class="ci">char</span>
@@ -1530,15 +1683,16 @@
          <p class="para _1">
           <code class="fsharp"><span class="ci">Peek</span><span class="cp">(</span><span class="ci">n</span><span class="cp">)</span></code> is an
           optimized implementation of <code class="fsharp"><a href="#Iterator.members.Advance"><span class="ci">Advance</span></a><span
-          class="cp">(</span><span class="ci">n</span><span class="cp">)</span><span class="cp">.</span><a href="#Iterator.members.Read"><span
+          class="cp">(</span><span class="ci">n</span><span class="cp">)</span><span class="cm">.</span><a href="#Iterator.members.Read"><span
           class="ci">Read</span></a><span class="cp">()</span></code>, except that the <code class="fsharp"><a
           href="#Iterator.members.EndOfStreamChar"><span class="ci">EndOfStreamChar</span></a></code> (<code class="fsharp"><span class="cc"><span
-          class="left-delimiter">'</span><span class="ce">\uFFFF</span><span class="right-delimiter">'</span></span></code>) is returned if <code
-          class="fsharp"><a href="#Iterator.members.Index"><span class="ci">Index</span></a></code> + n &lt; 0 (instead of an exception being thrown).
+          class="left-delimiter">'</span><span class="ce">\uFFFF</span><span class="right-delimiter">'</span></span></code>) is returned if the new
+          position would lie before the beginning of the <code class="fsharp"><a href="#"><span class="ci">CharStream</span></a></code> (instead of an
+          exception being thrown).
          </p>
         </div>
        </div>
-       <div class="interface-member _6" id="Iterator.members.Peek_uint">
+       <div class="interface-member _7" id="Iterator.members.Peek_uint">
         <div class="interface-member-code">
          <a class="interface-member-backlink" href="#Iterator.interface.Peek_uint:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">Peek</span></span><span class="cp">:</span> <span class="ci">uint</span> <span class="cr">-&gt;</span> <span class="ci">char</span>
@@ -1548,12 +1702,12 @@
          <p class="para _1">
           <code class="fsharp"><span class="ci">Peek</span><span class="cp">(</span><span class="ci">n</span><span class="cp">)</span></code> is an
           optimized implementation of <code class="fsharp"><a href="#Iterator.members.Advance"><span class="ci">Advance</span></a><span
-          class="cp">(</span><span class="ci">n</span><span class="cp">)</span><span class="cp">.</span><a href="#Iterator.members.Read"><span
+          class="cp">(</span><span class="ci">n</span><span class="cp">)</span><span class="cm">.</span><a href="#Iterator.members.Read"><span
           class="ci">Read</span></a><span class="cp">()</span></code>.
          </p>
         </div>
        </div>
-       <div class="interface-member _7" id="Iterator.members._Increment">
+       <div class="interface-member _8" id="Iterator.members._Increment">
         <div class="interface-member-code">
          <a class="interface-member-backlink" href="#Iterator.interface._Increment:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">_Increment</span></span><span class="cp">:</span> <span class="ci">unit</span> <span class="cr">-&gt;</span> <span class="ci">char</span>
@@ -1565,15 +1719,16 @@
           position.
          </p>
          <p class="para _2">
-          <code class="fsharp"><span class="ci">c</span> <span class="cp">=</span> <span class="ci">iter</span><span class="cp">.</span><span
+          <code class="fsharp"><span class="ci">c</span> <span class="co">&lt;-</span> <span class="ci">iter</span><span class="cm">.</span><span
           class="ci">_Increment</span><span class="cp">()</span></code> is an optimized implementation of <code class="fsharp"><span
-          class="ci">iter</span> <span class="cp">=</span> <span class="ci">iter</span><span class="cp">.</span><a href="#Iterator.members.Next"><span
-          class="ci">Next</span></a><span class="cp">;</span> <span class="ci">c</span> <span class="co">=</span> <span class="ci">iter</span><span
-          class="cp">.</span><a href="#Iterator.members.Read"><span class="ci">Read</span></a><span class="cp">()</span></code>.
+          class="ci">iter</span> <span class="co">&lt;-</span> <span class="ci">iter</span><span class="cm">.</span><a
+          href="#Iterator.members.Next"><span class="ci">Next</span></a><span class="cp">;</span> <span class="ci">c</span> <span
+          class="co">&lt;-</span> <span class="ci">iter</span><span class="cm">.</span><a href="#Iterator.members.Read"><span
+          class="ci">Read</span></a><span class="cp">()</span></code>.
          </p>
         </div>
        </div>
-       <div class="interface-member _8" id="Iterator.members._Increment_uint">
+       <div class="interface-member _9" id="Iterator.members._Increment_uint">
         <div class="interface-member-code">
          <a class="interface-member-backlink" href="#Iterator.interface._Increment_uint:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">_Increment</span></span><span class="cp">:</span> <span class="ci">uint</span> <span class="cr">-&gt;</span> <span class="ci">char</span>
@@ -1585,17 +1740,17 @@
           char on the new position.
          </p>
          <p class="para _2">
-          <code class="fsharp"><span class="ci">c</span> <span class="cp">=</span> <span class="ci">iter</span><span class="cp">.</span><span
+          <code class="fsharp"><span class="ci">c</span> <span class="co">&lt;-</span> <span class="ci">iter</span><span class="cm">.</span><span
           class="ci">_Increment</span><span class="cp">(</span><span class="ci">n</span><span class="cp">)</span></code> is an optimized
-          implementation of <code class="fsharp"><span class="ci">iter</span> <span class="cp">=</span> <span class="ci">iter</span><span
-          class="cp">.</span><a href="#Iterator.members.Advance"><span class="ci">Advance</span></a><span class="cp">(</span><span
-          class="ci">n</span><span class="cp">)</span><span class="cp">;</span> <span class="ci">c</span> <span class="co">=</span> <span
-          class="ci">iter</span><span class="cp">.</span><a href="#Iterator.members.Read"><span class="ci">Read</span></a><span
+          implementation of <code class="fsharp"><span class="ci">iter</span> <span class="co">&lt;-</span> <span class="ci">iter</span><span
+          class="cm">.</span><a href="#Iterator.members.Advance"><span class="ci">Advance</span></a><span class="cp">(</span><span
+          class="ci">n</span><span class="cp">)</span><span class="cp">;</span> <span class="ci">c</span> <span class="co">&lt;-</span> <span
+          class="ci">iter</span><span class="cm">.</span><a href="#Iterator.members.Read"><span class="ci">Read</span></a><span
           class="cp">()</span></code>.
          </p>
         </div>
        </div>
-       <div class="interface-member _9" id="Iterator.members._Decrement">
+       <div class="interface-member _0" id="Iterator.members._Decrement">
         <div class="interface-member-code">
          <a class="interface-member-backlink" href="#Iterator.interface._Decrement:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">_Decrement</span></span><span class="cp">:</span> <span class="ci">unit</span> <span class="cr">-&gt;</span> <span class="ci">char</span>
@@ -1603,21 +1758,27 @@
         </div>
         <div class="interface-member-description">
          <p class="para _1">
-          Advances the <code class="fsharp"><span class="ci">Iterator</span></code> <em>in‐place</em> by minus one char and returns the char on the
-          new position.
+          Advances the <code class="fsharp"><span class="ci">Iterator</span></code> <em>in‐place</em> by ‐1 and returns the char on the new position,
+          except if the <code class="fsharp"><span class="ci">Iterator</span></code> already points to the beginning of the <code class="fsharp"><a
+          href="#"><span class="ci">CharStream</span></a></code>, in which case the position does not change and the <code class="fsharp"><a
+          href="#Iterator.members.EndOfStreamChar"><span class="ci">EndOfStreamChar</span></a></code> (<code class="fsharp"><span class="cc"><span
+          class="left-delimiter">'</span><span class="ce">\uFFFF</span><span class="right-delimiter">'</span></span></code>) is returned.
          </p>
-         <p class="para _2">
-          <code class="fsharp"><span class="ci">c</span> <span class="cp">=</span> <span class="ci">iter</span><span class="cp">.</span><span
-          class="ci">_Decrement</span><span class="cp">()</span></code> is an optimized implementation of <code class="fsharp"><span
-          class="ci">iter</span> <span class="cp">=</span> <span class="ci">iter</span><span class="cp">.</span><a
-          href="#Iterator.members.Advance"><span class="ci">Advance</span></a><span class="cp">(</span><span class="co">-</span><span
-          class="cn">1</span><span class="cp">)</span><span class="cp">;</span> <span class="ci">c</span> <span class="co">=</span> <span
-          class="ci">iter</span><span class="cp">.</span><a href="#Iterator.members.Read"><span class="ci">Read</span></a><span
-          class="cp">()</span></code>.
-         </p>
+         <div class="para _2">
+          <p>
+           <code class="fsharp"><span class="ci">c</span> <span class="co">&lt;-</span> <span class="ci">iter</span><span class="cm">.</span><span
+           class="ci">_Decrement</span><span class="cp">()</span></code> is an optimized implementation of
+          </p>
+<pre class="code fsharp"><span class="ck">if</span> <span class="ci">not</span> <span class="cp">(</span><span class="ci">iter</span><span class="cm">.</span><a href="#Iterator.members.IsBeginOfStream"><span class="ci">IsBeginOfStream</span></a><span class="cp">)</span> <span class="ck">then</span>
+    <span class="ci">iter</span> <span class="co">&lt;-</span> <span class="ci">iter</span><span class="cm">.</span><a href="#Iterator.members.Advance"><span class="ci">Advance</span></a><span class="cp">(</span><span class="co">-</span><span class="cn">1</span><span class="cp">)</span>
+    <span class="ci">c</span> <span class="co">&lt;-</span> <span class="ci">iter</span><span class="cm">.</span><a href="#Iterator.members.Read"><span class="ci">Read</span></a><span class="cp">()</span>
+<span class="ck">else</span>
+    <span class="ci">c</span> <span class="co">&lt;-</span> <a href="#Iterator.members.EndOfStreamChar"><span class="ci">EndOfStreamChar</span></a>
+</pre>
+         </div>
         </div>
        </div>
-       <div class="interface-member _0" id="Iterator.members._Decrement_uint">
+       <div class="interface-member _1" id="Iterator.members._Decrement_uint">
         <div class="interface-member-code">
          <a class="interface-member-backlink" href="#Iterator.interface._Decrement_uint:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">member</span> <span class="interface-member-marker"><span class="ci">_Decrement</span></span><span class="cp">:</span> <span class="ci">uint</span> <span class="cr">-&gt;</span> <span class="ci">char</span>
@@ -1626,17 +1787,26 @@
         <div class="interface-member-description">
          <p class="para _1">
           Advances the <code class="fsharp"><span class="ci">Iterator</span></code> <em>in‐place</em> by minus the given number of chars and returns
-          the char on the new position.
+          the char on the new position, except if the new position would lie before the beginning of the <code class="fsharp"><a href="#"><span
+          class="ci">CharStream</span></a></code>, in which case the <code class="fsharp"><span class="ci">Iterator</span></code> is advanced to the
+          beginning of the stream and the <code class="fsharp"><a href="#Iterator.members.EndOfStreamChar"><span
+          class="ci">EndOfStreamChar</span></a></code> (<code class="fsharp"><span class="cc"><span class="left-delimiter">'</span><span
+          class="ce">\uFFFF</span><span class="right-delimiter">'</span></span></code>) is returned.
          </p>
-         <p class="para _2">
-          <code class="fsharp"><span class="ci">c</span> <span class="cp">=</span> <span class="ci">iter</span><span class="cp">.</span><span
-          class="ci">_Decrement</span><span class="cp">(</span><span class="ci">n</span><span class="cp">)</span></code> is an optimized
-          implementation of <code class="fsharp"><span class="ci">iter</span> <span class="cp">=</span> <span class="ci">iter</span><span
-          class="cp">.</span><a href="#Iterator.members.Advance"><span class="ci">Advance</span></a><span class="cp">(</span><span
-          class="co">-</span><span class="cp">(</span><span class="ci">int64</span> <span class="ci">n</span><span class="cp">)</span><span
-          class="cp">)</span><span class="cp">;</span> <span class="ci">c</span> <span class="co">=</span> <span class="ci">iter</span><span
-          class="cp">.</span><a href="#Iterator.members.Read"><span class="ci">Read</span></a><span class="cp">()</span></code>.
-         </p>
+         <div class="para _2">
+          <p>
+           <code class="fsharp"><span class="ci">c</span> <span class="co">&lt;-</span> <span class="ci">iter</span><span class="cm">.</span><span
+           class="ci">_Decrement</span><span class="cp">(</span><span class="ci">n</span><span class="cp">)</span></code> is an optimized
+           implementation of
+          </p>
+<pre class="code fsharp"><span class="ck">if</span> <span class="ci">iter</span><span class="cm">.</span><a href="#Iterator.members.Index"><span class="ci">Index</span></a> <span class="co">-</span> <span class="ci">n</span> <span class="co">&gt;=</span> <span class="ci">iter</span><span class="cm">.</span><a href="#Iterator.members.Stream"><span class="ci">Stream</span></a><span class="cm">.</span><a href="#members.BeginIndex"><span class="ci">BeginIndex</span></a> <span class="ck">then</span>
+    <span class="ci">iter</span> <span class="co">&lt;-</span> <span class="ci">iter</span><span class="cm">.</span><a href="#Iterator.members.Advance"><span class="ci">Advance</span></a><span class="cp">(</span><span class="co">-</span><span class="ci">n</span><span class="cp">)</span>
+    <span class="ci">c</span> <span class="co">&lt;-</span> <span class="ci">iter</span><span class="cm">.</span><a href="#Iterator.members.Read"><span class="ci">Read</span></a><span class="cp">()</span>
+<span class="ck">else</span>
+    <span class="ci">iter</span> <span class="co">&lt;-</span> <span class="ci">iter</span><span class="cm">.</span><a href="#Iterator.members.Stream"><span class="ci">Stream</span></a><span class="cm">.</span><a href="#members.Begin"><span class="ci">Begin</span></a>
+    <span class="ci">c</span> <span class="co">&lt;-</span> <a href="#Iterator.members.EndOfStreamChar"><span class="ci">EndOfStreamChar</span></a>
+</pre>
+         </div>
         </div>
        </div>
       </div>
@@ -1651,7 +1821,7 @@
      <th class="fn _1"><a class="footnote-backlink" id="remarks.:FN:1" href="#remarks.:FN:1:B:">[1]</a></th>
      <td class="fn _2">
       The detection of invalid byte sequences by the .NET decoders is not entirely reliable. For example, <code class="fsharp"><span
-      class="ci">System</span><span class="cp">.</span><span class="ci">Text</span><span class="cp">.</span><span
+      class="ci">System</span><span class="cm">.</span><span class="ci">Text</span><span class="cm">.</span><span
       class="ci">UnicodeEncoding</span></code> (UTF‐16) has an alignment related bug in .NET versions prior to 4.0 that sometimes leads to invalid
       surrogate pairs not being detected. The implementations of more complicated encodings, like GB18030, ISO‐2022 and ISCII, also have <a
       href="https://connect.microsoft.com/VisualStudio/feedback/ViewFeedback.aspx?FeedbackID=432648">several issues</a> with regard to the detection

@@ -229,19 +229,36 @@ code a:hover, .code a:hover {
 .cin: invalid
 .ck: keyword
 .clc: line comment
+.cm: member access/scope resolution operator
 .cn: number literal
 .cnu: null literal
 .co: operator
 .col: other literal
 .cp: punctuation
 .cpr: preprocessor
-.cr: right arrow
+.cr: right arrow (in functional languages)
+.cra: range operator/ ellipsis
 .cre: reserved
 .cs: string literal
 .ctv: type variable
+.cv: void
 */
 
-span.ck /* keyword */ /*, span.cb, span.cnu */ {
+span.ci /* identifier */,
+span.tv /* type variable */,
+span.cb /* boolean literal */,
+
+span.cn  /* number literal */,
+span.cnu /* null literal */,
+span.cp  /* punctuation */,
+span.cra /* range operator/ ellipsis */,
+span.cm  /* member access/scope resolution operator */,
+span.co  /* operator */ {
+    color: #000000;
+}
+
+
+span.ck /* keyword */, span.cbt, span.cv {
    color: #0048a0;
 }
 
@@ -260,6 +277,27 @@ span.ce /* escaped char */ {
 span.clc /* line comment*/, span.cbc /* block comment */ {
     color: #007e1e;
 }
+
+span.cin /* invalid */ {
+    color: White;
+    background-color: red;
+}
+
+span.cpr /* preprocessor */ {
+    color: #009293;
+}
+
+/* the following definitions are for debugging the syntax highlighter */
+
+/*
+span.cp {
+   color: red;
+}
+
+span.co {
+    color: Fuchsia;
+}
+*/s
 
 /* interface reference */
 
