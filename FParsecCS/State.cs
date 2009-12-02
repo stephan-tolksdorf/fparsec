@@ -42,7 +42,7 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
     }
 
     public State(CharStream stream, Pos pos, TUserState userState) {
-        Iter = stream.Seek(pos.Index); // will throw for negative index
+        Iter = stream.Seek(pos.Index); // throws for index smaller then stream.BeginIndex
         if (Iter.Index != pos.Index) throw new ArgumentOutOfRangeException("Pos.Index", "The index is too large.");
         data = new Data(pos.Line, pos.Index - pos.Column + 1, userState, pos.StreamName);
     }
@@ -59,9 +59,9 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
     public string     StreamName { get { return data.StreamName; } }
     public long       Index      { get { return Iter.Index; } }
     public long       Line       { get { return data.Line; } }
-    /// <summary>Is equivalent to Index - Column + 1.</summary>
+    /// <summary>The stream index of the first char in the line, i.e. Index - Column + 1.</summary>
     public long       LineBegin  { get { return data.LineBegin; } }
-    /// <summary>The 1-based index of the UTF16 char in the line.</summary>
+    /// <summary>The 1-based index of the UTF16 char in the line, i.e. Index - LineBegin + 1.</summary>
     public long       Column     { get { return Iter.Index - data.LineBegin + 1; } }
     public TUserState UserState  { get { return data.UserState; } }
 
