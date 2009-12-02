@@ -635,7 +635,7 @@ let skipManyMinMaxSatisfy2L minChars maxChars f1 f label = skipManyMinMaxSatisfy
 
 
 let internal regexE pattern error : Parser<string,'u> =
-    let regex = new Regex("\A" + pattern, RegexOptions.Multiline |||
+    let regex = new Regex("\\A" + pattern, RegexOptions.Multiline |||
                                           RegexOptions.ExplicitCapture)
     fun state ->
         let m = state.Iter.Match(regex)

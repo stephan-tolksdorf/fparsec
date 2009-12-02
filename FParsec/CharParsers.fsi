@@ -416,7 +416,7 @@ val skipManyMinMaxSatisfy2L: int -> int -> (char -> bool) -> (char -> bool) -> s
 ///
 /// The `System.Text.RegularExpressions.Regex` object that is internally used to match the pattern is constructed
 /// with the `RegexOptions` `MultiLine` and `ExplicitCapture`. In order to ensure that the regular expression
-/// can only match at the beginning of a string, `"\A"` is automatically prepended to the pattern.
+/// can only match at the beginning of a string, `"\\A"` is automatically prepended to the pattern.
 ///
 /// Newline chars ('\r' and '\n') in the pattern are interpreted literally.
 /// For example, an '\n' char in the pattern will only match "\n", not "\r" or "\r\n".
