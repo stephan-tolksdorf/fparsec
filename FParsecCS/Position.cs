@@ -5,13 +5,13 @@ using System;
 
 namespace FParsec {
 
-public class Pos : IEquatable<Pos>, IComparable, IComparable<Pos> {
+public sealed class Position : IEquatable<Position>, IComparable, IComparable<Position> {
     public long   Index      { get; private set;}
     public long   Line       { get; private set;}
     public long   Column     { get; private set;}
     public string StreamName { get; private set;}
 
-    public Pos(string streamName, long index, long line, long column) {
+    public Position(string streamName, long index, long line, long column) {
         this.StreamName = streamName; this.Index = index; this.Line = line; this.Column = column;
     }
 
@@ -21,18 +21,18 @@ public class Pos : IEquatable<Pos>, IComparable, IComparable<Pos> {
     }
 
     public override bool Equals(object obj) {
-        return Equals(obj as Pos);
+        return Equals(obj as Position);
     }
-    public bool Equals(Pos other) {
+    public bool Equals(Position other) {
         return (object)other != null && Index == other.Index && Line == other.Line && Column == other.Column && StreamName == other.StreamName;
     }
     public override int GetHashCode() {
         return Index.GetHashCode();
     }
-    public static bool operator==(Pos left, Pos right) { return  left.Equals(right); }
-    public static bool operator!=(Pos left, Pos right) { return !left.Equals(right); }
+    public static bool operator==(Position left, Position right) { return  left.Equals(right); }
+    public static bool operator!=(Position left, Position right) { return !left.Equals(right); }
 
-    public int CompareTo(Pos other) {
+    public int CompareTo(Position other) {
         if ((object)this == (object)other) return 0;
         if ((object)other == null) return 1;
         int r = String.CompareOrdinal(StreamName, other.StreamName);
@@ -44,11 +44,14 @@ public class Pos : IEquatable<Pos>, IComparable, IComparable<Pos> {
         return Index.CompareTo(other.Index);
     }
     int IComparable.CompareTo(object value) {
-        Pos pos = value as Pos;
-        if ((object)pos != null) return CompareTo(pos);
+        Position position = value as Position;
+        if ((object)position != null) return CompareTo(position);
         if (value == null) return 1;
-        throw new ArgumentException("value", "Object must be of type Pos.");
+        throw new ArgumentException("value", "Object must be of type Position.");
     }
 }
+
+[Obsolete("FParsec.State.Pos has been renamed to FParsec.State.Position.", true)]
+public sealed class Pos {}
 
 }

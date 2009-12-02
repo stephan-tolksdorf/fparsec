@@ -42,7 +42,7 @@ let float32OfHexString s = HexFloat.SingleFromHexString(s)
 
 [<StructuredFormatDisplay("{StructuredFormatDisplay}")>]
 type ParserResult<'Result,'UserState> =
-     | Success of 'Result * 'UserState * Pos
+     | Success of 'Result * 'UserState * Position
      | Failure of string * ParserError * 'UserState
      with
         member private t.StructuredFormatDisplay =
@@ -56,9 +56,9 @@ type ParserResult<'Result,'UserState> =
 let internal applyParser (parser: Parser<'Result,'UserState>) (state: State<'UserState>) =
     let reply = parser state
     if reply.Status = Ok then
-        Success(reply.Result, reply.State.UserState, reply.State.Pos)
+        Success(reply.Result, reply.State.UserState, reply.State.Position)
     else
-        let error = ParserError(reply.State.Pos, reply.Error)
+        let error = ParserError(reply.State.Position, reply.Error)
         Failure(error.ToString(reply.State.Stream), error, reply.State.UserState)
 
 let runParser (parser: Parser<'Result,'UserState>) (ustate: 'UserState) (name: string) (stream: CharStream) =
@@ -158,8 +158,12 @@ let internal unexpectedEndOfFile          = unexpectedError "end of file"
 // Reading the input stream position and handling the user state
 // -------------------------------------------------------------
 
-let getPos : Parser<Pos,'u> =
-    fun state -> Reply(state.Pos, state)
+
+let getPosition : Parser<Position,'u> =
+    fun state -> Reply(state.Position, state)
+
+[<System.Obsolete("FParsec.CharParsers.getPos has been renamed to FParsec.CharParsers.getPosition.")>]
+let getPos state = getPosition state
 
 let getUserState : Parser<'u,'u> =
     fun state -> Reply(state.UserState, state)

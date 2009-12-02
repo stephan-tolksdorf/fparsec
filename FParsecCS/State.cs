@@ -41,10 +41,10 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
         data = new Data(1, Iter.Anchor->CharIndexOffset, userState, streamName);
     }
 
-    public State(CharStream stream, Pos pos, TUserState userState) {
-        Iter = stream.Seek(pos.Index); // throws for index smaller then stream.BeginIndex
-        if (Iter.Index != pos.Index) throw new ArgumentOutOfRangeException("Pos.Index", "The index is too large.");
-        data = new Data(pos.Line, pos.Index - pos.Column + 1, userState, pos.StreamName);
+    public State(CharStream stream, Position position, TUserState userState) {
+        Iter = stream.Seek(position.Index); // throws for index smaller then stream.BeginIndex
+        if (Iter.Index != position.Index) throw new ArgumentOutOfRangeException("Position.Index", "The index is too large.");
+        data = new Data(position.Line, position.Index - position.Column + 1, userState, position.StreamName);
     }
 
     public State(CharStream.Iterator iter, long line, long column, TUserState userState)
@@ -170,10 +170,13 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
     }
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    public Pos Pos { get {
+    public Position Position { get {
         long index = Index;
-        return new Pos(data.StreamName, index, data.Line, index - data.LineBegin + 1);
+        return new Position(data.StreamName, index, data.Line, index - data.LineBegin + 1);
     } }
+
+    [Obsolete("FParsec.State.Pos has been renamed to FParsec.State.Position.")]
+    public Position Pos { get { return Position; } }
 
     public override bool Equals(object obj) {
         // most of the time this and obj are equal references ...

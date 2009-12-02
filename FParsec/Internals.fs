@@ -267,7 +267,7 @@ type LineSnippet = {
     IsBetweenCRAndLF: bool
 }
 
-let getLineSnippet (stream: CharStream) (p: Pos) (space: int) (tabSize: int) multiCharGraphemeSafe =
+let getLineSnippet (stream: CharStream) (p: Position) (space: int) (tabSize: int) multiCharGraphemeSafe =
     Debug.Assert(space > 0 && tabSize > 0)
     Debug.Assert(p.Index >= stream.BeginIndex && p.Index <= stream.EndIndex)
 

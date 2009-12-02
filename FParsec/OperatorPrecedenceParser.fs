@@ -230,7 +230,7 @@ type OperatorPrecedenceParser<'a,'u>(?operators: seq<PrecedenceParserOp<'a,'u>>)
     member t.OperatorConflictHandler with get() = operatorConflictHandler and set v = operatorConflictHandler <- v
 
     static member private DefaultOperatorConflictHandler (state1: State<'u>) (op1: PrecedenceParserOp<'a,'u>) (state2: State<'u>) (op2: PrecedenceParserOp<'a,'u>) =
-        let pos1, pos2 = state1.Pos, state2.Pos
+        let pos1, pos2 = state1.Position, state2.Position
         sprintf "The %s conflicts with the %s %s."
                 (op2.ToString()) (op1.ToString())
                 (if pos1.StreamName = pos2.StreamName then

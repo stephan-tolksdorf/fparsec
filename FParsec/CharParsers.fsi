@@ -17,7 +17,7 @@ open Primitives
 type ParserResult<'Result,'UserState> =
      /// Success(result, userState, endPos) holds the result and the user state returned by a successful parser,
      /// together with the position where the parser stopped.
-     | Success of 'Result * 'UserState * Pos
+     | Success of 'Result * 'UserState * Position
      /// Failure(errorAsString, error, suserState) holds the parser error and the user state returned by a failing parser,
      /// together with a string representation of the parser error.
      | Failure of string * ParserError * 'UserState
@@ -86,10 +86,12 @@ val run: Parser<'Result, unit> -> string -> ParserResult<'Result,unit>
 // Reading the input stream position and handling the user state
 // -------------------------------------------------------------
 
-/// The parser `getPos` returns the current position in the input Stream.
-/// `getPos` is equivalent to `fun state -> Reply(state.Pos, state)`.
-val getPos: Parser<Pos,'u>
+/// The parser `getPosition` returns the current position in the input Stream.
+/// `getPosition` is equivalent to `fun state -> Reply(state.Position, state)`.
+val getPosition: Parser<Position,'u>
 
+[<System.Obsolete("FParsec.CharParsers.getPos has been renamed to FParsec.CharParsers.getPosition.")>]
+val getPos: Parser<Position,'u>
 
 /// The parser `getUserState` returns the current user state.
 /// `getUserState` is equivalent to `fun state -> Reply(state.UserState, state)`.

@@ -49,7 +49,7 @@ type Reply<'Result,'UserState> = struct
         int t.Status ^^^ t.State.GetHashCode()
 
     member private t.GetDebuggerDisplay() =
-        let pos = if isNull t.State then "null" else t.State.Pos.ToString()
+        let pos = if isNull t.State then "null" else t.State.Position.ToString()
         if t.Status = Ok && isNull t.Error then
             if typeof<'Result> = typeof<unit> then "Reply((), " + pos + ")"
             else sprintf "Reply(%0.5A, %s)" t.Result pos
