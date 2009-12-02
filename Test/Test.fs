@@ -22,8 +22,8 @@ let Equal a b =
 let NotEqual a b =
     if a = b then Fail ()
 
-let ReferenceEqual a b =
-    if not (System.Object.Equals(a, b)) then Fail ()
+let ReferenceEqual (a: 't) (b: 't) =
+    if not (System.Object.ReferenceEquals(a, b)) then Fail ()
 
 
 let private ROkE_ withNewline (content: string) nSkippedChars result error (parser: Parser<_,_>) =

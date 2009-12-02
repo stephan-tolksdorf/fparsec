@@ -442,7 +442,7 @@ let testEmptyStream (stream: CharStream) =
     let cs = iter.Read2()
     cs.Char0 |> Equal EOS
     cs.Char1 |> Equal EOS
-    iter.ReadUntil(iter) |> Equal ""
+    iter.ReadUntil(iter) |> ReferenceEqual ""
 
 /// Tries to systematically test all code branches in CharStream.Iterator methods.
 let testStream (stream: CharStream) (refString: string) blockSize blockOverlap minRegexSpace =
@@ -802,15 +802,15 @@ let testStream (stream: CharStream) (refString: string) blockSize blockOverlap m
             if str.Length = n then
                 getIter(i).Read(n, true) |> Equal str
             else
-                getIter(i).Read(n, true) |> ReferenceEqual ""
+                getIter(i).Read(n, true) |> Equal ""
             let cs = Array.create (N + 2) '$'
             getIter(i).Read(cs, i%2, min n N) |> Equal str.Length
             cs |> Equal (((if i%2 = 1 then "$" else "") + str + new string('$', N + 2 - str.Length - i%2)).ToCharArray())
         else
             if i >= N then getIter(i).Read() |> Equal EOS
-            getIter(i).Read(n) |> ReferenceEqual ""
-            getIter(i).Read(n, true) |> ReferenceEqual ""
-            getIter(i).Read(n, false) |> ReferenceEqual ""
+            getIter(i).Read(n) |> Equal ""
+            getIter(i).Read(n, true) |> Equal ""
+            getIter(i).Read(n, false) |> Equal ""
             let endIter = getIter(i)
             getIter(i).ReadUntil(endIter) |> ReferenceEqual ""
             let cs = dollarString.ToCharArray()
@@ -843,7 +843,7 @@ let testStream (stream: CharStream) (refString: string) blockSize blockOverlap m
         with ArgumentOutOfRange -> ()
 
         try
-            iter0.Read(System.Int32.MaxValue, true) |> ReferenceEqual ""
+            iter0.Read(System.Int32.MaxValue, true) |> Equal ""
         with OutOfMemory -> ()
         try  iter0.Read(-1, true) |> ignore; Fail()
         with ArgumentOutOfRange -> ()
@@ -892,21 +892,21 @@ let testStream (stream: CharStream) (refString: string) blockSize blockOverlap m
 
         let iterN = getIter(N)
 
-        try  iterN.Read(System.Int32.MaxValue) |> ReferenceEqual ""
+        try  iterN.Read(System.Int32.MaxValue) |> Equal ""
         with OutOfMemory -> ()
         try  iterN.Read(-1) |> ignore; Fail()
         with ArgumentOutOfRange -> ()
         try  iterN.Read(System.Int32.MinValue) |> ignore; Fail()
         with ArgumentOutOfRange -> ()
 
-        try  iterN.Read(System.Int32.MaxValue, false) |> ReferenceEqual ""
+        try  iterN.Read(System.Int32.MaxValue, false) |> Equal ""
         with OutOfMemory -> ()
         try  iterN.Read(-1, false) |> ignore; Fail()
         with ArgumentOutOfRange -> ()
         try  iterN.Read(System.Int32.MinValue, false) |> ignore; Fail()
         with ArgumentOutOfRange -> ()
 
-        try  iterN.Read(System.Int32.MaxValue, true) |> ReferenceEqual ""
+        try  iterN.Read(System.Int32.MaxValue, true) |> Equal ""
         with OutOfMemory -> ()
         try  iterN.Read(-1, true) |> ignore; Fail()
         with ArgumentOutOfRange -> ()
@@ -1156,7 +1156,8 @@ let xTest() =
 let testNormalizeNewlines() =
     let normalize = CharStream.NormalizeNewlines
     normalize null |> Equal null
-    normalize ""   |> Equal ""
+    normalize ""   |> ReferenceEqual ""
+    normalize "ab" |> ReferenceEqual "ab"
 
     let check (cs: char[]) n =
         let str = new string(cs, 0, n)
@@ -1197,12 +1198,11 @@ let testFoldCase() =
 
     let foldCase = CharStream.FoldCase
     foldCase null   |> Equal null
-    foldCase ""     |> ReferenceEqual ""
-    foldCase "a"    |> ReferenceEqual "a"
+    for s in [""; "a"; "aa"; "aaa"] do
+        foldCase s |> ReferenceEqual s
+
     foldCase "A"    |> Equal "a"
-    foldCase "aa"   |> ReferenceEqual "aa"
     foldCase "aA"   |> Equal "aa"
-    foldCase "aaa"  |> ReferenceEqual "aaa"
     foldCase "aaA"  |> Equal "aaa"
     foldCase "abcAOUÄÖÜdef" |> Equal "abcaouäöüdef"
 
