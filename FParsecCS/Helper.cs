@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 
 namespace FParsec {
 
-public sealed class Helper {
+public static class Helper {
 
 /// <summary>Detects the presence of an encoding preamble in the first count bytes of the byte buffer.
 /// If detectEncoding is false, this function only searches for the preamble of the given default encoding,

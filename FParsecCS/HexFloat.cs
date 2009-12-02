@@ -5,7 +5,7 @@ using System;
 
 namespace FParsec {
 
-internal class HexFloat {
+internal static class HexFloat {
 // see the documentation of floatToHexString and floatOfHexString for more info
 
 #pragma warning disable 0429 // unreachable expression code

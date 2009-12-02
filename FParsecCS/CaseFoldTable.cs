@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 
 namespace FParsec {
 
-internal class CaseFoldTable {
+internal static class CaseFoldTable {
 #if LOW_TRUST
     public static char[] FoldedChars;
 
