@@ -82,30 +82,21 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
         return new State<TUserState>(Iter.Advance(nChars), data);
     }
     public State<TUserState> Advance(int nChars, TUserState userState) {
-        return new State<TUserState>(Iter.Advance(nChars),
-                                     new Data(data.Line,
-                                              data.LineBegin,
-                                              userState,
-                                              data.StreamName));
+        var newData = new Data(data.Line, data.LineBegin, userState, data.StreamName);
+        return new State<TUserState>(Iter.Advance(nChars), newData);
     }
     public State<TUserState> Advance(int nChars, int nLines, int nCharsAfterLastNL) {
         if (nLines > 0) {
             long newLineBegin = Iter.Index + nChars - nCharsAfterLastNL;
-            return new State<TUserState>(Iter.Advance(nChars),
-                                         new Data(data.Line + nLines,
-                                                  newLineBegin,
-                                                  data.UserState,
-                                                  data.StreamName));
+            var newData = new Data(data.Line + nLines, newLineBegin, data.UserState, data.StreamName);
+            return new State<TUserState>(Iter.Advance(nChars), newData);
         } else return Advance(nChars);
     }
     public State<TUserState> Advance(int nChars, int nLines, int nCharsAfterLastNL, TUserState userState) {
         if (nLines > 0) {
             long newLineBegin = Iter.Index + nChars - nCharsAfterLastNL;
-            return new State<TUserState>(Iter.Advance(nChars),
-                                         new Data(data.Line + nLines,
-                                                  newLineBegin,
-                                                  userState,
-                                                  data.StreamName));
+            var newData = new Data(data.Line + nLines, newLineBegin,      userState, data.StreamName);
+            return new State<TUserState>(Iter.Advance(nChars), newData);
         } else return Advance(nChars, userState);
     }
 
@@ -137,51 +128,40 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
         return new State<TUserState>(iter, data);
     }
     public State<TUserState> AdvanceTo(CharStream.Iterator iter, TUserState userState) {
-        return new State<TUserState>(iter, new Data(data.Line, data.LineBegin, userState, data.StreamName));
+        var newData = new Data(data.Line, data.LineBegin, userState, data.StreamName);
+        return new State<TUserState>(iter, newData);
     }
     public State<TUserState> AdvanceTo(CharStream.Iterator iter, int nLines, int nCharsAfterLastNL) {
         if (nLines > 0) {
-            return new State<TUserState>(iter, new Data(data.Line + nLines,
-                                                        iter.Index - nCharsAfterLastNL,
-                                                        data.UserState,
-                                                        data.StreamName));
+            var newData = new Data(data.Line + nLines, iter.Index - nCharsAfterLastNL, data.UserState, data.StreamName);
+            return new State<TUserState>(iter, newData);
         } else return AdvanceTo(iter);
-    }
-    public State<TUserState> AdvanceTo(CharStream.Iterator iter, int nLines, int nCharsAfterLastNL, TUserState userState) {
-        if (nLines > 0) {
-            return new State<TUserState>(iter, new Data(data.Line + nLines,
-                                                        iter.Index - nCharsAfterLastNL,
-                                                        userState,
-                                                        data.StreamName));
-        } else return AdvanceTo(iter);
-    }
-    public State<TUserState> AdvanceTo(CharStream.Iterator iter, uint nLines, uint nCharsAfterLastNL) {
-        return new State<TUserState>(iter, new Data(data.Line + nLines,
-                                                    iter.Index - nCharsAfterLastNL,
-                                                    data.UserState,
-                                                    data.StreamName));
-    }
-    public State<TUserState> AdvanceTo(CharStream.Iterator iter, uint nLines, uint nCharsAfterLastNL, TUserState userState) {
-        return new State<TUserState>(iter, new Data(data.Line + nLines,
-                                                    iter.Index - nCharsAfterLastNL,
-                                                    userState,
-                                                    data.StreamName));
     }
     public State<TUserState> AdvanceTo(CharStream.Iterator iter, long nLines, long nCharsAfterLastNL) {
         if (nLines > 0) {
-            return new State<TUserState>(iter, new Data(data.Line + nLines,
-                                                        iter.Index - nCharsAfterLastNL,
-                                                        data.UserState,
-                                                        data.StreamName));
+            var newData = new Data(data.Line + nLines, iter.Index - nCharsAfterLastNL, data.UserState, data.StreamName);
+            return new State<TUserState>(iter, newData);
+        } else return AdvanceTo(iter);
+    }
+    public State<TUserState> AdvanceTo(CharStream.Iterator iter, uint nLines, uint nCharsAfterLastNL) {
+            var newData = new Data(data.Line + nLines, iter.Index - nCharsAfterLastNL, data.UserState, data.StreamName);
+            return new State<TUserState>(iter, newData);
+    }
+    public State<TUserState> AdvanceTo(CharStream.Iterator iter, int nLines, int nCharsAfterLastNL, TUserState userState) {
+        if (nLines > 0) {
+            var newData = new Data(data.Line + nLines, iter.Index - nCharsAfterLastNL,      userState, data.StreamName);
+            return new State<TUserState>(iter, newData);
         } else return AdvanceTo(iter);
     }
     public State<TUserState> AdvanceTo(CharStream.Iterator iter, long nLines, long nCharsAfterLastNL, TUserState userState) {
         if (nLines > 0) {
-            return new State<TUserState>(iter, new Data(data.Line + nLines,
-                                                        iter.Index - nCharsAfterLastNL,
-                                                        userState,
-                                                        data.StreamName));
+            var newData = new Data(data.Line + nLines, iter.Index - nCharsAfterLastNL,      userState, data.StreamName);
+            return new State<TUserState>(iter, newData);
         } else return AdvanceTo(iter);
+    }
+    public State<TUserState> AdvanceTo(CharStream.Iterator iter, uint nLines, uint nCharsAfterLastNL, TUserState userState) {
+            var newData = new Data(data.Line + nLines, iter.Index - nCharsAfterLastNL,      userState, data.StreamName);
+            return new State<TUserState>(iter, newData);
     }
 
     public State<TUserState> WithUserState(TUserState userState) {
