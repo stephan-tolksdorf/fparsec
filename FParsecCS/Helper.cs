@@ -286,16 +286,16 @@ public sealed class CharSet {
     #endif
     }
 
-    public bool Contains(char c) {
-        int off = c - tableMin;
+    public bool Contains(char value) {
+        int off = value - tableMin;
         int idx = off >> log2WordSize;
         if (unchecked((uint)idx) < (uint)table.Length) {
             return ((table[idx] >> off) & 1) != 0; // we don't need to mask off because C#'s operator>> does that for us
         }
         if (charsNotInTable == null) return false;
-        if (c >= min && c <= max) {
-            foreach (char cc in charsNotInTable) {
-                if (cc == c) goto ReturnTrue;
+        if (value >= min && value <= max) {
+            foreach (char c in charsNotInTable) {
+                if (c == value) goto ReturnTrue;
             }
         }
         return false;

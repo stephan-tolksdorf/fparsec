@@ -258,14 +258,14 @@ public sealed class CharStream : IDisposable {
                 return new Iterator {Stream = Stream, Idx = Int32.MinValue};
         } }
 
-        /// <summary>Returns an Iterator that is advanced by numberOfChars chars. The Iterator can't
+        /// <summary>Returns an Iterator that is advanced by offset chars. The Iterator can't
         /// move past the end of the stream, i.e. any position beyond the last char
         /// in the stream is interpreted as precisely one char beyond the last char.</summary>
         /// <exception cref="ArgumentOutOfRangeException">The new position would lie before the beginning of the `CharStream`.</exception>
-        public Iterator Advance(int numberOfChars) {
+        public Iterator Advance(int offset) {
             var stream = Stream;
-            int idx = unchecked(Idx + numberOfChars);
-            if (numberOfChars < 0) goto Negative;
+            int idx = unchecked(Idx + offset);
+            if (offset < 0) goto Negative;
             if (unchecked((uint)idx) >= (uint)stream.IndexEnd) goto EndOfStream;
         ReturnIter:
             return new Iterator {Stream = stream, Idx = idx};
@@ -276,20 +276,20 @@ public sealed class CharStream : IDisposable {
             if (Idx >= 0) {
                 if (idx >= stream.IndexBegin) goto ReturnIter;
             } else {
-                idx = stream.IndexEnd + numberOfChars;
+                idx = stream.IndexEnd + offset;
                 if (idx >= stream.IndexBegin) goto ReturnIter;
             }
-            throw new ArgumentOutOfRangeException("numberOfChars");
+            throw new ArgumentOutOfRangeException("offset");
         }
 
-        /// <summary>Returns an Iterator that is advanced by numberOfChars chars. The Iterator can't
+        /// <summary>Returns an Iterator that is advanced by offset chars. The Iterator can't
         /// move past the end of the stream, i.e. any position beyond the last char
         /// in the stream is interpreted as precisely one char beyond the last char.</summary>
         /// <exception cref="ArgumentOutOfRangeException">The new position would lie before the beginning of the `CharStream`.</exception>
-        public Iterator Advance(long numberOfChars) {
-            if (unchecked((int)numberOfChars) != numberOfChars) goto LargeNumber;
-            int idx = unchecked(Idx + (int)numberOfChars);
-            if ((int)numberOfChars < 0) goto Negative;
+        public Iterator Advance(long offset) {
+            if (unchecked((int)offset) != offset) goto LargeNumber;
+            int idx = unchecked(Idx + (int)offset);
+            if ((int)offset < 0) goto Negative;
             if (unchecked((uint)idx) >= (uint)Stream.IndexEnd) goto EndOfStream;
         ReturnIter:
             return new Iterator {Stream = Stream, Idx = idx};
@@ -300,23 +300,23 @@ public sealed class CharStream : IDisposable {
             if (Idx >= 0) {
                 if (idx >= Stream.IndexBegin) goto ReturnIter;
             } else {
-                idx = Stream.IndexEnd + (int)numberOfChars;
+                idx = Stream.IndexEnd + (int)offset;
                 if (idx >= Stream.IndexBegin) goto ReturnIter;
             }
         OutOfRange:
-            throw new ArgumentOutOfRangeException("numberOfChars");
+            throw new ArgumentOutOfRangeException("offset");
         LargeNumber:
-            if (numberOfChars >= 0) goto EndOfStream;
+            if (offset >= 0) goto EndOfStream;
             else goto OutOfRange;
         }
 
-        /// <summary>Returns an Iterator that is advanced by numberOfChars chars. The Iterator can't
+        /// <summary>Returns an Iterator that is advanced by offset chars. The Iterator can't
         /// move past the end of the stream, i.e. any position beyond the last char
         /// in the stream is interpreted as precisely one char beyond the last char.</summary>
-        public Iterator Advance(uint numberOfChars) {
+        public Iterator Advance(uint offset) {
             int indexEnd = Stream.IndexEnd;
-            int n = unchecked((int)numberOfChars);
-            if (n >= 0) { // numberOfChars <= Int32.MaxValue
+            int n = unchecked((int)offset);
+            if (n >= 0) { // offset <= Int32.MaxValue
                 int idx = unchecked(Idx + n);
                 if (unchecked((uint)idx) < (uint)indexEnd) {
                     return new Iterator {Stream = Stream, Idx = idx};
@@ -339,12 +339,12 @@ public sealed class CharStream : IDisposable {
             }
         }
 
-        /// <summary>Advances the Iterator *in-place* by numberOfChars chars and returns the char on the new position.
-        /// `c &lt;- iter._Increment(numberOfChars)` is an optimized implementation of `iter &lt;- iter.Advance(numberOfChars); c &lt;- iter.Read()`.</summary>
-        public char _Increment(uint numberOfChars) {
+        /// <summary>Advances the Iterator *in-place* by offset chars and returns the char on the new position.
+        /// `c &lt;- iter._Increment(offset)` is an optimized implementation of `iter &lt;- iter.Advance(offset); c &lt;- iter.Read()`.</summary>
+        public char _Increment(uint offset) {
             var stream = Stream;
-            int n = unchecked((int)numberOfChars);
-            if (n >= 0) { // numberOfChars <= Int32.MaxValue
+            int n = unchecked((int)offset);
+            if (n >= 0) { // offset <= Int32.MaxValue
                 int idx = unchecked(Idx + n);
                 if (unchecked((uint)idx) < (uint)stream.IndexEnd) {
                     Idx = idx;
@@ -378,16 +378,16 @@ public sealed class CharStream : IDisposable {
         /// <summary>Advances the Iterator *in-place* by -numberOfChars chars and returns the char on the new position,
         /// except if the new position would lie before the beginning of the CharStream,
         /// in which case the Iterator is advanced to the beginning of the stream and the EndOfStreamChar ('\uFFFF') is returned.</summary>
-        public char _Decrement(uint numberOfChars) {
-            int idx = unchecked(Idx - (int)numberOfChars);
+        public char _Decrement(uint offset) {
+            int idx = unchecked(Idx - (int)offset);
             var stream = Stream;
             if (idx < Idx && idx >= stream.IndexBegin) {
                 Idx = idx;
                 return stream.String[idx];
-            } else if (numberOfChars != 0) {
+            } else if (offset != 0) {
                 if (Idx < 0) {
                     int indexEnd = stream.IndexEnd;
-                    idx = unchecked(indexEnd - (int)numberOfChars);
+                    idx = unchecked(indexEnd - (int)offset);
                     if (idx < indexEnd && idx >= stream.IndexBegin) {
                         Idx = idx;
                         return stream.String[idx];
@@ -408,12 +408,12 @@ public sealed class CharStream : IDisposable {
                 return EOS;
         }
 
-        /// <summary>Is an optimized implementation of Advance(numberOfChars).Read(),
-        /// except that the EndOfStreamChar ('\uFFFF') is returned if Index + numberOfChars &lt; 0 (instead of an exception being thrown).</summary>
-        public char Peek(int numberOfChars) {
+        /// <summary>Is an optimized implementation of Advance(offset).Read(),
+        /// except that the EndOfStreamChar ('\uFFFF') is returned if Index + offset &lt; 0 (instead of an exception being thrown).</summary>
+        public char Peek(int offset) {
             var stream = Stream;
-            int idx = unchecked(Idx + numberOfChars);
-            if (numberOfChars < 0) goto Negative;
+            int idx = unchecked(Idx + offset);
+            if (offset < 0) goto Negative;
             if (unchecked((uint)idx) >= (uint)stream.IndexEnd) goto EndOfStream;
         ReturnChar:
             return stream.String[idx];
@@ -421,18 +421,18 @@ public sealed class CharStream : IDisposable {
             if (Idx >= 0) {
                 if (idx >= stream.IndexBegin) goto ReturnChar;
             } else {
-                idx = stream.IndexEnd + numberOfChars;
+                idx = stream.IndexEnd + offset;
                 if (idx >= stream.IndexBegin) goto ReturnChar;
             }
         EndOfStream:
             return EOS;
         }
 
-        /// <summary>Is an optimized implementation of Advance(numberOfChars).Read().</summary>
-        public char Peek(uint numberOfChars) {
+        /// <summary>Is an optimized implementation of Advance(offset).Read().</summary>
+        public char Peek(uint offset) {
             var stream = Stream;
-            int n = unchecked((int)numberOfChars);
-            if (n >= 0) { // numberOfChars <= Int32.MaxValue
+            int n = unchecked((int)offset);
+            if (n >= 0) { // offset <= Int32.MaxValue
                 int idx = unchecked(Idx + n);
                 if (unchecked((uint)idx) < (uint)stream.IndexEnd)
                     return stream.String[idx];
@@ -442,64 +442,62 @@ public sealed class CharStream : IDisposable {
 
         /// <summary>Returns true if and only if the char argument matches the char pointed to by the Iterator.
         /// At the end of the stream Match always returns false.</summary>
-        public bool Match(char c) {
-            int idx = Idx;
-            if (idx >= 0) return Stream.String[idx] == c;
-            else return false;
+        public bool Match(char ch) {
+            return Idx >= 0 && Stream.String[Idx] == ch;
         }
 
-        /// <summary>Returns true if str matches the chars in the stream beginning with the char pointed to by the Iterator.
+        /// <summary>Returns true if chars matches the chars in the stream beginning with the char pointed to by the Iterator.
         /// If the chars do not match or if there are not enough chars remaining in the stream, false is returned.
-        /// If str is empty, true is returned.</summary>
-        /// <exception cref="NullReferenceException">str is null.</exception>
-        public bool Match(string str) {
-            if (unchecked((uint)Idx) + (uint)str.Length <= (uint)Stream.IndexEnd) {
+        /// If chars is empty, true is returned.</summary>
+        /// <exception cref="NullReferenceException">chars is null.</exception>
+        public bool Match(string chars) {
+            if (unchecked((uint)Idx) + (uint)chars.Length <= (uint)Stream.IndexEnd) {
                 var s = Stream.String;
-                for (int i = 0; i < str.Length; ++i)
-                    if (str[i] != s[Idx + i]) goto ReturnFalse;
+                for (int i = 0; i < chars.Length; ++i)
+                    if (chars[i] != s[Idx + i]) goto ReturnFalse;
                 return true;
             }
-            if (str.Length == 0) return true;
+            if (chars.Length == 0) return true;
         ReturnFalse:
             return false;
         }
 
-        /// <summary>Returns true if caseFoldedStr matches the chars in the stream
+        /// <summary>Returns true if caseFoldedChars matches the chars in the stream
         /// beginning with the char pointed to by the Iterator.
         /// The chars in the stream are case-folded before they are matched,
         /// while the chars in the string argument are assumed to already be case-folded.
         /// If the chars do not match or if there are not enough chars remaining in the stream, false is returned.
-        /// If caseFoldedStr is empty, true is returned.</summary>
-        /// <exception cref="NullReferenceException">caseFoldedStr is null.</exception>
-        public bool MatchCaseFolded(string caseFoldedStr) {
-            if (unchecked((uint)Idx) + (uint)caseFoldedStr.Length <= (uint)Stream.IndexEnd) {
+        /// If caseFoldedChars is empty, true is returned.</summary>
+        /// <exception cref="NullReferenceException">caseFoldedChars is null.</exception>
+        public bool MatchCaseFolded(string caseFoldedChars) {
+            if (unchecked((uint)Idx) + (uint)caseFoldedChars.Length <= (uint)Stream.IndexEnd) {
                 char[] cftable = CaseFoldTable.FoldedChars;
                 if (cftable == null) cftable = CaseFoldTable.Initialize();
                 var s = Stream.String;
-                for (int i = 0; i < caseFoldedStr.Length; ++i)
-                    if (caseFoldedStr[i] != cftable[s[Idx + i]]) goto ReturnFalse;
+                for (int i = 0; i < caseFoldedChars.Length; ++i)
+                    if (caseFoldedChars[i] != cftable[s[Idx + i]]) goto ReturnFalse;
                 return true;
             }
-            if (caseFoldedStr.Length == 0) return true;
+            if (caseFoldedChars.Length == 0) return true;
         ReturnFalse:
             return false;
         }
 
-        /// <summary>Returns true if the chars in str between the indices strIndex (inclusive) and
-        /// strIndex + length (exclusive) match the chars in the stream beginning with the char pointed to by the Iterator.
+        /// <summary>Returns true if the chars in chars between the indices charsIndex (inclusive) and
+        /// charsIndex + length (exclusive) match the chars in the stream beginning with the char pointed to by the Iterator.
         /// If the chars do not match or if there are not enough chars remaining in the stream, false is returned.
         /// If length is 0, true is returned.</summary>
-        /// <exception cref="ArgumentOutOfRangeException">strIndex is negative, length is negative or strIndex + length > str.Length.</exception>
-        /// <exception cref="NullReferenceException">str is null.</exception>
-        public bool Match(string str, int strIndex, int length) {
-            if (strIndex < 0)
+        /// <exception cref="ArgumentOutOfRangeException">charsIndex is negative, length is negative or charsIndex + length > chars.Length.</exception>
+        /// <exception cref="NullReferenceException">chars is null.</exception>
+        public bool Match(string chars, int charsIndex, int length) {
+            if (charsIndex < 0)
                 throw new ArgumentOutOfRangeException("charsIndex", "charsIndex is negative.");
-            if (length < 0 || strIndex > str.Length - length)
+            if (length < 0 || charsIndex > chars.Length - length)
                 throw new ArgumentOutOfRangeException("length", "length is out of range.");
             if (unchecked((uint)Idx) + (uint)length <= (uint)Stream.IndexEnd) {
                 var s = Stream.String;
                 for (int i = 0; i < length; ++i)
-                    if (str[strIndex + i] != s[Idx + i]) goto ReturnFalse;
+                    if (chars[charsIndex + i] != s[Idx + i]) goto ReturnFalse;
                 return true;
             }
             if (length == 0) return true;
@@ -610,27 +608,27 @@ public sealed class CharStream : IDisposable {
                 return Idx >= 0 && !allOrEmpty ? Stream.String.Substring(Idx, Stream.IndexEnd - Idx) : "";
         }
 
-        /// <summary>Copies the length stream chars beginning with the char pointed to by the Iterator into dest.
-        /// The chars are written into dest beginning at the index destIndex.
+        /// <summary>Copies the length stream chars beginning with the char pointed to by the Iterator into buffer.
+        /// The chars are written into buffer beginning at the index bufferIndex.
         /// If less than length chars are remaining in the stream, only the remaining chars are copied.
         /// Returns the actual number of chars copied.</summary>
-        /// <exception cref="ArgumentOutOfRangeException">destIndex is negative, length is negative or destIndex + length > dest.Length.</exception>
-        /// <exception cref="NullReferenceException">dest is null.</exception>
-        public int Read(char[] dest, int destIndex, int length) {
-            if (destIndex < 0)
-                throw new ArgumentOutOfRangeException("destIndex", "destIndex is negative.");
-            if (length < 0 || destIndex > dest.Length - length)
+        /// <exception cref="ArgumentOutOfRangeException">bufferIndex is negative, length is negative or bufferIndex + length > buffer.Length.</exception>
+        /// <exception cref="NullReferenceException">buffer is null.</exception>
+        public int Read(char[] buffer, int bufferIndex, int length) {
+            if (bufferIndex < 0)
+                throw new ArgumentOutOfRangeException("bufferIndex", "bufferIndex is negative.");
+            if (length < 0 || bufferIndex > buffer.Length - length)
                 throw new ArgumentOutOfRangeException("length", "length is out of range.");
             if (unchecked((uint)Idx) + (uint)length <= (uint)Stream.IndexEnd) {
                 var s = Stream.String;
                 for (int i = 0; i < length; ++i)
-                    dest[destIndex + i] = s[Idx + i];
+                    buffer[bufferIndex + i] = s[Idx + i];
                 return length;
             } else if (Idx >= 0){
                 int n = Stream.IndexEnd - Idx;
                 var s = Stream.String;
                 for (int i = 0; i < n; ++i)
-                    dest[destIndex + i] = s[Idx + i];
+                    buffer[bufferIndex + i] = s[Idx + i];
                 return n;
             } else {
                 return 0;
@@ -656,9 +654,8 @@ public sealed class CharStream : IDisposable {
             return "";
         }
 
-        public override bool Equals(object other) {
-            if (!(other is Iterator)) return false;
-            return Equals((Iterator) other);
+        public override bool Equals(object obj) {
+            return (obj is Iterator) && Equals((Iterator) obj);
         }
 
         public bool Equals(Iterator other) {
@@ -669,8 +666,8 @@ public sealed class CharStream : IDisposable {
             return Idx;
         }
 
-        public static bool operator==(Iterator i1, Iterator i2) { return  i1.Equals(i2); }
-        public static bool operator!=(Iterator i1, Iterator i2) { return !i1.Equals(i2); }
+        public static bool operator==(Iterator left, Iterator right) { return  left.Equals(right); }
+        public static bool operator!=(Iterator left, Iterator right) { return !left.Equals(right); }
     }
 
     /// <summary>Returns a case-folded copy of the string argument. All chars are mapped

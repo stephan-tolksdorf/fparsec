@@ -78,26 +78,26 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
         }
     } }
 
-    public State<TUserState> Advance(int nChars) {
-        return new State<TUserState>(Iter.Advance(nChars), data);
+    public State<TUserState> Advance(int charOffset) {
+        return new State<TUserState>(Iter.Advance(charOffset), data);
     }
-    public State<TUserState> Advance(int nChars, TUserState userState) {
+    public State<TUserState> Advance(int charOffset, TUserState userState) {
         var newData = new Data(data.Line, data.LineBegin, userState, data.StreamName);
-        return new State<TUserState>(Iter.Advance(nChars), newData);
+        return new State<TUserState>(Iter.Advance(charOffset), newData);
     }
-    public State<TUserState> Advance(int nChars, int nLines, int nCharsAfterLastNL) {
-        if (nLines > 0) {
-            long newLineBegin = Iter.Index + nChars - nCharsAfterLastNL;
-            var newData = new Data(data.Line + nLines, newLineBegin, data.UserState, data.StreamName);
-            return new State<TUserState>(Iter.Advance(nChars), newData);
-        } else return Advance(nChars);
+    public State<TUserState> Advance(int charOffset, int lineOffset, int newColumnMinus1) {
+        if (lineOffset > 0) {
+            long newLineBegin = Iter.Index + charOffset - newColumnMinus1;
+            var newData = new Data(data.Line + lineOffset, newLineBegin, data.UserState, data.StreamName);
+            return new State<TUserState>(Iter.Advance(charOffset), newData);
+        } else return Advance(charOffset);
     }
-    public State<TUserState> Advance(int nChars, int nLines, int nCharsAfterLastNL, TUserState userState) {
-        if (nLines > 0) {
-            long newLineBegin = Iter.Index + nChars - nCharsAfterLastNL;
-            var newData = new Data(data.Line + nLines, newLineBegin,      userState, data.StreamName);
-            return new State<TUserState>(Iter.Advance(nChars), newData);
-        } else return Advance(nChars, userState);
+    public State<TUserState> Advance(int charOffset, int lineOffset, int newColumnMinus1, TUserState userState) {
+        if (lineOffset > 0) {
+            long newLineBegin = Iter.Index + charOffset - newColumnMinus1;
+            var newData = new Data(data.Line + lineOffset, newLineBegin,      userState, data.StreamName);
+            return new State<TUserState>(Iter.Advance(charOffset), newData);
+        } else return Advance(charOffset, userState);
     }
 
     internal State<TUserState> AdvanceTo(char* ptr) {
@@ -114,11 +114,11 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
         newState.Iter.Ptr = ptr;
         return newState;
     }
-    internal State<TUserState> AdvanceTo(char* ptr, char* lineBegin, int nLines) {
+    internal State<TUserState> AdvanceTo(char* ptr, char* lineBegin, int lineOffset) {
         var anchor = Iter.Anchor;
         var d = CharStream.PositiveDistance(anchor->BufferBegin, lineBegin);
         long newLineBegin = d + anchor->CharIndexPlusOffset;
-        var newData = new Data(data.Line + nLines, newLineBegin, data.UserState, data.StreamName);
+        var newData = new Data(data.Line + lineOffset, newLineBegin, data.UserState, data.StreamName);
         var newState = new State<TUserState>(Iter, newData);
         newState.Iter.Ptr = ptr;
         return newState;
@@ -131,36 +131,36 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
         var newData = new Data(data.Line, data.LineBegin, userState, data.StreamName);
         return new State<TUserState>(iter, newData);
     }
-    public State<TUserState> AdvanceTo(CharStream.Iterator iter, int nLines, int nCharsAfterLastNL) {
-        if (nLines > 0) {
-            var newData = new Data(data.Line + nLines, iter.Index - nCharsAfterLastNL, data.UserState, data.StreamName);
+    public State<TUserState> AdvanceTo(CharStream.Iterator iter, int lineOffset, int newColumnMinus1) {
+        if (lineOffset > 0) {
+            var newData = new Data(data.Line + lineOffset, iter.Index - newColumnMinus1, data.UserState, data.StreamName);
             return new State<TUserState>(iter, newData);
         } else return AdvanceTo(iter);
     }
-    public State<TUserState> AdvanceTo(CharStream.Iterator iter, long nLines, long nCharsAfterLastNL) {
-        if (nLines > 0) {
-            var newData = new Data(data.Line + nLines, iter.Index - nCharsAfterLastNL, data.UserState, data.StreamName);
+    public State<TUserState> AdvanceTo(CharStream.Iterator iter, long lineOffset, long newColumnMinus1) {
+        if (lineOffset > 0) {
+            var newData = new Data(data.Line + lineOffset, iter.Index - newColumnMinus1, data.UserState, data.StreamName);
             return new State<TUserState>(iter, newData);
         } else return AdvanceTo(iter);
     }
-    public State<TUserState> AdvanceTo(CharStream.Iterator iter, uint nLines, uint nCharsAfterLastNL) {
-            var newData = new Data(data.Line + nLines, iter.Index - nCharsAfterLastNL, data.UserState, data.StreamName);
+    public State<TUserState> AdvanceTo(CharStream.Iterator iter, uint lineOffset, uint newColumnMinus1) {
+            var newData = new Data(data.Line + lineOffset, iter.Index - newColumnMinus1, data.UserState, data.StreamName);
             return new State<TUserState>(iter, newData);
     }
-    public State<TUserState> AdvanceTo(CharStream.Iterator iter, int nLines, int nCharsAfterLastNL, TUserState userState) {
-        if (nLines > 0) {
-            var newData = new Data(data.Line + nLines, iter.Index - nCharsAfterLastNL,      userState, data.StreamName);
-            return new State<TUserState>(iter, newData);
-        } else return AdvanceTo(iter);
-    }
-    public State<TUserState> AdvanceTo(CharStream.Iterator iter, long nLines, long nCharsAfterLastNL, TUserState userState) {
-        if (nLines > 0) {
-            var newData = new Data(data.Line + nLines, iter.Index - nCharsAfterLastNL,      userState, data.StreamName);
+    public State<TUserState> AdvanceTo(CharStream.Iterator iter, int lineOffset, int newColumnMinus1, TUserState userState) {
+        if (lineOffset > 0) {
+            var newData = new Data(data.Line + lineOffset, iter.Index - newColumnMinus1,      userState, data.StreamName);
             return new State<TUserState>(iter, newData);
         } else return AdvanceTo(iter);
     }
-    public State<TUserState> AdvanceTo(CharStream.Iterator iter, uint nLines, uint nCharsAfterLastNL, TUserState userState) {
-            var newData = new Data(data.Line + nLines, iter.Index - nCharsAfterLastNL,      userState, data.StreamName);
+    public State<TUserState> AdvanceTo(CharStream.Iterator iter, long lineOffset, long newColumnMinus1, TUserState userState) {
+        if (lineOffset > 0) {
+            var newData = new Data(data.Line + lineOffset, iter.Index - newColumnMinus1,      userState, data.StreamName);
+            return new State<TUserState>(iter, newData);
+        } else return AdvanceTo(iter);
+    }
+    public State<TUserState> AdvanceTo(CharStream.Iterator iter, uint lineOffset, uint newColumnMinus1, TUserState userState) {
+            var newData = new Data(data.Line + lineOffset, iter.Index - newColumnMinus1,      userState, data.StreamName);
             return new State<TUserState>(iter, newData);
     }
 
@@ -175,14 +175,14 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
         return new Pos(data.StreamName, index, data.Line, index - data.LineBegin + 1);
     } }
 
-    public override bool Equals(object other) {
-        // most of the time this and other are equal references ...
-        if ((object)this == other) return true;
-        var state2 = other as State<TUserState>;
-        return    (object)state2 != null
+    public override bool Equals(object obj) {
+        // most of the time this and obj are equal references ...
+        if ((object)this == obj) return true;
+        var other = obj as State<TUserState>;
+        return    (object)other != null
                // ... or their iterator indices (computed from the the Block and and Ptr) differ
-               && (Iter.Ptr == state2.Iter.Ptr || Iter.Block != state2.Iter.Block)
-               && EqualsHelper(state2);
+               && (Iter.Ptr == other.Iter.Ptr || Iter.Block != other.Iter.Block)
+               && EqualsHelper(other);
     }
 
     public bool Equals(State<TUserState> other) {
@@ -192,13 +192,13 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
                    && EqualsHelper(other));
     }
 
-    public static bool operator==(State<TUserState> s1, State<TUserState> s2) {
-        return    (object)s1 == (object)s2
-               || (   (object)s1 != null && (object)s2 != null
-                   && (s1.Iter.Ptr == s2.Iter.Ptr || s1.Iter.Block != s2.Iter.Block)
-                   && s1.EqualsHelper(s2));
+    public static bool operator==(State<TUserState> left, State<TUserState> right) {
+        return    (object)left == (object)right
+               || (   (object)left != null && (object)right != null
+                   && (left.Iter.Ptr == right.Iter.Ptr || left.Iter.Block != right.Iter.Block)
+                   && left.EqualsHelper(right));
     }
-    public static bool operator!=(State<TUserState> s1, State<TUserState> s2) { return !(s1 == s2); }
+    public static bool operator!=(State<TUserState> left, State<TUserState> right) { return !(left == right); }
 
     private bool EqualsHelper(State<TUserState> other) {
         Data d1 = data, d2 = other.data;
@@ -437,7 +437,7 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
         var anchor = Iter.Anchor;
         if (Iter.Block == anchor->Block) {
             char* bufferEnd1 = anchor->BufferEnd - 1; // - 1 to guarantee the lookahead for '\r'
-            char* end2 = unchecked (ptr + maxCharsOrNewlines); // could overflow
+            char* end2 = unchecked (ptr + maxCharsOrNewlines);
             char* end = end2 >= ptr && end2 <= bufferEnd1 ? end2 : bufferEnd1;
             if (ptr < end) {
                 for (;;) {
@@ -540,7 +540,7 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
         var anchor = Iter.Anchor;
         if (Iter.Block == anchor->Block) {
             char* bufferEnd1 = anchor->BufferEnd - 1; // - 1 to guarantee the lookahead for '\r'
-            char* end2 = unchecked (ptr + maxCharsOrNewlines); // could overflow
+            char* end2 = unchecked (ptr + maxCharsOrNewlines);
             char* end = end2 >= ptr && end2 <= bufferEnd1 ? end2 : bufferEnd1;
             if (ptr < end) {
                 for (;;) {
@@ -803,7 +803,7 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
         int nCRLF = 0;
         char* ptr = Iter.Ptr;
         char* bufferEnd1 = Iter.Anchor->BufferEnd - 1; // - 1 to guarantee the lookahead for '\r'
-        char* end2 = unchecked (ptr + maxCharsOrNewlines); // could overflow
+        char* end2 = unchecked (ptr + maxCharsOrNewlines);
         char* end = end2 >= ptr && end2 <= bufferEnd1 ? end2 : bufferEnd1;
         if (Iter.Block == Iter.Anchor->Block && ptr + 2 < end) { // + 2 so that we don't need to check after the first iteration
             char c = *ptr;
@@ -906,7 +906,7 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
         int nCR = 0;
         char* ptr = Iter.Ptr;
         char* bufferEnd1 = Iter.Anchor->BufferEnd - 1; // - 1 to guarantee the lookahead for '\r'
-        char* end2 = unchecked (ptr + maxCharsOrNewlines); // could overflow
+        char* end2 = unchecked (ptr + maxCharsOrNewlines);
         char* end = end2 >= ptr && end2 <= bufferEnd1 ? end2 : bufferEnd1;
         if (Iter.Block == Iter.Anchor->Block && ptr + 2 < end) { // + 2 so that we don't need to check after the first iteration
             char c = *ptr;
@@ -1049,11 +1049,11 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
         int strLength = str.Length; // throws if str is null
         if (strLength == 0) throw new ArgumentException("The string argument is empty.");
         if (maxCharsOrNewlines < 0) throw new ArgumentOutOfRangeException("maxCharsOrNewlines is negative.");
-        fixed (char* pstr = str) {
+        fixed (char* pStr = str) {
             char* lineBegin = null;
             int nLines = 0;
             int nCRLF = 0;
-            char first = pstr[0];
+            char first = pStr[0];
             char* ptr = Iter.Ptr;
             char* bufferEnd = Iter.Anchor->BufferEnd;
             char* end1 = unchecked (bufferEnd - strLength);
@@ -1083,12 +1083,12 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
                         }
                         continue;
                     CompareRestOfString:
-                        if (strLength == 1 || (ptr[1] == pstr[1] &&
-                            (strLength == 2 || (ptr[2] == pstr[2] &&
-                             (strLength == 3 || Rest3OfStringEquals(ptr, pstr, strLength)))))) goto Found;
+                        if (strLength == 1 || (ptr[1] == pStr[1] &&
+                            (strLength == 2 || (ptr[2] == pStr[2] &&
+                             (strLength == 3 || Rest3OfStringEquals(ptr, pStr, strLength)))))) goto Found;
                         goto StringsNotEqual;
                     } // for
-                    if (*ptr == first && RestOfStringEquals(ptr, pstr, strLength)) goto Found;
+                    if (*ptr == first && RestOfStringEquals(ptr, pStr, strLength)) goto Found;
                     if (ptr >= end1) goto EndOfBlock;
                     foundString = false;
                     goto ReturnState;
@@ -1102,21 +1102,21 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
                 }
             }
         EndOfBlock:
-            return SkipToStringContinue(pstr, strLength, maxCharsOrNewlines, out foundString, ptr, lineBegin, nLines, nCRLF);
+            return SkipToStringContinue(pStr, strLength, maxCharsOrNewlines, out foundString, ptr, lineBegin, nLines, nCRLF);
         }
     }
-    private State<TUserState> SkipToStringContinue(char* pstr, int strLength, int maxCharsOrNewlines, out bool foundString,
+    private State<TUserState> SkipToStringContinue(char* pStr, int strLength, int maxCharsOrNewlines, out bool foundString,
                                                    char* ptr, char* lineBegin, int nLines, int nCRLF)
     {
         foundString = false;
-        char first = *pstr;
+        char first = *pStr;
         int index = CharStream.PositiveDistance(Iter.Ptr, ptr);
         int count = index - nCRLF;
         int lineBeginCount = nLines == 0 ? 0 : count - CharStream.PositiveDistance(lineBegin, ptr);
         CharStream.Iterator iter = Iter;
         char c = iter._Increment((uint)index);
         for (;;) {
-            if (c != first || !iter.Match(pstr, strLength)) {
+            if (c != first || !iter.Match(pStr, strLength)) {
                 if (c == CharStream.Iterator.EndOfStreamChar || count == maxCharsOrNewlines) break;
                 ++count;
                 char c1 = iter._Increment();
@@ -1150,17 +1150,17 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
         int strLength = str.Length; // throws if str is null
         if (strLength == 0) throw new ArgumentException("The string argument is empty.");
         if (maxCharsOrNewlines < 0) throw new ArgumentOutOfRangeException("maxCharsOrNewlines is negative.");
-        fixed (char* pstr = str) {
+        fixed (char* pStr = str) {
             char* lineBegin = null;
             int nLines = 0;
             int nCRLF = 0;
             int nCR = 0;
-            char first = pstr[0];
+            char first = pStr[0];
             char* ptr = Iter.Ptr;
             char* bufferEnd = Iter.Anchor->BufferEnd;
-            char* end1 = unchecked (bufferEnd - strLength); // could overflow
+            char* end1 = unchecked (bufferEnd - strLength);
             if (end1 >= ptr && end1 < bufferEnd) {
-                char* end2 = unchecked (ptr + maxCharsOrNewlines); // could overflow
+                char* end2 = unchecked (ptr + maxCharsOrNewlines);
                 char* end = end1 <= end2 || end2 < ptr ? end1 : end2;
                 if (Iter.Block == Iter.Anchor->Block && ptr < end) {
                     for (;;) {
@@ -1187,12 +1187,12 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
                         }
                         continue;
                     CompareRestOfString:
-                        if (strLength == 1 || (ptr[1] == pstr[1] &&
-                             (strLength == 2 || (ptr[2] == pstr[2] &&
-                              (strLength == 3 || Rest3OfStringEquals(ptr, pstr, strLength)))))) goto Found;
+                        if (strLength == 1 || (ptr[1] == pStr[1] &&
+                             (strLength == 2 || (ptr[2] == pStr[2] &&
+                              (strLength == 3 || Rest3OfStringEquals(ptr, pStr, strLength)))))) goto Found;
                         goto StringsNotEqual;
                     } // for
-                    if (*ptr == first && RestOfStringEquals(ptr, pstr, strLength)) goto Found;
+                    if (*ptr == first && RestOfStringEquals(ptr, pStr, strLength)) goto Found;
                     if (ptr >= end1) goto EndOfBlock;
                     goto NotFound;
                 Found:
@@ -1227,20 +1227,20 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
                 }
             }
         EndOfBlock:
-            return SkipToStringContinue(pstr, strLength, maxCharsOrNewlines, out skippedString, ptr, lineBegin, nLines, nCRLF, nCR);
+            return SkipToStringContinue(pStr, strLength, maxCharsOrNewlines, out skippedString, ptr, lineBegin, nLines, nCRLF, nCR);
         }
     }
-    private State<TUserState> SkipToStringContinue(char* pstr, int strLength, int maxCharsOrNewlines, out string skippedString,
+    private State<TUserState> SkipToStringContinue(char* pStr, int strLength, int maxCharsOrNewlines, out string skippedString,
                                                    char* ptr, char* lineBegin, int nLines, int nCRLF, int nCR)
     {
-        char first = *pstr;
+        char first = *pStr;
         CharStream.Iterator iter = Iter;
         int index = CharStream.PositiveDistance(Iter.Ptr, ptr);
         int count = index - nCRLF;
         int lineBeginCount = nLines == 0 ? 0 : count - CharStream.PositiveDistance(lineBegin, ptr);
         char c = iter._Increment((uint)index);
         for (;;) {
-            if (c != first || !iter.Match(pstr, strLength)) {
+            if (c != first || !iter.Match(pStr, strLength)) {
                 if (c == CharStream.Iterator.EndOfStreamChar || count == maxCharsOrNewlines) break;
                 ++count;
                 char c1 = iter._Increment();
@@ -1287,15 +1287,15 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
         } else return this;
     }
 
-    public State<TUserState> SkipToStringCI(string caseFoldedStr, int maxCharsOrNewlines, out bool foundString) {
-        int strLength = caseFoldedStr.Length; // throws if str is null
+    public State<TUserState> SkipToStringCI(string caseFoldedString, int maxCharsOrNewlines, out bool foundString) {
+        int strLength = caseFoldedString.Length; // throws if str is null
         if (strLength == 0) throw new ArgumentException("The string argument is empty.");
         if (maxCharsOrNewlines < 0) throw new ArgumentOutOfRangeException("maxCharsOrNewlines is negative.");
-        fixed (char* pstr = caseFoldedStr) {
+        fixed (char* pStr = caseFoldedString) {
             char* lineBegin = null;
             int nLines = 0;
             int nCRLF = 0;
-            char first = pstr[0];
+            char first = pStr[0];
             char* ptr = Iter.Ptr;
             char* bufferEnd = Iter.Anchor->BufferEnd;
             char* end1 = unchecked (bufferEnd - strLength);
@@ -1327,10 +1327,10 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
                         }
                         continue;
                     CompareRestOfString:
-                        if (strLength == 1 || RestOfStringEqualsCI(ptr, pstr, strLength)) goto Found;
+                        if (strLength == 1 || RestOfStringEqualsCI(ptr, pStr, strLength)) goto Found;
                         goto StringsNotEqual;
                     } // for
-                    if (cftable[*ptr] == first && RestOfStringEqualsCI(ptr, pstr, strLength)) goto Found;
+                    if (cftable[*ptr] == first && RestOfStringEqualsCI(ptr, pStr, strLength)) goto Found;
                     if (ptr >= end1) goto EndOfBlock;
                     foundString = false;
                     goto ReturnState;
@@ -1344,14 +1344,14 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
                 }
             }
         EndOfBlock:
-            return SkipToStringCIContinue(pstr, strLength, maxCharsOrNewlines, out foundString, ptr, lineBegin, nLines, nCRLF);
+            return SkipToStringCIContinue(pStr, strLength, maxCharsOrNewlines, out foundString, ptr, lineBegin, nLines, nCRLF);
         }
     }
-    private State<TUserState> SkipToStringCIContinue(char* pstr, int strLength, int maxCharsOrNewlines, out bool foundString,
+    private State<TUserState> SkipToStringCIContinue(char* pStr, int strLength, int maxCharsOrNewlines, out bool foundString,
                                                      char* ptr, char* lineBegin, int nLines, int nCRLF)
     {
         foundString = false;
-        char first = *pstr;
+        char first = *pStr;
         int index = CharStream.PositiveDistance(Iter.Ptr, ptr);
         int count = index - nCRLF;
         int lineBeginCount = nLines == 0 ? 0 : count - CharStream.PositiveDistance(lineBegin, ptr);
@@ -1360,7 +1360,7 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
         CharStream.Iterator iter = Iter;
         char c = cftable[iter._Increment((uint)index)];
         for (;;) {
-            if (c != first || !iter.MatchCaseFolded(pstr, strLength)) {
+            if (c != first || !iter.MatchCaseFolded(pStr, strLength)) {
                 if (c == CharStream.Iterator.EndOfStreamChar || count == maxCharsOrNewlines) break;
                 ++count;
                 char c1 = cftable[iter._Increment()];
@@ -1390,21 +1390,21 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
         } else return this;
     }
 
-    public State<TUserState> SkipToStringCI(string caseFoldedStr, int maxCharsOrNewlines, out string skippedString) {
-        int strLength = caseFoldedStr.Length; // throws if str is null
+    public State<TUserState> SkipToStringCI(string caseFoldedString, int maxCharsOrNewlines, out string skippedString) {
+        int strLength = caseFoldedString.Length; // throws if str is null
         if (strLength == 0) throw new ArgumentException("The string argument is empty.");
         if (maxCharsOrNewlines < 0) throw new ArgumentOutOfRangeException("maxCharsOrNewlines is negative.");
-        fixed (char* pstr = caseFoldedStr) {
+        fixed (char* pStr = caseFoldedString) {
             char* lineBegin = null;
             int nLines = 0;
             int nCRLF = 0;
             int nCR = 0;
-            char first = pstr[0];
+            char first = pStr[0];
             char* ptr = Iter.Ptr;
             char* bufferEnd = Iter.Anchor->BufferEnd;
-            char* end1 = unchecked (bufferEnd - strLength); // could overflow
+            char* end1 = unchecked (bufferEnd - strLength);
             if (end1 >= ptr && end1 < bufferEnd) {
-                char* end2 = unchecked (ptr + maxCharsOrNewlines); // could overflow
+                char* end2 = unchecked (ptr + maxCharsOrNewlines);
                 char* end = end1 <= end2 || end2 < ptr ? end1 : end2;
                 if (Iter.Block == Iter.Anchor->Block && ptr < end) {
                     char* cftable = CaseFoldTable.FoldedChars;
@@ -1433,10 +1433,10 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
                         }
                         continue;
                     CompareRestOfString:
-                        if (strLength == 1 || RestOfStringEqualsCI(ptr, pstr, strLength)) goto Found;
+                        if (strLength == 1 || RestOfStringEqualsCI(ptr, pStr, strLength)) goto Found;
                         goto StringsNotEqual;
                     } // for
-                    if (cftable[*ptr] == first && RestOfStringEqualsCI(ptr, pstr, strLength)) goto Found;
+                    if (cftable[*ptr] == first && RestOfStringEqualsCI(ptr, pStr, strLength)) goto Found;
                     if (ptr >= end1) goto EndOfBlock;
                     goto NotFound;
                 Found:
@@ -1471,13 +1471,13 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
                 }
             }
         EndOfBlock:
-            return SkipToStringCIContinue(pstr, strLength, maxCharsOrNewlines, out skippedString, ptr, lineBegin, nLines, nCRLF, nCR);
+            return SkipToStringCIContinue(pStr, strLength, maxCharsOrNewlines, out skippedString, ptr, lineBegin, nLines, nCRLF, nCR);
         }
     }
-    private State<TUserState> SkipToStringCIContinue(char* pstr, int strLength, int maxCharsOrNewlines, out string skippedString,
+    private State<TUserState> SkipToStringCIContinue(char* pStr, int strLength, int maxCharsOrNewlines, out string skippedString,
                                                      char* ptr, char* lineBegin, int nLines, int nCRLF, int nCR)
     {
-        char first = *pstr;
+        char first = *pStr;
         CharStream.Iterator iter = Iter;
         int index = CharStream.PositiveDistance(Iter.Ptr, ptr);
         int count = index - nCRLF;
@@ -1486,7 +1486,7 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
         if (cftable == null) cftable = CaseFoldTable.Initialize();
         char c = cftable[iter._Increment((uint)index)];
         for (;;) {
-            if (c != first || !iter.MatchCaseFolded(pstr, strLength)) {
+            if (c != first || !iter.MatchCaseFolded(pStr, strLength)) {
                 if (c == CharStream.Iterator.EndOfStreamChar || count == maxCharsOrNewlines) break;
                 ++count;
                 char c1 = cftable[iter._Increment()];

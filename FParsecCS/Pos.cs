@@ -20,8 +20,8 @@ public class Pos : IEquatable<Pos>, IComparable, IComparable<Pos> {
                + Line.ToString() + ", Col: " + Column.ToString() + ")";
     }
 
-    public override bool Equals(object other) {
-        return Equals(other as Pos);
+    public override bool Equals(object obj) {
+        return Equals(obj as Pos);
     }
     public bool Equals(Pos other) {
         return (object)other != null && Index == other.Index && Line == other.Line && Column == other.Column && StreamName == other.StreamName;
@@ -29,8 +29,8 @@ public class Pos : IEquatable<Pos>, IComparable, IComparable<Pos> {
     public override int GetHashCode() {
         return Index.GetHashCode();
     }
-    public static bool operator==(Pos pos1, Pos pos2) { return  pos1.Equals(pos2); }
-    public static bool operator!=(Pos pos1, Pos pos2) { return !pos1.Equals(pos2); }
+    public static bool operator==(Pos left, Pos right) { return  left.Equals(right); }
+    public static bool operator!=(Pos left, Pos right) { return !left.Equals(right); }
 
     public int CompareTo(Pos other) {
         if ((object)this == (object)other) return 0;

@@ -76,32 +76,32 @@ public sealed class State<TUserState> : IEquatable<State<TUserState>> {
         }
     } }
 
-    public State<TUserState> Advance(int nChars) {
+    public State<TUserState> Advance(int charOffset) {
         var iter = Iter;
-        int idx = unchecked(iter.Idx + nChars);
-        if (nChars >= 0 && unchecked((uint)idx) < (uint)iter.Stream.IndexEnd) {
+        int idx = unchecked(iter.Idx + charOffset);
+        if (charOffset >= 0 && unchecked((uint)idx) < (uint)iter.Stream.IndexEnd) {
             iter.Idx = idx;
             return new State<TUserState>(iter, data);
         }
-        return new State<TUserState>(Iter.Advance(nChars), data);
+        return new State<TUserState>(Iter.Advance(charOffset), data);
     }
-    public State<TUserState> Advance(int nChars, TUserState userState) {
+    public State<TUserState> Advance(int charOffset, TUserState userState) {
         var newData = new Data(data.Line, data.LineBegin, userState, data.StreamName);
-        return new State<TUserState>(Iter.Advance(nChars), newData);
+        return new State<TUserState>(Iter.Advance(charOffset), newData);
     }
-    public State<TUserState> Advance(int nChars, int nLines, int nCharsAfterLastNL) {
-        if (nLines > 0) {
-            long newLineBegin = Iter.Index + nChars - nCharsAfterLastNL;
-            var newData = new Data(data.Line + nLines, newLineBegin, data.UserState, data.StreamName);
-            return new State<TUserState>(Iter.Advance(nChars), newData);
-        } else return Advance(nChars);
+    public State<TUserState> Advance(int charOffset, int lineOffset, int newColumnMinus1) {
+        if (lineOffset > 0) {
+            long newLineBegin = Iter.Index + charOffset - newColumnMinus1;
+            var newData = new Data(data.Line + lineOffset, newLineBegin, data.UserState, data.StreamName);
+            return new State<TUserState>(Iter.Advance(charOffset), newData);
+        } else return Advance(charOffset);
     }
-    public State<TUserState> Advance(int nChars, int nLines, int nCharsAfterLastNL, TUserState userState) {
-        if (nLines > 0) {
-            long newLineBegin = Iter.Index + nChars - nCharsAfterLastNL;
-            var newData = new Data(data.Line + nLines, newLineBegin,      userState, data.StreamName);
-            return new State<TUserState>(Iter.Advance(nChars), newData);
-        } else return Advance(nChars, userState);
+    public State<TUserState> Advance(int charOffset, int lineOffset, int newColumnMinus1, TUserState userState) {
+        if (lineOffset > 0) {
+            long newLineBegin = Iter.Index + charOffset - newColumnMinus1;
+            var newData = new Data(data.Line + lineOffset, newLineBegin,      userState, data.StreamName);
+            return new State<TUserState>(Iter.Advance(charOffset), newData);
+        } else return Advance(charOffset, userState);
     }
 
     internal State<TUserState> AdvanceTo(int idx) {
@@ -116,11 +116,11 @@ public sealed class State<TUserState> : IEquatable<State<TUserState>> {
         var newData = new Data(data.Line + 1, newLineBegin, data.UserState, data.StreamName);
         return new State<TUserState>(iter, newData);
     }
-    internal State<TUserState> AdvanceTo(int idx, int lineBegin, int nLines) {
+    internal State<TUserState> AdvanceTo(int idx, int lineBegin, int lineOffset) {
         var iter = Iter;
         iter.Idx = idx;
         long newLineBegin = (uint)(lineBegin - Iter.Stream.IndexBegin) + Iter.Stream.StreamIndexOffset;
-        var newData = new Data(data.Line + nLines, newLineBegin, data.UserState, data.StreamName);
+        var newData = new Data(data.Line + lineOffset, newLineBegin, data.UserState, data.StreamName);
         return new State<TUserState>(iter, newData);
     }
 
@@ -131,36 +131,36 @@ public sealed class State<TUserState> : IEquatable<State<TUserState>> {
         var newData = new Data(data.Line, data.LineBegin, userState, data.StreamName);
         return new State<TUserState>(iter, newData);
     }
-    public State<TUserState> AdvanceTo(CharStream.Iterator iter, int nLines, int nCharsAfterLastNL) {
-        if (nLines > 0) {
-            var newData = new Data(data.Line + nLines, iter.Index - nCharsAfterLastNL, data.UserState, data.StreamName);
+    public State<TUserState> AdvanceTo(CharStream.Iterator iter, int lineOffset, int newColumnMinus1) {
+        if (lineOffset > 0) {
+            var newData = new Data(data.Line + lineOffset, iter.Index - newColumnMinus1, data.UserState, data.StreamName);
             return new State<TUserState>(iter, newData);
         } else return AdvanceTo(iter);
     }
-    public State<TUserState> AdvanceTo(CharStream.Iterator iter, long nLines, long nCharsAfterLastNL) {
-        if (nLines > 0) {
-            var newData = new Data(data.Line + nLines, iter.Index - nCharsAfterLastNL, data.UserState, data.StreamName);
+    public State<TUserState> AdvanceTo(CharStream.Iterator iter, long lineOffset, long newColumnMinus1) {
+        if (lineOffset > 0) {
+            var newData = new Data(data.Line + lineOffset, iter.Index - newColumnMinus1, data.UserState, data.StreamName);
             return new State<TUserState>(iter, newData);
         } else return AdvanceTo(iter);
     }
-    public State<TUserState> AdvanceTo(CharStream.Iterator iter, uint nLines, uint nCharsAfterLastNL) {
-            var newData = new Data(data.Line + nLines, iter.Index - nCharsAfterLastNL, data.UserState, data.StreamName);
+    public State<TUserState> AdvanceTo(CharStream.Iterator iter, uint lineOffset, uint newColumnMinus1) {
+            var newData = new Data(data.Line + lineOffset, iter.Index - newColumnMinus1, data.UserState, data.StreamName);
             return new State<TUserState>(iter, newData);
     }
-    public State<TUserState> AdvanceTo(CharStream.Iterator iter, int nLines, int nCharsAfterLastNL, TUserState userState) {
-        if (nLines > 0) {
-            var newData = new Data(data.Line + nLines, iter.Index - nCharsAfterLastNL,      userState, data.StreamName);
-            return new State<TUserState>(iter, newData);
-        } else return AdvanceTo(iter);
-    }
-    public State<TUserState> AdvanceTo(CharStream.Iterator iter, long nLines, long nCharsAfterLastNL, TUserState userState) {
-        if (nLines > 0) {
-            var newData = new Data(data.Line + nLines, iter.Index - nCharsAfterLastNL,      userState, data.StreamName);
+    public State<TUserState> AdvanceTo(CharStream.Iterator iter, int lineOffset, int newColumnMinus1, TUserState userState) {
+        if (lineOffset > 0) {
+            var newData = new Data(data.Line + lineOffset, iter.Index - newColumnMinus1,      userState, data.StreamName);
             return new State<TUserState>(iter, newData);
         } else return AdvanceTo(iter);
     }
-    public State<TUserState> AdvanceTo(CharStream.Iterator iter, uint nLines, uint nCharsAfterLastNL, TUserState userState) {
-            var newData = new Data(data.Line + nLines, iter.Index - nCharsAfterLastNL,      userState, data.StreamName);
+    public State<TUserState> AdvanceTo(CharStream.Iterator iter, long lineOffset, long newColumnMinus1, TUserState userState) {
+        if (lineOffset > 0) {
+            var newData = new Data(data.Line + lineOffset, iter.Index - newColumnMinus1,      userState, data.StreamName);
+            return new State<TUserState>(iter, newData);
+        } else return AdvanceTo(iter);
+    }
+    public State<TUserState> AdvanceTo(CharStream.Iterator iter, uint lineOffset, uint newColumnMinus1, TUserState userState) {
+            var newData = new Data(data.Line + lineOffset, iter.Index - newColumnMinus1,      userState, data.StreamName);
             return new State<TUserState>(iter, newData);
     }
 
@@ -175,14 +175,14 @@ public sealed class State<TUserState> : IEquatable<State<TUserState>> {
         return new Pos(data.StreamName, index, data.Line, index - data.LineBegin + 1);
     } }
 
-    public override bool Equals(object other) {
-        // most of the time this and other are equal references ...
-        if ((object)this == other) return true;
-        var state2 = other as State<TUserState>;
-        return    (object)state2 != null
-              // ... or their iterator indices differ
-               && Iter.Idx == state2.Iter.Idx
-               && EqualsHelper(state2);
+    public override bool Equals(object obj) {
+        // most of the time this and obj are equal references ...
+        if ((object)this == obj) return true;
+        var other = obj as State<TUserState>;
+        return    (object)other != null
+               // ... or their iterator indices differ
+               && Iter.Idx == other.Iter.Idx
+               && EqualsHelper(other);
     }
 
     public bool Equals(State<TUserState> other) {
@@ -192,13 +192,13 @@ public sealed class State<TUserState> : IEquatable<State<TUserState>> {
                    && EqualsHelper(other));
     }
 
-    public static bool operator==(State<TUserState> s1, State<TUserState> s2) {
-        return    (object)s1 == (object)s2
-               || (   (object)s1 != null && (object)s2 != null
-                   && s1.Iter.Idx == s2.Iter.Idx
-                   && s1.EqualsHelper(s2));
+    public static bool operator==(State<TUserState> left, State<TUserState> right) {
+        return    (object)left == (object)right
+               || (   (object)left != null && (object)right != null
+                   && left.Iter.Idx == right.Iter.Idx
+                   && left.EqualsHelper(right));
     }
-    public static bool operator!=(State<TUserState> s1, State<TUserState> s2) { return !(s1 == s2); }
+    public static bool operator!=(State<TUserState> left, State<TUserState> right) { return !(left == right); }
 
     private bool EqualsHelper(State<TUserState> other) {
         Data d1 = data, d2 = other.data;
@@ -922,16 +922,16 @@ public sealed class State<TUserState> : IEquatable<State<TUserState>> {
         }
     }
 
-    public State<TUserState> SkipToStringCI(string caseFoldedStr, int maxCharsOrNewlines, out bool foundString) {
-        if (caseFoldedStr.Length == 0) throw new ArgumentException("The string argument is empty.");
+    public State<TUserState> SkipToStringCI(string caseFoldedString, int maxCharsOrNewlines, out bool foundString) {
+        if (caseFoldedString.Length == 0) throw new ArgumentException("The string argument is empty.");
         if (maxCharsOrNewlines < 0) throw new ArgumentOutOfRangeException("maxCharsOrNewlines is negative.");
-        char first = caseFoldedStr[0];
+        char first = caseFoldedString[0];
         int lineBegin = 0;
         int nLines = 0;
         int idx = Iter.Idx;
         var stream = Iter.Stream;
         int indexEnd = stream.IndexEnd;
-        int end1 = indexEnd - caseFoldedStr.Length;
+        int end1 = indexEnd - caseFoldedString.Length;
         var s = stream.String;
         char[] cftable = CaseFoldTable.FoldedChars;
         if (cftable == null) cftable = CaseFoldTable.Initialize();
@@ -959,13 +959,13 @@ public sealed class State<TUserState> : IEquatable<State<TUserState>> {
                 }
                 continue;
             CompareRestOfString:
-                if (idx > end1 || !RestOfStringEqualsCI(s, idx, caseFoldedStr)) goto StringsNotEqual;
+                if (idx > end1 || !RestOfStringEqualsCI(s, idx, caseFoldedString)) goto StringsNotEqual;
                 foundString = true;
                 goto ReturnState;
             }
         }
         // end1 might be negative too, so we can't use a single unsigned comparison
-        foundString = idx >= 0 && idx <= end1 && cftable[s[idx]] == first && RestOfStringEqualsCI(s, idx, caseFoldedStr);
+        foundString = idx >= 0 && idx <= end1 && cftable[s[idx]] == first && RestOfStringEqualsCI(s, idx, caseFoldedString);
     ReturnState:
         if (idx != Iter.Idx) {
             if (nLines == 0) {
@@ -977,10 +977,10 @@ public sealed class State<TUserState> : IEquatable<State<TUserState>> {
         return this;
     }
 
-    public State<TUserState> SkipToStringCI(string caseFoldedStr, int maxCharsOrNewlines, out string skippedString) {
-        if (caseFoldedStr.Length == 0) throw new ArgumentException("The string argument is empty.");
+    public State<TUserState> SkipToStringCI(string caseFoldedString, int maxCharsOrNewlines, out string skippedString) {
+        if (caseFoldedString.Length == 0) throw new ArgumentException("The string argument is empty.");
         if (maxCharsOrNewlines < 0) throw new ArgumentOutOfRangeException("maxCharsOrNewlines is negative.");
-        char first = caseFoldedStr[0];
+        char first = caseFoldedString[0];
         int lineBegin = 0;
         int nLines = 0;
         int nCRLF = 0;
@@ -988,7 +988,7 @@ public sealed class State<TUserState> : IEquatable<State<TUserState>> {
         int idx = Iter.Idx;
         var stream = Iter.Stream;
         int indexEnd = stream.IndexEnd;
-        int end1 = indexEnd - caseFoldedStr.Length;
+        int end1 = indexEnd - caseFoldedString.Length;
         var s = stream.String;
         char[] cftable = CaseFoldTable.FoldedChars;
         if (cftable == null) cftable = CaseFoldTable.Initialize();
@@ -1019,12 +1019,12 @@ public sealed class State<TUserState> : IEquatable<State<TUserState>> {
                 }
                 continue;
             CompareRestOfString:
-                if (idx > end1 || !RestOfStringEqualsCI(s, idx, caseFoldedStr)) goto StringsNotEqual;
+                if (idx > end1 || !RestOfStringEqualsCI(s, idx, caseFoldedString)) goto StringsNotEqual;
                 goto FoundString;
             }
         }
         // end1 might be negative too, so we can't use a single unsigned comparison
-        if (idx >= 0 && idx <= end1 && cftable[s[idx]] == first && RestOfStringEqualsCI(s, idx, caseFoldedStr)) goto FoundString;
+        if (idx >= 0 && idx <= end1 && cftable[s[idx]] == first && RestOfStringEqualsCI(s, idx, caseFoldedString)) goto FoundString;
         skippedString = null;
         if (idx != Iter.Idx) {
             if (nLines == 0)
