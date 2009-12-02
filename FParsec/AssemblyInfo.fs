@@ -1,6 +1,9 @@
 namespace FParsec
 
 open System.Reflection
+open System.Runtime.InteropServices
+
+[<assembly: ComVisible(false)>]
 
 [<assembly: AssemblyTitle("FParsec.dll")>]
 [<assembly: AssemblyDescription("FParsec.dll")>]
