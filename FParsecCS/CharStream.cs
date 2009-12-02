@@ -974,7 +974,7 @@ public unsafe sealed class CharStream : IDisposable {
         // methods are declared public.
 
         /// <summary>Advances the Iterator *in-place* by 1 char and returns the char on the new position.
-        ///`c = iter.Increment()` is equivalent to `iter = iter.Next; c = iter.Read()`.</summary>
+        ///`c &lt;- iter._Increment()` is equivalent to `iter &lt;- iter.Next; c &lt;- iter.Read()`.</summary>
         /// <exception cref="NotSupportedException">Seeking of the underlying byte stream is required, but the byte stream does not support seeking or the Encodings's Decoder is not serializable.</exception>
         /// <exception cref="IOException">An I/O error occured.</exception>
         /// <exception cref="ArgumentException">The input stream contains invalid bytes and the encoding was constructed with the throwOnInvalidBytes option.</exception>
@@ -995,7 +995,7 @@ public unsafe sealed class CharStream : IDisposable {
         }
 
         /// <summary>Advances the Iterator *in-place* by numberOfChars chars and returns the char on the new position.
-        /// `c = iter.Increment(numberOfChars)` is an optimized implementation of `iter = iter.Advance(numberOfChars); c = iter.Read()`.</summary>
+        /// `c &lt;- iter._Increment(numberOfChars)` is an optimized implementation of `iter &lt;- iter.Advance(numberOfChars); c &lt;- iter.Read()`.</summary>
         /// <exception cref="NotSupportedException">Seeking of the underlying byte stream is required, but the byte stream does not support seeking or the Encodings's Decoder is not serializable.</exception>
         /// <exception cref="IOException">An I/O error occured.</exception>
         /// <exception cref="ArgumentException">The input stream contains invalid bytes and the encoding was constructed with the throwOnInvalidBytes option.</exception>
@@ -1012,9 +1012,9 @@ public unsafe sealed class CharStream : IDisposable {
             return Read();
         }
 
-        /// <summary>Advances the Iterator *in-place* by -1 char and returns the char on the new position.
-        /// `c = iter.Decrement()` is an optimized implementation of `iter = iter.Advance(-1); c = iter.Read()`.</summary>
-        /// <exception cref="ArgumentOutOfRangeException">The new index is less than 0 (or less than the index offset specified when the CharStream was constructed).</exception>
+        /// <summary>Advances the Iterator *in-place* by -1 char and returns the char on the new position,
+        /// except if the Iterator already points to the beginning of the CharStream,
+        /// in which case the position does not change and the EndOfStreamChar ('\uFFFF') is returned.</summary>
         /// <exception cref="NotSupportedException">Seeking of the underlying byte stream is required, but the byte stream does not support seeking or the Encodings's Decoder is not serializable.</exception>
         /// <exception cref="IOException">An I/O error occured.</exception>
         public char _Decrement() {
@@ -1027,9 +1027,9 @@ public unsafe sealed class CharStream : IDisposable {
             return DecrementContinue(1u);
         }
 
-        /// <summary>Advances the Iterator *in-place* by -numberOfChars chars and returns the char on the new position.
-        /// `c = iter.Decrement()` is an optimized implementation of `iter = iter.Advance(-numberOfChars); c = iter.Read()`.</summary>
-        /// <exception cref="ArgumentOutOfRangeException">The new index is less than 0 (or less than the index offset specified when the CharStream was constructed).</exception>
+        /// <summary>Advances the Iterator *in-place* by -numberOfChars chars and returns the char on the new position,
+        /// except if the new position would lie before the beginning of the CharStream,
+        /// in which case the Iterator is advanced to the beginning of the stream and the EndOfStreamChar ('\uFFFF') is returned.</summary>
         /// <exception cref="NotSupportedException">Seeking of the underlying byte stream is required, but the byte stream does not support seeking or the Encodings's Decoder is not serializable.</exception>
         /// <exception cref="IOException">An I/O error occured.</exception>
         public char _Decrement(uint numberOfChars) {
@@ -1044,8 +1044,14 @@ public unsafe sealed class CharStream : IDisposable {
         }
         [MethodImplAttribute(MethodImplOptions.NoInlining)]
         private char DecrementContinue(uint numberOfChars) {
-           this = Stream.Seek(Index - numberOfChars);
-           return Read();
+           long newIndex = Index - numberOfChars;
+           if (newIndex >= Anchor->CharIndexOffset) {
+               this = Stream.Seek(newIndex);
+               return Read();
+           } else {
+               this = Stream.Begin;
+               return EOS;
+           }
         }
 
         /// <summary>Is an optimized implementation of Next.Read().</summary>

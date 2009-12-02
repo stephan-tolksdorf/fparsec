@@ -247,57 +247,31 @@ let testStream (stream: CharStream) (refString: string) blockSize blockOverlap m
         try  stream.Seek(System.Int64.MinValue) |> ignore; Fail ()
         with ArgumentOutOfRange -> ()
 
-        let iter0 = getIter(0)
         getIter(0).Advance(System.Int32.MaxValue).Index |> Equal endIndex
         getIter(0).Advance(System.UInt32.MaxValue).Index |> Equal endIndex
         getIter(0).Advance(System.Int64.MaxValue).Index |> Equal endIndex
 
-        try  getIter(0).Advance(-1) |> ignore; Fail ()
-        with ArgumentOutOfRange -> ()
-        try  getIter(0).Advance(-1L) |> ignore; Fail ()
-        with ArgumentOutOfRange -> ()
-        try  getIter(0).Advance(System.Int32.MinValue) |> ignore; Fail ()
-        with ArgumentOutOfRange -> ()
-        try  getIter(0).Advance(System.Int64.MinValue) |> ignore; Fail ()
-        with ArgumentOutOfRange -> ()
+        for i = 0 to N do
+            try  getIter(i).Advance(-i - 1) |> ignore; Fail ()
+            with ArgumentOutOfRange -> ()
+            try  getIter(i).Advance(int64 (-i - 1)) |> ignore; Fail ()
+            with ArgumentOutOfRange -> ()
+            try  getIter(i).Advance(System.Int32.MinValue) |> ignore; Fail ()
+            with ArgumentOutOfRange -> ()
+            try  getIter(i).Advance(System.Int64.MinValue) |> ignore; Fail ()
+            with ArgumentOutOfRange -> ()
 
-        try  getIter(N-1).Advance(-N) |> ignore; Fail ()
-        with ArgumentOutOfRange -> ()
-        try  getIter(N-1).Advance(int64 -N) |> ignore; Fail ()
-        with ArgumentOutOfRange -> ()
-        try  getIter(N-1).Advance(System.Int32.MinValue) |> ignore; Fail ()
-        with ArgumentOutOfRange -> ()
-        try  getIter(N-1).Advance(System.Int64.MinValue) |> ignore; Fail ()
-        with ArgumentOutOfRange -> ()
+            let mutable iter = getIter(i)
+            iter._Decrement(uint32 (i + 1)) |> Equal EOS
+            iter |> Equal stream.Begin
 
-        try  getIter(N).Advance(-N - 1) |> ignore; Fail ()
-        with ArgumentOutOfRange -> ()
-        try  getIter(N).Advance(int64 (-N - 1)) |> ignore; Fail ()
-        with ArgumentOutOfRange -> ()
-        try  getIter(N).Advance(System.Int32.MinValue) |> ignore; Fail ()
-        with ArgumentOutOfRange -> ()
-        try  getIter(N).Advance(System.Int64.MinValue) |> ignore; Fail ()
-        with ArgumentOutOfRange -> ()
+            iter <- getIter(i)
+            iter._Decrement(System.UInt32.MaxValue) |> Equal EOS
+            iter |> Equal stream.Begin
 
-        let mutable iter = stream.Begin
-        iter.Read() |> ignore
-        try  iter._Decrement() |> ignore; Fail ()
-        with ArgumentOutOfRange -> ()
-        try  iter._Decrement(1u) |> ignore; Fail ()
-        with ArgumentOutOfRange -> ()
-        iter._Increment() |> ignore
-        try  iter._Decrement(2u) |> ignore; Fail ()
-        with ArgumentOutOfRange -> ()
-        iter._Increment(uint32 (N - 2)) |> ignore
-        try  iter._Decrement(uint32 N) |> ignore; Fail ()
-        with ArgumentOutOfRange -> ()
-        iter._Increment() |> ignore
-        try  iter._Decrement(uint32 (N + 1)) |> ignore; Fail ()
-        with ArgumentOutOfRange -> ()
-        iter._Decrement(uint32 N) |> Equal refString.[0]
-        iter.Index |> Equal beginIndex
-        iter._Increment(System.UInt32.MaxValue) |> Equal EOS
-        iter.Index |> Equal endIndex
+            let mutable iter0 = getIter(0)
+            iter0._Decrement() |> Equal EOS
+            iter0 |> Equal stream.Begin
 
     testMoveException()
 

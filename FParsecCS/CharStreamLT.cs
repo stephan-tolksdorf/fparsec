@@ -310,8 +310,8 @@ public sealed class CharStream : IDisposable {
             return new Iterator {Stream = Stream, Idx = Int32.MinValue};
         }
 
-        /// <summary>Advances the iterator *in-place* by 1 char and returns the char on the new position.
-        ///`c = iter.Increment()` is equivalent to `iter = iter.Next; c = iter.Read()`.</summary>
+        /// <summary>Advances the Iterator *in-place* by 1 char and returns the char on the new position.
+        ///`c &lt;- iter._Increment()` is equivalent to `iter &lt;- iter.Next; c &lt;- iter.Read()`.</summary>
         public char _Increment() {
             int idx = Idx + 1;
             var stream = Stream;
@@ -324,8 +324,8 @@ public sealed class CharStream : IDisposable {
             }
         }
 
-        /// <summary>Advances the Iterator *in-place* by n chars and returns the char on the new position.
-        /// `c = iter.Increment(numberOfChars)` is an optimized implementation of `iter = iter.Advance(numberOfChars); c = iter.Read()`.</summary>
+        /// <summary>Advances the Iterator *in-place* by numberOfChars chars and returns the char on the new position.
+        /// `c &lt;- iter._Increment(numberOfChars)` is an optimized implementation of `iter &lt;- iter.Advance(numberOfChars); c &lt;- iter.Read()`.</summary>
         public char _Increment(uint numberOfChars) {
             var stream = Stream;
             int n = unchecked((int)numberOfChars);
@@ -340,9 +340,9 @@ public sealed class CharStream : IDisposable {
             return EOS;
         }
 
-        /// <summary>Advances the Iterator *in-place* by -1 char and returns the char on the new position.
-        /// `c = iter.Decrement()` is an optimized implementation of `iter = iter.Advance(-1); c = iter.Read()`.</summary>
-        /// <exception cref="ArgumentOutOfRangeException">The new index is less than 0 (or less than the index offset specified when the CharStream was constructed).</exception>
+        /// <summary>Advances the Iterator *in-place* by -1 char and returns the char on the new position,
+        /// except if the Iterator already points to the beginning of the CharStream,
+        /// in which case the position does not change and the EndOfStreamChar ('\uFFFF') is returned.</summary>        
         public char _Decrement() {
             int idx = Idx;
             var stream = Stream;
@@ -357,12 +357,12 @@ public sealed class CharStream : IDisposable {
                     return stream.String[idx];
                 }
             }
-            throw new ArgumentOutOfRangeException("implicit numberOfChars = 1");
+            return EOS;
         }
 
-        /// <summary>Advances the Iterator *in-place* by -numberOfChars chars and returns the char on the new position.
-        /// `c = iter.Decrement()` is an optimized implementation of `iter = iter.Advance(-numberOfChars); c = iter.Read()`.</summary>
-        /// <exception cref="ArgumentOutOfRangeException">The new index is less than 0 (or less than the index offset specified when the CharStream was constructed).</exception>
+        /// <summary>Advances the Iterator *in-place* by -numberOfChars chars and returns the char on the new position,
+        /// except if the new position would lie before the beginning of the CharStream,
+        /// in which case the Iterator is advanced to the beginning of the stream and the EndOfStreamChar ('\uFFFF') is returned.</summary>        
         public char _Decrement(uint numberOfChars) {
             int idx = unchecked(Idx - (int)numberOfChars);
             var stream = Stream;
@@ -379,7 +379,8 @@ public sealed class CharStream : IDisposable {
                     }
                 }
             } else return Read();
-            throw new ArgumentOutOfRangeException("numberOfChars");
+            Idx = stream.IndexBegin;
+            return EOS;
         }
 
         /// <summary>Is an optimized implementation of Next.Read().</summary>
