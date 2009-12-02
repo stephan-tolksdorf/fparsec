@@ -1526,7 +1526,7 @@ public unsafe sealed class CharStream : IDisposable {
         /// <exception cref="DecoderFallbackException">The input stream contains invalid bytes for which the decoder fallback threw this exception.</exception>
         public Match Match(Regex regex) {
             CharStream stream = Stream;
-            if (stream.BufferString == null) throw new NotSupportedException("CharStreams constructed from char arrays or char pointers do not support regular expression matching.");
+            if (stream.BufferString == null) throw new NotSupportedException("CharStream instances constructed from char arrays or char pointers do not support regular expression matching.");
             int block = Block;
             if (block >= 0) {
                 var data = stream.Data;

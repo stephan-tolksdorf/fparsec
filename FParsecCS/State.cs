@@ -48,7 +48,7 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
 
     public State(CharStream stream, Position position, TUserState userState) {
         Iter = stream.Seek(position.Index); // throws if index smaller then stream.BeginIndex
-        if (Iter.Index != position.Index) throw new ArgumentOutOfRangeException("Position.Index", "The index is too large.");
+        if (Iter.Index != position.Index) throw new ArgumentOutOfRangeException("position.Index is too large.", "position");
         data = new Data{Line = position.Line, LineBegin = position.Index - position.Column + 1,
                         UserState = userState, StreamName = position.StreamName};
     }

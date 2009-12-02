@@ -47,7 +47,7 @@ public sealed class Position : IEquatable<Position>, IComparable, IComparable<Po
         Position position = value as Position;
         if ((object)position != null) return CompareTo(position);
         if (value == null) return 1;
-        throw new ArgumentException("value", "Object must be of type Position.");
+        throw new ArgumentException("Object must be of type Position.");
     }
 }
 
