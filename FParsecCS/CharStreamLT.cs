@@ -13,6 +13,7 @@ namespace FParsec {
 
 public sealed class CharStream : IDisposable {
     private const int DefaultByteBufferLength = (1 << 12);
+    private static int MinimumByteBufferLength = 128; // must be larger than longest detectable preamble (we can only guess here)
     private const char EOS = '\uFFFF';
 
     public Encoding Encoding { get; private set; }
@@ -111,7 +112,7 @@ public sealed class CharStream : IDisposable {
 
     private void StreamConstructorContinue(Stream stream, bool leaveOpen, Encoding encoding, bool detectEncodingFromByteOrderMarks, int byteBufferLength) {
         // the ByteBuffer must be larger than the longest detectable preamble
-        if (byteBufferLength < 16) byteBufferLength = DefaultByteBufferLength;
+        if (byteBufferLength < MinimumByteBufferLength) byteBufferLength = MinimumByteBufferLength;
 
         long streamPosition = 0;
         int bytesInStream = -1;
@@ -528,8 +529,7 @@ public sealed class CharStream : IDisposable {
         }
 
         /// <summary>Applies the given regular expression to stream chars beginning with the char pointed to by the Iterator.
-        /// Returns the resulting Match object.
-        /// IMPORTANT: This method is not supported by CharStreams constructed from char arrays or pointers.</summary>
+        /// Returns the resulting Match object.</summary>
         /// <remarks>For performance reasons you should specifiy the regular expression
         /// such that it can only match at the beginning of a string,
         /// for example by prepending "\A".<br/>

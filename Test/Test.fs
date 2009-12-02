@@ -123,3 +123,9 @@ let shuffleArray (xs: 'a[]) =
        let t = xs.[i]
        xs.[i]     <- xs.[i + r]
        xs.[i + r] <- t
+
+let setStaticField (t: System.Type) name v =
+    t.GetField(name, System.Reflection.BindingFlags.NonPublic ||| System.Reflection.BindingFlags.Static).SetValue(null, v)
+
+let getStaticField (t: System.Type) name =
+    unbox (t.GetField(name, System.Reflection.BindingFlags.NonPublic ||| System.Reflection.BindingFlags.Static).GetValue())

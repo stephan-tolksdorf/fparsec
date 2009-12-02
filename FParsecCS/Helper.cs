@@ -87,7 +87,7 @@ internal unsafe static T RunParserOnString<T,TParser,TUserState>(
 {
     CharStream.Anchor anchor;
     fixed (char* pStr = str) {
-        var stream = new CharStream(str, pStr + index, index, length, 0, &anchor);
+        var stream = new CharStream(str, pStr, pStr + index, length, 0, &anchor);
         try {
             var data0  = new State<TUserState>.Data(1, 0, userState, streamName);
             var state0 = new State<TUserState>(stream.Begin, data0);
@@ -151,9 +151,7 @@ internal unsafe static T RunParserOnSubstream<T,TUserState,TSubStreamUserState>(
         if (end < ptr) throw new ArgumentException("The position of the second state lies before the position of the first state.");
         int length = CharStream.PositiveDistance(ptr, end);
         CharStream stream = (CharStream)anchor->StreamHandle.Target;
-        string buffer = stream.BufferString;
-        int index = buffer == null ? 0 : CharStream.PositiveDistance(anchor->BufferBegin, ptr) + stream.BufferStringIndex;
-        using (var subStream = new CharStream(buffer, ptr, index, length, s0.Index, &subStreamAnchor)) {
+        using (var subStream = new CharStream(stream.BufferString, stream.BufferStringPointer, ptr, length, s0.Index, &subStreamAnchor)) {
             var data0 = stateBeforeSubStream.data;
             var data = new State<TSubStreamUserState>.Data(data0.Line, data0.LineBegin, userState, data0.StreamName);
             var state = new State<TSubStreamUserState>(subStream.Begin, data);
@@ -166,7 +164,7 @@ internal unsafe static T RunParserOnSubstream<T,TUserState,TSubStreamUserState>(
         int length = CharStream.PositiveDistance(ptr, end);
         string subString = new String(ptr, 0, length);
         fixed (char* pSubString = subString)
-        using (var subStream = new CharStream(subString, pSubString, 0, length, s0.Index, &subStreamAnchor)) {
+        using (var subStream = new CharStream(subString, pSubString, pSubString, length, s0.Index, &subStreamAnchor)) {
             var data0 = stateBeforeSubStream.data;
             var data = new State<TSubStreamUserState>.Data(data0.Line, data0.LineBegin, userState, data0.StreamName);
             var state = new State<TSubStreamUserState>(subStream.Begin, data);
@@ -182,7 +180,7 @@ internal unsafe static T RunParserOnSubstream<T,TUserState,TSubStreamUserState>(
         string subString = new String('\u0000', length);
         fixed (char* pSubString = subString) {
             s0.Iter.Read(pSubString, length);
-            using (var subStream = new CharStream(subString, pSubString, 0, length, s0.Index, &subStreamAnchor)) {
+            using (var subStream = new CharStream(subString, pSubString, pSubString, length, s0.Index, &subStreamAnchor)) {
                 var data0 = stateBeforeSubStream.data;
                 var data = new State<TSubStreamUserState>.Data(data0.Line, data0.LineBegin, userState, data0.StreamName);
                 var state = new State<TSubStreamUserState>(subStream.Begin, data);

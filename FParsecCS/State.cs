@@ -220,7 +220,7 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
     }
 
     public State<TUserState> SkipWhitespace() {
-        char* end = Iter.Anchor->BufferEnd - 1; // - 1 to guarantee the lookahead for '\r',
+        char* end = unchecked(Iter.Anchor->BufferEnd - 1); // - 1 to guarantee the lookahead for '\r',
         char* ptr = Iter.Ptr;
         if (Iter.Block == Iter.Anchor->Block && ptr + 2 < end) { // + 2 so that we don't need to check after the first iteration
             char* lineBegin = null;
@@ -312,7 +312,7 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
 
     public State<TUserState> SkipRestOfLine(bool skipNewline) {
         State<TUserState> state = this;
-        char* end = Iter.Anchor->BufferEnd - 2; // - 2, so that we can do (*) without further checking
+        char* end = unchecked(Iter.Anchor->BufferEnd - 2); // - 2, so that we can do (*) without further checking
         char* ptr = Iter.Ptr;
         if (Iter.Block == Iter.Anchor->Block && ptr < end) {
             for (;;) {
@@ -350,7 +350,7 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
 
     public State<TUserState> SkipRestOfLine(bool skipNewline, out string skippedString) {
         State<TUserState> state = this;
-        char* end = Iter.Anchor->BufferEnd - 2; // - 2, so that we can do (*) without further checking
+        char* end = unchecked(Iter.Anchor->BufferEnd - 2); // - 2, so that we can do (*) without further checking
         char* ptr = Iter.Ptr;
         if (Iter.Block == Iter.Anchor->Block && ptr < end) {
             for (;;) {
@@ -613,7 +613,7 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
         char* lineBegin = null;
         int nLines = 0;
         char* ptr = Iter.Ptr;
-        char* end = Iter.Anchor->BufferEnd - 1; // - 1 to guarantee the lookahead for '\r'
+        char* end = unchecked(Iter.Anchor->BufferEnd - 1); // - 1 to guarantee the lookahead for '\r'
         if (Iter.Block == Iter.Anchor->Block && ptr + 2 < end) { // + 2 so that we don't need to check after the first iteration
             char c = *ptr;
             ++ptr;
@@ -693,7 +693,7 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
         int nCRLF = 0;
         int nCR = 0;
         char* ptr = Iter.Ptr;
-        char* end = Iter.Anchor->BufferEnd - 1; // - 1 to guarantee the lookahead for '\r'
+        char* end = unchecked(Iter.Anchor->BufferEnd - 1); // - 1 to guarantee the lookahead for '\r'
         if (Iter.Block == Iter.Anchor->Block && ptr + 2 < end) { // + 2 so that we don't need to check after the first iteration
             char c = *ptr;
             ++ptr;
@@ -802,8 +802,8 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
         int nLines = 0;
         int nCRLF = 0;
         char* ptr = Iter.Ptr;
-        char* bufferEnd1 = Iter.Anchor->BufferEnd - 1; // - 1 to guarantee the lookahead for '\r'
-        char* end2 = unchecked (ptr + maxCharsOrNewlines);
+        char* bufferEnd1 = unchecked(Iter.Anchor->BufferEnd - 1); // - 1 to guarantee the lookahead for '\r'
+        char* end2 = unchecked(ptr + maxCharsOrNewlines);
         char* end = end2 >= ptr && end2 <= bufferEnd1 ? end2 : bufferEnd1;
         if (Iter.Block == Iter.Anchor->Block && ptr + 2 < end) { // + 2 so that we don't need to check after the first iteration
             char c = *ptr;

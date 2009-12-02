@@ -175,46 +175,43 @@ public unsafe sealed class CharStream : IDisposable {
 
     private const int DefaultBlockSize = 3*(1 << 16); // 3*2^16 = 200k
     private const int DefaultByteBufferLength = (1 << 12);
+    private static int MinimumByteBufferLength = 128; // must be larger than longest detectable preamble (we can only guess here)
     private const char EOS = '\uFFFF';
-
-    private Stream Stream;
-    // we keep a seperate record of the Stream.Position, so that we don't need to require Stream.CanSeek
-    private long StreamPosition;
-    private bool LeaveOpen;
 
     /// <summary>The Encoding that is used for decoding the underlying byte stream, or
     /// System.Text.UnicodeEncoding in case the stream was directly constructed
     /// from a string.</summary>
     public  Encoding Encoding { get; private set; }
-    private int MaxCharCountForOneByte;
-    private Decoder Decoder;
-    private MemberInfo[] SerializableDecoderMembers;
 
-    private int BlockSize;
-    private int BlockOverlap;
-    private int MinRegexSpace;
+    // If the CharStream is constructed from a binary stream, we use a managed string as the char
+    // buffer. This allows us to apply regular expressions directly to the input.
+    // In the case of multi-block CharStreams we thus have to mutate the buffer string through pointers.
+    // This is safe as long as we use a newly constructed string and we don't pass a reference
+    // to the internal buffer string to the "outside world". (The one instance where we have to pass
+    // a reference to the buffer string is regex matching. See the docs for Iterator.Match(regex) for more info.)
+    //
+    // Apart from Iter.Match(regex) we access the internal buffer only through a pinned pointer.
+    // This way we avoid the overhead of redundant bounds checking and can support strings, char arrays
+    // and unmanaged char buffers through the same interface. Accessing the buffer through pointers
+    // is also a requirement for accessing the CharStream data through an Anchor pointer (see above).
+    //
+    // Pinning a string or char array makes life more difficult for the GC. However, as long as
+    // the buffer is only short-lived or large enough to be allocated on the large object heap,
+    // there shouldn't be a problem. Furthermore, the buffer strings for CharStreams constructed
+    // from a binary stream are allocated through the StringBuffer interface and hence always live
+    // on the large object heap. Thus, the only scenario to really worry about (and which the
+    // documentation explicitly warns about) is when a large number of small CharStreams
+    // are constructed directly from strings or char arrays and are used for an extended period of time.
 
-    private List<BlockInfo> Blocks;
-
-    private byte[] ByteBuffer;
-    private int ByteBufferIndex; // stores BufferStringIndex if ByteBuffer == null
-    private int ByteBufferCount;
-
-    /// <summary>The byte stream index of the first unused byte in the ByteBuffer.</summary>
-    private long ByteIndex { get { return StreamPosition - (ByteBufferCount - ByteBufferIndex); } }
-
-    /// <summary>The string holding the char buffer.</summary>
+    /// <summary>The string holding the char buffer, or null if the buffer is not part of a .NET string.</summary>
     internal string BufferString;
-    internal int BufferStringIndex { get { return ByteBuffer == null ? ByteBufferIndex : 0; } }
-    /// <summary>Pinned pointer handle for BufferString</summary>
-    private GCHandle BufferHandle;
+    /// <summary>A pointer to the beginning of BufferString, or null if BufferString is null.</summary>
+    internal char* BufferStringPointer;
 
-    // We use a string as the char buffer so that we can leverage the library support
-    // for strings. This way we can apply regular expressions directly to the input
-    // stream, for example. Because reference classes can't be allocated on the unmanaged
-    // heap, we need to take a pinned pointer. However, this shouldn't be a problem,
-    // because either the stream is small and the lifetime short, or the BufferString is
-    // so large that it will be allocated on the large object heap and the pinning is a no-op.
+    /// <summary>Holds the GCHandle for CharStreams directly constructed from strings or char arrays.</summary>
+    private GCHandle BufferHandle;
+    /// <summary>Holds the StringBuffer for CharStreams constructed from a binary stream.</summary>
+    private StringBuffer Buffer;
 
     internal Anchor* anchor; // allocated and assigned during construction,
                              // freed and set to null during disposal
@@ -244,9 +241,10 @@ public unsafe sealed class CharStream : IDisposable {
     internal CharStream(string chars) {
         Debug.Assert(chars != null);
         BufferString = chars;
-        ByteBufferIndex = 0; // we recycle ByteBufferIndex for BufferStringIndex
+        // ByteBufferIndex = 0; // we recycle ByteBufferIndex for BufferStringIndex
         BufferHandle = GCHandle.Alloc(chars, GCHandleType.Pinned);
         char* bufferBegin = (char*)BufferHandle.AddrOfPinnedObject();
+        BufferStringPointer = bufferBegin;
         CharConstructorContinue(bufferBegin, chars.Length, 0);
     }
     /// <summary>Constructs a CharStream from the chars in the string argument between the indices index (inclusive) and index + length (exclusive).</summary>
@@ -264,11 +262,10 @@ public unsafe sealed class CharStream : IDisposable {
         if (streamBeginIndex < 0 || streamBeginIndex >= (1L << 60)) throw new ArgumentOutOfRangeException("streamBeginIndex", "streamBeginIndex must be non-negative and less than 2^60.");
 
         BufferString = chars;
-        ByteBufferIndex = index; // we recycle ByteBufferIndex for BufferStringIndex
         BufferHandle = GCHandle.Alloc(chars, GCHandleType.Pinned);
-        char* bufferBegin = (char*)BufferHandle.AddrOfPinnedObject() + index;
-
-        CharConstructorContinue(bufferBegin, length, streamBeginIndex);
+        char* pBufferString = (char*)BufferHandle.AddrOfPinnedObject();
+        BufferStringPointer = pBufferString;
+        CharConstructorContinue(pBufferString + index, length, streamBeginIndex);
     }
 
     /// <summary>Constructs a CharStream from the chars in the char array argument between the indices index (inclusive) and index + length (exclusive).</summary>
@@ -287,7 +284,6 @@ public unsafe sealed class CharStream : IDisposable {
 
         BufferHandle = GCHandle.Alloc(chars, GCHandleType.Pinned);
         char* bufferBegin = (char*)BufferHandle.AddrOfPinnedObject() + index;
-
         CharConstructorContinue(bufferBegin, length, streamBeginIndex);
     }
 
@@ -310,39 +306,38 @@ public unsafe sealed class CharStream : IDisposable {
     }
 
     private void CharConstructorContinue(char* bufferBegin, int length, long streamBeginIndex) {
-        Debug.Assert(bufferBegin != null && length >= 0 && bufferBegin <= bufferBegin + length && streamBeginIndex >= 0 && streamBeginIndex < (1L << 60));
+        Debug.Assert((bufferBegin != null || length == 0) && length >= 0 && bufferBegin <= unchecked(bufferBegin + length) && streamBeginIndex >= 0 && streamBeginIndex < (1L << 60));
         Encoding = Encoding.Unicode;
-        BlockSize = length;
         var anchor = Anchor.Create(this);
-        anchor->BlockSizeMinusOverlap = length;
-        anchor->EndIndex = streamBeginIndex + length;
+        this.anchor = anchor;
         anchor->BufferBegin = bufferBegin;
         anchor->BufferEnd = bufferBegin + length;
+        anchor->BlockSizeMinusOverlap = length;
         anchor->Block = 0;
         anchor->LastBlock = 0;
         anchor->CharIndex = 0;
         anchor->CharIndexPlusOffset = streamBeginIndex;
         anchor->CharIndexOffset = streamBeginIndex;
-        this.anchor = anchor;
+        anchor->EndIndex = streamBeginIndex + length;
     }
 
-    internal CharStream(string chars, char* pCharsPlusIndex, int index, int length, long streamIndexOffset, Anchor* newUninitializedAnchor) {
-        Debug.Assert(index >= 0 && length >= 0 && (chars == null ? index == 0 : length <= chars.Length - index) && pCharsPlusIndex != null && streamIndexOffset >= 0 && streamIndexOffset < (1L << 60));
-        Debug.Assert(newUninitializedAnchor->NeedToFree == false && !newUninitializedAnchor->StreamHandle.IsAllocated);
-        Debug.Assert(newUninitializedAnchor->Block == 0 && newUninitializedAnchor->LastBlock == 0 && newUninitializedAnchor->CharIndex == 0);
+    internal CharStream(string chars, char* pChars, char* begin, int length, long streamIndexOffset, Anchor* newUninitializedAnchor) {
+        Debug.Assert((chars == null ? pChars == null : pChars <= begin)
+                     && (begin != null || length == 0) && length >= 0 && begin <= unchecked(begin + length) && streamIndexOffset >= 0 && streamIndexOffset < (1L << 60));
+        Debug.Assert(newUninitializedAnchor->NeedToFree == false && !newUninitializedAnchor->StreamHandle.IsAllocated
+                     && newUninitializedAnchor->Block == 0 && newUninitializedAnchor->LastBlock == 0 && newUninitializedAnchor->CharIndex == 0);
         BufferString = chars;
-        ByteBufferIndex = index; // we recycle ByteBufferIndex for BufferStringIndex
-        BlockSize = length;
+        BufferStringPointer = pChars;
         Encoding = Encoding.Unicode;
         var anchor = newUninitializedAnchor;
+        this.anchor = anchor;
+        anchor->BufferBegin = begin;
+        anchor->BufferEnd = begin + length;
         anchor->BlockSizeMinusOverlap = length;
-        anchor->EndIndex = streamIndexOffset + length;
-        anchor->BufferBegin = pCharsPlusIndex;
-        anchor->BufferEnd = pCharsPlusIndex + length;
         anchor->CharIndexPlusOffset = streamIndexOffset;
         anchor->CharIndexOffset = streamIndexOffset;
+        anchor->EndIndex = streamIndexOffset + length;
         anchor->StreamHandle = GCHandle.Alloc(this, GCHandleType.Normal);
-        this.anchor = anchor;
     }
 
     /// <summary>Constructs a CharStream from the file at the given path.<br/>Is equivalent to CharStream(new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.SequentialScan), false, encoding, true, defaultBlockSize, defaultBlockSize/3, ((defaultBlockSize/3)*2)/3, defaultByteBufferLength).</summary>
@@ -360,7 +355,7 @@ public unsafe sealed class CharStream : IDisposable {
                       int blockSize, int blockOverlap, int minRegexSpace, int byteBufferLength)
     {
         if (encoding == null) throw new ArgumentNullException("encoding");
-        Stream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.SequentialScan);
+        var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.SequentialScan);
         try {
            StreamConstructorContinue(stream, false, encoding, detectEncodingFromByteOrderMarks,
                                      blockSize, blockOverlap, minRegexSpace, byteBufferLength);
@@ -404,112 +399,132 @@ public unsafe sealed class CharStream : IDisposable {
         if (stream == null) throw new ArgumentNullException("stream");
         if (!stream.CanRead) throw new ArgumentException("stream is not readable");
         if (encoding == null) throw new ArgumentNullException("encoding");
-        StreamConstructorContinue(stream, leaveOpen,
-                                  encoding, detectEncodingFromByteOrderMarks,
+        StreamConstructorContinue(stream, false, encoding, detectEncodingFromByteOrderMarks,
                                   blockSize, blockOverlap, minRegexSpace, byteBufferLength);
     }
+
+    /// <summary>we modify this flag via reflection in the unit test</summary>
+    private static bool DoNotRoundUpBlockSizeToSimplifyTesting = false;
 
     private void StreamConstructorContinue(Stream stream, bool leaveOpen,
                                            Encoding encoding, bool detectEncodingFromByteOrderMarks,
                                            int blockSize, int blockOverlap, int minRegexSpace, int byteBufferLength)
     {
-        Stream = stream;
-        LeaveOpen = leaveOpen;
-
-        // the ByteBuffer must be larger than the longest detectable preamble
-        if (byteBufferLength < 16) byteBufferLength = DefaultByteBufferLength;
+        if (byteBufferLength < MinimumByteBufferLength) byteBufferLength = MinimumByteBufferLength;
 
         int bytesInStream = -1;
-        if (Stream.CanSeek) {
-            StreamPosition = stream.Position;
-            long streamLength = Stream.Length - StreamPosition;
+        long streamPosition;
+        if (stream.CanSeek) {
+            streamPosition = stream.Position;
+            long streamLength = stream.Length - streamPosition;
             if (streamLength <= Int32.MaxValue) {
                 bytesInStream = (int)streamLength;
                 if (bytesInStream < byteBufferLength) byteBufferLength = bytesInStream;
             }
         } else {
-            StreamPosition = 0;
+            streamPosition = 0;
         }
 
-        ByteBuffer = new byte[byteBufferLength];
-        ClearAndRefillByteBuffer(0); // sets ByteBufferIndex and ByteBufferCount
-        if (ByteBufferCount < byteBufferLength) bytesInStream = ByteBufferCount;
+        byte[] byteBuffer = new byte[byteBufferLength];
+        int byteBufferCount = 0;
+        // byteBufferLength should be larger than the longest detectable preamble
+        do {
+            int n = stream.Read(byteBuffer, byteBufferCount, byteBufferLength - byteBufferCount);
+            if (n == 0) break;
+            byteBufferCount += n;
+        } while (byteBufferCount < byteBufferLength);
+        if (byteBufferCount < byteBufferLength) bytesInStream = byteBufferCount;
+        streamPosition += byteBufferCount;
 
-        int preambleLength = Helper.DetectPreamble(ByteBuffer, ByteBufferCount, ref encoding, detectEncodingFromByteOrderMarks);
-        ByteBufferIndex += preambleLength;
+        int preambleLength = Helper.DetectPreamble(byteBuffer, byteBufferCount, ref encoding, detectEncodingFromByteOrderMarks);
+        int byteBufferIndex = preambleLength;
         bytesInStream -= preambleLength;
 
         Encoding = encoding;
-        Decoder = encoding.GetDecoder();
+        Decoder decoder = encoding.GetDecoder();
 
         // we allow such small block sizes only to simplify testing
         if (blockSize < 8) blockSize = DefaultBlockSize;
 
         bool allCharsFitIntoOneBlock = false;
         if (bytesInStream >= 0 && bytesInStream/4 <= blockSize) {
-            try {
-                int maxCharCount = Encoding.GetMaxCharCount(bytesInStream); // may throw ArgumentOutOfRangeException
-                if (blockSize >= maxCharCount) {
-                    allCharsFitIntoOneBlock = true;
-                    blockSize = maxCharCount;
-                }
-            } catch (ArgumentOutOfRangeException) { }
+            if (bytesInStream != 0) {
+                try {
+                    int maxCharCount = Encoding.GetMaxCharCount(bytesInStream); // may throw ArgumentOutOfRangeException
+                    if (blockSize >= maxCharCount) {
+                        allCharsFitIntoOneBlock = true;
+                        blockSize = maxCharCount;
+                    }
+                } catch (ArgumentOutOfRangeException) { }
+            } else {
+                allCharsFitIntoOneBlock = true;
+                blockSize = 0;
+            }
         }
-        if (allCharsFitIntoOneBlock) {
-            blockOverlap  = 0;
-            minRegexSpace = 0;
-            MaxCharCountForOneByte = -1;
-            SerializableDecoderMembers = null;
-        } else {
-            MaxCharCountForOneByte = Math.Max(1, Encoding.GetMaxCharCount(1));
-            SerializableDecoderMembers = GetSerializableDecoderMemberInfo(Decoder);
-            if (blockSize < 3*MaxCharCountForOneByte) blockSize = 3*MaxCharCountForOneByte;
-            // MaxCharCountForOneByte == the maximum number of overhang chars
-            if(    Math.Min(blockOverlap, blockSize - 2*blockOverlap) < MaxCharCountForOneByte
-                || blockOverlap >= blockSize/2) blockOverlap = blockSize/3;
-            if (minRegexSpace < 0 || minRegexSpace > blockOverlap) minRegexSpace = 2*blockOverlap/3;
-        }
-
-        BlockSize     = blockSize;
-        BlockOverlap  = blockOverlap;
-        MinRegexSpace = minRegexSpace;
-
+        var buffer = StringBuffer.Create(blockSize);
+        Debug.Assert(buffer.Length >= blockSize);
+        Buffer = buffer;
+        BufferString = buffer.String;
+        BufferStringPointer = buffer.StringPointer;
+        char* bufferBegin = buffer.StringPointer + buffer.Index;
         try {
-            BufferString = new String('\u0000', BlockSize);
-            BufferHandle = GCHandle.Alloc(BufferString, GCHandleType.Pinned);
-            char* bufferBegin = (char*)BufferHandle.AddrOfPinnedObject();
-
-            anchor = Anchor.Create(this);
-            anchor->BlockSizeMinusOverlap = blockSize - blockOverlap;
-            anchor->BufferBegin = bufferBegin;
             if (allCharsFitIntoOneBlock) {
-                int bufferCount = ByteBufferCount == 0 ? 0 : ReadAllRemainingCharsFromStream(bufferBegin, BlockSize);
+                int bufferCount = byteBufferIndex == byteBufferCount
+                                  ? 0
+                                  : ReadAllRemainingCharsFromStream(bufferBegin, buffer.Length, byteBuffer, byteBufferIndex, byteBufferCount, stream, streamPosition, decoder);
+                if (!leaveOpen) stream.Close();
+                var anchor = Anchor.Create(this);
+                this.anchor = anchor;
+                anchor->BlockSizeMinusOverlap = bufferCount;
+                anchor->EndIndex = bufferCount;
+                anchor->BufferBegin = bufferBegin;
+                anchor->BufferEnd = bufferBegin + bufferCount;
                 anchor->Block = 0;
                 anchor->LastBlock = 0;
                 anchor->CharIndex = 0;
                 anchor->CharIndexOffset = 0;
                 anchor->CharIndexPlusOffset = 0;
-                anchor->BufferEnd = bufferBegin + bufferCount;
-                anchor->EndIndex = bufferCount;
-                ByteBuffer = null; // we don't need the byte buffer anymore
-                if (!leaveOpen) stream.Close();
-                Stream = null;
             } else {
+                if (!DoNotRoundUpBlockSizeToSimplifyTesting) blockSize = buffer.Length;
+                var d = new MultiBlockData();
+                Data = d;
+                d.Stream = stream;
+                d.StreamPosition = streamPosition;
+                d.LeaveOpen = leaveOpen;
+                d.Decoder = decoder;
+                d.ByteBuffer = byteBuffer;
+                d.ByteBufferIndex = byteBufferIndex;
+                d.ByteBufferCount = byteBufferCount;
+                d.MaxCharCountForOneByte = Math.Max(1, Encoding.GetMaxCharCount(1));
+                d.SerializableDecoderMembers = GetSerializableDecoderMemberInfo(decoder);
+                if (blockSize < 3*d.MaxCharCountForOneByte) blockSize = 3*d.MaxCharCountForOneByte;
+                // MaxCharCountForOneByte == the maximum number of overhang chars
+                if(    Math.Min(blockOverlap, blockSize - 2*blockOverlap) < d.MaxCharCountForOneByte
+                    || blockOverlap >= blockSize/2) blockOverlap = blockSize/3;
+                if (minRegexSpace < 0 || minRegexSpace > blockOverlap) minRegexSpace = 2*blockOverlap/3;
+                d.BlockSize     = blockSize;
+                d.BlockOverlap  = blockOverlap;
+                d.RegexSpaceThreshold = bufferBegin + (blockSize - minRegexSpace);
+                var anchor = Anchor.Create(this);
+                this.anchor = anchor;
+                d.anchor = anchor;
+                anchor->BlockSizeMinusOverlap = blockSize - blockOverlap;
+                anchor->EndIndex = Int64.MaxValue;
+                anchor->BufferBegin = bufferBegin;
+                anchor->BufferEnd = bufferBegin;
                 anchor->Block = -2; // special value recognized by ReadBlock
                 anchor->LastBlock = Int32.MaxValue;
                 anchor->CharIndex = 0;
                 anchor->CharIndexOffset = 0;
                 anchor->CharIndexPlusOffset = 0;
-                anchor->BufferEnd = bufferBegin;
-                anchor->EndIndex = Int64.MaxValue;
-                Blocks = new List<BlockInfo>();
+                d.Blocks = new List<BlockInfo>();
                 // the first block has no overlap with a previous block
-                Blocks.Add(new BlockInfo(ByteBufferIndex, ByteBufferIndex, 0, EOS, null, new DecoderState(), null, new DecoderState()));
-                ReadBlock(0);
+                d.Blocks.Add(new BlockInfo(byteBufferIndex, byteBufferIndex, 0, EOS, null, new DecoderState(), null, new DecoderState()));
+                d.ReadBlock(0);
             }
         } catch {
+            buffer.Dispose();
             if (anchor != null) Anchor.Free(anchor);
-            if (BufferHandle.IsAllocated) BufferHandle.Free();
             throw;
         }
     }
@@ -519,13 +534,44 @@ public unsafe sealed class CharStream : IDisposable {
         Anchor.Free(anchor);
         anchor = null;
         if (BufferHandle.IsAllocated) BufferHandle.Free();
-        if (Stream != null && !LeaveOpen) Stream.Close();
+        if (Buffer != null) Buffer.Dispose();
+        if (Data != null && !Data.LeaveOpen) Data.Stream.Close();
     }
 
     /// <summary>an optimized version of end - begin, which assumes that 2^31 > end - begin >= 0. </summary>
     internal static int PositiveDistance(char* begin, char* end) {
         return (int)((uint)((byte*)end - (byte*)begin)/2);
     }
+
+    private MultiBlockData Data;
+
+/// <summary>Contains the data and methods needed in case the input byte stream
+/// is large enough to span multiple blocks of the CharStream.</summary>
+private partial class MultiBlockData {
+    public Anchor* anchor;
+
+    public Stream Stream;
+    // we keep a seperate record of the Stream.Position, so that we don't need to require Stream.CanSeek
+    public long StreamPosition;
+    public bool LeaveOpen;
+
+    public int MaxCharCountForOneByte;
+    public Decoder Decoder;
+    public MemberInfo[] SerializableDecoderMembers;
+
+    public int BlockSize;
+    public int BlockOverlap;
+    /// <summary>BufferBegin + BlockSize - minRegexSpace</summary>
+    public char* RegexSpaceThreshold;
+
+    /// <summary>The byte stream index of the first unused byte in the ByteBuffer.</summary>
+    public long ByteIndex { get { return StreamPosition - (ByteBufferCount - ByteBufferIndex); } }
+
+    public List<BlockInfo> Blocks;
+
+    public byte[] ByteBuffer;
+    public int ByteBufferIndex;
+    public int ByteBufferCount;
 
     /// <summary>Refills the ByteBuffer if no unused byte is remaining.
     /// Returns the number of unused bytes in the (refilled) ByteBuffer.</summary>
@@ -560,30 +606,36 @@ public unsafe sealed class CharStream : IDisposable {
         StreamPosition += n;
         return n;
     }
+}
 
     /// <summary>Reads all remaining chars into the given buffer. If the remaining stream
     /// content holds more than the given maximum number of chars, an exception will be thrown.</summary>
-    private int ReadAllRemainingCharsFromStream(char* buffer, int maxCount) {
-        Debug.Assert(maxCount >= 0);
-        fixed (byte* byteBuffer = ByteBuffer) {
-            int bufferCount = 0;
-            bool flush;
-            do {
-                int nBytesInByteBuffer = FillByteBuffer();
-                flush = nBytesInByteBuffer == 0;
-                try {
-                    bufferCount += Decoder.GetChars(byteBuffer + ByteBufferIndex, nBytesInByteBuffer,
+    private static int ReadAllRemainingCharsFromStream(char* buffer, int maxCount, byte[] byteBuffer, int byteBufferIndex, int byteBufferCount, Stream stream, long streamPosition, Decoder decoder) {
+        Debug.Assert(maxCount > 0 && byteBufferIndex >= 0 && byteBufferIndex < byteBufferCount);
+        fixed (byte* pByteBuffer = byteBuffer) {
+            try {
+                int bufferCount = 0;
+                bufferCount += decoder.GetChars(pByteBuffer + byteBufferIndex, byteBufferCount - byteBufferIndex,
+                                                buffer + bufferCount, maxCount - bufferCount, false);
+                byteBufferIndex = 0;
+                bool flush;
+                do {
+                    byteBufferCount = stream.Read(byteBuffer, 0, byteBuffer.Length);
+                    streamPosition += byteBufferCount;
+                    flush = byteBufferCount == 0;
+                    bufferCount += decoder.GetChars(pByteBuffer, byteBufferCount,
                                                     buffer + bufferCount, maxCount - bufferCount, flush);
-                    ByteBufferIndex += nBytesInByteBuffer; // GetChars consumed all bytes in the byte buffer
-                } catch (DecoderFallbackException e) {
-                    e.Data.Add("Stream.Position", ByteIndex + e.Index);
-                    throw;
-                }
-            } while (!flush);
-            return bufferCount;
+                    byteBufferIndex += byteBufferCount; // GetChars consumed all bytes in the byte buffer
+                } while (!flush);
+                return bufferCount;
+            } catch (DecoderFallbackException e) {
+                e.Data.Add("Stream.Position", streamPosition - (byteBufferCount - byteBufferIndex) + e.Index);
+                throw;
+            }
         }
     }
 
+private partial class MultiBlockData {
     /// <summary>Reads up to the given maximum number of chars into the given buffer.
     /// If more than the maximum number of chars have to be read from the stream in order to
     /// fill the buffer (due to	the way the Decoder API works), the overhang chars are
@@ -778,6 +830,7 @@ public unsafe sealed class CharStream : IDisposable {
         anchor->BufferEnd = buffer;
         return buffer > begin ? begin : null;
     }
+}
 
     /// <summary>An iterator pointing to the beginning of the stream (or to the end if the CharStream is empty).</summary>
     public Iterator Begin { get {
@@ -812,28 +865,27 @@ public unsafe sealed class CharStream : IDisposable {
             return new Iterator(){Anchor = anchor, Ptr = anchor->BufferBegin + (int)off, Block = anchor->Block};
         if (index >= anchor->EndIndex) return new Iterator() {Anchor = anchor, Ptr = null, Block = -1};
         if (index < anchor->CharIndexOffset) throw (new ArgumentOutOfRangeException("index", "The index is negative or less than the BeginIndex."));
+        // we never get here for streams with only one block
         index -= anchor->CharIndexOffset;
-        int blockSizeMinusOverlap = anchor->BlockSizeMinusOverlap;
         long idx_;
-        long block_ = Math.DivRem(index, blockSizeMinusOverlap, out idx_);
+        long block_ = Math.DivRem(index, anchor->BlockSizeMinusOverlap, out idx_);
         int block = block_ > Int32.MaxValue ? Int32.MaxValue : (int)block_;
         int idx = (int)idx_;
         return Seek(block, idx);
     }
     private Iterator Seek(int block, int idx) {
         Anchor* anchor = this.anchor;
-        int blockSizeMinusOverlap = anchor->BlockSizeMinusOverlap;
-        if (anchor->Block < block && idx < BlockOverlap) {
+        if (anchor->Block < block && idx < Data.BlockOverlap) {
             --block;
-            idx += blockSizeMinusOverlap;
+            idx += anchor->BlockSizeMinusOverlap;
         }
-        int last = Blocks.Count - 1;
+        int last = Data.Blocks.Count - 1;
         if (block >= last) {
             int b = last;
-            while (ReadBlock(b) != null && b < block) ++b; // we will get an OutOfMemoryException before b overflows
+            while (Data.ReadBlock(b) != null && b < block) ++b; // we will get an OutOfMemoryException before b overflows
             if (block != anchor->Block || idx >= PositiveDistance(anchor->BufferBegin, anchor->BufferEnd))
                 return new Iterator(){Anchor = anchor, Ptr = null, Block = -1};
-        } else ReadBlock(block);
+        } else Data.ReadBlock(block);
         return new Iterator(){Anchor = anchor, Ptr = anchor->BufferBegin + idx, Block = block};
     }
 
@@ -850,19 +902,13 @@ public unsafe sealed class CharStream : IDisposable {
         /// <summary>The buffer block for which Ptr is valid.</summary>
         internal int Block;
 
-        internal Iterator(Anchor* anchor, int block, char* ptr) {
-            Anchor = anchor;
-            Ptr = ptr;
-            Block = block;
-        }
-
         /// <summary>The CharStream over which the Iterator iterates.</summary>
         public CharStream Stream { get { return (CharStream) Anchor->StreamHandle.Target; } }
 
         /// <summary>Indicates whether the Iterator points to the beginning of the CharStream.
         /// If the CharStream is empty, this property is always true.</summary>
         public bool IsBeginOfStream { get {
-            return Ptr == Anchor->BufferBegin ? Block == 0 : (Ptr == null && Anchor->BufferBegin == Anchor->BufferEnd);
+            return Ptr == Anchor->BufferBegin ? Block <= 0 : (Ptr == null && Anchor->BufferBegin == Anchor->BufferEnd);
         } }
 
         /// <summary>Indicates whether the Iterator points to the end of the CharStream,
@@ -872,7 +918,6 @@ public unsafe sealed class CharStream : IDisposable {
         /// <summary>The char returned by Read() if the iterator has
         /// reached the end of the stream. The value is '\uFFFF'.</summary>
         public const char EndOfStreamChar = EOS;
-
 
         // Trivial variations in the code, such as introducing a temporary variable
         // or changing the order of expressions, can have a significant effect on the
@@ -913,7 +958,8 @@ public unsafe sealed class CharStream : IDisposable {
             int block = Block;
             if (block == anchor->Block && newPtr < anchor->BufferEnd)
                 return new Iterator() {Anchor = anchor, Ptr = newPtr, Block = block};
-
+            if (anchor->LastBlock == 0)
+                return new Iterator(){Anchor = anchor, Ptr = null, Block = -1};
             return Stream.Seek(Index + 1);
         } }
 
@@ -978,7 +1024,8 @@ public unsafe sealed class CharStream : IDisposable {
                 char* newPtr = ptr + offset;
                 return new Iterator() {Anchor = Anchor, Ptr = newPtr, Block = Block};
             }
-
+            if (anchor->LastBlock == 0)
+                return new Iterator(){Anchor = anchor, Ptr = null, Block = -1};
             return Stream.Seek(Index + offset);
         }
 
@@ -1135,7 +1182,7 @@ public unsafe sealed class CharStream : IDisposable {
         [MethodImplAttribute(MethodImplOptions.NoInlining)]
         private bool MatchContinue(char ch) {
             if (Block == -1) return false;
-            Stream.ReadBlock(Block);
+            Stream.Data.ReadBlock(Block);
             return *Ptr == ch;
         }
 
@@ -1302,12 +1349,12 @@ public unsafe sealed class CharStream : IDisposable {
             }
 
             int block = this.Block; // local copy that might be modified below
-            if (block == -1) return false;
+            if (block == -1 || Anchor->LastBlock == 0) return false;
 
             CharStream stream = null;
             if (block != Anchor->Block) {
                 stream = this.Stream;
-                stream.ReadBlock(block);
+                stream.Data.ReadBlock(block);
             }
 
             char* ptr = Ptr;
@@ -1336,7 +1383,7 @@ public unsafe sealed class CharStream : IDisposable {
                 if (length == 0) return true;
                 else {
                     if (stream == null) stream = this.Stream;
-                    ptr = stream.ReadBlock(++block);
+                    ptr = stream.Data.ReadBlock(++block);
                     if (ptr == null) return false;
                 }
             }
@@ -1351,12 +1398,12 @@ public unsafe sealed class CharStream : IDisposable {
             }
 
             int block = this.Block; // local copy that might be modified below
-            if (block == -1) return false;
+            if (block == -1 || Anchor->LastBlock == 0) return false;
 
             CharStream stream = null;
             if (block != Anchor->Block) {
                 stream = this.Stream;
-                stream.ReadBlock(block);
+                stream.Data.ReadBlock(block);
             }
 
             char* ptr = Ptr;
@@ -1377,7 +1424,7 @@ public unsafe sealed class CharStream : IDisposable {
                 if (length == 0) return true;
                 else {
                     if (stream == null) stream = this.Stream;
-                    ptr = stream.ReadBlock(++block);
+                    ptr = stream.Data.ReadBlock(++block);
                     if (ptr == null) return false;
                 }
             }
@@ -1386,15 +1433,21 @@ public unsafe sealed class CharStream : IDisposable {
         }
 
         /// <summary>Applies the given regular expression to stream chars beginning with the char pointed to by the Iterator.
-        /// Returns the resulting Match object.
-        /// IMPORTANT: This method is not supported by CharStreams constructed from char arrays or pointers.</summary>
-        /// <remarks>For performance reasons you should specifiy the regular expression
+        /// Returns the resulting Match object. (Not supported by CharStreams constructed from char arrays or pointers.)</summary>
+        /// <remarks><para>For performance reasons you should specify the regular expression
         /// such that it can only match at the beginning of a string,
-        /// for example by prepending "\A".<br/>
-        /// For CharStreams constructed from large binary streams the regular expression is not applied
+        /// for example by prepending "\A".</para>
+        /// <para>For CharStreams constructed from large binary streams the regular expression is not applied
         /// to a string containing all the remaining chars in the stream. The minRegexSpace parameter
         /// of the CharStream constructors determines the minimum number of chars that are guaranteed
-        /// to be visible to the regular expression.</remarks>
+        /// to be visible to the regular expression.</para>
+        /// <para>
+        /// IMPORTANT:<br/>
+        /// If the CharStream has been constructed from a System.IO.Stream or a file path, the regular expression is
+        /// applied to an internal mutable buffer. Since the Match object may work lazily, i.e. compute matched strings
+        /// not before they are needed, you need to retrieve all the required information from the Match object before
+        /// you continue to access the CharStream, otherwise you might get invalid results.</para>
+        /// </remarks>
         /// <exception cref="NullReferenceException">regex is null.</exception>
         /// <exception cref="NotSupportedException">Two possible reasons: 1) The CharStream was constructed from a char array or char pointer, in which case it does not support regular expression matching.
         /// 2) Seeking of the underlying byte stream is required, but the byte stream does not support seeking or the Encodings's Decoder is not serializable.</exception>
@@ -1406,23 +1459,26 @@ public unsafe sealed class CharStream : IDisposable {
             if (stream.BufferString == null) throw new NotSupportedException("CharStreams constructed from char arrays or char pointers do not support regular expression matching.");
             int block = Block;
             if (block >= 0) {
-                int index = PositiveDistance(Anchor->BufferBegin, Ptr);
-                if (index > stream.BlockSize - stream.MinRegexSpace && block < Anchor->LastBlock) {
-                    // BlockOverlap > MinRegexSpace
-                    if (block + 1 == Anchor->Block || stream.ReadBlock(block + 1) != null) {
-                        // index now needs to point to the beginning of the buffer
-                        // (where the overlap with the previous block is)
-                        index -= Anchor->BlockSizeMinusOverlap;
+                var data = stream.Data;
+                if (data != null) {
+                    if (Ptr <= data.RegexSpaceThreshold || block == Anchor->LastBlock) {
+                        if (block != Anchor->Block) data.ReadBlock(block);
                     } else {
-                        // block < LastBlock and we failed to read new chars from block + 1,
-                        // so we now definitely need to read the current block
-                        stream.ReadBlock(block);
+                        // BlockOverlap > MinRegexSpace
+                        if (block + 1 == Anchor->Block || data.ReadBlock(block + 1) != null) {
+                            // the char pointed to by the iterator has moved to beginning of the buffer
+                            Block = block + 1;
+                            Ptr -= Anchor->BlockSizeMinusOverlap;
+                        } else {
+                            // block < LastBlock and we failed to read new chars from block + 1,
+                            // so we now definitely need to read the current block
+                            data.ReadBlock(block);
+                        }
                     }
-                } else if (block != Anchor->Block) stream.ReadBlock(block);
-                return regex.Match(stream.BufferString, stream.BufferStringIndex + index, PositiveDistance(Anchor->BufferBegin, Anchor->BufferEnd) - index);
-            } else {
-                return regex.Match("");
+                }
+                return regex.Match(stream.BufferString, PositiveDistance(stream.BufferStringPointer, Ptr), PositiveDistance(Ptr, Anchor->BufferEnd));
             }
+            return regex.Match("");
         }
 
         /// <summary>Returns the stream char pointed to by the Iterator,
@@ -1436,7 +1492,7 @@ public unsafe sealed class CharStream : IDisposable {
         [MethodImplAttribute(MethodImplOptions.NoInlining)]
         private char ReadContinue() {
             if (Block == -1) return EOS;
-            Stream.ReadBlock(Block);
+            Stream.Data.ReadBlock(Block);
             return *Ptr;
         }
 
@@ -1623,7 +1679,7 @@ public unsafe sealed class CharStream : IDisposable {
             CharStream stream = null;
             if (block != Anchor->Block) {
                 stream = this.Stream;
-                stream.ReadBlock(block);
+                stream.Data.ReadBlock(block);
             }
 
             char* ptr = Ptr;
@@ -1668,8 +1724,11 @@ public unsafe sealed class CharStream : IDisposable {
 
                 if (length == 0) return oldLength;
                 else {
-                    if (stream == null) stream = this.Stream;
-                    ptr = stream.ReadBlock(++block);
+                    if (stream == null) {
+                        if (Anchor->LastBlock == 0) return oldLength - length;
+                        stream = this.Stream;
+                    }
+                    ptr = stream.Data.ReadBlock(++block);
                     if (ptr == null) return oldLength - length;
                 }
             }

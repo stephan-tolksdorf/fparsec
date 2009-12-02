@@ -329,14 +329,20 @@ let testStream (stream: CharStream) (refString: string) blockSize blockOverlap m
                     test (refString.Substring(i, n - 1) + ((char (int (refString.[i + n - 1]) + 1)).ToString())) false
             else
                 test (refString.Substring(i, N - i) + (new string(refString.[N - 1], n - (N - i)))) false
-            let mstr = getIter(i).Match(regex).Value
+            let iteri = getIter(i)
+            let mutable iter = iteri
+            let mstr = iter.Match(regex).Value // might modify iter...
+            iter.Equals(iteri) |> True // ...but iter should still point to the same char
             let minLength = if blockOverlap = 0 then N - i else min minRegexSpace (N - i)
             (mstr.Length >= minLength) |> True
             mstr |> Equal (refString.Substring(i, mstr.Length))
         else
             let str = new string(refString.[N - 1], n)
             test str false
-            getIter(i).Match(regex).Value |> Equal ""
+            let iteri = getIter(i)
+            let mutable iter = iteri
+            iter.Match(regex).Value |> Equal ""
+            iter.Equals(iteri) |> True
 
     for i = 0 to N do
         for n = 0 to N + 15 - i do
@@ -896,7 +902,7 @@ let testFoldCase() =
     foldCase "aaA"  |> Equal "aaa"
     foldCase "abcAOUÄÖÜdef" |> Equal "abcaouäöüdef"
 
-    let oneToOneMappings = typeof<FParsec.CharStream>.Assembly.GetType("FParsec.CaseFoldTable").GetField("oneToOneMappings", System.Reflection.BindingFlags.Static ||| System.Reflection.BindingFlags.NonPublic).GetValue() :?> string
+    let oneToOneMappings = getStaticField (typeof<FParsec.CharStream>.Assembly.GetType("FParsec.CaseFoldTable")) "oneToOneMappings" : string
 
     let mutable j = 0
     for i in 0..2..(oneToOneMappings.Length - 2) do
@@ -907,7 +913,70 @@ let testFoldCase() =
         j <- c + 1
     j |> Equal 0xff3b
 
+#if LOW_TRUST
+#else
+
+let testStreamBuffer() =
+    let ty = typeof<FParsec.StringBuffer>
+    let getStaticField name = getStaticField ty name
+    let minChunkSize          = getStaticField "MinChunkSize" : int
+    let firstSegmentSmallSize = getStaticField "FirstSegmentSmallSize" : int
+    let firstSegmentLargeSize = getStaticField "FirstSegmentLargeSize" : int
+    let maxSegmentSize        = getStaticField "MaxSegmentSize" : int
+
+    let testConstructor() =
+        let buffer1 = FParsec.StringBuffer.Create(0)
+        buffer1.Dispose()
+        let buffer1 = FParsec.StringBuffer.Create(firstSegmentSmallSize)
+        buffer1.Dispose()
+        let buffer2 = FParsec.StringBuffer.Create(maxSegmentSize + 1)
+        buffer2.Dispose()
+        try FParsec.StringBuffer.Create(System.Int32.MaxValue) |> ignore; Fail()
+        with :? System.ArgumentOutOfRangeException -> ()
+        try FParsec.StringBuffer.Create(-1) |> ignore; Fail()
+        with :? System.ArgumentOutOfRangeException -> ()
+
+    testConstructor()
+
+    let maxBufferSize =  196608
+    let maxTotalSize = 1 <<< 22
+    let buffers = new ResizeArray<_>()
+    let mutable allocated = 0
+    let mutable maxReached = false
+    for i = 1 to 10000 do
+        if (not maxReached && rand.Next(2) = 0) || buffers.Count = 0 then
+            let maxSize = rand.Next(maxBufferSize + 1)
+            let n = rand.Next(1, 11)
+            for i = 1 to n do
+                let size = rand.Next(maxSize + 1)
+                if allocated + size < maxTotalSize then
+                    let buffer = FParsec.StringBuffer.Create(size)
+                    allocated <- allocated + buffer.Length
+                    buffers.Add(buffer)
+                else
+                    maxReached <- true
+        else
+            maxReached <- false
+            let n = rand.Next(1, buffers.Count + 1)
+            for i = 1 to n do
+                let idx = rand.Next(buffers.Count)
+                let buffer = buffers.[idx]
+                allocated <- allocated - buffer.Length
+                buffer.Dispose()
+                buffers.RemoveAt(idx)
+    buffers.Reverse()
+    for b in buffers do b.Dispose()
+#endif
+
 let run() =
+    testFoldCase()
+#if LOW_TRUST
+#else
+    testStreamBuffer()
+    setStaticField typeof<FParsec.CharStream> "MinimumByteBufferLength" 10
+    setStaticField typeof<FParsec.CharStream> "DoNotRoundUpBlockSizeToSimplifyTesting" true
+#endif
+
     testEncodingDetection()
     testNonStreamConstructors()
 
@@ -944,4 +1013,5 @@ let run() =
     xTest()
     testNormalizeNewlines()
     testFoldCase()
+
 

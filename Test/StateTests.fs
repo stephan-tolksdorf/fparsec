@@ -772,6 +772,10 @@ let testHelperCountTextElements() =
 
 
 let run () =
+#if LOW_TRUST
+#else
+    setStaticField typeof<FParsec.CharStream> "DoNotRoundUpBlockSizeToSimplifyTesting" true
+#endif
     testSkipWhitespace()
     testSkipRestOfLine()
     testSkipCharsOrNewlines()
