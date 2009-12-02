@@ -118,7 +118,7 @@ val pchar:    char -> Parser<char,'u>
 /// `skipChar c` is an optimized implementation of `pchar c |>> ignore`.
 val skipChar: char -> Parser<unit,'u>
 
-/// `charReturn c x` is an optimized implementation of `pchar c >>$ x`.
+/// `charReturn c x` is an optimized implementation of `pchar c >>% x`.
 val charReturn: char -> 'a -> Parser<'a,'u>
 
 /// `anyChar` parses any single char or newline ("\n", "\r\n" or "\r").
@@ -238,7 +238,7 @@ val newline<'u> : Parser<char,'u>
 /// `skipNewline` is an optimized implementation of `newline |>> ignore`.
 val skipNewline<'u> : Parser<unit,'u>
 
-/// `newlineReturn x` is an optimized implementation of `newline >>$ x`.
+/// `newlineReturn x` is an optimized implementation of `newline >>% x`.
 val newlineReturn: 'a -> Parser<'a,'u>
 
 /// Parses a unicode newline ("\n", "\r\n", "\r", `"\u0085"`, `"\u000C"`, `"\u2028"`, or `"\u2029"`).
@@ -280,7 +280,7 @@ val eof: Parser<unit,'u>
 val pstring:    string -> Parser<string,'u>
 /// `skipString str` is an optimized implementation of `pstring str |>> ignore`.
 val skipString: string -> Parser<unit,'u>
-/// `stringReturn str x` is an optimized implementation of `pstring str >>$ x`.
+/// `stringReturn str x` is an optimized implementation of `pstring str >>% x`.
 val stringReturn: string -> 'a -> Parser<'a,'u>
 
 /// `pstringCI str` parses any string that case-insensitively matches the string `str`.
@@ -289,7 +289,7 @@ val stringReturn: string -> 'a -> Parser<'a,'u>
 val pstringCI:    string -> Parser<string,'u>
 /// `skipStringCI str` is an optimized implementation of `pstringCI str |>> ignore`.
 val skipStringCI: string -> Parser<unit,'u>
-/// `stringCIReturn str x` is an optimized implementation of `pstringCI str >>$ x`.
+/// `stringCIReturn str x` is an optimized implementation of `pstringCI str >>% x`.
 val stringCIReturn: string -> 'a -> Parser<'a,'u>
 
 /// `anyString n` parses any sequence of `n` chars or newlines ("\n", "\r\n" or "\r").

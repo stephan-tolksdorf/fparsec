@@ -47,10 +47,10 @@ module Reference =
                 else reply2.WithError(mergeErrors reply1.Error reply2.Error)
             else reconstructErrorReply reply1
 
-    let (>>$) p x = p >>= fun _ -> preturn x
+    let (>>%) p x = p >>= fun _ -> preturn x
 
     let (>>.) p1 p2 = p1 >>= fun _ -> p2
-    let (.>>) p1 p2 = p1 >>= fun x -> p2 >>$ x
+    let (.>>) p1 p2 = p1 >>= fun x -> p2 >>% x
 
     let between popen pclose p = popen >>. (p .>> pclose)
 
@@ -118,11 +118,11 @@ module Reference =
     let choice (ps: seq<Parser<'a,'u>>) =
         List.fold (fun p pc -> p <|> pc) pzero (List.ofSeq ps)
 
-    let (<|>$) p x = p <|> preturn x
+    let (<|>%) p x = p <|> preturn x
 
-    let opt p = (p |>> Some) <|>$ None
+    let opt p = (p |>> Some) <|>% None
 
-    let optional p = (p >>$ ()) <|>$ ()
+    let optional p = (p >>% ()) <|>% ()
 
     let attempt (p: Parser<'a,'u>) =
         fun state ->
@@ -144,7 +144,7 @@ module Reference =
             else reconstructErrorReply reply1
 
     let (>>?)  p1 p2 = p1 >>=? fun _ -> p2
-    let (.>>?) p1 p2 = p1 >>=? fun x -> p2 >>$ x
+    let (.>>?) p1 p2 = p1 >>=? fun x -> p2 >>% x
 
     let lookAhead (p: Parser<'a,'u>) =
         fun state ->
@@ -190,20 +190,20 @@ module Reference =
     // an infinite loop/recursion by throwing an exception if the given parser
     // argument succeeds without changing the state.
 
-    let rec many p = many1 p <|>$ []
+    let rec many p = many1 p <|>% []
     and many1 p = p >>= fun hd -> many p |>> (fun tl -> hd::tl)
 
-    /// a version of `(p1 >>. p2) <|>$ x` that does not succeed if `p1` succeeds
+    /// a version of `(p1 >>. p2) <|>% x` that does not succeed if `p1` succeeds
     /// without changing the state and `p2` fails without changing the state
     let ifP1ThenP2ElseReturnX p1 p2 x =
-        (p1 >>$ p2 <|>$ (preturn x)) >>= fun p -> p
+        (p1 >>% p2 <|>% (preturn x)) >>= fun p -> p
 
-    let rec sepBy p sep = sepBy1 p sep <|>$ []
+    let rec sepBy p sep = sepBy1 p sep <|>% []
     and sepBy1 p sep =
         p >>= fun hd -> ifP1ThenP2ElseReturnX sep (sepBy1 p sep) [] |>> fun tl -> hd::tl
 
-    let rec sepEndBy p sep = sepEndBy1 p sep <|>$ []
-    and sepEndBy1 p sep = p >>= fun hd -> sep >>. sepEndBy p sep <|>$ [] |>> fun tl -> hd::tl
+    let rec sepEndBy p sep = sepEndBy1 p sep <|>% []
+    and sepEndBy1 p sep = p >>= fun hd -> sep >>. sepEndBy p sep <|>% [] |>> fun tl -> hd::tl
 
     let endBy  p sep = many  (p .>> sep)
     let endBy1 p sep = many1 (p .>> sep)
@@ -233,17 +233,17 @@ module Reference =
 
     let chainl1 p op =
         let rec fold x = (op >>= fun f ->
-                          p  >>= fun y -> fold (f x y)) <|>$ x
+                          p  >>= fun y -> fold (f x y)) <|>% x
         p >>= fun x -> fold x
 
-    let chainl p op x = chainl1 p op <|>$ x
+    let chainl p op x = chainl1 p op <|>% x
 
     let rec chainr1 p op =
         p >>= fun x ->
             (op >>= fun f -> chainr1 p op
-                             |>> fun y -> f x y) <|>$ x
+                             |>> fun y -> f x y) <|>% x
 
-    let rec chainr p op x = chainr1 p op <|>$ x
+    let rec chainr p op x = chainr1 p op <|>% x
 
 
 open FParsec.Primitives
@@ -342,7 +342,7 @@ let testPrimitives() =
         checkParser pzero   Reference.pzero
         checkCombA  (<?>)   Reference.(<?>) "test"
         checkBind   (>>=)   Reference.(>>=)
-        checkCombA  (>>$)   Reference.(>>$) "test"
+        checkCombA  (>>%)   Reference.(>>%) "test"
         checkComb2  (>>.)   Reference.(>>.)
         checkComb2  (.>>)   Reference.(.>>)
         checkComb3  between Reference.between
@@ -390,7 +390,7 @@ let testPrimitives() =
             checkParser (choice  pss)        refChoice
             checkParser (choiceL pss "test") refChoiceL
 
-        checkCombA (<|>$)         Reference.(<|>$)          99
+        checkCombA (<|>%)         Reference.(<|>%)          99
         checkComb  opt            Reference.opt
         checkComb  optional       Reference.optional
         checkComb  attempt        Reference.attempt

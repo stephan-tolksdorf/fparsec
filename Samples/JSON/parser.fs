@@ -69,9 +69,9 @@ do jvalueRef := choice [jobject;
                         jlist;
                         jstring;
                         jnumber;
-                        str "true"  >>$ JBool true;
-                        str "false" >>$ JBool false;
-                        str "null"  >>$ JNull
+                        str "true"  >>% JBool true;
+                        str "false" >>% JBool false;
+                        str "null"  >>% JNull
                        ]
 
 let json = ws >>. jvalue .>> eof

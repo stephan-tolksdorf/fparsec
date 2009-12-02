@@ -185,7 +185,7 @@ let testOpParser() =
 
         opp.RemovePrefixOp("+") |> True
 
-    let withMsg m p = p .>> (fail m <|>$ ())
+    let withMsg m p = p .>> (fail m <|>% ())
 
     testOpParser (ws |> withMsg "e1") (preturn 0 |> withMsg "e2")
     testOpParser (fail "e1")  (preturn 0 |> withMsg "e2" )
@@ -206,7 +206,7 @@ let testOpParser() =
             let term = expect "prefix operator" >>. term
             let op1 = pstring "?" >>? opWsParser <?> "infix operator"
             let op2 = expect "infix operator" >>. (pstring ":" >>? opWsParser <?> "':'")
-            pipe2 term (tuple2 (op1 >>. term) (op2 >>. term .>> expect "infix operator") <|>$ (0,0))
+            pipe2 term (tuple2 (op1 >>. term) (op2 >>. term .>> expect "infix operator") <|>% (0,0))
                   (fun x (y,z) -> x + y + z)
 
         checkParserStr expr expr2 "1 ?"
@@ -247,7 +247,7 @@ let testAlternativeOpConstructors() =
         pipe3 (tuple4 term op term op) (tuple2 op term) (tuple2 op (tuple2 op term))
               (fun (v12, sMult, v3, sPlusPlus) (sQMark, v4) (sColon, (sMinus, v5)) ->
                   Tern(sQMark, sColon, Op(sMult, v12, Post(sPlusPlus, v3)), v4, Pre(sMinus, v5)))
-        .>> (str "xx" <?> "infix or postfix operator" <|>$ ())
+        .>> (str "xx" <?> "infix or postfix operator" <|>% ())
 
     checkParserStr expr expr2 "12 * 3++ ? 4 : -5"
 

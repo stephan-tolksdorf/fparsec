@@ -104,7 +104,7 @@ let (>>=) (p: Parser<'a,'u>) (f: 'a -> Parser<'b,'u>) =
             else
                 Reply(reply1.Status, reply1.Error, reply1.State)
 
-let (>>$) (p: Parser<'a,'u>) x =
+let (>>%) (p: Parser<'a,'u>) x =
     fun state ->
         let reply = p state
         Reply(reply.Status, x, reply.Error, reply.State)
@@ -338,7 +338,7 @@ let choiceL (ps: seq<Parser<'a,'u>>) label =
                else
                    Reply(Error, NoErrorMessages, state)
 
-let (<|>$) (p: Parser<'a,'u>) x =
+let (<|>%) (p: Parser<'a,'u>) x =
     fun state ->
         let mutable reply = p state
         if reply.Status = Error && reply.State == state then
@@ -851,7 +851,7 @@ let chainr1 p op =
                                                             | (op2, x)::tl -> calc op2 (op1 x y) tl
                                                             | [] -> op1 x0 y
                                                         calc op y tl)
-let chainr p op x = chainr1 p op <|>$ x
+let chainr p op x = chainr1 p op <|>% x
 
 
 // ------------------------------
@@ -882,3 +882,13 @@ let createParserForwardedToRef() =
     let dummyParser = fun state -> failwith "a parser was not initialized"
     let r = ref dummyParser
     (fun state -> !r state), r : Parser<_,'u> * Parser<_,'u> ref
+
+
+// --------------------
+// Obsolete definitions
+// --------------------
+
+#nowarn "35" // This construct is deprecated: '$' is no longer permitted as a character in operator names and is reserved for future use
+
+let (>>$)  p x = p >>%  x
+let (<|>$) p x = p <|>% x

@@ -629,7 +629,7 @@ let testNumberParsers() =
         pfloat |> RFatalError "0x1.fffffffffffffp1024|" 0 (messageError "This number is outside the allowable range for double precision floating-pointer numbers.")
         pfloat |> ROk "Inf|" System.Double.PositiveInfinity
         pfloat |> ROk "-Infinity|" System.Double.NegativeInfinity
-        pfloat >>$ 1 |> ROk  "NaN|" 1
+        pfloat >>% 1 |> ROk  "NaN|" 1
 
     testPfloat()
 

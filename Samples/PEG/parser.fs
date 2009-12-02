@@ -42,7 +42,7 @@ open Ast
 // `pipe2 p1 p2 f` parses `p1` and `p2` in sequence and then applies `f` to the results.
 // `p1 .>> p2` parses `p1` followed by `p2` and returns the result of `p1`.
 // `p1 >>. p2` parses `p1` followed by `p2` and returns the result of `p2`.
-// `p <|>$ x` parses `p` or, in case `p` fails, returns `x`.
+// `p <|>% x` parses `p` or, in case `p` fails, returns `x`.
 
 // In Visual Studio you can just hover to the mouse over any of the
 // FParsec parsers to get a documentation tooltip displayed.
@@ -114,7 +114,7 @@ let isIdentifierCont  = fun c -> isAsciiLetter c || isDigit c || c = '_' // A-Za
 let pIdentifierString = many1Satisfy2 isIdentifierStart isIdentifierCont .>> pSpacing
 let pIdentifier = pIdentifierString |>> Identifier
 
-let pDot = DOT >>$ Dot
+let pDot = DOT >>% Dot
 
 
 // Hierarchical syntax
@@ -126,7 +126,7 @@ let pPrimary, pPrimaryRef = createParserForwardedToRef() // initially pPrimary h
 
 let pSuffix =
                    // returns 'x' if there is no '?', '*' or '+'
-    pipe2 pPrimary (anyOf "?*+" <|>$ 'x')
+    pipe2 pPrimary (anyOf "?*+" <|>% 'x')
           (fun p c ->
                match c with
                | '?' -> Opt p

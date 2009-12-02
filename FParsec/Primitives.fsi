@@ -144,16 +144,16 @@ val (>>=): Parser<'a,'u> -> ('a -> Parser<'b,'u>) -> Parser<'b,'u>
 // In most situations one of the following specialized operators will be more
 // convenient and faster than the `>>=` combinator.
 
-/// The parser `p >>$ x` applies the parser `p` and returns the result `x`.
-/// `p >>$ x` is an optimized implementation of `p >>= fun _ -> preturn x`.
-val (>>$): Parser<'a,'u> -> 'b -> Parser<'b,'u>
+/// The parser `p >>% x` applies the parser `p` and returns the result `x`.
+/// `p >>% x` is an optimized implementation of `p >>= fun _ -> preturn x`.
+val (>>%): Parser<'a,'u> -> 'b -> Parser<'b,'u>
 
 /// The parser `p1 >>. p2` applies the parsers `p1` and `p2` in sequence. It returns the result of `p2`.
 /// `p1 >>. p2` is an optimized implementation of `p1 >>= fun _ -> p2`.
 val (>>.): Parser<'a,'u> -> Parser<'b,'u> -> Parser<'b,'u>
 
 /// The parser `p1 .>> p2` applies the parsers `p1` and `p2` in sequence. It returns the result of `p1`.
-/// `p1 .>> p2` is an optimized implementation of `p1 >>= fun x -> p2 >>$ x`.
+/// `p1 .>> p2` is an optimized implementation of `p1 >>= fun x -> p2 >>% x`.
 val (.>>): Parser<'a,'u> -> Parser<'b,'u> -> Parser<'a,'u>
 
 /// The parser `between popen pclose p` applies the parsers `pOpen`, `p` and `pEnd` in sequence.
@@ -231,15 +231,15 @@ val choice: seq<Parser<'a,'u>> -> Parser<'a,'u>
 /// The parser `choiceL ps label` is an optimized implementation of `choice ps <?> label`.
 val choiceL: seq<Parser<'a,'u>> -> string -> Parser<'a,'u>
 
-/// The parser `p <|>$ x` is equivalent to `p <|> preturn x`.
-val (<|>$): Parser<'a,'u> -> 'a -> Parser<'a,'u>
+/// The parser `p <|>% x` is equivalent to `p <|> preturn x`.
+val (<|>%): Parser<'a,'u> -> 'a -> Parser<'a,'u>
 
 /// The parser `opt p` parses an optional occurrence of `p` as an option value.
-/// `opt p` is an optimized implementation of `(p |>> Some) <|>$ None`.
+/// `opt p` is an optimized implementation of `(p |>> Some) <|>% None`.
 val opt: Parser<'a,'u> -> Parser<'a option,'u>
 
 /// The parser `optional p` skips over an optional occurrence of `p`.
-/// `optional p` is an optimized implementation of `(p >>$ ()) <|>$ ()`.
+/// `optional p` is an optimized implementation of `(p >>% ()) <|>% ()`.
 val optional: Parser<'a,'u> -> Parser<unit,'u>
 
 
@@ -394,7 +394,7 @@ val manyRev: Parser<'a,'u> -> Parser<'a list,'u>
 val manyFold: 'b -> ('b -> 'a -> 'b) -> Parser<'a,'u> -> Parser<'b,'u>
 
 /// The parser `manyReduce f defVal p` is an optimized implementation of
-/// `(many1 p |>> List.reduce f) <|>$ defVal`.
+/// `(many1 p |>> List.reduce f) <|>% defVal`.
 val manyReduce:  ('a -> 'a -> 'a) -> 'a -> Parser<'a,'u> -> Parser<'a,'u>
 
 
@@ -434,7 +434,7 @@ val inline
 
 /// The parser `manyFoldApply2 f1 foldF applyF emptyF p1 p` expands to an optimized implementation of
 ///
-/// pipe2 p1 (many p) (fun hd tl -> hd::tl) <|>$ []
+/// pipe2 p1 (many p) (fun hd tl -> hd::tl) <|>% []
 /// |>> function
 ///     | []     -> emptyF ()
 ///     | hd::tl -> applyF (List.fold foldF (f1 hd) tl)
@@ -484,7 +484,7 @@ val sepByRev: Parser<'a,'u> -> Parser<'b,'u> -> Parser<'a list,'u>
 val sepByFold: 'c -> ('c -> 'a -> 'c) -> Parser<'a,'u> -> Parser<'b,'u> -> Parser<'c,'u>
 
 /// The parser `sepByReduce f defVal p sep` is an optimized implementation of
-/// `(sepBy1 p sep |>> List.Reduce f) <|>$ defVal`.
+/// `(sepBy1 p sep |>> List.Reduce f) <|>% defVal`.
 val sepByReduce: ('a -> 'a -> 'a) -> 'a -> Parser<'a,'u> -> Parser<'b,'u> -> Parser<'a,'u>
 
 /// The parser `sepByFoldApply f1 foldF applyF emptyF p sep` expands to an optimized implementation of
@@ -550,7 +550,7 @@ val sepEndByRev: Parser<'a,'u> -> Parser<'b,'u> -> Parser<'a list,'u>
 val sepEndByFold: 'c -> ('c -> 'a -> 'c) -> Parser<'a,'u> -> Parser<'b,'u> -> Parser<'c,'u>
 
 /// The parser `sepEndByReduce f defVal p sep` is an optimized implementation of
-/// `(sepEndBy1 p sep |>> List.Reduce f) <|>$ defVal`.
+/// `(sepEndBy1 p sep |>> List.Reduce f) <|>% defVal`.
 val sepEndByReduce: ('a -> 'a -> 'a) -> 'a -> Parser<'a,'u> -> Parser<'b,'u> -> Parser<'a,'u>
 
 /// The parser `sepEndByFoldApply f1 foldF applyF emptyF p sep` expands to an optimized implementation of
@@ -652,7 +652,7 @@ val inline
 /// `x_1` to `x_n+1` are the values returned by `p`.
 val chainl1: Parser<'a,'u> -> Parser<('a -> 'a -> 'a),'u>       -> Parser<'a,'u>
 
-/// The parser `chainl p op defVal` is equivalent to `chainl1 p op <|>$ defVal`.
+/// The parser `chainl p op defVal` is equivalent to `chainl1 p op <|>% defVal`.
 val chainl:  Parser<'a,'u> -> Parser<('a -> 'a -> 'a),'u> -> 'a -> Parser<'a,'u>
 
 
@@ -667,7 +667,7 @@ val chainl:  Parser<'a,'u> -> Parser<('a -> 'a -> 'a),'u> -> 'a -> Parser<'a,'u>
 /// `x_1` to `x_n+1` are the values returned by `p`.
 val chainr1: Parser<'a,'u> -> Parser<('a -> 'a -> 'a),'u>       -> Parser<'a,'u>
 
-/// The parser `chainr p op defVal` is equivalent to `chainr1 p op <|>$ defVal`.
+/// The parser `chainr p op defVal` is equivalent to `chainr1 p op <|>% defVal`.
 val chainr:  Parser<'a,'u> -> Parser<('a -> 'a -> 'a),'u> -> 'a -> Parser<'a,'u>
 
 
@@ -703,3 +703,10 @@ val parse : ParserCombinator
 /// to a dummy parser that raises an exception on any invocation.
 val createParserForwardedToRef: unit -> Parser<'a,'u> * Parser<'a,'u> ref
 
+#nowarn "35" // This construct is deprecated: '$' is no longer permitted as a character in operator names and is reserved for future use
+
+[<System.Obsolete("The FParsec operator <|>$ has been renamed to <|>%.")>]
+val (<|>$): Parser<'a,'u> -> 'a -> Parser<'a,'u>
+
+[<System.Obsolete("The FParsec operator >>$ has been renamed to >>%.")>]
+val (>>$): Parser<'a,'u> -> 'b -> Parser<'b,'u>
