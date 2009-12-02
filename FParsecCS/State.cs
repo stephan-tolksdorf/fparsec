@@ -428,7 +428,7 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
     }
 
     public State<TUserState> SkipCharsOrNewlines(int maxCharsOrNewlines, out string skippedString) {
-        if (maxCharsOrNewlines < 0) throw new ArgumentOutOfRangeException("maxCharsOrNewlines is negative.");
+        if (maxCharsOrNewlines < 0) throw new ArgumentOutOfRangeException("maxCharsOrNewlines", "maxCharsOrNewlines is negative.");
         char* lineBegin = null;
         int nLines = 0;
         int nCRLF = 0;
@@ -532,7 +532,7 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
         return SkipCharsOrNewlines(maxCharsOrNewlines, out numberOfSkippedCharsOrNewlines);
     }
     public State<TUserState> SkipCharsOrNewlines(int maxCharsOrNewlines, out int numberOfSkippedCharsOrNewlines) {
-        if (maxCharsOrNewlines < 0) throw new ArgumentOutOfRangeException("maxCharsOrNewlines is negative.");
+        if (maxCharsOrNewlines < 0) throw new ArgumentOutOfRangeException("maxCharsOrNewlines", "maxCharsOrNewlines is negative.");
         char* lineBegin = null;
         int nLines = 0;
         int nCRLF = 0;
@@ -797,7 +797,7 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
         return SkipCharsOrNewlinesWhile(f, f, minCharsOrNewlines, maxCharsOrNewlines);
     }
     public State<TUserState> SkipCharsOrNewlinesWhile(Microsoft.FSharp.Core.FSharpFunc<char,bool> f1, Microsoft.FSharp.Core.FSharpFunc<char,bool> f, int minCharsOrNewlines, int maxCharsOrNewlines) {
-        if (maxCharsOrNewlines < 0) throw new ArgumentOutOfRangeException("maxCharsOrNewlines is negative.");
+        if (maxCharsOrNewlines < 0) throw new ArgumentOutOfRangeException("maxCharsOrNewlines", "maxCharsOrNewlines is negative.");
         char* lineBegin = null;
         int nLines = 0;
         int nCRLF = 0;
@@ -899,7 +899,7 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
         return SkipCharsOrNewlinesWhile(f, f, minCharsOrNewlines, maxCharsOrNewlines, out skippedString);
     }
     public State<TUserState> SkipCharsOrNewlinesWhile(Microsoft.FSharp.Core.FSharpFunc<char,bool> f1, Microsoft.FSharp.Core.FSharpFunc<char,bool> f, int minCharsOrNewlines, int maxCharsOrNewlines, out string skippedString) {
-        if (maxCharsOrNewlines < 0) throw new ArgumentOutOfRangeException("maxCharsOrNewlines is negative.");
+        if (maxCharsOrNewlines < 0) throw new ArgumentOutOfRangeException("maxCharsOrNewlines", "maxCharsOrNewlines is negative.");
         char* lineBegin = null;
         int nLines = 0;
         int nCRLF = 0;
@@ -1048,7 +1048,7 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
     public State<TUserState> SkipToString(string str, int maxCharsOrNewlines, out bool foundString) {
         int strLength = str.Length; // throws if str is null
         if (strLength == 0) throw new ArgumentException("The string argument is empty.");
-        if (maxCharsOrNewlines < 0) throw new ArgumentOutOfRangeException("maxCharsOrNewlines is negative.");
+        if (maxCharsOrNewlines < 0) throw new ArgumentOutOfRangeException("maxCharsOrNewlines", "maxCharsOrNewlines is negative.");
         fixed (char* pStr = str) {
             char* lineBegin = null;
             int nLines = 0;
@@ -1149,7 +1149,7 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
     public State<TUserState> SkipToString(string str, int maxCharsOrNewlines, out string skippedString) {
         int strLength = str.Length; // throws if str is null
         if (strLength == 0) throw new ArgumentException("The string argument is empty.");
-        if (maxCharsOrNewlines < 0) throw new ArgumentOutOfRangeException("maxCharsOrNewlines is negative.");
+        if (maxCharsOrNewlines < 0) throw new ArgumentOutOfRangeException("maxCharsOrNewlines", "maxCharsOrNewlines is negative.");
         fixed (char* pStr = str) {
             char* lineBegin = null;
             int nLines = 0;
@@ -1290,7 +1290,7 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
     public State<TUserState> SkipToStringCI(string caseFoldedString, int maxCharsOrNewlines, out bool foundString) {
         int strLength = caseFoldedString.Length; // throws if str is null
         if (strLength == 0) throw new ArgumentException("The string argument is empty.");
-        if (maxCharsOrNewlines < 0) throw new ArgumentOutOfRangeException("maxCharsOrNewlines is negative.");
+        if (maxCharsOrNewlines < 0) throw new ArgumentOutOfRangeException("maxCharsOrNewlines", "maxCharsOrNewlines is negative.");
         fixed (char* pStr = caseFoldedString) {
             char* lineBegin = null;
             int nLines = 0;
@@ -1393,7 +1393,7 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
     public State<TUserState> SkipToStringCI(string caseFoldedString, int maxCharsOrNewlines, out string skippedString) {
         int strLength = caseFoldedString.Length; // throws if str is null
         if (strLength == 0) throw new ArgumentException("The string argument is empty.");
-        if (maxCharsOrNewlines < 0) throw new ArgumentOutOfRangeException("maxCharsOrNewlines is negative.");
+        if (maxCharsOrNewlines < 0) throw new ArgumentOutOfRangeException("maxCharsOrNewlines", "maxCharsOrNewlines is negative.");
         fixed (char* pStr = caseFoldedString) {
             char* lineBegin = null;
             int nLines = 0;
