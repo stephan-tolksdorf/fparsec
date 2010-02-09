@@ -702,11 +702,3 @@ val parse : ParserCombinator
 /// calls to the parser in the reference cell `pRef`. Initially, `pRef` holds a reference
 /// to a dummy parser that raises an exception on any invocation.
 val createParserForwardedToRef: unit -> Parser<'a,'u> * Parser<'a,'u> ref
-
-#nowarn "35" // This construct is deprecated: '$' is no longer permitted as a character in operator names and is reserved for future use
-
-[<System.Obsolete("The FParsec operator <|>$ has been renamed to <|>%.")>]
-val (<|>$): Parser<'a,'u> -> 'a -> Parser<'a,'u>
-
-[<System.Obsolete("The FParsec operator >>$ has been renamed to >>%.")>]
-val (>>$): Parser<'a,'u> -> 'b -> Parser<'b,'u>

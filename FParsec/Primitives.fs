@@ -882,13 +882,3 @@ let createParserForwardedToRef() =
     let dummyParser = fun state -> failwith "a parser was not initialized"
     let r = ref dummyParser
     (fun state -> !r state), r : Parser<_,'u> * Parser<_,'u> ref
-
-
-// --------------------
-// Obsolete definitions
-// --------------------
-
-#nowarn "35" // This construct is deprecated: '$' is no longer permitted as a character in operator names and is reserved for future use
-
-let (>>$)  p x = p >>%  x
-let (<|>$) p x = p <|>% x
