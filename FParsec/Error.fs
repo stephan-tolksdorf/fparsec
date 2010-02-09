@@ -162,7 +162,7 @@ let
 
 let internal newlineChars = [|'\r'; '\n'; '\u0085'; '\u000C'; '\u2028'; '\u2029'|]
 
-[<System.Obsolete>]
+[<System.Obsolete("This function will be removed in a future version of FParsec. If you want to continue to use it, please copy its source code.")>]
 let printErrorLine (stream: CharStream) (index: int64) (tw: System.IO.TextWriter) (indent: string) (columnWidth: int) =
     let iter = stream.Seek(index)
     if index > iter.Index then
