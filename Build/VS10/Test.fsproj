@@ -31,18 +31,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>3</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <OutputPath>bin\Release\</OutputPath>
-    <NoWarn>
-    </NoWarn>
-    <OtherFlags>--debug</OtherFlags>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <OutputPath>bin\Debug</OutputPath>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
-  </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\..\Test\Test.fs">
       <Link>Test.fs</Link>

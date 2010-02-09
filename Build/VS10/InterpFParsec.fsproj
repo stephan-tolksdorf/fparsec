@@ -22,6 +22,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>3</WarningLevel>
+    <StartArguments>..\..\..\..\Samples\FSharpParsingSample\LexYaccVersion\test.lang</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -30,26 +31,14 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>3</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <StartArguments>..\..\..\..\Samples\FSharpParsingSample\LexYaccVersion\test.lang</StartArguments>
-    <OtherFlags>--debug</OtherFlags>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <StartArguments>..\..\..\..\Samples\FSharpParsingSample\LexYaccVersion\test.lang</StartArguments>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="FSharp.Core" />
-    <Reference Include="FSharp.PowerPack, Version=1.9.6.16, Culture=neutral, PublicKeyToken=a19089b1c74d0809">
-      <Name>FSharp.PowerPack</Name>
-      <AssemblyName>FSharp.PowerPack.dll</AssemblyName>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
+    <Reference Include="FSharp.PowerPack" />
     <Reference Include="mscorlib" />
     <Reference Include="System" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
+    <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\Samples\FSharpParsingSample\LexYaccVersion\ast.fs">

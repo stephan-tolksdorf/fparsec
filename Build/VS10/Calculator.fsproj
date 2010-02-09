@@ -31,17 +31,10 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>3</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <OutputPath>bin\Release\</OutputPath>
-    <OtherFlags>--debug</OtherFlags>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="FSharp.Core" />
     <Reference Include="mscorlib" />
     <Reference Include="System" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\Samples\Calculator\calculator.fs">
@@ -52,7 +45,7 @@
     <ProjectReference Include="FParsecCS.csproj">
       <Name>FParsecCS</Name>
       <Project>{501423c3-8ea5-4e54-8d9c-ef60272b57fa}</Project>
-      <Private>True</Private>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="FParsec.fsproj">
       <Name>FParsec</Name>
