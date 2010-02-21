@@ -64,6 +64,7 @@
   <ItemGroup>
     <Reference Include="FSharp.Core" />
     <Reference Include="FSharp.PowerPack" />
+    <Reference Include="FSharp.PowerPack.Compatibility" />
     <Reference Include="mscorlib" />
     <Reference Include="System" />
   </ItemGroup>
