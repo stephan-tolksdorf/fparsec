@@ -357,8 +357,8 @@ let getLineSnippet (stream: CharStream) (p: Position) (space: int) (tabSize: int
     let utf16Column = columnOffset + int64 (idx + 1)
     let mutable lineContainsTabsBeforeIndex = false
     if nTabs > 0 then // replace tabs with spaces
-        let off = if columnOffset = 0L then 0
-                  else int32 (columnOffset%(int64 tabSize))
+        let mutable off = if columnOffset = 0L then 0
+                          else int32 (columnOffset%(int64 tabSize))
         let sb = new System.Text.StringBuilder(str.Length + nTabs*tabSize)
         let mutable i0 = 0
         let mutable idxIncr = 0
@@ -367,7 +367,8 @@ let getLineSnippet (stream: CharStream) (p: Position) (space: int) (tabSize: int
                 if i > i0 then sb.Append(str, i0, i - i0) |> ignore
                 let n = tabSize - (off + i)%tabSize
                 sb.Append(' ', n) |> ignore
-                if i < idx then // correct idx for added spaces
+                off <- off + (n - 1)
+                if i < idx then
                     lineContainsTabsBeforeIndex <- true
                     idxIncr <- idxIncr + (n - 1)
                 i0 <- i + 1
