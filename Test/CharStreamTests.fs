@@ -1192,10 +1192,6 @@ let testNormalizeNewlines() =
     normalize "_\n_\r\n_\r\r_\r\n_\r\n\n\r_" |> Equal "_\n_\n_\n\n_\n_\n\n\n_"
 
 let testFoldCase() =
-    FParsec.CaseFoldTable.Initialize() |> ignore
-    FParsec.CaseFoldTable.Free()
-    FParsec.CaseFoldTable.Initialize() |> ignore
-
     let foldCase = CharStream.FoldCase
     foldCase null   |> Equal null
     for s in [""; "a"; "aa"; "aaa"] do

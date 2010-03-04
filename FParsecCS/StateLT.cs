@@ -963,8 +963,7 @@ public sealed class State<TUserState> : IEquatable<State<TUserState>> {
         int indexEnd = stream.IndexEnd;
         int end1 = indexEnd - caseFoldedString.Length;
         var s = stream.String;
-        char[] cftable = CaseFoldTable.FoldedChars;
-        if (cftable == null) cftable = CaseFoldTable.Initialize();
+        char[] cftable = CaseFoldTable.FoldedChars;        
         int end2 = unchecked(idx + maxCharsOrNewlines); // is negative if idx == Int32.MinValue
         int end = end2 >= idx && unchecked((uint)end2) <= (uint)indexEnd ? end2 : indexEnd; // is always positive
         if (unchecked((uint)idx) < (uint)end) {
@@ -1020,8 +1019,7 @@ public sealed class State<TUserState> : IEquatable<State<TUserState>> {
         int indexEnd = stream.IndexEnd;
         int end1 = indexEnd - caseFoldedString.Length;
         var s = stream.String;
-        char[] cftable = CaseFoldTable.FoldedChars;
-        if (cftable == null) cftable = CaseFoldTable.Initialize();
+        char[] cftable = CaseFoldTable.FoldedChars;        
         int end2 = unchecked(idx + maxCharsOrNewlines); // is negative if idx == Int32.MinValue
         int end = end2 >= idx && unchecked((uint)end2) <= (uint)indexEnd ? end2 : indexEnd; // is always positive
         if (unchecked((uint)idx) < (uint)end) {

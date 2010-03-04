@@ -1383,7 +1383,6 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
                 char* end = end1 <= end2 || end2 < ptr ? end1 : end2;
                 if (Iter.Block == Iter.Anchor->Block && ptr < end) {
                     char* cftable = CaseFoldTable.FoldedChars;
-                    if (cftable == null) cftable = CaseFoldTable.Initialize();
                     for (;;) {
                         char c = cftable[*ptr];
                         if (c == first) goto CompareRestOfString;
@@ -1436,7 +1435,6 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
         int count = index - nCRLF;
         int lineBeginCount = nLines == 0 ? 0 : count - (int)CharStream.PositiveDistance(lineBegin, ptr);
         char* cftable = CaseFoldTable.FoldedChars;
-        if (cftable == null) cftable = CaseFoldTable.Initialize();
         CharStream.Iterator iter = Iter;
         char c = cftable[iter._Increment((uint)index)];
         for (;;) {
@@ -1489,7 +1487,6 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
                 char* end = end1 <= end2 || end2 < ptr ? end1 : end2;
                 if (Iter.Block == Iter.Anchor->Block && ptr < end) {
                     char* cftable = CaseFoldTable.FoldedChars;
-                    if (cftable == null) cftable = CaseFoldTable.Initialize();
                     for (;;) {
                         char c = cftable[*ptr];
                         if (c == first) goto CompareRestOfString;
@@ -1562,7 +1559,6 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
         int count = index - nCRLF;
         int lineBeginCount = nLines == 0 ? 0 : count - (int)CharStream.PositiveDistance(lineBegin, ptr);
         char* cftable = CaseFoldTable.FoldedChars;
-        if (cftable == null) cftable = CaseFoldTable.Initialize();
         char c = cftable[iter._Increment((uint)index)];
         for (;;) {
             if (c != first || !iter.MatchCaseFolded(pStr, strLength)) {

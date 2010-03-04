@@ -491,7 +491,6 @@ public sealed class CharStream : IDisposable {
         public bool MatchCaseFolded(string caseFoldedChars) {
             if (unchecked((uint)Idx) + (uint)caseFoldedChars.Length <= (uint)Stream.IndexEnd) {
                 char[] cftable = CaseFoldTable.FoldedChars;
-                if (cftable == null) cftable = CaseFoldTable.Initialize();
                 var s = Stream.String;
                 for (int i = 0; i < caseFoldedChars.Length; ++i)
                     if (caseFoldedChars[i] != cftable[s[Idx + i]]) goto ReturnFalse;
@@ -700,7 +699,6 @@ public sealed class CharStream : IDisposable {
     /// If the argument is null, null is returned.</summary>
     static public string FoldCase(string str) {
         char[] cftable = CaseFoldTable.FoldedChars;
-        if (cftable == null) cftable = CaseFoldTable.Initialize();
         if (str != null) {
             for (int i = 0; i < str.Length; ++i) {
                 char c   = str[i];

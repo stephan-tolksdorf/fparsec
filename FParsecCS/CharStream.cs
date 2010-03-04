@@ -1479,7 +1479,6 @@ public unsafe sealed class CharStream : IDisposable {
             char* ptr = Ptr;
 
             char* cftable = CaseFoldTable.FoldedChars;
-            if (cftable == null) cftable = CaseFoldTable.Initialize();
 
             // requires length > 0
             for (;;) {
@@ -1867,8 +1866,7 @@ public unsafe sealed class CharStream : IDisposable {
         if (str != null) {
             fixed (char* src0 = str) {
                 char* end = src0 + str.Length;
-                char* cftable_ = CaseFoldTable.FoldedChars;
-                char* cftable = cftable_ == null ? CaseFoldTable.Initialize() : cftable_;
+                char* cftable = CaseFoldTable.FoldedChars;
                 char* src = src0;
                 for (;;) { // src is null-terminated, so we can always read one char
                     char c = *src;

@@ -10,18 +10,7 @@ namespace FParsec {
 
 internal static class CaseFoldTable {
 #if LOW_TRUST
-    public static char[] FoldedChars;
-
-    public static char[] Initialize() {
-        if (FoldedChars != null) return FoldedChars;
-        char[] table = CreateFoldedCharsArray();
-        FoldedChars = table;
-        return table;
-    }
-
-    public static void Free() {
-        FoldedChars = null;
-    }
+    public static readonly char[] FoldedChars = CreateFoldedCharsArray();
 
     private static char[] CreateFoldedCharsArray() {
         Debug.Assert(oneToOneMappings.Length%2 == 0);
@@ -33,59 +22,37 @@ internal static class CaseFoldTable {
         return table;
     }
 #else
-    public static unsafe char* FoldedChars;
-    public static char[] FoldedCharsArray;
-    private static GCHandle FoldedCharsHandle;
+    public static readonly char[] FoldedCharsArray = new char[0x10000];
 
-    [SuppressMessage("Microsoft.Reliability", "CA2002:DoNotLockOnObjectsWithWeakIdentity",
-                     Justification = "The string oneToOneMappings is private and obscure enough that we don't have to worry about a calling or called method locking the same string.")]
-    public static unsafe char* Initialize() {
-        if (FoldedChars != null) return FoldedChars;
-        lock (oneToOneMappings) {
-            if (FoldedChars != null) return FoldedChars;
-            // We pin an array on the managed heap instead of using Marshal.AllocHGlobal
-            // because we normally want it to be alive for as long as the AppDomain exists
-            // but not necessarily as long as the process lives.
-            char[] table = CreateFoldedCharsArray();
-            // The table is large enough to be allocated on the large object heap,
-            // so pinning it is a no-op and the GC is not affected.
-            var handle = GCHandle.Alloc(table, GCHandleType.Pinned);
-            char* chars = (char*) handle.AddrOfPinnedObject();
+    public static readonly unsafe char* FoldedChars = Initialize();
+    internal static GCHandle FoldedCharsHandle; // assigned by Initialize
 
-            FoldedChars       = chars;
-            FoldedCharsArray  = table;
-            FoldedCharsHandle = handle;
-            return chars;
-        }
-    }
-
-    // If Free isn't called manually, the table and the handle will be automatically freed when the AppDomain is unloaded.
-    public static unsafe void Free() {
-        FoldedChars = null;
-        FoldedCharsArray = null;
-        if (FoldedCharsHandle.IsAllocated) FoldedCharsHandle.Free();
-    }
-
-    private static unsafe char[] CreateFoldedCharsArray() {
+    private static unsafe char* Initialize() {
+        // initialize FoldedCharsArray
         int n = oneToOneMappings.Length;
         Debug.Assert(n%2 == 0);
-        var tableArray = new char[0x10000];
-        fixed (char* table = tableArray)
+        fixed (char* chars = FoldedCharsArray)
         fixed (char* mappings = oneToOneMappings) {
-            var uiTable = (uint*) table;
+            var uints = (uint*) chars;
             uint c0 = BitConverter.IsLittleEndian ? 0x10000u : 0x1u;
             for (int i = 0; i < 0x10000/2; i += 4) {
-                uiTable[i    ] = c0;
-                uiTable[i + 1] = c0 + 0x20002u;
-                uiTable[i + 2] = c0 + 0x40004u;
-                uiTable[i + 3] = c0 + 0x60006u;
+                uints[i    ] = c0;
+                uints[i + 1] = c0 + 0x20002u;
+                uints[i + 2] = c0 + 0x40004u;
+                uints[i + 3] = c0 + 0x60006u;
                 c0 = unchecked(c0 + 0x80008u);
             }
-            for (int i = n - 2; i >= 0; i -= 2) {
-                table[mappings[i]] = mappings[i + 1];
-            }
+            for (int i = n - 2; i >= 0; i -= 2)
+                chars[mappings[i]] = mappings[i + 1];
         }
-        return tableArray;
+
+        // We pin an array on the managed heap instead of using Marshal.AllocHGlobal
+        // because we normally want it to be alive for as long as the AppDomain exists
+        // but not necessarily as long as the process lives.
+        // The table is large enough to be allocated on the large object heap,
+        // so pinning it is a no-op and the GC is not affected.
+        FoldedCharsHandle = GCHandle.Alloc(FoldedCharsArray, GCHandleType.Pinned);
+        return (char*)FoldedCharsHandle.AddrOfPinnedObject();
     }
 #endif
 
