@@ -532,25 +532,25 @@ let testSkipCharsOrNewlines() =
             checkOutputState sEnd8
 
             iter0.Read() |> ignore; iterBegin.Read() |> ignore
-            let mutable foundString = false
-            let sEnd9 = sBegin.SkipToString("x", n, &foundString) // there's no x in the input
+            let mutable foundString = false;
+            let sEnd9 = sBegin.SkipToString("\u0000", n, &foundString) // there's no '\u0000' in the input
             foundString |> False
             checkOutputState sEnd9
 
             iter0.Read() |> ignore; iterBegin.Read() |> ignore
-            let sEnd10 = sBegin.SkipToStringCI("x", n, &foundString)
+            let sEnd10 = sBegin.SkipToStringCI("\u0000", n, &foundString)
             foundString |> False
             checkOutputState sEnd10
 
             iter0.Read() |> ignore; iterBegin.Read() |> ignore
             let mutable str11 = null : string
-            let sEnd11 = sBegin.SkipToString("x", n, &str11)
+            let sEnd11 = sBegin.SkipToString("\u0000", n, &str11)
             str11 |> Equal null
             checkOutputState sEnd11
 
             iter0.Read()|> ignore; iterBegin.Read() |> ignore
             let mutable str12 = null : string
-            let sEnd12 = sBegin.SkipToStringCI("x", n, &str12)
+            let sEnd12 = sBegin.SkipToStringCI("\u0000", n, &str12)
             str12 |> Equal null
             checkOutputState sEnd12
 
@@ -758,34 +758,31 @@ let testSkipToString() =
                               elif maxChars < cs.Length - i0 then i0 + maxChars
                               else cs.Length
 
+                   let skippedString = if not isPresent then null
+                                       else new string(cs.[i0..i1 - 1])
+
                    s0.Iter.Read() |> ignore; si0.Iter.Read() |> ignore
                    let mutable found = false
                    let s1 = si0.SkipToString(strToFind, maxChars, &found)
-                   found |> Equal isPresent
                    int32 s1.Index |> Equal iEnd
+                   found |> Equal isPresent
 
                    s0.Iter.Read() |> ignore; si0.Iter.Read() |> ignore
                    let mutable str = null
                    let s2 = si0.SkipToString(strToFind, maxChars, &str)
-                   if isPresent then
-                       str.Length |> Equal (iEnd  - i0)
-                   else
-                       str |> Equal null
                    int32 s2.Index |> Equal iEnd
+                   str |> Equal skippedString
 
                    s0.Iter.Read() |> ignore; si0.Iter.Read() |> ignore
                    let strToFindCI = CharStream.FoldCase(strToFind)
                    let s3 = si0.SkipToStringCI(strToFindCI, maxChars, &found)
-                   found |> Equal isPresent
                    int32 s3.Index |> Equal iEnd
+                   found |> Equal isPresent
 
                    s0.Iter.Read() |> ignore; si0.Iter.Read() |> ignore
                    let s4 = si0.SkipToStringCI(strToFindCI, maxChars, &str)
-                   if isPresent then
-                       str.Length |> Equal (iEnd  - i0)
-                   else
-                       str |> Equal null
                    int32 s4.Index |> Equal iEnd
+                   str |> Equal skippedString
 
                let strToFind = new string(cs, i1, n)
                check strToFind (i1 - i0) true

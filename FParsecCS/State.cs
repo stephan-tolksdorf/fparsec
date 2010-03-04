@@ -1096,27 +1096,19 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
         }
     }
 
-    private static bool RestOfStringEquals(char* p1, char* p2, int length) {
-        for (int i = 1; i < length; ++i) {
-            if (p1[i] != p2[i]) goto ReturnFalse;
-        }
-        return true;
-    ReturnFalse:
-        return false;
-    }
-    private static bool Rest3OfStringEquals(char* p1, char* p2, int length) {
+    private static bool Rest3OfStringEquals(char* str1, char* str2, int length) {
         for (int i = 3; i < length; ++i) {
-            if (p1[i] != p2[i]) goto ReturnFalse;
+            if (str1[i] != str2[i]) goto ReturnFalse;
         }
         return true;
     ReturnFalse:
         return false;
     }
 
-    private static bool RestOfStringEqualsCI(char* p1, char* p2, int length) {
+    private static bool Rest3OfStringEqualsCI(char* str1, char* cfStr2, int length) {
         char* cftable = CaseFoldTable.FoldedChars;
-        for (int i = 1; i < length; ++i) {
-            if (cftable[p1[i]] != p2[i]) goto ReturnFalse;
+        for (int i = 3; i < length; ++i) {
+            if (cftable[str1[i]] != cfStr2[i]) goto ReturnFalse;
         }
         return true;
     ReturnFalse:
@@ -1127,93 +1119,93 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
         int strLength = str.Length; // throws if str is null
         if (strLength == 0) throw new ArgumentException("The string argument is empty.");
         if (maxCharsOrNewlines < 0) throw new ArgumentOutOfRangeException("maxCharsOrNewlines", "maxCharsOrNewlines is negative.");
+        char* lineBegin = null; // putting this here improves the loop alignment on the 32-bit .NET JIT
         fixed (char* pStr = str) {
-            char* lineBegin = null;
             int nLines = 0;
             int nCRLF = 0;
-            char first = pStr[0];
             char* ptr = Iter.Ptr;
             char* bufferEnd = Iter.Anchor->BufferEnd;
             char* end1 = unchecked(bufferEnd - strLength);
             if (end1 >= ptr && end1 < bufferEnd) {
                 char* end2 = unchecked(ptr + maxCharsOrNewlines);
-                char* end = end1 <= end2 || end2 < ptr ? end1 : end2;
-                if (Iter.Block == Iter.Anchor->Block && ptr < end) {
+                char* end = end2 < ptr || end1 <= end2 ? end1 : end2;
+                if (Iter.Block == Iter.Anchor->Block) {
                     for (;;) {
                         char c = *ptr;
-                        if (c == first) goto CompareRestOfString;
-                    StringsNotEqual:
-                        ++ptr;
-                        if (c > '\r') {
-                            if (ptr >= end) break;
+                        if (c != pStr[0]) {
+                            if (ptr == end) break;
+                            ++ptr;
+                            if (c > '\r' || c == '\t') continue;
                         } else {
-                            if (c == '\r') {
-                                if (*ptr == '\n') {
-                                    ++ptr;
-                                    ++nCRLF;
-                                    if (end < end1) ++end;
+                            Debug.Assert(ptr + strLength <= Iter.Anchor->BufferEnd);
+                            if (strLength == 1 || (ptr[1] == pStr[1] &&
+                                (strLength == 2 || (ptr[2] == pStr[2] &&
+                                 (strLength == 3 || Rest3OfStringEquals(ptr, pStr, strLength))))))
+                            {
+                                foundString = true;
+                                if (ptr != Iter.Ptr) {
+                                    if (nLines == 0) return AdvanceTo(ptr);
+                                    return AdvanceTo(ptr, lineBegin, nLines);
                                 }
-                            } else if (c != '\n') goto CheckBound;
-                            lineBegin = ptr;
-                            ++nLines;
-                        CheckBound:
-                            if (ptr >= end) break;
+                                return this;
+                            }
+                            c = *ptr;
+                            if (ptr == end) break;
+                            ++ptr;
+                            if (c > '\r' || c == '\t') continue;
                         }
-                        continue;
-                    CompareRestOfString:
-                        if (strLength == 1 || (ptr[1] == pStr[1] &&
-                            (strLength == 2 || (ptr[2] == pStr[2] &&
-                             (strLength == 3 || Rest3OfStringEquals(ptr, pStr, strLength)))))) goto Found;
-                        goto StringsNotEqual;
+                        if (c == '\r') {
+                            if (*ptr == '\n') {
+                                ++ptr;
+                                lineBegin = ptr;
+                                ++nLines;
+                                ++nCRLF;
+                                if (end < end1) ++end;
+                                else if (ptr > end) break;
+                                continue;
+                            }
+                        } else if (c != '\n') continue;
+                        lineBegin = ptr;
+                        ++nLines;
                     } // for
-                    if (*ptr == first && RestOfStringEquals(ptr, pStr, strLength)) goto Found;
-                    if (ptr >= end1) goto EndOfBlock;
-                    foundString = false;
-                    goto ReturnState;
-                Found:
-                    foundString = true;
-                ReturnState:
-                    if (ptr != Iter.Ptr) {
-                        if (nLines == 0) return AdvanceTo(ptr);
-                        return AdvanceTo(ptr, lineBegin, nLines);
+                    if (ptr < end1) {
+                        foundString = false;
+                        if (ptr != Iter.Ptr) {
+                            if (nLines == 0) return AdvanceTo(ptr);
+                            return AdvanceTo(ptr, lineBegin, nLines);
+                        }
+                        return this;
                     }
-                    return this;
                 }
             }
-        EndOfBlock:
-            return SkipToStringContinue(pStr, strLength, maxCharsOrNewlines, out foundString, ptr, lineBegin, nLines, nCRLF);
+            return SkipToStringContinue(ptr, lineBegin, nLines, nCRLF, pStr, strLength, maxCharsOrNewlines, out foundString);
         }
     }
-    private State<TUserState> SkipToStringContinue(char* pStr, int strLength, int maxCharsOrNewlines, out bool foundString,
-                                                   char* ptr, char* lineBegin, int nLines, int nCRLF)
+    private State<TUserState> SkipToStringContinue(char* ptr, char* lineBegin, int nLines, int nCRLF,
+                                                   char* pStr, int strLength, int maxCharsOrNewlines, out bool foundString)
     {
         foundString = false;
-        char first = *pStr;
-        int index = (int)CharStream.PositiveDistance(Iter.Ptr, ptr);
-        int count = index - nCRLF;
+        uint index = CharStream.PositiveDistance(Iter.Ptr, ptr);
+        int count = (int)index - nCRLF;
         int lineBeginCount = nLines == 0 ? 0 : count - (int)CharStream.PositiveDistance(lineBegin, ptr);
         CharStream.Iterator iter = Iter;
         char c = iter._Increment((uint)index);
         for (;;) {
-            if (c != first || !iter.Match(pStr, strLength)) {
+            if (c != pStr[0] || !iter.Match(pStr, strLength)) {
                 if (c == CharStream.Iterator.EndOfStreamChar || count == maxCharsOrNewlines) break;
                 ++count;
-                char c1 = iter._Increment();
-                if (c > '\r') c = c1;
-                else if (c == '\r') {
-                    if (c1 == '\n') {
-                        ++nCRLF;
-                        c = iter._Increment();
-                    } else {
-                        c = c1;
-                    }
+                char c0 = c;
+                c = iter._Increment();
+                if (c0 <= '\r') {
+                    if (c0 == '\r') {
+                        if (c == '\n') {
+                            c = iter._Increment();
+                            ++nCRLF;
+                        }
+                    } else if (c0 != '\n') continue;
                     lineBeginCount = count;
                     ++nLines;
-                } else if (c == '\n') {
-                    c = c1;
-                    lineBeginCount = count;
-                    ++nLines;
-                } else c = c1;
+                }
             } else {
                 foundString = true;
                 break;
@@ -1235,109 +1227,102 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
             int nLines = 0;
             int nCRLF = 0;
             int nCR = 0;
-            char first = pStr[0];
             char* ptr = Iter.Ptr;
             char* bufferEnd = Iter.Anchor->BufferEnd;
             char* end1 = unchecked(bufferEnd - strLength);
             if (end1 >= ptr && end1 < bufferEnd) {
                 char* end2 = unchecked(ptr + maxCharsOrNewlines);
-                char* end = end1 <= end2 || end2 < ptr ? end1 : end2;
-                if (Iter.Block == Iter.Anchor->Block && ptr < end) {
+                char* end = end2 < ptr || end1 <= end2 ? end1 : end2;
+                if (Iter.Block == Iter.Anchor->Block) {
                     for (;;) {
                         char c = *ptr;
-                        if (c == first) goto CompareRestOfString;
-                    StringsNotEqual:
-                        ++ptr;
-                        if (c > '\r') {
-                            if (ptr >= end) break;
+                        if (c != pStr[0]) {
+                            if (ptr == end) break;
+                            ++ptr;
+                            if (c > '\r' || c == '\t') continue;
                         } else {
-                            if (c == '\r') {
-                                if (*ptr == '\n') {
-                                    ++ptr;
-                                    ++nCRLF;
-                                    if (end < end1) ++end;
+                            Debug.Assert(ptr + strLength <= Iter.Anchor->BufferEnd);
+                            if (strLength == 1 || (ptr[1] == pStr[1] &&
+                                (strLength == 2 || (ptr[2] == pStr[2] &&
+                                 (strLength == 3 || Rest3OfStringEquals(ptr, pStr, strLength))))))
+                            {
+                                char* ptr0 = Iter.Ptr;
+                                if (ptr != ptr0) {
+                                    int length = (int)CharStream.PositiveDistance(ptr0, ptr);
+                                    if (nLines == 0) {
+                                        skippedString = new string(ptr0, 0, length);
+                                        return AdvanceTo(ptr);
+                                    } else {
+                                        skippedString = (nCR | nCRLF) == 0
+                                                        ? new string(ptr0, 0, length)
+                                                        : CharStream.CopyWithNormalizedNewlines(ptr0, length, nCRLF, nCR);
+                                        return AdvanceTo(ptr, lineBegin, nLines);
+                                    }
                                 } else {
-                                    ++nCR;
+                                    skippedString = "";
+                                    return this;
                                 }
-                            } else if (c != '\n') goto CheckBound;
-                            lineBegin = ptr;
-                            ++nLines;
-                        CheckBound:
-                            if (ptr >= end) break;
-                        }
-                        continue;
-                    CompareRestOfString:
-                        if (strLength == 1 || (ptr[1] == pStr[1] &&
-                             (strLength == 2 || (ptr[2] == pStr[2] &&
-                              (strLength == 3 || Rest3OfStringEquals(ptr, pStr, strLength)))))) goto Found;
-                        goto StringsNotEqual;
-                    } // for
-                    if (*ptr == first && RestOfStringEquals(ptr, pStr, strLength)) goto Found;
-                    if (ptr >= end1) goto EndOfBlock;
-                    goto NotFound;
-                Found:
-                    {
-                        char* ptr0 = Iter.Ptr;
-                        if (ptr != ptr0) {
-                            int length = (int)CharStream.PositiveDistance(ptr0, ptr);
-                            if (nLines == 0) {
-                                skippedString = new string(ptr0, 0, length);
-                                return AdvanceTo(ptr);
-                            } else {
-                                skippedString = (nCR | nCRLF) == 0
-                                                ? new string(ptr0, 0, length)
-                                                : CharStream.CopyWithNormalizedNewlines(ptr0, length, nCRLF, nCR);
-                                return AdvanceTo(ptr, lineBegin, nLines);
                             }
-                        } else {
-                            skippedString = "";
-                            return this;
+                            c = *ptr;
+                            if (ptr == end) break;
+                            ++ptr;
+                            if (c > '\r' || c == '\t') continue;
                         }
-                    }
-                NotFound:
-                    {
+                        if (c == '\r') {
+                            if (*ptr == '\n') {
+                                ++ptr;
+                                lineBegin = ptr;
+                                ++nLines;
+                                ++nCRLF;
+                                if (end < end1) ++end;
+                                else if (ptr > end) break;
+                                continue;
+                            } else {
+                                ++nCR;
+                            }
+                        } else if (c != '\n') continue;
+                        lineBegin = ptr;
+                        ++nLines;
+                    } // for
+                    if (ptr < end1) {
                         skippedString = null;
-                        char* ptr0 = Iter.Ptr;
-                        Debug.Assert(ptr != ptr0);
-                        if (nLines == 0) return AdvanceTo(ptr);
-                        return AdvanceTo(ptr, lineBegin, nLines);
+                        if (ptr != Iter.Ptr) {
+                            if (nLines == 0) return AdvanceTo(ptr);
+                            return AdvanceTo(ptr, lineBegin, nLines);
+                        }
+                        return this;
                     }
                 }
             }
-        EndOfBlock:
-            return SkipToStringContinue(pStr, strLength, maxCharsOrNewlines, out skippedString, ptr, lineBegin, nLines, nCRLF, nCR);
+            return SkipToStringContinue(ptr, lineBegin, nLines, nCRLF, nCR, pStr, strLength, maxCharsOrNewlines, out skippedString);
         }
     }
-    private State<TUserState> SkipToStringContinue(char* pStr, int strLength, int maxCharsOrNewlines, out string skippedString,
-                                                   char* ptr, char* lineBegin, int nLines, int nCRLF, int nCR)
+    private State<TUserState> SkipToStringContinue(char* ptr, char* lineBegin, int nLines, int nCRLF, int nCR,
+                                                   char* pStr, int strLength, int maxCharsOrNewlines, out string skippedString)
     {
-        char first = *pStr;
-        CharStream.Iterator iter = Iter;
-        int index = (int)CharStream.PositiveDistance(Iter.Ptr, ptr);
-        int count = index - nCRLF;
+        uint index = CharStream.PositiveDistance(Iter.Ptr, ptr);
+        int count = (int)index - nCRLF;
         int lineBeginCount = nLines == 0 ? 0 : count - (int)CharStream.PositiveDistance(lineBegin, ptr);
-        char c = iter._Increment((uint)index);
+        CharStream.Iterator iter = Iter;
+        char c = iter._Increment(index);
         for (;;) {
-            if (c != first || !iter.Match(pStr, strLength)) {
+            if (c != pStr[0] || !iter.Match(pStr, strLength)) {
                 if (c == CharStream.Iterator.EndOfStreamChar || count == maxCharsOrNewlines) break;
                 ++count;
-                char c1 = iter._Increment();
-                if (c > '\r') c = c1;
-                else if (c == '\r') {
-                    if (c1 == '\n') {
-                        ++nCRLF;
-                        c = iter._Increment();
-                    } else {
-                        ++nCR;
-                        c = c1;
-                    }
+                char c0 = c;
+                c = iter._Increment();
+                if (c0 <= '\r') {
+                    if (c0 == '\r') {
+                        if (c == '\n') {
+                            c = iter._Increment();
+                            ++nCRLF;
+                        } else {
+                            ++nCR;
+                        }
+                    } else if (c0 != '\n') continue;
                     lineBeginCount = count;
                     ++nLines;
-                } else if (c == '\n') {
-                    c = c1;
-                    lineBeginCount = count;
-                    ++nLines;
-                } else c = c1;
+                }
             } else { // found string
                 if (count != 0) {
                     if (nLines == 0) {
@@ -1370,93 +1355,95 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
         int strLength = caseFoldedString.Length; // throws if str is null
         if (strLength == 0) throw new ArgumentException("The string argument is empty.");
         if (maxCharsOrNewlines < 0) throw new ArgumentOutOfRangeException("maxCharsOrNewlines", "maxCharsOrNewlines is negative.");
+        char* lineBegin = null; // putting this here improves the loop alignment on the 32-bit .NET JIT
         fixed (char* pStr = caseFoldedString) {
-            char* lineBegin = null;
             int nLines = 0;
             int nCRLF = 0;
-            char first = pStr[0];
             char* ptr = Iter.Ptr;
             char* bufferEnd = Iter.Anchor->BufferEnd;
             char* end1 = unchecked(bufferEnd - strLength);
             if (end1 >= ptr && end1 < bufferEnd) {
                 char* end2 = unchecked(ptr + maxCharsOrNewlines);
-                char* end = end1 <= end2 || end2 < ptr ? end1 : end2;
-                if (Iter.Block == Iter.Anchor->Block && ptr < end) {
+                char* end = end2 < ptr || end1 <= end2 ? end1 : end2;
+                if (Iter.Block == Iter.Anchor->Block) {
                     char* cftable = CaseFoldTable.FoldedChars;
                     for (;;) {
                         char c = cftable[*ptr];
-                        if (c == first) goto CompareRestOfString;
-                    StringsNotEqual:
-                        ++ptr;
-                        if (c > '\r') {
-                            if (ptr >= end) break;
+                        if (c != pStr[0]) {
+                            if (ptr == end) break;
+                            ++ptr;
+                            if (c > '\r' || c == '\t') continue;
                         } else {
-                            if (c == '\r') {
-                                if (*ptr == '\n') {
-                                    ++ptr;
-                                    ++nCRLF;
-                                    if (end < end1) ++end;
+                            Debug.Assert(ptr + strLength <= Iter.Anchor->BufferEnd);
+                            if (strLength == 1 || (cftable[ptr[1]] == pStr[1] &&
+                                (strLength == 2 || (cftable[ptr[2]] == pStr[2] &&
+                                 (strLength == 3 || Rest3OfStringEqualsCI(ptr, pStr, strLength))))))
+                            {
+                                foundString = true;
+                                if (ptr != Iter.Ptr) {
+                                    if (nLines == 0) return AdvanceTo(ptr);
+                                    return AdvanceTo(ptr, lineBegin, nLines);
                                 }
-                            } else if (c != '\n') goto CheckBound;
-                            lineBegin = ptr;
-                            ++nLines;
-                        CheckBound:
-                            if (ptr >= end) break;
+                                return this;
+                            }
+                            c = *ptr; // we don't need to casefold here
+                            if (ptr == end) break;
+                            ++ptr;
+                            if (c > '\r' || c == '\t') continue;
                         }
-                        continue;
-                    CompareRestOfString:
-                        if (strLength == 1 || RestOfStringEqualsCI(ptr, pStr, strLength)) goto Found;
-                        goto StringsNotEqual;
+                        if (c == '\r') {
+                            if (*ptr == '\n') {
+                                ++ptr;
+                                lineBegin = ptr;
+                                ++nLines;
+                                ++nCRLF;
+                                if (end < end1) ++end;
+                                else if (ptr > end) break;
+                                continue;
+                            }
+                        } else if (c != '\n') continue;
+                        lineBegin = ptr;
+                        ++nLines;
                     } // for
-                    if (cftable[*ptr] == first && RestOfStringEqualsCI(ptr, pStr, strLength)) goto Found;
-                    if (ptr >= end1) goto EndOfBlock;
-                    foundString = false;
-                    goto ReturnState;
-                Found:
-                    foundString = true;
-                ReturnState:
-                    if (ptr != Iter.Ptr) {
-                        if (nLines == 0) return AdvanceTo(ptr);
-                        return AdvanceTo(ptr, lineBegin, nLines);
+                    if (ptr < end1) {
+                        foundString = false;
+                        if (ptr != Iter.Ptr) {
+                            if (nLines == 0) return AdvanceTo(ptr);
+                            return AdvanceTo(ptr, lineBegin, nLines);
+                        }
+                        return this;
                     }
-                    return this;
                 }
             }
-        EndOfBlock:
-            return SkipToStringCIContinue(pStr, strLength, maxCharsOrNewlines, out foundString, ptr, lineBegin, nLines, nCRLF);
+            return SkipToStringCIContinue(ptr, lineBegin, nLines, nCRLF, pStr, strLength, maxCharsOrNewlines, out foundString);
         }
     }
-    private State<TUserState> SkipToStringCIContinue(char* pStr, int strLength, int maxCharsOrNewlines, out bool foundString,
-                                                     char* ptr, char* lineBegin, int nLines, int nCRLF)
+    private State<TUserState> SkipToStringCIContinue(char* ptr, char* lineBegin, int nLines, int nCRLF,
+                                                     char* pStr, int strLength, int maxCharsOrNewlines, out bool foundString)
     {
         foundString = false;
-        char first = *pStr;
-        int index = (int)CharStream.PositiveDistance(Iter.Ptr, ptr);
-        int count = index - nCRLF;
+        uint index = CharStream.PositiveDistance(Iter.Ptr, ptr);
+        int count = (int)index - nCRLF;
         int lineBeginCount = nLines == 0 ? 0 : count - (int)CharStream.PositiveDistance(lineBegin, ptr);
-        char* cftable = CaseFoldTable.FoldedChars;
         CharStream.Iterator iter = Iter;
+        char* cftable = CaseFoldTable.FoldedChars;
         char c = cftable[iter._Increment((uint)index)];
         for (;;) {
-            if (c != first || !iter.MatchCaseFolded(pStr, strLength)) {
+            if (c != pStr[0] || !iter.MatchCaseFolded(pStr, strLength)) {
                 if (c == CharStream.Iterator.EndOfStreamChar || count == maxCharsOrNewlines) break;
                 ++count;
-                char c1 = cftable[iter._Increment()];
-                if (c > '\r') c = c1;
-                else if (c == '\r') {
-                    if (c1 == '\n') {
-                        ++nCRLF;
-                        c = cftable[iter._Increment()];
-                    } else {
-                        c = c1;
-                    }
+                char c0 = c;
+                c = cftable[iter._Increment()];
+                if (c0 <= '\r') {
+                    if (c0 == '\r') {
+                        if (c == '\n') {
+                            c = cftable[iter._Increment()];
+                            ++nCRLF;
+                        }
+                    } else if (c0 != '\n') continue;
                     lineBeginCount = count;
                     ++nLines;
-                } else if (c == '\n') {
-                    c = c1;
-                    lineBeginCount = count;
-                    ++nLines;
-                } else c = c1;
+                }
             } else {
                 foundString = true;
                 break;
@@ -1478,109 +1465,104 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
             int nLines = 0;
             int nCRLF = 0;
             int nCR = 0;
-            char first = pStr[0];
             char* ptr = Iter.Ptr;
             char* bufferEnd = Iter.Anchor->BufferEnd;
             char* end1 = unchecked(bufferEnd - strLength);
             if (end1 >= ptr && end1 < bufferEnd) {
                 char* end2 = unchecked(ptr + maxCharsOrNewlines);
-                char* end = end1 <= end2 || end2 < ptr ? end1 : end2;
-                if (Iter.Block == Iter.Anchor->Block && ptr < end) {
+                char* end = end2 < ptr || end1 <= end2 ? end1 : end2;
+                if (Iter.Block == Iter.Anchor->Block) {
                     char* cftable = CaseFoldTable.FoldedChars;
                     for (;;) {
                         char c = cftable[*ptr];
-                        if (c == first) goto CompareRestOfString;
-                    StringsNotEqual:
-                        ++ptr;
-                        if (c > '\r') {
-                            if (ptr >= end) break;
+                        if (c != pStr[0]) {
+                            if (ptr == end) break;
+                            ++ptr;
+                            if (c > '\r' || c == '\t') continue;
                         } else {
-                            if (c == '\r') {
-                                if (*ptr == '\n') {
-                                    ++ptr;
-                                    ++nCRLF;
-                                    if (end < end1) ++end;
+                            Debug.Assert(ptr + strLength <= Iter.Anchor->BufferEnd);
+                            if (strLength == 1 || (cftable[ptr[1]] == pStr[1] &&
+                                (strLength == 2 || (cftable[ptr[2]] == pStr[2] &&
+                                 (strLength == 3 || Rest3OfStringEqualsCI(ptr, pStr, strLength))))))
+                            {
+                                char* ptr0 = Iter.Ptr;
+                                if (ptr != ptr0) {
+                                    int length = (int)CharStream.PositiveDistance(ptr0, ptr);
+                                    if (nLines == 0) {
+                                        skippedString = new string(ptr0, 0, length);
+                                        return AdvanceTo(ptr);
+                                    } else {
+                                        skippedString = (nCR | nCRLF) == 0
+                                                        ? new string(ptr0, 0, length)
+                                                        : CharStream.CopyWithNormalizedNewlines(ptr0, length, nCRLF, nCR);
+                                        return AdvanceTo(ptr, lineBegin, nLines);
+                                    }
                                 } else {
-                                    ++nCR;
+                                    skippedString = "";
+                                    return this;
                                 }
-                            } else if (c != '\n') goto CheckBound;
-                            lineBegin = ptr;
-                            ++nLines;
-                        CheckBound:
-                            if (ptr >= end) break;
-                        }
-                        continue;
-                    CompareRestOfString:
-                        if (strLength == 1 || RestOfStringEqualsCI(ptr, pStr, strLength)) goto Found;
-                        goto StringsNotEqual;
-                    } // for
-                    if (cftable[*ptr] == first && RestOfStringEqualsCI(ptr, pStr, strLength)) goto Found;
-                    if (ptr >= end1) goto EndOfBlock;
-                    goto NotFound;
-                Found:
-                    {
-                        char* ptr0 = Iter.Ptr;
-                        if (ptr != ptr0) {
-                            int length = (int)CharStream.PositiveDistance(ptr0, ptr);
-                            if (nLines == 0) {
-                                skippedString = new string(ptr0, 0, length);
-                                return AdvanceTo(ptr);
-                            } else {
-                                skippedString = (nCR | nCRLF) == 0
-                                                ? new string(ptr0, 0, length)
-                                                : CharStream.CopyWithNormalizedNewlines(ptr0, length, nCRLF, nCR);
-                                return AdvanceTo(ptr, lineBegin, nLines);
                             }
-                        } else {
-                            skippedString = "";
-                            return this;
+                            c = *ptr; // we don't need to casefold here
+                            if (ptr == end) break;
+                            ++ptr;
+                            if (c > '\r' || c == '\t') continue;
                         }
-                    }
-                NotFound:
-                    {
+                        if (c == '\r') {
+                            if (*ptr == '\n') {
+                                ++ptr;
+                                lineBegin = ptr;
+                                ++nLines;
+                                ++nCRLF;
+                                if (end < end1) ++end;
+                                else if (ptr > end) break;
+                                continue;
+                            } else {
+                                ++nCR;
+                            }
+                        } else if (c != '\n') continue;
+                        lineBegin = ptr;
+                        ++nLines;
+                    } // for
+                    if (ptr < end1) {
                         skippedString = null;
-                        char* ptr0 = Iter.Ptr;
-                        Debug.Assert(ptr != ptr0);
-                        if (nLines == 0) return AdvanceTo(ptr);
-                        return AdvanceTo(ptr, lineBegin, nLines);
+                        if (ptr != Iter.Ptr) {
+                            if (nLines == 0) return AdvanceTo(ptr);
+                            return AdvanceTo(ptr, lineBegin, nLines);
+                        }
+                        return this;
                     }
                 }
             }
-        EndOfBlock:
-            return SkipToStringCIContinue(pStr, strLength, maxCharsOrNewlines, out skippedString, ptr, lineBegin, nLines, nCRLF, nCR);
+            return SkipToStringCIContinue(ptr, lineBegin, nLines, nCRLF, nCR, pStr, strLength, maxCharsOrNewlines, out skippedString);
         }
     }
-    private State<TUserState> SkipToStringCIContinue(char* pStr, int strLength, int maxCharsOrNewlines, out string skippedString,
-                                                     char* ptr, char* lineBegin, int nLines, int nCRLF, int nCR)
+    private State<TUserState> SkipToStringCIContinue(char* ptr, char* lineBegin, int nLines, int nCRLF, int nCR,
+                                                     char* pStr, int strLength, int maxCharsOrNewlines, out string skippedString)
     {
-        char first = *pStr;
-        CharStream.Iterator iter = Iter;
-        int index = (int)CharStream.PositiveDistance(Iter.Ptr, ptr);
-        int count = index - nCRLF;
+        uint index = CharStream.PositiveDistance(Iter.Ptr, ptr);
+        int count = (int)index - nCRLF;
         int lineBeginCount = nLines == 0 ? 0 : count - (int)CharStream.PositiveDistance(lineBegin, ptr);
+        CharStream.Iterator iter = Iter;
         char* cftable = CaseFoldTable.FoldedChars;
-        char c = cftable[iter._Increment((uint)index)];
+        char c = cftable[iter._Increment(index)];
         for (;;) {
-            if (c != first || !iter.MatchCaseFolded(pStr, strLength)) {
+            if (c != pStr[0] || !iter.MatchCaseFolded(pStr, strLength)) {
                 if (c == CharStream.Iterator.EndOfStreamChar || count == maxCharsOrNewlines) break;
                 ++count;
-                char c1 = cftable[iter._Increment()];
-                if (c > '\r') c = c1;
-                else if (c == '\r') {
-                    if (c1 == '\n') {
-                        ++nCRLF;
-                        c = cftable[iter._Increment()];
-                    } else {
-                        ++nCR;
-                        c = c1;
-                    }
+                char c0 = c;
+                c = cftable[iter._Increment()];
+                if (c0 <= '\r') {
+                    if (c0 == '\r') {
+                        if (c == '\n') {
+                            c = cftable[iter._Increment()];
+                            ++nCRLF;
+                        } else {
+                            ++nCR;
+                        }
+                    } else if (c0 != '\n') continue;
                     lineBeginCount = count;
                     ++nLines;
-                } else if (c == '\n') {
-                    c = c1;
-                    lineBeginCount = count;
-                    ++nLines;
-                } else c = c1;
+                }
             } else { // found string
                 if (count != 0) {
                     if (nLines == 0) {
