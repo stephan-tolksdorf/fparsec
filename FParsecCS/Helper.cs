@@ -159,7 +159,7 @@ internal unsafe static T RunParserOnSubstream<T,TUserState,TSubStreamUserState>(
         char* end = s1.Iter.Ptr;
         if (end == null) end = anchor->BufferEnd;
         if (end < ptr) throw new ArgumentException("The position of the second state lies before the position of the first state.");
-        int length = CharStream.PositiveDistance(ptr, end);
+        int length = (int)CharStream.PositiveDistance(ptr, end);
         CharStream stream = (CharStream)anchor->StreamHandle.Target;
         using (var subStream = new CharStream(stream.BufferString, stream.BufferStringPointer, ptr, length, s0.Index, &subStreamAnchor)) {
             // state.Iter = subStream.Begin
@@ -172,7 +172,7 @@ internal unsafe static T RunParserOnSubstream<T,TUserState,TSubStreamUserState>(
         char* ptr = s0.Iter.Ptr;
         char* end = s1.Iter.Ptr;
         if (end < ptr) throw new ArgumentException("The position of the second state lies before the position of the first state.");
-        int length = CharStream.PositiveDistance(ptr, end);
+        int length = (int)CharStream.PositiveDistance(ptr, end);
         string subString = new String(ptr, 0, length);
         fixed (char* pSubString = subString)
         using (var subStream = new CharStream(subString, pSubString, pSubString, length, s0.Index, &subStreamAnchor)) {

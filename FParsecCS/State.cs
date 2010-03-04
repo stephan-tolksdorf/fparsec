@@ -182,7 +182,7 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
     internal State<TUserState> AdvanceTo(char* ptr, char* lineBegin, int lineOffset) {
         var anchor = Iter.Anchor;
         var d = CharStream.PositiveDistance(anchor->BufferBegin, lineBegin);
-        long newLineBegin = (uint)d + anchor->CharIndexPlusOffset;
+        long newLineBegin = d + anchor->CharIndexPlusOffset;
         var newData = new Data{Line = data.Line + lineOffset, LineBegin = newLineBegin,
                                UserState = data.UserState, StreamName = data.StreamName};
         var newState = new State<TUserState>{data = newData};
@@ -343,9 +343,9 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
                 }
             }
             // reached the end of the current block
-            int index = CharStream.PositiveDistance(Iter.Ptr, ptr);
+            int index = (int)CharStream.PositiveDistance(Iter.Ptr, ptr);
             var newState = nLines == 0 ? Advance(index)
-                                       : Advance(index, nLines, CharStream.PositiveDistance(lineBegin, ptr));
+                                       : Advance(index, nLines, (int)CharStream.PositiveDistance(lineBegin, ptr));
             return newState.SkipWhitespaceContinue();
         }
         return SkipWhitespaceContinue();
@@ -410,7 +410,7 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
             }
             // reached the end of the current block
             if (ptr != Iter.Ptr) {
-                int count = CharStream.PositiveDistance(Iter.Ptr, ptr);
+                int count = (int)CharStream.PositiveDistance(Iter.Ptr, ptr);
                 state = Advance(count);
             }
         }
@@ -439,7 +439,7 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
                     char* ptr0 = Iter.Ptr;
                     if (!skipNewline) {
                         if (ptr != ptr0) {
-                            int length = CharStream.PositiveDistance(ptr0, ptr);
+                            int length = (int)CharStream.PositiveDistance(ptr0, ptr);
                             skippedString = new string(ptr0, 0, length);
                             return AdvanceTo(ptr);
                         } else {
@@ -448,7 +448,7 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
                         }
                     } else {
                         if (ptr != ptr0) {
-                            int length = CharStream.PositiveDistance(ptr0, ptr);
+                            int length = (int)CharStream.PositiveDistance(ptr0, ptr);
                             skippedString = new string(ptr0, 0, length);
                         } else {
                             skippedString = "";
@@ -461,7 +461,7 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
             }
             // reached the end of the current block
             if (ptr != Iter.Ptr) {
-                int count = CharStream.PositiveDistance(Iter.Ptr, ptr);
+                int count = (int)CharStream.PositiveDistance(Iter.Ptr, ptr);
                 state = Advance(count);
             }
         }
@@ -541,7 +541,7 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
                 }
                 if (end < bufferEnd1) {
                     char* ptr0 = Iter.Ptr;
-                    int index = CharStream.PositiveDistance(ptr0, ptr);
+                    int index = (int)CharStream.PositiveDistance(ptr0, ptr);
                     if (nLines == 0) {
                         skippedString = new string(ptr0, 0, index);
                         return AdvanceTo(ptr);
@@ -560,11 +560,11 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
     private State<TUserState> SkipCharsOrNewlinesContinue(int maxCharsOrNewlines, out string skippedString,
                                                          char* ptr, char* lineBegin, int nLines, int nCRLF, int nCR)
     {
-        int index = CharStream.PositiveDistance(Iter.Ptr, ptr);
-        int count = index - nCRLF;
-        int lineBeginCount = nLines == 0 ? 0 : count - CharStream.PositiveDistance(lineBegin, ptr);
+        uint index = CharStream.PositiveDistance(Iter.Ptr, ptr);
+        int count = (int)index - nCRLF;
+        int lineBeginCount = nLines == 0 ? 0 : count - (int)CharStream.PositiveDistance(lineBegin, ptr);
         CharStream.Iterator iter = Iter;
-        char c = iter._Increment((uint)index);
+        char c = iter._Increment(index);
         for (;;) {
              if (c == CharStream.Iterator.EndOfStreamChar || count == maxCharsOrNewlines) break;
              ++count;
@@ -641,7 +641,7 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
                     }
                 }
                 if (end < bufferEnd1) {
-                    numberOfSkippedCharsOrNewlines = CharStream.PositiveDistance(Iter.Ptr, ptr) - nCRLF;
+                    numberOfSkippedCharsOrNewlines = (int)CharStream.PositiveDistance(Iter.Ptr, ptr) - nCRLF;
                     if (nLines == 0) return AdvanceTo(ptr);
                     return AdvanceTo(ptr, lineBegin, nLines);
                 }
@@ -652,9 +652,9 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
     private State<TUserState> SkipCharsOrNewlinesContinue(int maxCharsOrNewlines, out int numberOfSkippedCharsOrNewlines,
                                                          char* ptr, char* lineBegin, int nLines, int nCRLF)
     {
-        int index = CharStream.PositiveDistance(Iter.Ptr, ptr);
+        int index = (int)CharStream.PositiveDistance(Iter.Ptr, ptr);
         int count = index - nCRLF;
-        int lineBeginCount = nLines == 0 ? 0 : count - CharStream.PositiveDistance(lineBegin, ptr);
+        int lineBeginCount = nLines == 0 ? 0 : count - (int)CharStream.PositiveDistance(lineBegin, ptr);
         CharStream.Iterator iter = Iter;
         char c = iter._Increment((uint)index);
         for (;;) {
@@ -736,10 +736,10 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
                 return AdvanceTo(ptr, lineBegin, nLines);
             }
             // reached the end of the current block
-            int index = CharStream.PositiveDistance(Iter.Ptr, ptr);
+            int index = (int)CharStream.PositiveDistance(Iter.Ptr, ptr);
             var state =   nLines == 0
                         ? Advance(index)
-                        : Advance(index, nLines, CharStream.PositiveDistance(lineBegin, ptr));
+                        : Advance(index, nLines, (int)CharStream.PositiveDistance(lineBegin, ptr));
             return SkipCharsOrNewlinesWhileContinue(f /* not f1 */, f, state);
         ReturnEmpty:
             return this;
@@ -823,7 +823,7 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
                 }
                 --ptr;
                 char* ptr0 = Iter.Ptr;
-                int index = CharStream.PositiveDistance(ptr0, ptr);
+                int index = (int)CharStream.PositiveDistance(ptr0, ptr);
                 if (nLines == 0) {
                     skippedString = new string(ptr0, 0, index);
                     return AdvanceTo(ptr);
@@ -837,10 +837,10 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
             }
             {
                 // reached the end of the current block
-                int index = CharStream.PositiveDistance(Iter.Ptr, ptr);
+                int index = (int)CharStream.PositiveDistance(Iter.Ptr, ptr);
                 var state = nLines == 0
                             ? Advance(index)
-                            : Advance(index, nLines, CharStream.PositiveDistance(lineBegin, ptr));
+                            : Advance(index, nLines, (int)CharStream.PositiveDistance(lineBegin, ptr));
                 return SkipCharsOrNewlinesWhileContinue(f /* not f1 */, f, out skippedString, state);
             }
         ReturnEmpty:
@@ -936,7 +936,7 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
             if (end >= bufferEnd1) goto EndOfBlock;
         ReturnStringInBlock:
             {
-                int count = CharStream.PositiveDistance(Iter.Ptr, ptr) - nCRLF;
+                int count = (int)CharStream.PositiveDistance(Iter.Ptr, ptr) - nCRLF;
                 if (count >= minCharsOrNewlines) {
                     if (nLines == 0) return AdvanceTo(ptr);
                     return AdvanceTo(ptr, lineBegin, nLines);
@@ -946,10 +946,10 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
             return this;
         EndOfBlock:
             {
-                int index = CharStream.PositiveDistance(Iter.Ptr, ptr);
+                int index = (int)CharStream.PositiveDistance(Iter.Ptr, ptr);
                 var state = nLines == 0
                             ? Advance(index)
-                            : Advance(index, nLines, CharStream.PositiveDistance(lineBegin, ptr));
+                            : Advance(index, nLines, (int)CharStream.PositiveDistance(lineBegin, ptr));
                 int count = index - nCRLF;
                 return SkipCharsOrNewlinesWhileContinue(f /* not f1 */, f, minCharsOrNewlines, maxCharsOrNewlines, state, count);
             }
@@ -1043,7 +1043,7 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
         ReturnStringInBlock:
             {
                 char* ptr0 = Iter.Ptr;
-                int index = CharStream.PositiveDistance(ptr0, ptr);
+                int index = (int)CharStream.PositiveDistance(ptr0, ptr);
                 int count = index - nCRLF;
                 if (count >= minCharsOrNewlines) {
                     if (nLines == 0) {
@@ -1063,10 +1063,10 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
             return this;
         EndOfBlock:
             {
-                int index = CharStream.PositiveDistance(Iter.Ptr, ptr);
+                int index = (int)CharStream.PositiveDistance(Iter.Ptr, ptr);
                 var state = nLines == 0
                             ? Advance(index)
-                            : Advance(index, nLines, CharStream.PositiveDistance(lineBegin, ptr));
+                            : Advance(index, nLines, (int)CharStream.PositiveDistance(lineBegin, ptr));
                 int count = index - nCRLF;
                 return SkipCharsOrNewlinesWhileContinue(f /* not f1 */, f, minCharsOrNewlines, maxCharsOrNewlines, out skippedString, state, count);
             }
@@ -1189,9 +1189,9 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
     {
         foundString = false;
         char first = *pStr;
-        int index = CharStream.PositiveDistance(Iter.Ptr, ptr);
+        int index = (int)CharStream.PositiveDistance(Iter.Ptr, ptr);
         int count = index - nCRLF;
-        int lineBeginCount = nLines == 0 ? 0 : count - CharStream.PositiveDistance(lineBegin, ptr);
+        int lineBeginCount = nLines == 0 ? 0 : count - (int)CharStream.PositiveDistance(lineBegin, ptr);
         CharStream.Iterator iter = Iter;
         char c = iter._Increment((uint)index);
         for (;;) {
@@ -1279,7 +1279,7 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
                     {
                         char* ptr0 = Iter.Ptr;
                         if (ptr != ptr0) {
-                            int length = CharStream.PositiveDistance(ptr0, ptr);
+                            int length = (int)CharStream.PositiveDistance(ptr0, ptr);
                             if (nLines == 0) {
                                 skippedString = new string(ptr0, 0, length);
                                 return AdvanceTo(ptr);
@@ -1299,7 +1299,6 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
                         skippedString = null;
                         char* ptr0 = Iter.Ptr;
                         Debug.Assert(ptr != ptr0);
-                        int length = CharStream.PositiveDistance(ptr0, ptr);
                         if (nLines == 0) return AdvanceTo(ptr);
                         return AdvanceTo(ptr, lineBegin, nLines);
                     }
@@ -1314,9 +1313,9 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
     {
         char first = *pStr;
         CharStream.Iterator iter = Iter;
-        int index = CharStream.PositiveDistance(Iter.Ptr, ptr);
+        int index = (int)CharStream.PositiveDistance(Iter.Ptr, ptr);
         int count = index - nCRLF;
-        int lineBeginCount = nLines == 0 ? 0 : count - CharStream.PositiveDistance(lineBegin, ptr);
+        int lineBeginCount = nLines == 0 ? 0 : count - (int)CharStream.PositiveDistance(lineBegin, ptr);
         char c = iter._Increment((uint)index);
         for (;;) {
             if (c != first || !iter.Match(pStr, strLength)) {
@@ -1433,9 +1432,9 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
     {
         foundString = false;
         char first = *pStr;
-        int index = CharStream.PositiveDistance(Iter.Ptr, ptr);
+        int index = (int)CharStream.PositiveDistance(Iter.Ptr, ptr);
         int count = index - nCRLF;
-        int lineBeginCount = nLines == 0 ? 0 : count - CharStream.PositiveDistance(lineBegin, ptr);
+        int lineBeginCount = nLines == 0 ? 0 : count - (int)CharStream.PositiveDistance(lineBegin, ptr);
         char* cftable = CaseFoldTable.FoldedChars;
         if (cftable == null) cftable = CaseFoldTable.Initialize();
         CharStream.Iterator iter = Iter;
@@ -1525,7 +1524,7 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
                     {
                         char* ptr0 = Iter.Ptr;
                         if (ptr != ptr0) {
-                            int length = CharStream.PositiveDistance(ptr0, ptr);
+                            int length = (int)CharStream.PositiveDistance(ptr0, ptr);
                             if (nLines == 0) {
                                 skippedString = new string(ptr0, 0, length);
                                 return AdvanceTo(ptr);
@@ -1545,7 +1544,6 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
                         skippedString = null;
                         char* ptr0 = Iter.Ptr;
                         Debug.Assert(ptr != ptr0);
-                        int length = CharStream.PositiveDistance(ptr0, ptr);
                         if (nLines == 0) return AdvanceTo(ptr);
                         return AdvanceTo(ptr, lineBegin, nLines);
                     }
@@ -1560,9 +1558,9 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
     {
         char first = *pStr;
         CharStream.Iterator iter = Iter;
-        int index = CharStream.PositiveDistance(Iter.Ptr, ptr);
+        int index = (int)CharStream.PositiveDistance(Iter.Ptr, ptr);
         int count = index - nCRLF;
-        int lineBeginCount = nLines == 0 ? 0 : count - CharStream.PositiveDistance(lineBegin, ptr);
+        int lineBeginCount = nLines == 0 ? 0 : count - (int)CharStream.PositiveDistance(lineBegin, ptr);
         char* cftable = CaseFoldTable.FoldedChars;
         if (cftable == null) cftable = CaseFoldTable.Initialize();
         char c = cftable[iter._Increment((uint)index)];
