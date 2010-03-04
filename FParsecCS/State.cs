@@ -173,6 +173,7 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
     }
 
     internal State<TUserState> AdvanceTo(char* ptr) {
+        Debug.Assert(Iter.Anchor->BufferBegin <= ptr && ptr < Iter.Anchor->BufferEnd);
         var newState = new State<TUserState>{data = data};
         newState.Iter.Anchor = Iter.Anchor;
         newState.Iter.Ptr    = ptr;
@@ -180,6 +181,9 @@ public sealed unsafe class State<TUserState> : IEquatable<State<TUserState>> {
         return newState;
     }
     internal State<TUserState> AdvanceTo(char* ptr, char* lineBegin, int lineOffset) {
+        Debug.Assert(   lineBegin >= Iter.Anchor->BufferBegin
+                     && ptr >= lineBegin
+                     && ptr < Iter.Anchor->BufferEnd);
         var anchor = Iter.Anchor;
         var d = CharStream.PositiveDistance(anchor->BufferBegin, lineBegin);
         long newLineBegin = d + anchor->CharIndexPlusOffset;

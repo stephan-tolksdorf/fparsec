@@ -133,12 +133,17 @@ public sealed class State<TUserState> : IEquatable<State<TUserState>> {
     }
 
     internal State<TUserState> AdvanceTo(int idx) {
+        Debug.Assert(idx < 0 ? idx == Int32.MinValue
+                             : idx >= Iter.Stream.IndexBegin && idx < Iter.Stream.IndexEnd);
         var newState = new State<TUserState>{data = data};
         newState.Iter.Stream = Iter.Stream;
         newState.Iter.Idx = idx;
         return newState;
     }
     internal State<TUserState> AdvanceTo(int idx, int lineBegin, int lineOffset) {
+        Debug.Assert(   idx < 0 ? idx == Int32.MinValue
+                                : idx >= lineBegin && idx < Iter.Stream.IndexEnd
+                     && lineBegin >= Iter.Stream.IndexBegin && lineBegin <= Iter.Stream.IndexEnd);
         long newLineBegin = (uint)lineBegin + Iter.Stream.StringToStreamIndexOffset;
         var newData = new Data{Line = data.Line + lineOffset, LineBegin = newLineBegin,
                                UserState = data.UserState, StreamName = data.StreamName};
