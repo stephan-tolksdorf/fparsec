@@ -1698,7 +1698,7 @@ public unsafe sealed class CharStream : IDisposable {
             if (Block == anchor->Block && unchecked((uint)length) <= PositiveDistance(ptr, anchor->BufferEnd)) {
                 #if UNALIGNED_READS
                     int len = length;
-                    if ((unchecked((int)buffer) & 2) != 0) { // align buffer pointer
+                    if ((unchecked((int)buffer) & 2) != 0 && len != 0) { // align buffer pointer
                         *buffer = *ptr;
                         ++buffer; ++ptr; --len;
                     }

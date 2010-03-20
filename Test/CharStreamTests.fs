@@ -805,7 +805,19 @@ let testStream (stream: CharStream) (refString: string) blockSize blockOverlap m
                 getIter(i).Read(n, true) |> Equal ""
             let cs = Array.create (N + 2) '$'
             getIter(i).Read(cs, i%2, min n N) |> Equal str.Length
-            cs |> Equal (((if i%2 = 1 then "$" else "") + str + new string('$', N + 2 - str.Length - i%2)).ToCharArray())
+            let cs2 = ((if i%2 = 1 then "$" else "") + str + new string('$', N + 2 - str.Length - i%2))
+            new string(cs) |> Equal cs2
+        #if LOW_TRUST
+        #else
+            Array.fill cs 0 cs.Length '$'
+            let handle = System.Runtime.InteropServices.GCHandle.Alloc(cs, System.Runtime.InteropServices.GCHandleType.Pinned)
+            let ptr = NativePtr.ofNativeInt<char> (handle.AddrOfPinnedObject())
+            let count = getIter(i).Read(NativePtr.add ptr (i%2), min n N)
+            handle.Free()
+            count |> Equal str.Length
+            new string(cs) |> Equal cs2
+        #endif
+
         else
             if i >= N then getIter(i).Read() |> Equal EOS
             getIter(i).Read(n) |> Equal ""
@@ -814,8 +826,18 @@ let testStream (stream: CharStream) (refString: string) blockSize blockOverlap m
             let endIter = getIter(i)
             getIter(i).ReadUntil(endIter) |> ReferenceEqual ""
             let cs = dollarString.ToCharArray()
-            getIter(i).Read(cs, 0, min n N) |> Equal 0
+            getIter(i).Read(cs, i%2, min n N) |> Equal 0
             new string(cs) |> Equal dollarString
+        #if LOW_TRUST
+        #else
+            Array.fill cs 0 cs.Length '$'
+            let handle = System.Runtime.InteropServices.GCHandle.Alloc(cs, System.Runtime.InteropServices.GCHandleType.Pinned)
+            let ptr = NativePtr.ofNativeInt<char> (handle.AddrOfPinnedObject())
+            let count = getIter(i).Read(NativePtr.add ptr (i%2), min n N)
+            handle.Free()
+            count |> Equal 0
+            new string(cs) |> Equal dollarString
+        #endif
 
     for i = 0 to N do
         for n = 0 to N + 15 - i do
