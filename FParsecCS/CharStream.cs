@@ -1349,7 +1349,11 @@ public unsafe sealed class CharStream : IDisposable {
                 throw new ArgumentOutOfRangeException("charsIndex", "charsIndex is negative.");
             if (length > chars.Length - charsIndex) // throws if chars is null
                 throw new ArgumentOutOfRangeException("length", "Length is out of range.");
-            fixed (char* pChars = chars) return Match(pChars + charsIndex, length); // checks length >= 0
+            if (length <= 0) {
+                if (length == 0) return true; // pinning an empty array is "implementation-defined" C#
+                throw new ArgumentOutOfRangeException("length", "Length is negative.");
+            }
+            fixed (char* pChars = chars) return Match(pChars + charsIndex, length);
         }
 
         /// <summary>Returns true if the length chars at the pointer address match the chars
@@ -1676,11 +1680,15 @@ public unsafe sealed class CharStream : IDisposable {
         public int Read(char[] buffer, int bufferIndex, int length) {
             if (bufferIndex < 0)
                 throw new ArgumentOutOfRangeException("bufferIndex", "bufferIndex is negative.");
-            if (length > buffer.Length - bufferIndex)
+            if (length > buffer.Length - bufferIndex) // throws if buffer is null
                 throw new ArgumentOutOfRangeException("length", "Length is out of range.");
+            if (length <= 0) {
+                if (length == 0) return 0; // pinning an empty array is "implementation-defined" C#
+                throw new ArgumentOutOfRangeException("length", "Length is negative.");
+            }
 
             fixed (char* pBuffer = buffer)
-            return Read(pBuffer + bufferIndex, length); // will check length >= 0
+            return Read(pBuffer + bufferIndex, length);
         }
 
         /// <summary>Copies the length stream chars beginning with the char pointed to by the Iterator into the buffer at the given pointer address.

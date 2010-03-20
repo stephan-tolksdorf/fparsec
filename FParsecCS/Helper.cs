@@ -272,7 +272,7 @@ public sealed class CharSet {
     #if LOW_TRUST
         var notInTable = nCharsNotInTable > 0 ? new char[nCharsNotInTable] : null;
     #else
-        charsNotInTable = nCharsNotInTable > 0 ? new string('\u0000', nCharsNotInTable) : null;
+        charsNotInTable = nCharsNotInTable > 0 ? new string('\u0000', nCharsNotInTable) : "";
         fixed (char* notInTable = charsNotInTable) {
     #endif
             prevChar = chars[0] != 'x' ? 'x' : 'y';
