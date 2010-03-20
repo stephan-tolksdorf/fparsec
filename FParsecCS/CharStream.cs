@@ -1579,7 +1579,7 @@ public unsafe sealed class CharStream : IDisposable {
 
             public override bool Equals(object obj) { return (obj is TwoChars) && chars == ((TwoChars) obj).chars; }
             public bool Equals(TwoChars other) { return chars == other.chars; }
-            public override int GetHashCode()  { return (int)chars; }
+            public override int GetHashCode()  { return unchecked((int)chars); }
             public static bool operator==(TwoChars left, TwoChars right) { return left.chars == right.chars; }
             public static bool operator!=(TwoChars left, TwoChars right) { return left.chars != right.chars; }
         }
