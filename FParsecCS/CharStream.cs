@@ -1298,9 +1298,7 @@ public unsafe sealed class CharStream : IDisposable {
         /// <exception cref="DecoderFallbackException">The input stream contains invalid bytes for which the decoder fallback threw this exception.</exception>
         public bool MatchCaseFolded(string caseFoldedChars) {
             Anchor* anchor = Anchor;
-            if (Block == anchor->Block && (uint)caseFoldedChars.Length <= PositiveDistance(Ptr, anchor->BufferEnd)
-                && CaseFoldTable.FoldedChars != null)
-            {
+            if (Block == anchor->Block && (uint)caseFoldedChars.Length <= PositiveDistance(Ptr, anchor->BufferEnd)) {
                 for (int i = 0; i < caseFoldedChars.Length; ++i)
                     if (CaseFoldTable.FoldedChars[Ptr[i]] != caseFoldedChars[i]) goto ReturnFalse;
                 return true;
@@ -1399,9 +1397,7 @@ public unsafe sealed class CharStream : IDisposable {
         /// <exception cref="ArgumentException">The input stream contains invalid bytes and the encoding was constructed with the throwOnInvalidBytes option.</exception>
         /// <exception cref="DecoderFallbackException">The input stream contains invalid bytes for which the decoder fallback threw this exception.</exception>
         public bool MatchCaseFolded(char* caseFoldedChars, int length) {
-            if (Block == Anchor->Block && unchecked((uint)length) <= PositiveDistance(Ptr, Anchor->BufferEnd)
-                && CaseFoldTable.FoldedChars != null)
-            {
+            if (Block == Anchor->Block && unchecked((uint)length) <= PositiveDistance(Ptr, Anchor->BufferEnd)) {
                 for (int i = 0; i < length; ++i) {
                     if (CaseFoldTable.FoldedChars[Ptr[i]] != caseFoldedChars[i]) goto ReturnFalse;
                 }
