@@ -47,9 +47,9 @@ let testRemove (opp: OperatorPrecedenceParser<_,_>) (op: PrecedenceParserOp<_,_>
     | TernaryOp (str,_,str2,_, _,_,_)
     | TernaryOp' (str,_,str2,_,_,_,_) -> opp.RemoveTernaryOp(str, str2) |> True
 
-let testRemoveSeq opp ops =
+let testRemoveSeq rand opp ops =
     let ops = Seq.toArray ops
-    shuffleArray ops
+    shuffleArray rand ops
     for op in ops do
         testRemove opp op
 
@@ -226,7 +226,8 @@ let testOpParser() =
     testTernary2ndOpParser (ws |> withMsg "e")
     testTernary2ndOpParser (ws1 |> withMsg "e")
 
-    testRemoveSeq opp opp.Operators
+    let rand = new System.Random(1234)
+    testRemoveSeq rand opp opp.Operators
 
 let testAlternativeOpConstructors() =
     let opp = new OperatorPrecedenceParser<_,_>()
@@ -251,7 +252,8 @@ let testAlternativeOpConstructors() =
 
     checkParserStr expr expr2 "12 * 3++ ? 4 : -5"
 
-    testRemoveSeq opp opp.Operators
+    let rand = new System.Random(546433)
+    testRemoveSeq rand opp opp.Operators
 
 
 let testPrecAndAssoc() =
@@ -490,8 +492,8 @@ let testPrecAndAssoc() =
 
     expr |> ROk "1 po1n po2n" (Po2(Po1(Val(1))))
 
-    testRemoveSeq opp opp.Operators
-
+    let rand = new System.Random(6975)
+    testRemoveSeq rand opp opp.Operators
 
 let run() =
     testOpParser()

@@ -35,6 +35,9 @@
     <Compile Include="..\..\Test\Test.fs">
       <Link>Test.fs</Link>
     </Compile>
+    <Compile Include="..\..\Test\CloningTests.fs">
+      <Link>CloningTests.fs</Link>
+    </Compile>
     <Compile Include="..\..\Test\CharStreamTests.fs">
       <Link>CharStreamTests.fs</Link>
     </Compile>
@@ -61,6 +64,7 @@
     <Reference Include="FSharp.Core" />
     <Reference Include="mscorlib" />
     <Reference Include="System" />
+    <Reference Include="System.Core" />
     <ProjectReference Include="FParsecCS.csproj">
       <Name>FParsecCS</Name>
       <Project>{501423c3-8ea5-4e54-8d9c-ef60272b57fa}</Project>

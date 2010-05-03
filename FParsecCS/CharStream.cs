@@ -14,6 +14,7 @@ using System.Runtime.Serialization;
 using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 
+using FParsec.Cloning;
 
 namespace FParsec {
 /// <summary>Provides access to the char content of a binary Stream (or a String) through
@@ -59,14 +60,20 @@ public unsafe sealed class CharStream : IDisposable {
         /// <summary>chars after the overlap with the previous block that were already read together with the overlap chars</summary>
         public string OverhangCharsAfterOverlap;
 
-        public DecoderState DecoderStateAtBlockBegin;
-        public DecoderState DecoderStateAfterOverlap;
+        // Unfortunately the Decoder API has no explicit methods for managing the state,
+        // which forces us to use the comparatively inefficient serialization API
+        // (via FParsec.Cloning) for this purpose.
+        // The absence of explicit state management or at least a cloning method in the
+        // Decoder interface is almost as puzzling to me as the absence of such methods
+        // in System.Random.
 
+        public CloneImage DecoderImageAtBlockBegin;
+        public CloneImage DecoderImageAfterOverlap;
 
         public BlockInfo(long byteIndex, int byteBufferIndex,
                          int nBytesInOverlapCount, char lastCharInOverlap,
-                         string overhangCharsAtBlockBegin, DecoderState decoderStateAtBlockBegin,
-                         string overhangCharsAfterOverlap, DecoderState decoderStateAfterOverlap)
+                         string overhangCharsAtBlockBegin, CloneImage decoderImageAtBlockBegin,
+                         string overhangCharsAfterOverlap, CloneImage decoderImageAfterOverlap)
         {
             this.ByteIndex = byteIndex;
             this.ByteBufferIndex = byteBufferIndex;
@@ -74,52 +81,8 @@ public unsafe sealed class CharStream : IDisposable {
             this.LastCharInOverlap = lastCharInOverlap;
             this.OverhangCharsAtBlockBegin = overhangCharsAtBlockBegin;
             this.OverhangCharsAfterOverlap = overhangCharsAfterOverlap;
-            this.DecoderStateAtBlockBegin = decoderStateAtBlockBegin;
-            this.DecoderStateAfterOverlap = decoderStateAfterOverlap;
-        }
-    }
-
-    // Unfortunately the Decoder API has no explicit methods for managing the state,
-    // which forces us to abuse the comparatively inefficient serialization API for this purpose.
-    // (The absence of explicit state management or at least a deep cloning method in the Decoder interface
-    // is almost as puzzling as the absence of such methods in System.Random).
-
-    private static Dictionary<Type, MemberInfo[]> SerializableMemberInfoCache;
-
-    private static MemberInfo[] GetSerializableDecoderMemberInfo(Decoder decoder) {
-        Type type = decoder.GetType();
-        if (!type.IsSerializable) return null;
-        MemberInfo[] smis;
-        if (SerializableMemberInfoCache == null) {
-            SerializableMemberInfoCache = new Dictionary<Type,MemberInfo[]>(8);
-        }
-        lock (SerializableMemberInfoCache) {
-            if (!SerializableMemberInfoCache.TryGetValue(type, out smis) ) {
-                smis = FormatterServices.GetSerializableMembers(type, new StreamingContext(StreamingContextStates.Clone));
-                SerializableMemberInfoCache.Add(type, smis);
-            }
-        }
-        return smis;
-    }
-
-    private struct DecoderState {
-        private object[] DecoderData;
-
-        public DecoderState(Decoder decoder, MemberInfo[] serializableDecoderMembers) {
-            DecoderData = serializableDecoderMembers != null
-                          ? FormatterServices.GetObjectData(decoder, serializableDecoderMembers)
-                          : null;
-        }
-
-        public void WriteTo(ref Decoder decoder, MemberInfo[] serializableDecoderMembers) {
-            if (DecoderData != null) {
-                //Decoder newDecoder = (Decoder) FormatterServices.GetUninitializedObject(decoder.GetType());
-                //FormatterServices.PopulateObjectMembers(newDecoder, serializableDecoderMembers, DecoderData);
-                //decoder = newDecoder;
-                FormatterServices.PopulateObjectMembers(decoder, serializableDecoderMembers, DecoderData);
-            } else {
-                decoder.Reset();
-            }
+            this.DecoderImageAtBlockBegin = decoderImageAtBlockBegin;
+            this.DecoderImageAfterOverlap = decoderImageAfterOverlap;
         }
     }
 
@@ -232,7 +195,7 @@ public unsafe sealed class CharStream : IDisposable {
 
         public int MaxCharCountForOneByte;
         public Decoder Decoder;
-        public MemberInfo[] SerializableDecoderMembers;
+        public bool DecoderIsSerializable;
 
         public int BlockSize;
         public int BlockOverlap;
@@ -341,7 +304,7 @@ public unsafe sealed class CharStream : IDisposable {
             if (block > anchor->LastBlock) return null;
             int prevBlock = anchor->Block;
             if (block == prevBlock) throw new InvalidOperationException();
-            if (SerializableDecoderMembers == null && block > 0) {
+            if (!DecoderIsSerializable && block > 0) {
                 if (prevBlock > block)
                     throw new NotSupportedException("The CharStream does not support seeking backwards over ranges longer than the block overlap because the Encoding's Decoder is not serializable.");
                 while (prevBlock + 1 < block) ReadBlock(++prevBlock);
@@ -364,7 +327,10 @@ public unsafe sealed class CharStream : IDisposable {
                 // now that there was no exception, we can change the state...
                 StreamPosition = bi.ByteIndex;
                 ClearAndRefillByteBuffer(bi.ByteBufferIndex);
-                bi.DecoderStateAtBlockBegin.WriteTo(ref Decoder, SerializableDecoderMembers); // will reset Decoder if block == 0
+                if (block != 0)
+                    Decoder = (Decoder)bi.DecoderImageAtBlockBegin.CreateClone();
+                else
+                    Decoder.Reset();
                 if (prevBlock == block + 1) {
                     // move the overlap into [BlockSize - BlockOverlap, BlockSize - 1] before it gets overwritten
                     MemMove(bufferBegin + blockSizeMinusOverlap, bufferBegin, BlockOverlap*2);
@@ -408,9 +374,15 @@ public unsafe sealed class CharStream : IDisposable {
             long byteIndexAtNextBlockBegin = ByteIndex;
             int byteBufferIndexAtNextBlockBegin = ByteBufferIndex;
 
+
             // fill [BlockSize-BlockOverlap ... BlockSize-1]
             if (block == Blocks.Count - 1) { // next block hasn't yet been read
-                DecoderState decoderStateAtNextBlockBegin = new DecoderState(Decoder, SerializableDecoderMembers);
+                Cloner cloner = null;
+                CloneImage decoderImageAtNextBlockBegin = null;
+                if (DecoderIsSerializable) {
+                    cloner = Cloner.Create(Decoder.GetType());
+                    decoderImageAtNextBlockBegin = cloner.CaptureImage(Decoder);
+                }
                 nCharsToRead = BlockOverlap;
                 if (overhangCharsAtNextBlockBegin != null) {
                     nCharsToRead -= overhangCharsAtNextBlockBegin.Length;
@@ -421,12 +393,13 @@ public unsafe sealed class CharStream : IDisposable {
                 buffer = ReadCharsFromStream(buffer, nCharsToRead, out overhangCharsAfterOverlapWithNextBlock);
                 if (anchor->LastBlock == Int32.MaxValue) { // last block hasn't yet been detected
                     if (buffer == bufferBegin + BlockSize) {
-                        DecoderState decoderStateAfterOverlapWithNextBlock = new DecoderState(Decoder, SerializableDecoderMembers);
+                        var decoderImageAfterOverlapWithNextBlock =
+                            !DecoderIsSerializable ? null : cloner.CaptureImage(Decoder);
                         int nBytesInOverlapWithNextBlock = (int)(ByteIndex - byteIndexAtNextBlockBegin);
                         Blocks.Add(new BlockInfo(byteIndexAtNextBlockBegin, byteBufferIndexAtNextBlockBegin,
                                                  nBytesInOverlapWithNextBlock, *(buffer - 1),
-                                                 overhangCharsAtNextBlockBegin, decoderStateAtNextBlockBegin,
-                                                 overhangCharsAfterOverlapWithNextBlock, decoderStateAfterOverlapWithNextBlock));
+                                                 overhangCharsAtNextBlockBegin, decoderImageAtNextBlockBegin,
+                                                 overhangCharsAfterOverlapWithNextBlock, decoderImageAfterOverlapWithNextBlock));
                     } else { // we reached the end of the stream
                         anchor->LastBlock = block;
                         anchor->EndIndex = anchor->CharIndexOffset + charIndex + (buffer - bufferBegin);
@@ -442,7 +415,7 @@ public unsafe sealed class CharStream : IDisposable {
                     || overhangCharsAtNextBlockBegin != nbi.OverhangCharsAtBlockBegin)
                     throw new IOException("CharStream: stream integrity error");
 
-                if (prevBlock != block + 1 || (block == 0 && SerializableDecoderMembers == null)) { // jumping back to block 0 is supported even if the decoder is not serializable
+                if (prevBlock != block + 1 || (block == 0 && !DecoderIsSerializable)) { // jumping back to block 0 is supported even if the decoder is not serializable
                     nCharsToRead = BlockOverlap;
                     if (overhangCharsAtNextBlockBegin != null) {
                         nCharsToRead -= overhangCharsAtNextBlockBegin.Length;
@@ -469,7 +442,7 @@ public unsafe sealed class CharStream : IDisposable {
                     } else {
                         ByteBufferIndex += nbi.NumberOfBytesInOverlap;
                     }
-                    nbi.DecoderStateAfterOverlap.WriteTo(ref Decoder, SerializableDecoderMembers);
+                    Decoder = (Decoder)nbi.DecoderImageAfterOverlap.CreateClone();
                 }
             }
 
@@ -799,11 +772,11 @@ public unsafe sealed class CharStream : IDisposable {
                 d.StreamPosition = streamPosition;
                 d.LeaveOpen = leaveOpen;
                 d.Decoder = decoder;
+                d.DecoderIsSerializable = decoder.GetType().IsSerializable;
                 d.ByteBuffer = byteBuffer;
                 d.ByteBufferIndex = preambleLength;
                 d.ByteBufferCount = byteBufferCount;
                 d.MaxCharCountForOneByte = Math.Max(1, Encoding.GetMaxCharCount(1));
-                d.SerializableDecoderMembers = GetSerializableDecoderMemberInfo(decoder);
                 if (blockSize < 3*d.MaxCharCountForOneByte) blockSize = 3*d.MaxCharCountForOneByte;
                 // MaxCharCountForOneByte == the maximum number of overhang chars
                 if(    Math.Min(blockOverlap, blockSize - 2*blockOverlap) < d.MaxCharCountForOneByte
@@ -826,7 +799,7 @@ public unsafe sealed class CharStream : IDisposable {
                 anchor->CharIndexPlusOffset = 0;
                 d.Blocks = new List<BlockInfo>();
                 // the first block has no overlap with a previous block
-                d.Blocks.Add(new BlockInfo(preambleLength, preambleLength, 0, EOS, null, new DecoderState(), null, new DecoderState()));
+                d.Blocks.Add(new BlockInfo(preambleLength, preambleLength, 0, EOS, null, null, null, null));
                 d.ReadBlock(0);
                 if (anchor->BufferBegin == anchor->BufferEnd) {
                     Debug.Assert(anchor->EndIndex == anchor->CharIndexOffset);

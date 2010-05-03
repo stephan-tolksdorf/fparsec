@@ -1056,7 +1056,7 @@ let xTest() =
     let gb18030 = System.Text.Encoding.GetEncoding(54936, System.Text.EncoderFallback.ExceptionFallback,
                                                           System.Text.DecoderFallback.ExceptionFallback)
 
-    for j = 1 to 100 do
+    for j = 1 to 50 do
         let encoding, bytes, chars =
             match rand.Next()%4 with // 0 = utf8, 1 = utf16, 2-3 = gb18030
             | 0 ->

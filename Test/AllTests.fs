@@ -1,7 +1,9 @@
-﻿// Copyright (c) Stephan Tolksdorf 2007-2009
+﻿// Copyright (c) Stephan Tolksdorf 2007-2010
 // License: Simplified BSD License. See accompanying documentation.
 
 let run() =
+    printfn "Testing FParsec.Cloning ..."
+    FParsec.Test.CloningTests.run()
     printfn "Testing FParsec.CharStream ..."
     FParsec.Test.CharStreamTests.run()
     printfn "Testing FParsec.State<_> ..."

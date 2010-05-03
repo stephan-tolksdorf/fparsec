@@ -14,6 +14,7 @@
     <OldToolsVersion>2.0</OldToolsVersion>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -43,11 +44,13 @@
   <ItemGroup>
     <Reference Include="FSharp.Core" />
     <Reference Include="System" />
+    <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\FParsecCS\CaseFoldTable.cs" />
     <Compile Include="..\..\FParsecCS\CharStream.cs" />
     <Compile Include="..\..\FParsecCS\CharStreamLT.cs" />
+    <Compile Include="..\..\FParsecCS\Cloning.cs" />
     <Compile Include="..\..\FParsecCS\HexFloat.cs" />
     <Compile Include="..\..\FParsecCS\Position.cs" />
     <Compile Include="..\..\FParsecCS\Properties\AssemblyInfo.cs" />

@@ -38,7 +38,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;CLR4</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -50,7 +50,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;CLR4</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -63,11 +63,13 @@
   <ItemGroup>
     <Reference Include="FSharp.Core" />
     <Reference Include="System" />
+    <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\FParsecCS\CaseFoldTable.cs" />
     <Compile Include="..\..\FParsecCS\CharStream.cs" />
     <Compile Include="..\..\FParsecCS\CharStreamLT.cs" />
+    <Compile Include="..\..\FParsecCS\Cloning.cs" />
     <Compile Include="..\..\FParsecCS\HexFloat.cs" />
     <Compile Include="..\..\FParsecCS\Position.cs" />
     <Compile Include="..\..\FParsecCS\Properties\AssemblyInfo.cs" />

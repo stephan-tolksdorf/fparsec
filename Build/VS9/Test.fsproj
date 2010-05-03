@@ -34,6 +34,9 @@
     <Compile Include="..\..\Test\Test.fs">
       <Link>Test.fs</Link>
     </Compile>
+    <Compile Include="..\..\Test\CloningTests.fs">
+      <Link>CloningTests.fs</Link>
+    </Compile>
     <Compile Include="..\..\Test\CharStreamTests.fs">
       <Link>CharStreamTests.fs</Link>
     </Compile>
@@ -58,6 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="FParsecCS.csproj">

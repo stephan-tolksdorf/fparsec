@@ -22,6 +22,11 @@ let Equal a b =
 let NotEqual a b =
     if a = b then Fail ()
 
+let IsNull o =
+    match o with
+    | null -> ()
+    | _    -> Fail()
+
 let ReferenceEqual (a: 't) (b: 't) =
     if not (System.Object.ReferenceEquals(a, b)) then Fail ()
 
@@ -115,11 +120,10 @@ let seqParserAndReset2 ps =
     let p2, p2r = seqParserAndReset ps
     p1, p2, (fun () -> p1r(); p2r())
 
-let private _shuffleArrayRandom = new System.Random(123)
-let shuffleArray (xs: 'a[]) =
+let shuffleArray (rand: System.Random) (xs: 'a[]) =
     let n = xs.Length
     for i = 0 to n - 2 do
-       let r = _shuffleArrayRandom.Next(n - i - 1);
+       let r = rand.Next(n - i - 1);
        let t = xs.[i]
        xs.[i]     <- xs.[i + r]
        xs.[i + r] <- t
