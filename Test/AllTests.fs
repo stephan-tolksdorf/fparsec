@@ -2,8 +2,11 @@
 // License: Simplified BSD License. See accompanying documentation.
 
 let run() =
+#if LOW_TRUST
+#else
     printfn "Testing FParsec.Cloning ..."
     FParsec.Test.CloningTests.run()
+#endif
     printfn "Testing FParsec.CharStream ..."
     FParsec.Test.CharStreamTests.run()
     printfn "Testing FParsec.State<_> ..."

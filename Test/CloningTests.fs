@@ -3,6 +3,8 @@
 
 module FParsec.Test.CloningTests
 
+#if LOW_TRUST
+#else
 open FParsec.Test.Test
 
 open FParsec.Cloning
@@ -1341,3 +1343,4 @@ let run() =
     testCloners()
     testCloning()
 
+#endif
