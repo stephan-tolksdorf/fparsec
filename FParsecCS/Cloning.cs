@@ -1,4 +1,4 @@
-#if !LOW_TRUST
+﻿#if !LOW_TRUST
 
 // Copyright (c) Stephan Tolksdorf 2010
 // License: Simplified BSD License. See accompanying documentation.
