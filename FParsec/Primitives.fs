@@ -19,7 +19,7 @@ let FatalError = ReplyStatus.FatalError
 
 [<System.Diagnostics.DebuggerDisplay("{GetDebuggerDisplay(),nq}")>]
 [<CustomEquality; NoComparison>]
-type Reply<'Result,'UserState> = struct
+type Reply<'TResult,'TUserState> = struct
     new (result, state)        = {State = state; Error = NoErrorMessages; Result = result; Status = Ok}
     new (status, error, state) = {State = state; Error = error; Result = Unchecked.defaultof<_>; Status = status}
     new (status, result, error, state) = {State = state; Error = error; Result = result; Status = status}
@@ -28,16 +28,16 @@ type Reply<'Result,'UserState> = struct
     // We don't use LayoutKind.Auto because it inhibits JIT optimizations:
     // http://blogs.msdn.com/clrcodegeneration/archive/2007/11/02/how-are-value-types-implemented-in-the-32-bit-clr-what-has-been-done-to-improve-their-performance.aspx
 
-    val mutable State:  State<'UserState>
+    val mutable State:  State<'TUserState>
     [<System.Diagnostics.DebuggerDisplay("{FParsec.Error.ErrorMessageList.GetDebuggerDisplay(Error),nq}")>]
     val mutable Error:  ErrorMessageList
-    /// If Status <> Ok then the value of the Result field is undefined and may be equal to Unchecked.defaultof<'Result>.
-    val mutable Result: 'Result
+    /// If Status <> Ok then the value of the Result field is undefined and may be equal to Unchecked.defaultof<'TResult>.
+    val mutable Result: 'TResult
     val mutable Status: ReplyStatus
 
     override t.Equals(value: obj) =
         match value with
-        | :? Reply<'Result,'UserState> as r ->
+        | :? Reply<'TResult,'TUserState> as r ->
                t.Status = r.Status
             && (t.Status <> Ok || LanguagePrimitives.GenericEqualityERComparer.Equals(t.Result, r.Result))
             && t.State = r.State
@@ -51,12 +51,12 @@ type Reply<'Result,'UserState> = struct
     member private t.GetDebuggerDisplay() =
         let pos = if isNull t.State then "null" else t.State.Position.ToString()
         if t.Status = Ok && isNull t.Error then
-            if typeof<'Result> = typeof<unit> then "Reply((), " + pos + ")"
+            if typeof<'TResult> = typeof<unit> then "Reply((), " + pos + ")"
             else sprintf "Reply(%0.5A, %s)" t.Result pos
         else
             let e = FParsec.Error.ErrorMessageList.GetDebuggerDisplay(t.Error)
             if t.Status = Ok then
-                if typeof<'Result> = typeof<unit> then "Reply(Ok, (), " + e + ", " + pos + ")"
+                if typeof<'TResult> = typeof<unit> then "Reply(Ok, (), " + e + ", " + pos + ")"
                 else sprintf "Reply(Ok, %0.5A, %s, %s)" t.Result e pos
             else sprintf "Reply(Error, %s, %s)" e pos
 

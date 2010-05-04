@@ -56,17 +56,17 @@ type ReplyStatus = Ok         =  1
 
 
 [<CustomEquality; NoComparison>]
-type Reply<'Result,'UserState> = struct
-    new: 'Result * State<'UserState> -> Reply<'Result,'UserState>
-    new: ReplyStatus * ErrorMessageList * State<'UserState> -> Reply<'Result,'UserState>
-    new: ReplyStatus * 'Result * ErrorMessageList * State<'UserState> -> Reply<'Result,'UserState>
+type Reply<'TResult,'TUserState> = struct
+    new: 'TResult * State<'TUserState> -> Reply<'TResult,'TUserState>
+    new: ReplyStatus * ErrorMessageList * State<'TUserState> -> Reply<'TResult,'TUserState>
+    new: ReplyStatus * 'TResult * ErrorMessageList * State<'TUserState> -> Reply<'TResult,'TUserState>
 
     // Note: the actual order of the fields in this struct is defined in Primitives.fs
 
     val mutable Status: ReplyStatus
-    /// If Status <> Ok then the value of the Result field is undefined and may be equal to Unchecked.defaultof<'Result>.
-    val mutable Result: 'Result
-    val mutable State:  State<'UserState>
+    /// If Status <> Ok then the value of the Result field is undefined and may be equal to Unchecked.defaultof<'TResult>.
+    val mutable Result: 'TResult
+    val mutable State:  State<'TUserState>
     val mutable Error:  ErrorMessageList
 
     override Equals: obj -> bool
