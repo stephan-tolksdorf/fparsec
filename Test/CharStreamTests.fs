@@ -184,9 +184,15 @@ let testEncodingDetection() =
         cs2.Begin.Read(s.Length) |> Equal s
         use cs3 = new CharStream(new System.IO.MemoryStream(bs, false), false, gb18030, false);
         cs3.Encoding |> ReferenceEqual gb18030
-
+#if SILVERLIGHT
+    try test (System.Text.UTF32Encoding(false, true)); Fail()
+    with :? System.NotSupportedException -> ()
+    try test (System.Text.UTF32Encoding(true, true)); Fail()
+    with :? System.NotSupportedException -> ()
+#else
     test (System.Text.UTF32Encoding(false, true))
     test (System.Text.UTF32Encoding(true, true))
+#endif
     test (System.Text.UnicodeEncoding(false, true))
     test (System.Text.UnicodeEncoding(true, true))
     test (System.Text.UTF8Encoding(true))
@@ -1254,7 +1260,11 @@ let run() =
         use stringStream = new CharStream(" " + refString, 1, refString.Length, 100L)
         testStream stringStream refString refString.Length 0 0
 
+    #if SILVERLIGHT
+        let be = System.Text.Encoding.BigEndianUnicode
+    #else
         let be = new System.Text.UTF32Encoding(true, true)
+    #endif
         let bs = Array.append (be.GetPreamble()) (be.GetBytes(refString))
         use fileStream = createMultiBlockTestStream (new System.IO.MemoryStream(bs, false)) System.Text.Encoding.Unicode
         testStream fileStream refString 8 3 3

@@ -80,7 +80,11 @@ public sealed class CharStream : IDisposable {
     /// <summary>Constructs a CharStream from the file at the given path.<br/>Is equivalent to CharStream(new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.SequentialScan), false, encoding, detectEncodingFromByteOrderMarks, blockSize, blockOverlap, minRegexSpace, byteBufferLength).</summary>
     public CharStream(string path, Encoding encoding, bool detectEncodingFromByteOrderMarks, int byteBufferLength) {
         if (encoding == null) throw new ArgumentNullException("encoding");
-        Stream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.SequentialScan);
+        Stream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096
+                                  #if !SILVERLIGHT
+                                      , FileOptions.SequentialScan
+                                  #endif
+                                      );
         try {
            StreamConstructorContinue(stream, false, encoding, detectEncodingFromByteOrderMarks, byteBufferLength);
         } catch {

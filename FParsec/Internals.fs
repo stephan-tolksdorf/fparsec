@@ -112,7 +112,13 @@ type LineWrapper(tw: System.IO.TextWriter, columnWidth: int, writerIsMultiCharGr
     let mutable afterSpace = false
 
     new (tw: System.IO.TextWriter, columnWidth: int) =
-        new LineWrapper(tw, columnWidth, not tw.Encoding.IsSingleByte)
+        new LineWrapper(tw, columnWidth,
+                                     #if SILVERLIGHT
+                                         true
+                                     #else
+                                         not tw.Encoding.IsSingleByte
+                                     #endif
+                                         )
 
     member t.TextWriter = tw
     member t.ColumnWidth = columnWidth

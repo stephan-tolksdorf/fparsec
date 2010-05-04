@@ -257,17 +257,17 @@ let internal printErrorPosition (lw: LineWrapper) (stream: CharStream) (p: Posit
         let i = sn.Index
         let c = str.[i]
         if System.Char.IsSurrogate(c) then
-            if System.Char.IsHighSurrogate(c) then
-                if i + 1 < str.Length && System.Char.IsLowSurrogate(str.[i + 1]) then
+            if Helper.IsHighSurrogate(c) then
+                if i + 1 < str.Length && Helper.IsLowSurrogate(str.[i + 1]) then
                     msgs.Add(concat3 "The error occurred at the beginning of the surrogate pair " (asciiQuoteString (str.Substring(i, 2))) ".")
                 else
                     msgs.Add(concat3 "The char at the error position ('" (hexEscapeChar c) "') is an isolated high surrogate.")
             else // low surrogate
-                if i > 0 && System.Char.IsHighSurrogate(str.[i - 1]) then
+                if i > 0 && Helper.IsHighSurrogate(str.[i - 1]) then
                     msgs.Add(concat3 "The error occurred at the second char in the surrogate pair " (asciiQuoteString (str.Substring(i - 1, 2))) ".")
                 else
                     msgs.Add(concat3 "The char at the error position ('" (hexEscapeChar c) "') is an isolated low surrogate.")
-        elif i > 0 && System.Char.IsHighSurrogate(str.[i - 1]) then
+        elif i > 0 && Helper.IsHighSurrogate(str.[i - 1]) then
             msgs.Add(concat3 "The char before the error position ('" (hexEscapeChar (str.[i - 1])) "') is an isolated high surrogate.")
     else
         if p.Index = stream.EndIndex then msgs.Add("The error occurred at the end of the input stream.")

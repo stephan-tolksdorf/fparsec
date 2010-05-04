@@ -24,30 +24,57 @@ internal static int DetectPreamble(byte[] buffer, int count, ref Encoding encodi
         switch (buffer[0]) {
         case 0xEF:
             if (buffer[1] == 0xBB && count > 2 && buffer[2] == 0xBF) {
-                if (encoding.CodePage != 65001) encoding = Encoding.UTF8;
+            #if !SILVERLIGHT
+                if (encoding.CodePage != 65001)
+            #else
+                if (encoding.WebName != "utf-8")
+            #endif
+                    encoding = Encoding.UTF8;
                 return 3;
             }
         break;
         case 0xFE:
             if (buffer[1] == 0xFF) {
-                if (encoding.CodePage != 1201) encoding = Encoding.BigEndianUnicode;
+            #if !SILVERLIGHT
+                if (encoding.CodePage != 1201)
+            #else
+                if (encoding.WebName != "utf-16BE")
+            #endif
+                    encoding = Encoding.BigEndianUnicode;
                 return 2;
             }
         break;
         case 0xFF:
             if (buffer[1] == 0xFE) {
                 if (count >= 4 && buffer[2] == 0x00 && buffer[3] == 0x00) {
-                    if (encoding.CodePage != 12000) encoding = Encoding.UTF32; // UTF-32 little endian
+                #if !SILVERLIGHT
+                    if (encoding.CodePage != 12000)
+                        encoding = Encoding.UTF32; // UTF-32 little endian
+                #else
+                    if (encoding.WebName != "utf-32")
+                        throw new NotSupportedException("An UTF-32 input encoding was detected, which is not natively supported under Silverlight.");
+                #endif
                     return 4;
                 } else {
-                    if (encoding.CodePage != 1200) encoding = Encoding.Unicode; // UTF-16 little endian
+                #if !SILVERLIGHT
+                    if (encoding.CodePage != 1200)
+                #else
+                    if (encoding.WebName != "utf-16")
+                #endif
+                        encoding = Encoding.Unicode; // UTF-16 little endian
                     return 2;
                 }
             }
         break;
         case 0x00:
             if (buffer[1] == 0x00 && count >= 4 && buffer[2] == 0xFE && buffer[3] == 0xFF) {
-                if (encoding.CodePage != 12001) encoding = new UTF32Encoding(true, true); // UTF-32 big endian
+            #if !SILVERLIGHT
+                if (encoding.CodePage != 12001)
+                    encoding = new UTF32Encoding(true, true); // UTF-32 big endian
+            #else
+                if (encoding.WebName != "utf-32BE")
+                    throw new NotSupportedException("An UTF-32 (big endian) input encoding was detected, which is not natively supported under Silverlight.");
+            #endif
                 return 4;
             }
         break;
@@ -410,6 +437,12 @@ internal class UTF8EncodingWithNonSerializableDecoder : System.Text.UTF8Encoding
 }
 
 #endif
+
+// Apparently System.Char.Is(High|Low)Surrogate is not safe for consumption by Silverlight developers
+
+public static bool IsSurrogate(char ch)     { return (ch & 0xF800) == 0xD800; }
+public static bool IsHighSurrogate(char ch) { return (ch & 0xFC00) == 0xD800; }
+public static bool IsLowSurrogate(char ch)  { return (ch & 0xFC00) == 0xDC00; }
 
 } // class Helper
 
