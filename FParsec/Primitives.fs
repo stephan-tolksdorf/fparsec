@@ -58,7 +58,12 @@ type Reply<'TResult,'TUserState> = struct
             if t.Status = Ok then
                 if typeof<'TResult> = typeof<unit> then "Reply(Ok, (), " + e + ", " + pos + ")"
                 else sprintf "Reply(Ok, %0.5A, %s, %s)" t.Result e pos
-            else sprintf "Reply(Error, %s, %s)" e pos
+            else
+               let status = match t.Status with
+                            | Error -> "Error"
+                            | FatalError -> "FatalError"
+                            | _ -> "(ReplyStatus)" + (int t.Status).ToString()                           
+               sprintf "Reply(%s, %s, %s)" status e pos
 
 end
 
