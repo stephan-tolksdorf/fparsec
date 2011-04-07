@@ -388,13 +388,11 @@ let (>>=?) (p: Parser<'a,'u>) (f: 'a -> Parser<'b,'u>) =
             let mutable reply2 = optF.Invoke(reply1.Result, reply1.State)
             if reply2.State == reply1.State then
                 let error = mergeErrors reply1.Error reply2.Error
-                if reply2.Status = Ok then reply2.Error <- error
+                if reply2.Status <> Error || reply1.State == state then
+                    reply2.Error <- error
                 else
-                    if reply1.State == state then reply2.Error <- error
-                    else
-                        reply2.Error <- backtrackError reply2.State error
-                        reply2.State <- state
-                    reply2.Status <- Error // turns FatalErrors into Error
+                    reply2.Error <- backtrackError reply2.State error
+                    reply2.State <- state
             reply2
         else
             Reply(reply1.Status, reply1.Error, reply1.State)
@@ -406,13 +404,11 @@ let (>>?) (p: Parser<'a,'u>) (q: Parser<'b,'u>) =
             let mutable reply2 = q reply1.State
             if reply2.State == reply1.State then
                 let error = mergeErrors reply1.Error reply2.Error
-                if reply2.Status = Ok then reply2.Error <- error
+                if reply2.Status <> Error || reply1.State == state then
+                    reply2.Error <- error
                 else
-                    if reply1.State == state then reply2.Error <- error
-                    else
-                        reply2.Error <- backtrackError reply2.State error
-                        reply2.State <- state
-                    reply2.Status <- Error // turns FatalErrors into Errors
+                    reply2.Error <- backtrackError reply2.State error
+                    reply2.State <- state
             reply2
         else
             Reply(reply1.Status, reply1.Error, reply1.State)
@@ -422,19 +418,19 @@ let (.>>?) (p: Parser<'a,'u>) (q: Parser<'b,'u>) =
         let mutable reply1 = p state
         if reply1.Status = Ok then
             let reply2 = q reply1.State
-            if reply2.State == reply1.State then
-                let error = mergeErrors reply1.Error reply2.Error
-                if reply2.Status = Ok then reply1.Error <- error
-                else
-                    if reply1.State == state then reply1.Error <- error
-                    else
-                        reply1.Error <- backtrackError reply1.State error
-                        reply1.State <- state
-                    reply1.Status <- Error // turns FatalErrors into Errors
-            else
+            if reply2.State != reply1.State then
                 reply1.State  <- reply2.State
                 reply1.Error  <- reply2.Error
                 reply1.Status <- reply2.Status
+            else
+                let error = mergeErrors reply1.Error reply2.Error
+                if reply2.Status <> Error || reply1.State == state then
+                    reply1.Error  <- error
+                    reply1.Status <- reply2.Status
+                else
+                    reply1.Error  <- backtrackError reply1.State error
+                    reply1.State  <- state
+                    reply1.Status <- Error
         reply1
 
 

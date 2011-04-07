@@ -139,7 +139,7 @@ module Reference =
                 if reply2.State <> reply1.State then reply2
                 else
                     let error = mergeErrors reply1.Error reply2.Error
-                    if reply2.Status = Ok then reply2.WithError(error)
+                    if reply2.Status <> Error then reply2.WithError(error)
                     else backtrack reply2.State error state
             else reconstructErrorReply reply1
 
