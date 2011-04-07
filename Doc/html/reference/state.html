@@ -757,13 +757,12 @@
        </div>
        <div class="interface-member-description">
         <p class="para _1">
-         Skips over a space (<code class="fsharp"><span class="cc"><span class="left-delimiter">'</span> <span
-         class="right-delimiter">'</span></span></code>), a tab (<code class="fsharp"><span class="cc"><span class="left-delimiter">'</span><span
-         class="ce">\t</span><span class="right-delimiter">'</span></span></code>) or a newline (<code class="fsharp"><span class="cs"><span
-         class="left-delimiter">"</span><span class="ce">\n</span><span class="right-delimiter">"</span></span></code>, <code class="fsharp"><span
-         class="cs"><span class="left-delimiter">"</span><span class="ce">\r</span><span class="ce">\n</span><span
-         class="right-delimiter">"</span></span></code> or <code class="fsharp"><span class="cs"><span class="left-delimiter">"</span><span
-         class="ce">\r</span><span class="right-delimiter">"</span></span></code>). Returns a new <code class="fsharp"><span
+         Skips over any sequence of space (<code class="fsharp"><span class="cc"><span class="left-delimiter">'</span> <span
+         class="right-delimiter">'</span></span></code>), tab (<code class="fsharp"><span class="cc"><span class="left-delimiter">'</span><span
+         class="ce">\t</span><span class="right-delimiter">'</span></span></code>) or newline (<code class="fsharp"><span class="cc"><span
+         class="left-delimiter">'</span><span class="ce">\r</span><span class="right-delimiter">'</span></span></code>, <code class="fsharp"><span
+         class="cc"><span class="left-delimiter">'</span><span class="ce">\n</span><span class="right-delimiter">'</span></span></code>) chars.
+         Returns a new <code class="fsharp"><span
          class="ci">State</span></code> positioned after the whitespace, or the old <code class="fsharp"><span class="ci">State</span></code> (<code
          class="fsharp"><span class="ci">this</span></code>) if there is no whitespace.
         </p>
