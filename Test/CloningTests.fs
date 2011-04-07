@@ -1,4 +1,4 @@
-﻿// Copyright (c) Stephan Tolksdorf 2010
+﻿// Copyright (c) Stephan Tolksdorf 2010-2011
 // License: Simplified BSD License. See accompanying documentation.
 
 module FParsec.Test.CloningTests
@@ -35,6 +35,9 @@ type KeyValuePair<'k,'v> = System.Collections.Generic.KeyValuePair<'k,'v>
 [<AllowNullLiteral>]
 type TestState(objectIndices: int[]) =
     inherit Cloner.State(null, objectIndices)
+
+    override t.Type =
+        raise (System.NotImplementedException())
 
     override t.CreateUninitializedObject() =
         raise (System.NotImplementedException())
@@ -840,12 +843,28 @@ type CustomSerializationTestClass<'t> private (id: int, value: 't, isConstructed
 type CustomSerializationTestClassProxyProxy<'t>(id: int, value: 't) =
     interface IObjectReference with
         member t.GetRealObject(context) =
-            box (CustomSerializationTestClass(id, value))
+            box (CustomSerializationTestClassWithProxy(id, value))
 
-type CustomSerializationTestClassProxy<'t>(id: int, value: 't) =
+and CustomSerializationTestClassProxy<'t>(id: int, value: 't) =
     private new (info: SerializationInfo, context: StreamingContext) =
         CustomSerializationTestClassProxy(info.GetValue("id", typeof<int>) :?> int,
                                           info.GetValue("value", typeof<'t>) :?> 't)
+
+    [<DefaultValue; System.NonSerialized>]
+    val mutable OnDeserializingWasCalled: bool
+    [<DefaultValue; System.NonSerialized>]
+    val mutable DeserializationCallbackWasCalled: bool
+
+    [<OnDeserializing>]
+    member private t.OnDeserializing(context: StreamingContext) =
+        t.OnDeserializingWasCalled |> False
+        t.OnDeserializingWasCalled <- true
+
+    interface IDeserializationCallback with
+        member t.OnDeserialization(sender) =
+            t.OnDeserializingWasCalled |> True
+            t.DeserializationCallbackWasCalled |> False
+            t.DeserializationCallbackWasCalled <- true
 
     interface ISerializable with
         member t.GetObjectData(info, context) =
@@ -853,18 +872,74 @@ type CustomSerializationTestClassProxy<'t>(id: int, value: 't) =
 
     interface IObjectReference with
         member t.GetRealObject(context) =
+            t.OnDeserializingWasCalled |> True
+            t.DeserializationCallbackWasCalled |> False
             box (CustomSerializationTestClassProxyProxy(id, value))
 
-type CustomSerializationTestClassProxy2<'t> = struct
+and CustomSerializationTestClassProxyWithOnDeserialized<'t>(id: int, value: 't) =
+    [<DefaultValue; System.NonSerialized>]
+    val mutable OnDeserializingWasCalled: bool
+    [<DefaultValue; System.NonSerialized>]
+    val mutable OnDeserializedWasCalled: bool
+    [<DefaultValue; System.NonSerialized>]
+    val mutable DeserializationCallbackWasCalled: bool
+
+    [<OnDeserializing>]
+    member private t.OnDeserializing(context: StreamingContext) =
+        t.OnDeserializingWasCalled |> False
+        t.OnDeserializingWasCalled <- true
+
+    [<OnDeserialized>]
+    member private t.OnDeserialized(context: StreamingContext) =
+        t.OnDeserializingWasCalled |> True
+        t.OnDeserializedWasCalled |> False
+        t.OnDeserializedWasCalled <- true
+
+    interface IDeserializationCallback with
+        member t.OnDeserialization(sender) =
+            t.OnDeserializedWasCalled |> True
+            t.DeserializationCallbackWasCalled |> False
+            t.DeserializationCallbackWasCalled <- true
+
+    interface IObjectReference with
+        member t.GetRealObject(context) =
+            t.OnDeserializedWasCalled |> True
+            t.DeserializationCallbackWasCalled |> False
+            box (CustomSerializationTestClassProxyProxy(id, value))
+
+and CustomSerializationTestClassProxy2<'t> = struct
     val mutable id: int
     val mutable value: 't
+
+    member t.Id    with get() = t.id and set v = t.id <- v
+    member t.Value with get() = t.value and set v = t.value <- v
 
     interface IObjectReference with
         member t.GetRealObject(context) =
             box (CustomSerializationTestClassProxyProxy(t.id, t.value))
 end
 
-type CustomSerializationTestClassWithProxy<'t>(id_, value_) =
+and CustomSerializationTestClassWithProxy12<'t>(id_, value_) =
+    inherit CustomSerializationTestClass<'t>(id_, value_)
+
+    [<DefaultValue>]
+    static val mutable private ProxyCounter: int
+
+    interface ISerializable with
+        override t.GetObjectData(info, context) =
+            info.AddValue("id", t.Id)
+            info.AddValue("value", t.Value)
+            info.AddValue("unused", "data")
+            let c = CustomSerializationTestClassWithProxy12<'t>.ProxyCounter
+            CustomSerializationTestClassWithProxy12<'t>.ProxyCounter <- c + 1
+            if c%3 <> 0 then
+                info.FullTypeName <- typeof<CustomSerializationTestClassProxy<'t>>.FullName
+                info.AssemblyName <- typeof<CustomSerializationTestClassProxy<'t>>.Assembly.FullName
+            else
+                info.FullTypeName <- typeof<CustomSerializationTestClassProxy2<'t>>.FullName
+                info.AssemblyName <- typeof<CustomSerializationTestClassProxy2<'t>>.Assembly.FullName
+
+and CustomSerializationTestClassWithProxy<'t>(id_, value_) =
     inherit CustomSerializationTestClass<'t>(id_, value_)
 
     [<DefaultValue>]
@@ -877,12 +952,9 @@ type CustomSerializationTestClassWithProxy<'t>(id_, value_) =
             info.AddValue("unused", "data")
             let c = CustomSerializationTestClassWithProxy<'t>.ProxyCounter
             CustomSerializationTestClassWithProxy<'t>.ProxyCounter <- c + 1
-            if c%3 <> 0 then
-                info.FullTypeName <- typeof<CustomSerializationTestClassProxy<'t>>.FullName
-                info.AssemblyName <- typeof<CustomSerializationTestClassProxy<'t>>.Assembly.FullName
-            else
-                info.FullTypeName <- typeof<CustomSerializationTestClassProxy2<'t>>.FullName
-                info.AssemblyName <- typeof<CustomSerializationTestClassProxy2<'t>>.Assembly.FullName
+            info.FullTypeName <- typeof<CustomSerializationTestClassProxy<'t>>.FullName
+            info.AssemblyName <- typeof<CustomSerializationTestClassProxy<'t>>.Assembly.FullName
+
 
 type CustomSerializationTestClassWithSimpleProxyBase() = class end
 type CustomSerializationTestClassWithSimpleProxy() =
@@ -1161,7 +1233,7 @@ let testCloners() =
             v9 |> Equal v
 
         let () =
-            let v = box (CustomSerializationTestClassWithProxy(1, KeyValuePair("2", 3))) :?> CustomSerializationTestClass<KeyValuePair<string,int>>
+            let v = box (CustomSerializationTestClassWithProxy12(1, KeyValuePair("2", 3))) :?> CustomSerializationTestClass<KeyValuePair<string,int>>
             let cloner = Cloner.Create(v.GetType())
             let v2 = cloner.Clone(v) :?> _
             v2 |> Equal v
@@ -1175,7 +1247,7 @@ let testCloners() =
             v4 |> Equal v
 
         let () =
-            let v = box (CustomSerializationTestClassWithProxy(1, Some 2)) :?> CustomSerializationTestClass<int option>
+            let v = box (CustomSerializationTestClassWithProxy12(1, Some 2)) :?> CustomSerializationTestClass<int option>
             let cloner = Cloner.Create(v.GetType())
             let v2 = cloner.Clone(v) :?> _
             v2 |> Equal v
@@ -1196,8 +1268,8 @@ let testCloners() =
             v2.GetType() |> Equal (typeof<CustomSerializationTestClassWithSimpleProxyBase>)
 
         let () =
-            let v1 = CustomSerializationTestClassWithProxy<obj>(1, null)
-            let v2 = CustomSerializationTestClassWithProxy<obj>(2, null)
+            let v1 = CustomSerializationTestClassWithProxy12<obj>(1, null)
+            let v2 = CustomSerializationTestClassWithProxy12<obj>(2, null)
             v1.Value <- v2
             Cloner.Create(v1.GetType()).Clone(v1) |> Equal (box v1)
             v1.OnSerializingWasCalled <- false; v1.OnSerializedWasCalled <- false
@@ -1210,6 +1282,35 @@ let testCloners() =
             v1.Value <- v2 // creates object graph cycle involving IObjectReferences
             try
                 Cloner.Create(v2.GetType()).Clone(v2) |> ignore
+                Fail()
+            with :? SerializationException -> ()
+
+        let () =
+            let v1 = NativeSerializationTestClass<KeyValuePair<obj,obj>>(1, KeyValuePair())
+            let v2 = CustomSerializationTestClassWithProxy(2, v1)
+            v1.Value <- KeyValuePair<obj,obj>(null, v2)
+            try
+                Cloner.Create(v1.GetType()).Clone(v1) |> ignore
+                Fail()
+            with :? SerializationException -> ()
+
+        let () =
+            let v1 = NativeSerializationTestClass<obj>(1, null)
+            let v2 = CustomSerializationTestClassProxyWithOnDeserialized<obj>(2, v1)
+            v1.Value <- v2
+            try
+                Cloner.Create(v1.GetType()).Clone(v1) |> ignore
+                Fail()
+            with :? SerializationException -> ()
+
+        let () =
+            let v1 = NativeSerializationTestClass<obj>(1, null)
+            let mutable v2 = CustomSerializationTestClassProxy2<obj>()
+            v2.Id <- 2
+            v2.Value <- v1
+            v1.Value <- v2
+            try
+                Cloner.Create(v1.GetType()).Clone(v1) |> ignore
                 Fail()
             with :? SerializationException -> ()
 
@@ -1288,6 +1389,26 @@ let testCloning() =
         o2.OnDeserializingWasCalled |> False
 
     let () =
+        // cycle 1
+        let o6_2 = NativeSerializationTestClass<obj>(6, null)
+        let o5_2 = NativeSerializationTestClass<obj>(5, o6_2)
+        let o4_2 = CustomSerializationTestClassWithProxy<obj>(4, o5_2)
+        o6_2.Value <- o4_2
+
+        // cycle 2
+        let o3_1 = NativeSerializationTestClass2<obj,obj>(3, null, o4_2)
+        let o2_1 = NativeSerializationTestClass<obj>(2, o3_1)
+        let o1_1 = CustomSerializationTestClassWithProxy<obj>(1, o2_1)
+        o3_1.Value <- o1_1
+
+        onDeserializedList <- []
+        let cloner = Cloner.Create(o1_1.GetType())
+        let o = cloner.Clone(o1_1) :?> CustomSerializationTestClassWithProxy<obj>
+        o |> Equal o1_1
+        onDeserializedList |> Equal [2;3;5;6] // the order within the strongly connected components
+                                              // is implementation defined
+
+    let () =
         let o8 = CustomSerializationTestClassWithProxy<obj>(8, Some(2))
         let o7 = CustomSerializationTestClassWithProxy<obj>(7, Some(1))
 
@@ -1313,23 +1434,44 @@ let testCloning() =
         onDeserializedList |> Equal [0;1;2;3;5;6;4] // the order within the strongly connected components
                                                     // is implementation defined
 
-        o0.OnSerializingWasCalled   <- false; o0.OnSerializedWasCalled <- false
-        o1_1.OnSerializingWasCalled <- false; o1_1.OnSerializedWasCalled <- false
-        o2_1.OnSerializingWasCalled <- false; o2_1.OnSerializedWasCalled <- false
-        o3_1.OnSerializingWasCalled <- false; o3_1.OnSerializedWasCalled <- false
-        o4_2.OnSerializingWasCalled <- false; o4_2.OnSerializedWasCalled <- false
-        o5_2.OnSerializingWasCalled <- false; o5_2.OnSerializedWasCalled <- false
-        o6_2.OnSerializingWasCalled <- false; o6_2.OnSerializedWasCalled <- false
-        o7.OnSerializingWasCalled <- false; o7.OnSerializedWasCalled <- false
-        o8.OnSerializingWasCalled <- false; o8.OnSerializedWasCalled <- false
+        let reset() =
+            onDeserializedList <- []
+            o0.OnSerializingWasCalled   <- false; o0.OnSerializedWasCalled <- false
+            o1_1.OnSerializingWasCalled <- false; o1_1.OnSerializedWasCalled <- false
+            o2_1.OnSerializingWasCalled <- false; o2_1.OnSerializedWasCalled <- false
+            o3_1.OnSerializingWasCalled <- false; o3_1.OnSerializedWasCalled <- false
+            o4_2.OnSerializingWasCalled <- false; o4_2.OnSerializedWasCalled <- false
+            o5_2.OnSerializingWasCalled <- false; o5_2.OnSerializedWasCalled <- false
+            o6_2.OnSerializingWasCalled <- false; o6_2.OnSerializedWasCalled <- false
+            o7.OnSerializingWasCalled <- false; o7.OnSerializedWasCalled <- false
+            o8.OnSerializingWasCalled <- false; o8.OnSerializedWasCalled <- false
 
+        reset()
         let os3 = cloner.Clone(os) :?> obj[]
         os3.[4] |> Equal os.[4]
+        onDeserializedList |> Equal [0;1;2;3;5;6;4]
+
+        reset()
+        let o = Cloner.Create(o1_1.GetType()).Clone(o1_1)
+        onDeserializedList |> Equal [1;2;3;4;5;6]
+        o |> Equal (box o1_1)
 
     try Cloner.Create(typeof<NonSerializableBase>) |> ignore
     with :? System.Runtime.Serialization.SerializationException -> ()
     try Cloner.Create(typeof<string>).Clone(Some "") |> ignore; Fail()
     with :? System.ArgumentException -> ()
+
+let encodingTests() =
+    for e in System.Text.Encoding.GetEncodings() do
+        let encoding = e.GetEncoding()
+        let bs = encoding.GetBytes("test test")
+        let decoder = encoding.GetDecoder()
+        let cs = Array.zeroCreate 20
+        new string(cs, 0, decoder.GetChars(bs, 0, bs.Length, cs, 0)) |> Equal "test test"
+        let cloner = FParsec.Cloning.Cloner.Create(decoder.GetType())
+        let image = cloner.CaptureImage(decoder)
+        let decoder2 = image.CreateClone() :?> System.Text.Decoder
+        new string(cs, 0, decoder2.GetChars(bs, 0, bs.Length, cs, 0)) |> Equal "test test"
 
 
 let run() =
@@ -1342,5 +1484,6 @@ let run() =
     testCreateISerializableConstructorCaller()
     testCloners()
     testCloning()
+    encodingTests()
 
 #endif

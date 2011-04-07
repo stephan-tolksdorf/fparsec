@@ -1,6 +1,6 @@
 ﻿#if !LOW_TRUST
 
-// Copyright (c) Stephan Tolksdorf 2010
+// Copyright (c) Stephan Tolksdorf 2010-2011
 // License: Simplified BSD License. See accompanying documentation.
 
 using System;
@@ -45,7 +45,7 @@ namespace FParsec.Cloning {
 // or IObjectReferenence interfaces. Since the object graph can contain cycles, we
 // first identify strongly connected components using a variant of Tarjan's algorithm.
 // Any OnDeserializing handler, deserialization constructor, OnDeserialized handler or
-// IObjectReference.GetRealObject method (in that sequence) is then invoked in the
+// IObjectReference.GetRealObject method (in that order) is then invoked in the
 // topological order starting with the most dependent objects. Objects in a strongly
 // connected component (with more than 1 object) are processed in the reverse order
 // in which the objects in the component where discovered during a depth-first search
@@ -53,11 +53,17 @@ namespace FParsec.Cloning {
 // deserialization constructors of the objects in the component are invoked. Any
 // OnDeserialized handlers are then invoked in a second pass.
 // OnSerializing handlers are invoked immediately before an object is serialized.
-// OnSerialized handlers are invoked in an undefined order in at the end of the
+// OnSerialized handlers are invoked in an undefined order at the end of the
 // serialization job (not immediately after an object's subgraph has been serialized).
 //
-// In contrast to the .NET BinaryFormatter we do not allow objects implementing
-// IObjectReference in a cycle of the serialized object graph.
+// We only allow an object implementing IObjectReference in a cycle of the serialized
+// object graph under the following conditions (which are more restrictive than
+// what the .NET BinaryFormatter enforces):
+// - There may only be 1 object implementing IObjectReference in a cycle.
+// - The type implementing IObjectReference must not be a value type.
+// - All objects containing references to the IObjectReference object must have reference types.
+// - The type implementing IObjectReference must not have any OnDeserialized handler.
+// - There must not be any other object in the cycle implementing ISerializable.
 //
 // Similar to the .NET BinaryFormatter we delay all IDeserializationCallbacks until
 // the end of the deserialization of the complete object graph (not just the relevant
@@ -80,7 +86,8 @@ namespace FParsec.Cloning {
 // OnDeserializing and OnDeserialized handlers are invoked on a boxed value type instance
 // too, but this time any changes show up in the deserialized object graph, because
 // the boxed instance is copied into the deserialized object graph after the
-// OnDeserialized event. This deviates from the BinaryFormatter behaviour in that
+// OnDeserialized event (at least if the instance is not part of an object cycle).
+// This deviates from the BinaryFormatter behaviour in that
 // the BinaryFormatter seems to copy the boxed instance into the deserialized object
 // graph before the OnDeserialized event. However, since mutating the instance
 // in an OnDeserialized handler has no effect when using the BinaryFormatter,
@@ -164,6 +171,7 @@ public abstract class Cloner {
         /// <summary>May be null.</summary>
         public int[] StronglyConnectedComponent;
 
+        public abstract Type Type { get; }
         public abstract object CreateUninitializedObject();
         public abstract void WriteToUninitializedObject(object instance, object[] objectGraph);
 
@@ -175,6 +183,10 @@ public abstract class Cloner {
         private State() {}
         public static readonly State Dummy = new DummyState();
         private sealed class DummyState : State {
+            public override Type Type { get {
+                throw new NotImplementedException();
+            } }
+
             public override object CreateUninitializedObject() {
                throw new NotImplementedException();
             }
@@ -277,6 +289,14 @@ public abstract class Cloner {
         }
     }
 
+    private static bool Contains(int[] arrayOrNull, int element) {
+        if (arrayOrNull != null) {
+            foreach (var e in arrayOrNull)
+                if (e == element) return true;
+        }
+        return false;
+    }
+
     private CloneImage CaptureImage(object instance, bool imageIsReturnedToUser) {
         if (instance.GetType() != Type)
             throw new ArgumentException("The object instance does not have the run-time type the Cloner was created for.");
@@ -335,9 +355,28 @@ public abstract class Cloner {
 
                 int[] order = ComputeTopologicalOrder(states);
                 if (ObjectReferenceList.Count != 0) {
-                    foreach (var index in ObjectReferenceList) {
-                        if (states[index].StronglyConnectedComponent != null)
-                            throw new SerializationException("The serialized object graph contains a cycle that includes an object implementing IObjectReference.");
+                    foreach (var index1 in ObjectReferenceList) {
+                        var state1 = states[index1];
+                        var scc = state1.StronglyConnectedComponent;
+                        if (scc == null) continue;
+                        var type1 = state1.Type;
+                        if (type1.IsValueType)
+                            throw new SerializationException("The serialized object graph contains a cycle that includes a value type object (type: "+ type1.FullName +") implementing IObjectReference.");
+                        if ((state1.EventHandlers.Events & CloneEvents.OnDeserialized) != 0)
+                            throw new SerializationException("The serialized object graph contains a cycle that includes an object (type: "+ type1.FullName +") implementing IObjectReference and also exposing an OnDeserialized handler.");
+                        foreach (var index2 in scc) {
+                            if (index2 == index1) continue;
+                            var state2 = states[index2];
+                            var type2 = state2.Type;
+                            if (state2.EventHandlers != null && (state2.EventHandlers.Events & (CloneEvents.ISerializable | CloneEvents.IObjectReference)) != 0) {
+                                var msg = String.Format("The serialized object graph contains a cycle that includes an object (type: {0}) implementing IObjectReference and another object (type: {1}) implementing ISerializable and/or IObjectReference .", type1.FullName, type2.FullName);
+                                throw new SerializationException(msg);
+                            }
+                            if (type2.IsValueType && Contains(state2.ObjectIndices, index1)) {
+                                var msg = String.Format("The serialized object graph contains a cycle that includes a value type object (type: {0}) referencing an IObjectReference object (type: {1}) in the same cycle.", type2.FullName, type1.FullName);
+                                throw new SerializationException(msg);
+                            }
+                        }
                     }
                 }
                 return new OrderedImage(states, order, deserializationCallbackCount);
@@ -375,6 +414,8 @@ public abstract class Cloner {
         public BlittableState(CloneEventHandlers eventHandlers, object value) : base(eventHandlers, null) {
             Value = value;
         }
+
+        public override Type Type { get { return Value.GetType(); } }
 
         public override object CreateUninitializedObject() {
             return Cloner.CloneMemberwise(Value);
@@ -425,6 +466,8 @@ public abstract class Cloner {
             ElementType = elementType;
             LowerBound = lowerBound;
         }
+
+        public override Type Type { get { return ElementType.MakeArrayType(); } }
 
         public override object CreateUninitializedObject() {
             if (LowerBound == 0)
@@ -509,6 +552,8 @@ public abstract class Cloner {
             Ends = ends;
         }
 
+        public override Type Type { get { return ElementType.MakeArrayType(Lengths.Length); } }
+
         public override object CreateUninitializedObject() {
             return Array.CreateInstance(ElementType, Lengths, LowerBounds);
         }
@@ -544,7 +589,7 @@ public abstract class Cloner {
         internal override State CaptureShallowStateAndEnqueueNestedState(object instance, CaptureContext captureContext) {
             Debug.Assert(Type == instance.GetType());
             if (SerializedFields.Length == 0)
-                return new NativeSerializatonState(this);
+                return new NativeSerializationState(this);
             var getter = FieldValuesGetter;
             if (getter == null)
                 FieldValuesGetter = getter = CreateFieldValuesGetter(Type, SerializedFields);
@@ -563,27 +608,29 @@ public abstract class Cloner {
                 }
                 objectIndices[i] = captureContext.GetObjectIndex(value, cloner);
             }
-            return new NativeSerializatonState(this, values, objectIndices);
+            return new NativeSerializationState(this, values, objectIndices);
         }
     }
 
-    private sealed class NativeSerializatonState : State {
+    private sealed class NativeSerializationState : State {
         private readonly NativeSerializationCloner Cloner;
         private readonly object[] Values; // maybe null if object has no fields
 
-        public NativeSerializatonState(NativeSerializationCloner cloner)
+        public NativeSerializationState(NativeSerializationCloner cloner)
                : base(cloner.EventHandlers, null)
         {
             Cloner = cloner;
         }
 
-        public NativeSerializatonState(NativeSerializationCloner cloner, object[] values, int[] objectIndices)
+        public NativeSerializationState(NativeSerializationCloner cloner, object[] values, int[] objectIndices)
                : base(cloner.EventHandlers, objectIndices)
         {
             Debug.Assert(cloner != null && values.Length != 0 && values.Length == objectIndices.Length);
             Cloner = cloner;
             Values = values;
         }
+
+        public override Type Type { get { return Cloner.Type; } }
 
         public override object CreateUninitializedObject() {
             return FormatterServices.GetUninitializedObject(Cloner.Type);
@@ -598,30 +645,32 @@ public abstract class Cloner {
         }
     }
 
-    // NativeSerializatonProxyState is used by CustomSerializationCloner to store the state of
+    // NativeSerializationProxyState is used by CustomSerializationCloner to store the state of
     // proxy objects which don't implement ISerializable.
-    private sealed class NativeSerializatonProxyState : State {
-        private readonly Type Type;
+    private sealed class NativeSerializationProxyState : State {
+        private readonly Type Type_;
         private readonly FieldInfo[] Fields;
         private readonly object[] Values;
 
-        public NativeSerializatonProxyState(Type type, CloneEventHandlers eventHandlers)
+        public NativeSerializationProxyState(Type type, CloneEventHandlers eventHandlers)
                : base(eventHandlers, null)
         {
-            Type = type;
+            Type_ = type;
         }
 
-        public NativeSerializatonProxyState(Type type, CloneEventHandlers eventHandlers, FieldInfo[] fields, object[] values, int[] objectIndices)
+        public NativeSerializationProxyState(Type type, CloneEventHandlers eventHandlers, FieldInfo[] fields, object[] values, int[] objectIndices)
                : base(eventHandlers, objectIndices)
         {
             Debug.Assert(fields.Length == values.Length && values.Length == objectIndices.Length);
-            Type = type;
+            Type_ = type;
             Fields = fields;
             Values = values;
         }
 
+        public override Type Type { get { return Type_; } }
+
         public override object CreateUninitializedObject() {
-            return FormatterServices.GetUninitializedObject(Type);
+            return FormatterServices.GetUninitializedObject(Type_);
         }
 
         public override void WriteToUninitializedObject(object instance, object[] objectGraph) {
@@ -713,7 +762,7 @@ public abstract class Cloner {
 
             if (proxyType == Type) {
                 if (Constructor == null) throw new SerializationException("The ISerializable type '" + Type.ToString() + "' does not define a proper deserialization constructor.");
-                return new CustomSerializatonState(this, members, objectIndices);
+                return new CustomSerializationState(this, members, objectIndices);
             }
 
             Cloner proxyCloner;
@@ -732,10 +781,10 @@ public abstract class Cloner {
             CustomSerializationCloner csc = proxyCloner as CustomSerializationCloner;
             if (csc != null) {
                 if (csc.Constructor == null) throw new SerializationException("The ISerializable type '" + csc.Type.ToString() + "' does not define a proper deserialization constructor.");
-                return new CustomSerializatonState(csc, members, objectIndices);
+                return new CustomSerializationState(csc, members, objectIndices);
             }
 
-            if (n == 0) return new NativeSerializatonProxyState(proxyType, proxyCloner.EventHandlers);
+            if (n == 0) return new NativeSerializationProxyState(proxyType, proxyCloner.EventHandlers);
 
             FieldInfo[] proxyFields;
             {
@@ -768,15 +817,15 @@ public abstract class Cloner {
                     }
                 }
             }
-            return new NativeSerializatonProxyState(proxyType, proxyCloner.EventHandlers, proxyFields, proxyValues, proxyObjectIndices);
+            return new NativeSerializationProxyState(proxyType, proxyCloner.EventHandlers, proxyFields, proxyValues, proxyObjectIndices);
         }
     }
 
-    private sealed class CustomSerializatonState : State {
+    private sealed class CustomSerializationState : State {
         private readonly CustomSerializationCloner Cloner;
         private readonly CustomSerializationMemberInfo[] Members;
 
-        public CustomSerializatonState(CustomSerializationCloner cloner,
+        public CustomSerializationState(CustomSerializationCloner cloner,
                                        CustomSerializationMemberInfo[] members,
                                        int[] objectIndices)
                : base(cloner.EventHandlers, objectIndices)
@@ -784,6 +833,8 @@ public abstract class Cloner {
             Cloner = cloner;
             Members = members;
         }
+
+        public override Type Type { get { return Cloner.Type; } }
 
         public override object CreateUninitializedObject() {
             return FormatterServices.GetUninitializedObject(Cloner.Type);
@@ -880,55 +931,76 @@ public abstract class Cloner {
 
         public override object CreateClone() {
             int callbackIndicesIndex = DeserializationCallbackCount;
-            int[] callbackIndices =
-                DeserializationCallbackCount == 0 ? null : new int[DeserializationCallbackCount];
+            object[] callbackObjects =
+                DeserializationCallbackCount == 0 ? null : new object[DeserializationCallbackCount];
             var objects = new object[States.Length];
-            var delayedOnDeserializedEvents = new List<int>();
             for (int i = 1; i < States.Length; ++i)
                 objects[i] = States[i].CreateUninitializedObject();
+            var delayedOnDeserializedEvents = new List<int>();
+            int objectReferenceIndex = 0;
+            object objectReference = null;
             int[] lastScc = null;
             for (int i = Order.Length - 1; i != 0; --i) {
                 var index = Order[i];
                 var state = States[index];
+                var scc = state.StronglyConnectedComponent;
+                if (scc != lastScc) {
+                    lastScc = scc;
+                    if (objectReference != null) {
+                        ReplaceObjectReferenceInSCCWithRealObject(objectReference, objectReferenceIndex, objects);
+                        objectReferenceIndex = 0;
+                        objectReference = null;
+                    }
+                    if (delayedOnDeserializedEvents.Count != 0)
+                        InvokeDelayedOnDeserializedEvents(delayedOnDeserializedEvents, objects); // also clears delayedOnDeserializedEvents
+                    if (scc != null) {
+                        foreach (var idx in scc)  {
+                            var handlers = States[idx].EventHandlers;
+                            if (handlers != null && (handlers.Events & CloneEvents.IObjectReference) != 0) {
+                                objectReferenceIndex = idx;
+                                objectReference = objects[idx];
+                                objects[idx] = null; // set to null until we call ReplaceObjectReferenceInSCCWithRealObject
+                            }
+                        }
+                    }
+                }
                 var instance = objects[index];
                 var eventHandlers = state.EventHandlers;
                 if (eventHandlers == null) {
-                    state.WriteToUninitializedObject(objects[index], objects);
+                    state.WriteToUninitializedObject(instance, objects);
                 } else {
                     var events = eventHandlers.Events;
-                    if ((events & CloneEvents.OnDeserializing) != 0)
-                        eventHandlers.InvokeOnDeserializing(instance, Cloner.StreamingContext);
-                    var scc = state.StronglyConnectedComponent;
-                    if (scc == null) {
-                        if (delayedOnDeserializedEvents.Count != 0)
-                            InvokeDelayedOnDeserializedEvents(delayedOnDeserializedEvents, objects);
+                    if (instance != null) {
+                        if ((events & CloneEvents.OnDeserializing) != 0)
+                            eventHandlers.InvokeOnDeserializing(instance, Cloner.StreamingContext);
                         state.WriteToUninitializedObject(instance, objects);
-                        if ((events & CloneEvents.OnDeserialized) != 0)
-                            eventHandlers.InvokeOnDeserialized(instance, Cloner.StreamingContext);
-                        if ((events & CloneEvents.IObjectReference) != 0)
+                        if ((events & CloneEvents.OnDeserialized) != 0) {
+                            if (scc == null) eventHandlers.InvokeOnDeserialized(instance, Cloner.StreamingContext);
+                            else delayedOnDeserializedEvents.Add(index);
+                        }
+                        if ((events & CloneEvents.IObjectReference) != 0) {
+                            Debug.Assert(state.StronglyConnectedComponent == null);
                             objects[index] = GetRealObject(instance);
+                        }
                     } else {
-                        if ((object)scc != (object)lastScc && delayedOnDeserializedEvents.Count != 0)
-                            InvokeDelayedOnDeserializedEvents(delayedOnDeserializedEvents, objects);
-                        state.WriteToUninitializedObject(objects[index], objects);
-                        if ((events & CloneEvents.OnDeserialized) != 0)
-                            delayedOnDeserializedEvents.Add(index);
-                        Debug.Assert((events & CloneEvents.IObjectReference) == 0);
-                        // we don't allow IObjectReferences in cycles
+                        Debug.Assert(index == objectReferenceIndex);
                     }
                     // It's a pity we have to process the IDeserializationCallback separately
                     // from OnDeserialized events to stay compatible with the .NET BinaryFormatter.
                     if ((events & CloneEvents.IDeserializationCallback) != 0)
-                        callbackIndices[--callbackIndicesIndex] = index;
-                    lastScc = scc;
+                        callbackObjects[--callbackIndicesIndex] = instance ?? objectReference;
                 }
             }
-            if (callbackIndices != null) {
+            if (objectReference != null)
+                ReplaceObjectReferenceInSCCWithRealObject(objectReference, objectReferenceIndex, objects);
+            if (delayedOnDeserializedEvents.Count != 0)
+                InvokeDelayedOnDeserializedEvents(delayedOnDeserializedEvents, objects);
+            if (callbackObjects != null) {
                 Debug.Assert(callbackIndicesIndex == 0);
                 // We call the callback in in the reverse topological order at the end of
                 // deserialization, which is similar to what the BinaryFormatter does, unfortunately.
-                foreach (var index in callbackIndices)
-                    ((IDeserializationCallback)objects[index]).OnDeserialization(null);
+                foreach (var obj in callbackObjects)
+                    ((IDeserializationCallback)obj).OnDeserialization(null);
             }
             return objects[1];
         }
@@ -939,6 +1011,27 @@ public abstract class Cloner {
                 handlers.InvokeOnDeserialized(objects[index], Cloner.StreamingContext);
             }
             indices.Clear();
+        }
+
+        private void ReplaceObjectReferenceInSCCWithRealObject(object objectReference, int objectReferenceIndex, object[] objects) {
+            var state = States[objectReferenceIndex];
+            var eventHandlers = state.EventHandlers;
+            var events = eventHandlers.Events;
+            if ((events & CloneEvents.OnDeserializing) != 0)
+                eventHandlers.InvokeOnDeserializing(objectReference, Cloner.StreamingContext);
+            state.WriteToUninitializedObject(objectReference, objects);
+            Debug.Assert((events & CloneEvents.OnDeserialized) == 0);
+            objects[objectReferenceIndex] = GetRealObject(objectReference);
+            // set all references to real object
+            foreach (var index2 in state.StronglyConnectedComponent) {
+                if (index2 == objectReferenceIndex) continue;
+                var state2 = States[index2];
+                Debug.Assert(state2.EventHandlers == null || (state2.EventHandlers.Events & (CloneEvents.ISerializable | CloneEvents.IObjectReference)) == 0);
+                if (Cloner.Contains(state2.ObjectIndices, objectReferenceIndex)) {
+                    Debug.Assert(!state2.Type.IsValueType);
+                    state2.WriteToUninitializedObject(objects[index2], objects); // overwrite all fields
+                }
+            }
         }
     }
 
@@ -1146,8 +1239,6 @@ public abstract class Cloner {
             if (i + 1 != fields.Length) ilg.Emit(OpCodes.Dup); // ... so we use OpCodes.Dup to keep it around
 
             var field = fields[i];
-            var objectLabel = ilg.DefineLabel();
-            var continueLabel = ilg.DefineLabel();
 
             // is field value an object in the object graph array?
             ilg.Emit(OpCodes.Ldarg_3);
