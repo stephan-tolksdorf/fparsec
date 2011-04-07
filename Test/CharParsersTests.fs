@@ -1014,45 +1014,72 @@ let testFollowedBy() =
     try notFollowedByStringCI "13\r" |> ignore; Fail()
     with :? System.ArgumentException -> ()
 
-    nextCharSatisfies ((=) '2')  |> ROk    "12"  0 ()
-    nextCharSatisfies ((=) '\n') |> ROk    "1\n" 0 ()
-    nextCharSatisfies ((=) '\n') |> ROk    "1\r" 0 ()
-    nextCharSatisfies ((=) '2')  |> RError "11"  0 NoErrorMessages
-    nextCharSatisfies ((=) '2')  |> RError "1"   0 NoErrorMessages
-    nextCharSatisfies ((=) '2')  |> RError ""    0 NoErrorMessages
+    nextCharSatisfies ((=) '2')  |> ROk    "12"     0 ()
+    nextCharSatisfies ((=) '2')  |> ROk    "\r2"    0 ()
+    nextCharSatisfies ((=) '2')  |> ROk    "\r\n2"  0 ()
+    nextCharSatisfies ((=) '2')  |> ROk    "\n2"    0 ()
+    nextCharSatisfies ((=) '\n') |> ROk    "\n\r"   0 ()
+    nextCharSatisfies ((=) '\n') |> ROk    "\r\r"   0 ()
+    nextCharSatisfies ((=) '\n') |> ROk    "\r\n\r" 0 ()
+    nextCharSatisfies ((=) '2')  |> RError ""       0 NoErrorMessages
+    nextCharSatisfies ((=) '2')  |> RError "1"      0 NoErrorMessages
+    nextCharSatisfies ((=) '2')  |> RError "13"     0 NoErrorMessages
+    nextCharSatisfies ((=) '\n') |> RError "\r"     0 NoErrorMessages
+    nextCharSatisfies ((=) '\n') |> RError "\r\n"   0 NoErrorMessages
+    nextCharSatisfies ((=) '\n') |> RError "\n"     0 NoErrorMessages
+    nextCharSatisfies ((=) '\n') |> RError "\n\t"   0 NoErrorMessages
+    nextCharSatisfies ((=) '\n') |> RError "\r\n\t" 0 NoErrorMessages
+    nextCharSatisfies ((=) '\n') |> RError "\r\t"   0 NoErrorMessages
 
-    nextCharSatisfiesNot ((<>) '2')  |> ROk    "12"  0 ()
-    nextCharSatisfiesNot ((<>) '\n') |> ROk    "1\n" 0 ()
-    nextCharSatisfiesNot ((<>) '\n') |> ROk    "1\r" 0 ()
-    nextCharSatisfiesNot ((<>) '2')  |> RError "11"  0 NoErrorMessages
-    nextCharSatisfiesNot ((<>) '2')  |> ROk    "1"   0 ()
-    nextCharSatisfiesNot ((<>) '2')  |> ROk    ""    0 ()
+    nextCharSatisfiesNot ((<>) '2')  |> ROk    "12"     0 ()
+    nextCharSatisfiesNot ((<>) '2')  |> ROk    "\r2"    0 ()
+    nextCharSatisfiesNot ((<>) '2')  |> ROk    "\r\n2"  0 ()
+    nextCharSatisfiesNot ((<>) '2')  |> ROk    "\n2"    0 ()
+    nextCharSatisfiesNot ((<>) '\n') |> ROk    "\n\r"   0 ()
+    nextCharSatisfiesNot ((<>) '\n') |> ROk    "\r\r"   0 ()
+    nextCharSatisfiesNot ((<>) '\n') |> ROk    "\r\n\r" 0 ()
+    nextCharSatisfiesNot ((<>) '2')  |> ROk    ""       0 ()
+    nextCharSatisfiesNot ((<>) '2')  |> ROk    "1"      0 ()
+    nextCharSatisfiesNot ((<>) '2')  |> RError "13"     0 NoErrorMessages
+    nextCharSatisfiesNot ((<>) '\n') |> ROk    "\n"     0 ()
+    nextCharSatisfiesNot ((<>) '\n') |> ROk    "\r\n"   0 ()
+    nextCharSatisfiesNot ((<>) '\n') |> ROk    "\r"     0 ()
+    nextCharSatisfiesNot ((<>) '\n') |> RError "\n\t"   0 NoErrorMessages
+    nextCharSatisfiesNot ((<>) '\n') |> RError "\r\n\t" 0 NoErrorMessages
+    nextCharSatisfiesNot ((<>) '\n') |> RError "\r\t"   0 NoErrorMessages
 
-    currentCharSatisfies ((=) '2')  |> ROk    "2"  0 ()
-    currentCharSatisfies ((=) '\n') |> ROk    "\n" 0 ()
-    currentCharSatisfies ((=) '\n') |> ROk    "\r" 0 ()
-    currentCharSatisfies ((=) '2')  |> RError "1"  0 NoErrorMessages
-    currentCharSatisfies ((=) '2')  |> RError ""   0 NoErrorMessages
+    currentCharSatisfies ((=) '2')  |> ROk    "2"    0 ()
+    currentCharSatisfies ((=) '\n') |> ROk    "\n"   0 ()
+    currentCharSatisfies ((=) '\n') |> ROk    "\r\n" 0 ()
+    currentCharSatisfies ((=) '\n') |> ROk    "\r"   0 ()
+    currentCharSatisfies ((=) '2')  |> RError ""     0 NoErrorMessages
+    currentCharSatisfies ((=) '2')  |> RError "1"    0 NoErrorMessages
+    currentCharSatisfies ((=) '\r') |> RError "\r"   0 NoErrorMessages
 
-    currentCharSatisfiesNot ((<>) '2')  |> ROk    "2"  0 ()
-    currentCharSatisfiesNot ((<>) '\n') |> ROk    "\n" 0 ()
-    currentCharSatisfiesNot ((<>) '\n') |> ROk    "\r" 0 ()
-    currentCharSatisfiesNot ((<>) '2')  |> RError "1"  0 NoErrorMessages
-    currentCharSatisfiesNot ((<>) '2')  |> ROk    ""   0 ()
+    currentCharSatisfiesNot ((<>) '2')  |> ROk    "2"    0 ()
+    currentCharSatisfiesNot ((<>) '\n') |> ROk    "\n"   0 ()
+    currentCharSatisfiesNot ((<>) '\n') |> ROk    "\r\n" 0 ()
+    currentCharSatisfiesNot ((<>) '\n') |> ROk    "\r"   0 ()
+    currentCharSatisfiesNot ((<>) '2')  |> ROk    ""     0 ()
+    currentCharSatisfiesNot ((<>) '2')  |> RError "1"    0 NoErrorMessages
+    currentCharSatisfiesNot ((<>) '\r') |> RError "\r"   0 NoErrorMessages
 
-    (anyChar >>. previousCharSatisfies ((=) '1'))  |> ROk    "12"  1 ()
-    (anyChar >>. previousCharSatisfies ((=) '\n')) |> ROkNL  "\n1" 1 ()
-    (anyChar >>. previousCharSatisfies ((=) '\n')) |> ROkNL  "\r1" 1 ()
-    (anyChar >>. previousCharSatisfies ((=) '1'))  |> RError "01"  1 NoErrorMessages
+    (anyChar >>. previousCharSatisfies ((=) '1'))  |> ROk    "12"    1 ()
+    (anyChar >>. previousCharSatisfies ((=) '\n')) |> ROkNL  "\n1"   1 ()
+    (anyChar >>. previousCharSatisfies ((=) '\n')) |> ROkNL  "\r\n1" 2 ()
+    (anyChar >>. previousCharSatisfies ((=) '\n')) |> ROkNL  "\r1"   1 ()
+    (anyChar >>. previousCharSatisfies ((=) '1'))  |> RError "01"    1 NoErrorMessages
     (previousCharSatisfies ((=) '1'))  |> RError "1" 0 NoErrorMessages
-    (previousCharSatisfies ((=) '1'))  |> RError "" 0 NoErrorMessages
+    (previousCharSatisfies ((=) '1'))  |> RError ""  0 NoErrorMessages
 
-    (anyChar >>. previousCharSatisfiesNot ((<>) '1'))  |> ROk   "12"  1 ()
-    (anyChar >>. previousCharSatisfiesNot ((<>) '\n')) |> ROkNL "\n1" 1 ()
-    (anyChar >>. previousCharSatisfiesNot ((<>) '\n')) |> ROkNL "\r1" 1 ()
-    (anyChar >>. previousCharSatisfiesNot ((<>) '1'))  |> RError "01" 1 NoErrorMessages
+    (anyChar >>. previousCharSatisfiesNot ((<>) '1'))  |> ROk    "12"    1 ()
+    (anyChar >>. previousCharSatisfiesNot ((<>) '\n')) |> ROkNL  "\n1"   1 ()
+    (anyChar >>. previousCharSatisfiesNot ((<>) '\n')) |> ROkNL  "\r\n1" 2 ()
+    (anyChar >>. previousCharSatisfiesNot ((<>) '\n')) |> ROkNL  "\r1"   1 ()
+    (anyChar >>. previousCharSatisfiesNot ((<>) '1'))  |> RError "01"    1 NoErrorMessages
     (previousCharSatisfiesNot ((<>) '1'))  |> ROk "1" 0 ()
     (previousCharSatisfiesNot ((<>) '1'))  |> ROk "" 0 ()
+
 
 let testUserStateParsers() =
     use stream = new CharStream("test")

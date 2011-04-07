@@ -1593,30 +1593,32 @@ let notFollowedByStringCI s : Parser<unit,'u> =
         else Reply(Error, error, state)
 
 let inline charSatisfies c f =
-    if isCertainlyNoNLOrEOS c then
-        if f c then Ok else Error
-     elif c = '\r' || c = '\n' then
-        if f '\n' then Ok else Error
-     else
-        if c <> EOS && f c then Ok else Error
+    match c with
+    | '\r' -> if f '\n' then Ok else Error
+    | EOS -> Error
+    | _ -> if f c then Ok else Error
 
 let inline charSatisfiesNot c f =
-    if isCertainlyNoNLOrEOS c then
-        if not (f c) then Ok else Error
-     elif c = '\r' || c = '\n' then
-        if not (f '\n') then Ok else Error
-     else
-        if c = EOS || not (f c) then Ok else Error
+    match c with
+    | '\r' -> if not (f '\n') then Ok else Error
+    | EOS -> Ok
+    | _ -> if not (f c) then Ok else Error
 
 let nextCharSatisfies f : Parser<unit,'u> =
     fun state ->
-        let c = state.Iter.Peek()
-        Reply<unit,_>(charSatisfies c f, NoErrorMessages, state)
+        let cs = state.Iter.Read2()
+        let status = match cs.Char0, cs.Char1 with
+                     | '\r', '\n' -> charSatisfies (state.Iter.Peek(2)) f
+                     |  _, c1     -> charSatisfies c1 f
+        Reply<unit,_>(status, NoErrorMessages, state)
 
 let nextCharSatisfiesNot f : Parser<unit,'u> =
     fun state ->
-        let c = state.Iter.Peek()
-        Reply<unit,_>(charSatisfiesNot c f, NoErrorMessages, state)
+        let cs = state.Iter.Read2()
+        let status = match cs.Char0, cs.Char1 with
+                     | '\r', '\n' -> charSatisfiesNot (state.Iter.Peek(2)) f
+                     |  _, c1     -> charSatisfiesNot c1 f
+        Reply<unit,_>(status, NoErrorMessages, state)
 
 let previousCharSatisfies f : Parser<unit,'u> =
     fun state ->
