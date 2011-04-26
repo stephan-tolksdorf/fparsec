@@ -1,0 +1,574 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+ <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+ <title>Internals of a simple Parser function</title>
+ <link rel="stylesheet" type="text/css" media="all" href="../css/style.css" /> 
+ <link rel="stylesheet" type="text/css" media="screen" href="../css/screen-sidebar.css" />  
+ <!--[if lt IE 9]>
+ <link rel="stylesheet" type="text/css" media="all" href="../css/style-ie.css" /> 
+ <![endif]-->
+ <!--[if IE 6]>
+ <link rel="stylesheet" type="text/css" media="all" href="../css/style-ie6.css" /> 
+ <![endif]-->
+ <link rel="stylesheet" type="text/css" media="print" href="../css/print.css" />
+</head>
+<body>
+ <div id="fixed-layer">
+ <div id="fixed-wrapper">
+ <div id="sidebar">
+  <div id="top-links"><span><a href="http://bitbucket.org/fparsec/main">FParsec @ BitBucket</a> | <a href="https://bitbucket.org/fparsec/main/issues">Report a bug</a> | <a href="mailto:fparsec [at] quanttec.com?subject=FParsec&body=Hello Stephan,%0A%0A[your feedback]">Feedback</a></span></div>
+  <div id="nav-tree">
+   <table class="nav n1">
+    <tbody class="nav-open n1">
+     <tr class="nav-entry n1 _1">
+      <td class="nav-number n1"></td>
+      <td class="nav-title n1"><a href="../index.html">FParsec Documentation</a></td>
+     </tr>
+     <tr class="nav-subentries n1 _1">
+      <td class="nav-subentries-number n1"></td>
+      <td class="nav-subentries n1">
+       <table class="nav n2">
+        <tbody class="nav-before-open n2">
+         <tr class="nav-entry n2 _1">
+          <td class="nav-number n2"><a href="../about/index.html"><span class="section-number">1</span><span class="nav-space"></span></a></td>
+          <td class="nav-title n2"><a href="../about/index.html">About FParsec</a></td>
+         </tr>
+         <tr class="nav-entry n2 _2">
+          <td class="nav-number n2"><a href="../license.html"><span class="section-number">2</span><span class="nav-space"></span></a></td>
+          <td class="nav-title n2"><a href="../license.html">License</a></td>
+         </tr>
+         <tr class="nav-entry n2 _3">
+          <td class="nav-number n2">
+           <a href="../download-and-installation.html"><span class="section-number">3</span><span class="nav-space"></span></a>
+          </td>
+          <td class="nav-title n2"><a href="../download-and-installation.html">Download and installation</a></td>
+         </tr>
+         <tr class="nav-entry n2 _4">
+          <td class="nav-number n2"><a href="../tutorial.html"><span class="section-number">4</span><span class="nav-space"></span></a></td>
+          <td class="nav-title n2"><a href="../tutorial.html">Tutorial</a></td>
+         </tr>
+        </tbody>
+        <tbody class="nav-open n2">
+         <tr class="nav-entry n2 _5">
+          <td class="nav-number n2"><a href="index.html"><span class="section-number">5</span><span class="nav-space"></span></a></td>
+          <td class="nav-title n2"><a href="index.html">User’s Guide</a></td>
+         </tr>
+         <tr class="nav-subentries n2 _5">
+          <td class="nav-subentries-number n2"></td>
+          <td class="nav-subentries n2">
+           <table class="nav n3">
+            <tbody class="nav-before-open n3">
+             <tr class="nav-entry n3 _1">
+              <td class="nav-number n3"><a href="parser-functions.html"><span class="section-number">1</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="parser-functions.html">Parser functions</a></td>
+             </tr>
+             <tr class="nav-entry n3 _2">
+              <td class="nav-number n3">
+               <a href="running-parsers-on-input.html"><span class="section-number">2</span><span class="nav-space"></span></a>
+              </td>
+              <td class="nav-title n3"><a href="running-parsers-on-input.html">Running parsers on input</a></td>
+             </tr>
+            </tbody>
+            <tbody class="nav-open selected n3">
+             <tr class="nav-entry selected n3 _3">
+              <td class="nav-number selected n3"><a href="#"><span class="section-number">3</span><span class="nav-space"></span></a></td>
+              <td class="nav-title selected n3">
+               <a href="#">Internals of a simple <code class="fsharp"><span class="ci">Parser</span></code> function</a>
+              </td>
+             </tr>
+             <tr class="nav-subentries selected n3 _3">
+              <td class="nav-subentries-number selected n3"></td>
+              <td class="nav-subentries selected n3">
+               <table class="nav n4">
+                <tbody class="nav-before-open n4">
+                 <tr class="nav-entry n4 _1">
+                  <td class="nav-number n4"><a href="#the-code"><span class="section-number">1</span><span class="nav-space"></span></a></td>
+                  <td class="nav-title n4"><a href="#the-code">The code</a></td>
+                 </tr>
+                 <tr class="nav-entry n4 _2">
+                  <td class="nav-number n4"><a href="#the-reply-type"><span class="section-number">2</span><span class="nav-space"></span></a></td>
+                  <td class="nav-title n4"><a href="#the-reply-type">The <code class="fsharp"><span class="ci">Reply</span></code> type</a></td>
+                 </tr>
+                 <tr class="nav-entry n4 _3">
+                  <td class="nav-number n4">
+                   <a href="#the-parser-state-and-the-line-and-column-count"><span class="section-number">3</span><span class="nav-space"></span></a>
+                  </td>
+                  <td class="nav-title n4">
+                   <a href="#the-parser-state-and-the-line-and-column-count">The parser state and the line and column count</a>
+                  </td>
+                 </tr>
+                </tbody>
+               </table>
+              </td>
+             </tr>
+            </tbody>
+            <tbody class="nav-after-open n3">
+             <tr class="nav-entry n3 _4">
+              <td class="nav-number n3">
+               <a href="applying-parsers-in-sequence.html"><span class="section-number">4</span><span class="nav-space"></span></a>
+              </td>
+              <td class="nav-title n3"><a href="applying-parsers-in-sequence.html">Applying parsers in sequence</a></td>
+             </tr>
+             <tr class="nav-entry n3 _5">
+              <td class="nav-number n3"><a href="parsing-sequences.html"><span class="section-number">5</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="parsing-sequences.html">Parsing sequences</a></td>
+             </tr>
+             <tr class="nav-entry n3 _6">
+              <td class="nav-number n3">
+               <a href="parsing-alternatives.html"><span class="section-number">6</span><span class="nav-space"></span></a>
+              </td>
+              <td class="nav-title n3"><a href="parsing-alternatives.html">Parsing alternatives</a></td>
+             </tr>
+             <tr class="nav-entry n3 _7">
+              <td class="nav-number n3">
+               <a href="looking-ahead-and-backtracking.html"><span class="section-number">7</span><span class="nav-space"></span></a>
+              </td>
+              <td class="nav-title n3"><a href="looking-ahead-and-backtracking.html">Looking ahead and backtracking</a></td>
+             </tr>
+             <tr class="nav-entry n3 _8">
+              <td class="nav-number n3">
+               <a href="customizing-error-messages.html"><span class="section-number">8</span><span class="nav-space"></span></a>
+              </td>
+              <td class="nav-title n3"><a href="customizing-error-messages.html">Customizing error messages</a></td>
+             </tr>
+             <tr class="nav-entry n3 _9">
+              <td class="nav-number n3">
+               <a href="parsing-with-user-state.html"><span class="section-number">9</span><span class="nav-space"></span></a>
+              </td>
+              <td class="nav-title n3"><a href="parsing-with-user-state.html">Parsing with user state</a></td>
+             </tr>
+             <tr class="nav-entry n3 _0">
+              <td class="nav-number n3">
+               <a href="where-is-the-monad.html"><span class="section-number">10</span><span class="nav-space"></span></a>
+              </td>
+              <td class="nav-title n3"><a href="where-is-the-monad.html">Where is the monad?</a></td>
+             </tr>
+             <tr class="nav-entry n3 _1">
+              <td class="nav-number n3">
+               <a href="debugging-a-parser.html"><span class="section-number">11</span><span class="nav-space"></span></a>
+              </td>
+              <td class="nav-title n3"><a href="debugging-a-parser.html">Debugging a parser</a></td>
+             </tr>
+             <tr class="nav-entry n3 _2">
+              <td class="nav-number n3">
+               <a href="performance-optimizations.html"><span class="section-number">12</span><span class="nav-space"></span></a>
+              </td>
+              <td class="nav-title n3"><a href="performance-optimizations.html">Performance optimizations</a></td>
+             </tr>
+             <tr class="nav-entry n3 _3">
+              <td class="nav-number n3"><a href="tips-and-tricks.html"><span class="section-number">13</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="tips-and-tricks.html">Tips and tricks</a></td>
+             </tr>
+            </tbody>
+           </table>
+          </td>
+         </tr>
+        </tbody>
+        <tbody class="nav-after-open n2">
+         <tr class="nav-entry n2 _6">
+          <td class="nav-number n2"><a href="../reference/index.html"><span class="section-number">6</span><span class="nav-space"></span></a></td>
+          <td class="nav-title n2"><a href="../reference/index.html">Reference</a></td>
+         </tr>
+        </tbody>
+       </table>
+      </td>
+     </tr>
+    </tbody>
+   </table>
+  </div>
+  <div id="copyright">
+    <span>Copyright © 2011 <a href="../about/contact.html">Stephan Tolksdorf</a></span>
+  </div>
+ </div>
+ </div>
+ </div>
+ <div id="wrapper">   
+ <div id="main">
+ <div id="main-content"> 
+ <div id="breadcrumbs">
+  <span class="breadcrumbs">
+   <span id="breadcrumbs-parents"><a href="../index.html">FParsec Documentation</a><span class="breadcrumbs-sep"> > </span><a href="index.html">User’s Guide</a></span><span class="breadcrumbs-sep"> > </span>Internals of a simple <code
+class="fsharp"><a href="../reference/primitives.html#members.Parser"><span class="ci">Parser</span></a></code> function
+  </span>
+ </div>  
+ <div class="section s2">
+  <h1 class="title h2">
+   <span><span class="section-number">5.3</span> Internals of a simple <code class="fsharp"><a
+   href="../reference/primitives.html#members.Parser"><span class="ci">Parser</span></a></code> function</span>
+  </h1>
+  <div class="intro i2">
+   <div class="para _1">
+    <p>
+     In the beginning of this user’s guide we noted that <code class="fsharp"><a href="../reference/charparsers.html#members.asciiLower"><span
+     class="ci">asciiLower</span></a></code> &#x201C;parses&#x201D; a lower case ASCII char and that <code class="fsharp"><span
+     class="ci">skipString</span></code> &#x201C;skips&#x201D; over a string, but we haven’t yet explained what it actually means for a <code
+     class="fsharp"><a href="../reference/primitives.html#members.Parser"><span class="ci">Parser</span></a></code> function to &#x201C;parse&#x201D;
+     a letter or &#x201C;skip&#x201D; a string. That’s what we will do in this chapter. To explain how <code class="fsharp"><a
+     href="../reference/primitives.html#members.Parser"><span class="ci">Parser</span></a></code> functions work, we will discuss the implementation
+     of a simple string parser. This also gives us the opportunity to explain some important details about the <code class="fsharp"><a
+     href="../reference/reply.html"><span class="ci">Reply</span></a></code> and <code class="fsharp"><a
+     href="../reference/charstream.html#CharStream"><span class="ci">CharStream</span></a></code> types.
+    </p>
+   </div>
+  </div>
+  <div id="the-code" class="section s3">
+   <h2 class="title h3"><span><span class="section-number">5.3.1</span> The code</span></h2>
+   <div class="intro i3">
+    <div class="para _1 lcinp">
+     <p>The parser whose implementation we will discuss in this chapter is</p>
+<pre class="code fsharp"><span class="ck">val</span> <a href="../reference/charparsers.html#members.stringReturn"><span class="ci">stringReturn</span></a><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span> <span class="cr">-&gt;</span> <a href="../reference/primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ctv">'a</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
+</pre>
+    </div>
+    <div class="para _2">
+     <p>
+      Like <code class="fsharp"><span class="ci">skipString</span> <span class="ci">str</span></code> the parser <code class="fsharp"><a
+      href="../reference/charparsers.html#members.stringReturn"><span class="ci">stringReturn</span></a> <span class="ci">str</span> <span
+      class="ci">result</span></code> skips over the string <code class="fsharp"><span class="ci">str</span></code>, but it returns <code
+      class="fsharp"><span class="ci">result</span></code> as part of its reply value, instead of the <code class="fsharp"><span
+      class="ci">unit</span></code> value <code class="fsharp"><span class="cp">()</span></code> that <code class="fsharp"><span
+      class="ci">skipString</span> <span class="ci">str</span></code> returns. This makes <code class="fsharp"><a
+      href="../reference/charparsers.html#members.stringReturn"><span class="ci">stringReturn</span></a></code> a bit more general than <code
+      class="fsharp"><span class="ci">skipString</span></code>. Indeed, the two library parsers <code class="fsharp"><a
+      href="../reference/charparsers.html#members.pstring"><span class="ci">pstring</span></a></code> and <code class="fsharp"><span
+      class="ci">skipString</span></code> are actually implemented with the help of <code class="fsharp"><a
+      href="../reference/charparsers.html#members.stringReturn"><span class="ci">stringReturn</span></a></code>. For example, <code
+      class="fsharp"><span class="ci">skipString</span> <span class="ci">str</span></code> is defined as <code class="fsharp"><a
+      href="../reference/charparsers.html#members.stringReturn"><span class="ci">stringReturn</span></a> <span class="ci">str</span> <span
+      class="cp">()</span></code>.
+     </p>
+    </div>
+    <div class="para _3 lcinp">
+     <p>
+      A simplified version<sup class="fn-mark"><a id="the-code.:FN:1:B:" href="#the-code.:FN:1">[1]</a></sup> of the actual implementation of <code
+      class="fsharp"><a href="../reference/charparsers.html#members.stringReturn"><span class="ci">stringReturn</span></a></code> in the library is
+     </p>
+<pre class="code fsharp"><span class="ck">let</span> <span class="ci">stringReturn</span> <span class="ci">str</span> <span class="ci">result</span> <span class="cp">:</span> <a href="../reference/primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">_</span><span class="cp">,</span><span class="ci">_</span><span class="cp">&gt;</span> <span class="cp">=</span>                                <span class="clc"><span class="cld">//</span> 1</span>
+    <span class="ci">checkStringContainsNoNewlineChar</span> <span class="ci">str</span> <span class="cs"><span class="cld">"</span>pstring/skipString/stringReturn<span class="crd">"</span></span> <span class="clc"><span class="cld">//</span> 2</span>
+    <span class="ck">let</span> <span class="ci">error</span> <span class="cp">=</span> <span class="ci">expectedString</span> <span class="ci">str</span>                                         <span class="clc"><span class="cld">//</span> 3</span>
+    <span class="ck">fun</span> <span class="ci">stream</span> <span class="cr">-&gt;</span>                                                          <span class="clc"><span class="cld">//</span> 4</span>
+        <span class="ck">if</span> <span class="ci">stream</span><span class="cm">.</span><a href="../reference/charstream.html#CharStream.members.Skip"><span class="ci">Skip</span></a><span class="cp">(</span><span class="ci">str</span><span class="cp">)</span> <span class="ck">then</span>                                           <span class="clc"><span class="cld">//</span> 5</span>
+            <a href="../reference/reply.html"><span class="ci">Reply</span></a><span class="cp">(</span><span class="ci">result</span><span class="cp">)</span>                                                  <span class="clc"><span class="cld">//</span> 6</span>
+        <span class="ck">else</span>                                                               <span class="clc"><span class="cld">//</span> 7</span>
+            <a href="../reference/reply.html"><span class="ci">Reply</span></a><span class="cp">(</span><a href="../reference/primitives.html#members.Error"><span class="ci">Error</span></a><span class="cp">,</span> <span class="ci">error</span><span class="cp">)</span>                                            <span class="clc"><span class="cld">//</span> 8</span>
+</pre>
+    </div>
+    <div class="para _4">
+     <p>
+      Let’s start with the general structure of this implementation: We define a function <code class="fsharp"><span
+      class="ci">stringReturn</span></code> with two parameters that returns a function closure. The type annotation <code class="fsharp"><span
+      class="cp">:</span> <a href="../reference/primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span
+      class="ci">_</span><span class="cp">,</span><span class="ci">_</span><span class="cp">&gt;</span></code> on <span class="i">line 1</span> fixes
+      the type of the returned function closure to <code class="fsharp"><a href="../reference/primitives.html#members.Parser"><span
+      class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ctv">'a</span><span class="cp">,</span><span class="ctv">'u</span><span
+      class="cp">&gt;</span></code> and in particular constrains the type of its argument to <code class="fsharp"><a
+      href="../reference/charstream.html#CharStream"><span class="ci">CharStream</span></a><span class="cp">&lt;</span><span
+      class="ctv">'u</span><span class="cp">&gt;</span></code>. Remember, the type <code class="fsharp"><a
+      href="../reference/primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span
+      class="ctv">'a</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span></code> is simply an abbreviation for <code
+      class="fsharp"><a href="../reference/charstream.html#CharStream"><span class="ci">CharStream</span></a><span class="cp">&lt;</span><span
+      class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <a href="../reference/reply.html"><span
+      class="ci">Reply</span></a><span class="cp">&lt;</span><span class="ctv">'a</span><span class="cp">&gt;</span></code>, where <code
+      class="fsharp"><span class="ctv">'a</span></code> represents the result type and <code class="fsharp"><span class="ctv">'u</span></code> the
+      user state type.
+     </p>
+    </div>
+    <div class="para _5">
+     <p>
+      Implementing our parameterized parser as a function returning a parser closure allows us to factor out common setup work that only needs to be
+      done once for every parser.<sup class="fn-mark"><a id="the-code.:FN:2:B:" href="#the-code.:FN:2">[2]</a></sup> In this case we only need to
+      check once (<span class="i">line 2</span>) whether the string contains a newline char, i.e. <code class="fsharp"><span class="cc"><span
+      class="cld">'</span><span class="ce">\r</span><span class="crd">'</span></span></code> or <code class="fsharp"><span class="cc"><span
+      class="cld">'</span><span class="ce">\n</span><span class="crd">'</span></span></code>, (we’ll explain below why this is necessary) and in <span
+      class="i">line 3</span> we preconstruct the error message that is later used whenever the parser is applied and doesn’t find <code
+      class="fsharp"><span class="ci">str</span></code> in the input (we’ll write more about error messages in later chapters).
+     </p>
+    </div>
+    <div class="para _6">
+     <p>
+      The actual parsing logic is completely straightforward: On <span class="i">line 5</span> the parser calls the CharStream’s <code
+      class="fsharp"><a href="../reference/charstream.html#CharStream.members.Skip"><span class="ci">Skip</span></a></code> method with the argument
+      <code class="fsharp"><span class="ci">str</span></code>. If the next chars in the stream match <code class="fsharp"><span
+      class="ci">str</span></code>, <code class="fsharp"><a href="../reference/charstream.html#CharStream.members.Skip"><span
+      class="ci">Skip</span></a></code> advances the stream’s position by the length of the passed string and returns <code class="fsharp"><span
+      class="cb">true</span></code>; otherwise, it doesn’t change the position of the stream and returns <code class="fsharp"><span
+      class="cb">false</span></code>. Thus, if the string is skipped, the parser returns with a <code class="fsharp"><a
+      href="../reference/reply.html"><span class="ci">Reply</span></a></code> value containing the result (<span class="i">line 6</span>). Otherwise,
+      it returns a <code class="fsharp"><a href="../reference/reply.html"><span class="ci">Reply</span></a></code> with the preconstructed error
+      message (<span class="i">line 8</span>).
+     </p>
+    </div>
+   </div>
+  </div>
+  <div id="the-reply-type" class="section s3">
+   <h2 class="title h3">
+    <span><span class="section-number">5.3.2</span> The <code class="fsharp"><a href="../reference/reply.html"><span
+    class="ci">Reply</span></a></code> type</span>
+   </h2>
+   <div class="intro i3">
+    <div class="para _1">
+     <p>
+      This is a good time to discuss the <code class="fsharp"><a href="../reference/reply.html"><span class="ci">Reply</span></a></code> type in a
+      little more detail.
+     </p>
+    </div>
+    <div class="para _2 lcinp">
+<pre class="code fsharp"><span class="ck">type</span> <a href="../reference/reply.html"><span class="ci">Reply</span></a><span class="cp">&lt;</span><span class="ctv">'TResult</span><span class="cp">&gt;</span> <span class="cp">=</span> <span class="ck">struct</span>
+  <span class="ck">new</span><span class="cp">:</span> <span class="ctv">'TResult</span> <span class="cr">-&gt;</span> <a href="../reference/reply.html"><span class="ci">Reply</span></a><span class="cp">&lt;</span><span class="ctv">'TResult</span><span class="cp">&gt;</span>
+  <span class="ck">new</span><span class="cp">:</span> <a href="../reference/reply.html#interface.ReplyStatus"><span class="ci">ReplyStatus</span></a> <span class="cp">*</span> <a href="../reference/errormessagelist.html"><span class="ci">ErrorMessageList</span></a> <span class="cr">-&gt;</span> <a href="../reference/reply.html"><span class="ci">Reply</span></a><span class="cp">&lt;</span><span class="ctv">'TResult</span><span class="cp">&gt;</span>
+  <span class="ck">new</span><span class="cp">:</span> <a href="../reference/reply.html#interface.ReplyStatus"><span class="ci">ReplyStatus</span></a> <span class="cp">*</span> <span class="ctv">'TResult</span> <span class="cp">*</span> <a href="../reference/errormessagelist.html"><span class="ci">ErrorMessageList</span></a> <span class="cr">-&gt;</span> <a href="../reference/reply.html"><span class="ci">Reply</span></a><span class="cp">&lt;</span><span class="ctv">'TResult</span><span class="cp">&gt;</span>
+
+  <span class="ck">val</span> <span class="ck">mutable</span> <a href="../reference/reply.html#members.Status"><span class="ci">Status</span></a><span class="cp">:</span> <a href="../reference/reply.html#interface.ReplyStatus"><span class="ci">ReplyStatus</span></a>
+  <span class="clc"><span class="cld">//</span>/ If Status &lt;&gt; Ok then the Result value is undefined and may be null.</span>
+  <span class="ck">val</span> <span class="ck">mutable</span> <a href="../reference/reply.html#members.Result"><span class="ci">Result</span></a><span class="cp">:</span> <span class="ctv">'TResult</span>
+  <span class="ck">val</span> <span class="ck">mutable</span> <a href="../reference/primitives.html#members.Error"><span class="ci">Error</span></a><span class="cp">:</span> <a href="../reference/errormessagelist.html"><span class="ci">ErrorMessageList</span></a>
+<span class="ck">end</span>
+</pre>
+    </div>
+    <div class="para _3">
+     <p>
+      Similar to a tuple, a <code class="fsharp"><a href="../reference/reply.html"><span class="ci">Reply</span></a></code> can be seen as an
+      aggregate of it three fields: <code class="fsharp"><a href="../reference/reply.html#members.Status"><span class="ci">Status</span></a></code>,
+      <code class="fsharp"><a href="../reference/reply.html#members.Result"><span class="ci">Result</span></a></code> and <code class="fsharp"><span
+      class="ci">Error</span></code>. The <code class="fsharp"><a href="../reference/reply.html#members.Status"><span
+      class="ci">Status</span></a></code> field contains a <code class="fsharp"><a href="../reference/reply.html#interface.ReplyStatus"><span
+      class="ci">ReplyStatus</span></a></code> enum value indicating whether the parser succeeded (<code class="fsharp"><a
+      href="../reference/primitives.html#members.Ok"><span class="ci">Ok</span></a></code>) or failed (<code class="fsharp"><a
+      href="../reference/primitives.html#members.Error"><span class="ci">Error</span></a></code> or <code class="fsharp"><a
+      href="../reference/primitives.html#members.FatalError"><span class="ci">FatalError</span></a></code>). By returning a <code class="fsharp"><a
+      href="../reference/primitives.html#members.FatalError"><span class="ci">FatalError</span></a></code> instead of an <code class="fsharp"><a
+      href="../reference/primitives.html#members.Error"><span class="ci">Error</span></a></code> a parser can signal that no error recovery should be
+      tried (except through backtracking mechanisms, which we explain later). If the <code class="fsharp"><a
+      href="../reference/reply.html#members.Status"><span class="ci">Status</span></a></code> is <code class="fsharp"><a
+      href="../reference/primitives.html#members.Ok"><span class="ci">Ok</span></a></code>, the <code class="fsharp"><a
+      href="../reference/reply.html#members.Result"><span class="ci">Result</span></a></code> field contains the parser result; otherwise, its value
+      is undefined (and <code class="fsharp"><span class="cnu">null</span></code>). The <code class="fsharp"><a
+      href="../reference/primitives.html#members.Error"><span class="ci">Error</span></a></code> field holds a list of error messages in the form of
+      an <code class="fsharp"><a href="../reference/errormessagelist.html"><span class="ci">ErrorMessageList</span></a></code> value. An empty <code
+      class="fsharp"><a href="../reference/errormessagelist.html"><span class="ci">ErrorMessageList</span></a></code> is represented as a <code
+      class="fsharp"><span class="cnu">null</span></code> value.
+     </p>
+    </div>
+    <div class="para _4">
+     <p>
+      The 1‐argument constructor we use in <span class="i">line 6</span> sets the status to <code class="fsharp"><a
+      href="../reference/primitives.html#members.Ok"><span class="ci">Ok</span></a></code> and the result value to <code class="fsharp"><span
+      class="ci">result</span></code>. The 2‐argument constructor we use in <span class="i">line 8</span> sets the status to <code class="fsharp"><a
+      href="../reference/primitives.html#members.Error"><span class="ci">Error</span></a></code> and the error message to <code class="fsharp"><span
+      class="ci">error</span></code>. The <code class="fsharp"><a href="../reference/reply.html"><span class="ci">Reply</span></a></code> type also
+      defines a 3‐argument constructor, which simply sets the fields to the respective argument values. The default valuetype constructor with 0
+      arguments initializes the <code class="fsharp"><a href="../reference/reply.html"><span class="ci">Reply</span></a></code> value to <code
+      class="fsharp"><a href="../reference/reply.html"><span class="ci">Reply</span></a><span class="cp">(</span><a
+      href="../reference/primitives.html#members.Error"><span class="ci">Error</span></a><span class="cp">,</span> <span class="cnu">null</span><span
+      class="cp">)</span></code>.
+     </p>
+    </div>
+    <div class="para _5">
+     <p>
+      The error messages returned in the <code class="fsharp"><a href="../reference/reply.html"><span class="ci">Reply</span></a></code> value
+      implicitly refer to the current stream position. Since the <code class="fsharp"><a
+      href="../reference/errormessage.html#members.ErrorMessage"><span class="ci">ErrorMessage</span></a></code> values stored in the <code
+      class="fsharp"><a href="../reference/errormessagelist.html"><span class="ci">ErrorMessageList</span></a></code> do not themselves contain an
+      error position, they can only be interpreted together with the position of the <code class="fsharp"><a
+      href="../reference/charstream.html#CharStream"><span class="ci">CharStream</span></a></code> as it is when the parser returns.
+     </p>
+    </div>
+   </div>
+  </div>
+  <div id="the-parser-state-and-the-line-and-column-count" class="section s3">
+   <h2 class="title h3"><span><span class="section-number">5.3.3</span> The parser state and the line and column count</span></h2>
+   <div class="intro i3">
+    <div class="para _1">
+     <p>
+      Usually one <code class="fsharp"><a href="../reference/charstream.html#CharStream"><span class="ci">CharStream</span></a><span
+      class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span></code> instance is created per input file and all parser functions
+      involved in parsing elements of the same file are passed the same <code class="fsharp"><a href="../reference/charstream.html#CharStream"><span
+      class="ci">CharStream</span></a></code> instance. Since calling the methods of a <code class="fsharp"><a
+      href="../reference/charstream.html#CharStream"><span class="ci">CharStream</span></a></code> may change its state, parser functions have to be
+      careful about when and how they change the <code class="fsharp"><a href="../reference/charstream.html#CharStream"><span
+      class="ci">CharStream</span></a></code> state, because it obviously may affect all parsers subsequently called.
+     </p>
+    </div>
+    <div class="para _2">
+     <p>
+      In the example above, <code class="fsharp"><a href="../reference/charparsers.html#members.stringReturn"><span
+      class="ci">stringReturn</span></a></code> only advances the stream position when it succeeds. This makes it an <em>atomic</em> string parser,
+      because it does not consume input if only the beginning of the argument string matches the input. Whether or not a parser consumes input before
+      it fails has important implications for the error handling, as we will discuss later in this user’s guide.
+     </p>
+    </div>
+    <div class="para _3">
+     <p>
+      Except for the freely customizable <code class="fsharp"><span class="ci">UserState</span></code>, all the mutable state information in the <code
+      class="fsharp"><a href="../reference/charstream.html#CharStream"><span class="ci">CharStream</span></a><span class="cp">&lt;</span><span
+      class="ctv">'u</span><span class="cp">&gt;</span></code> instance pertains to the location of the next char in the text stream. The most
+      important element of the state is the char <code class="fsharp"><a href="../reference/charstream.html#CharStream.members.Index"><span
+      class="ci">Index</span></a></code>, which uniquely identifies the UTF‐16 char in the stream. In addition to the index of the next char, the
+      <code class="fsharp"><a href="../reference/charstream.html#CharStream"><span class="ci">CharStream</span></a></code> also keeps track of char’s
+      <code class="fsharp"><a href="../reference/charstream.html#CharStream.members.Line"><span class="ci">Line</span></a></code> number and the index
+      of the first char in the line, the <code class="fsharp"><a href="../reference/charstream.html#CharStream.members.LineBegin"><span
+      class="ci">LineBegin</span></a></code>. By combining the <code class="fsharp"><a
+      href="../reference/charstream.html#CharStream.members.Index"><span class="ci">Index</span></a></code> and <code class="fsharp"><a
+      href="../reference/charstream.html#CharStream.members.LineBegin"><span class="ci">LineBegin</span></a></code> we can calculate a <code
+      class="fsharp"><a href="../reference/charstream.html#CharStream.members.Column"><span class="ci">Column</span></a></code>. The <code
+      class="fsharp"><a href="../reference/charstream.html#CharStream"><span class="ci">CharStream</span></a></code>’s <code class="fsharp"><a
+      href="../reference/charstream.html#CharStream.members.Name"><span class="ci">Name</span></a></code> serves as a description or identifier for
+      the stream.
+     </p>
+    </div>
+    <div class="para _4">
+     <p>
+      Only the char index is strictly necessary for the core stream functionality. We also store the other pieces of state information in a <code
+      class="fsharp"><a href="../reference/charstream.html#CharStream"><span class="ci">CharStream</span></a><span class="cp">&lt;</span><span
+      class="ctv">'u</span><span class="cp">&gt;</span></code> instance because having all parser state information in one place reduces complexity
+      and allows us to expose a more convenient API to <code class="fsharp"><a href="../reference/primitives.html#members.Parser"><span
+      class="ci">Parser</span></a></code> functions.
+     </p>
+    </div>
+    <div class="para _5 lcinp">
+     <div class="admonition">
+      <div class="admonition-title">Note</div>
+      <div class="admonition-body">
+       <div class="para _1">
+        <p>
+         The <code class="fsharp"><a href="../reference/charstream.html#CharStream"><span class="ci">CharStream</span></a><span
+         class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span><span class="cp">.</span><a
+         href="../reference/charstream.html#CharStream_1.members.State"><span class="ci">State</span></a></code> property returns a snapshot of all
+         the mutable state components in the form of a <code class="fsharp"><a href="../reference/charstream.html#CharStreamState"><span
+         class="ci">CharStreamState</span></a><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span></code> value.
+        </p>
+       </div>
+       <div class="para _2">
+        <p>
+         The state information that is exposed through the <code class="fsharp"><a href="../reference/charstream.html#CharStream"><span
+         class="ci">CharStream</span></a><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span><span
+         class="cp">.</span><a href="../reference/charstream.html#CharStream_1.members.State"><span class="ci">State</span></a></code> property is
+         <em>all</em> the state that is tracked by <code class="fsharp"><span class="ci">FParsec</span></code> parsers, which is why we also refer to
+         it as <em>the parser state</em>.<sup class="fn-mark"><a id="the-parser-state-and-the-line-and-column-count.:FN:3:B:"
+         href="#the-parser-state-and-the-line-and-column-count.:FN:3">[3]</a></sup>
+        </p>
+       </div>
+      </div>
+     </div>
+    </div>
+    <div class="para _6">
+     <p>
+      Ideally, the <code class="fsharp"><a href="../reference/charstream.html#CharStream"><span class="ci">CharStream</span></a></code> class would
+      keep track of the column and line count in a completely automated fashion. Ideally, the <code class="fsharp"><a
+      href="../reference/charstream.html#CharStream"><span class="ci">CharStream</span></a></code> class would give the user a way to freely specify
+      the recognized set of newline character sequences and all <code class="fsharp"><a href="../reference/charstream.html#CharStream"><span
+      class="ci">CharStream</span></a></code> methods then would automatically detect such newlines in the input. Unfortunately, such a configuration
+      option would be difficult to implement efficiently and would likely have a severe impact on performance (at least in comparison to the
+      hard‐coded alternative, and with the current language and compiler support).
+     </p>
+    </div>
+    <div class="para _7">
+     <p>
+      Since the <code class="fsharp"><a href="../reference/charstream.html#CharStream"><span class="ci">CharStream</span></a></code> can’t provide
+      automatic support for all possible notions of a newline, it exposes two sets of methods in its interface. One set provides the basic stream
+      operations, such as skipping a certain number of UTF‐16 chars or matching a string with the stream content. These methods come without any
+      automatic newline detection, but they offer optimal performance and give the user complete freedom to manually register any kind of newline. The
+      other set of methods provides some frequently needed higher‐level text operations, such as skipping over a sequence of whitespace chars or
+      reading a sequence of chars satisfying a given predicate function. These other methods automatically detect any of the 3 standard newline char
+      sequences <code class="fsharp"><span class="cs"><span class="cld">"</span><span class="ce">\n</span><span class="crd">"</span></span></code>,
+      <code class="fsharp"><span class="cs"><span class="cld">"</span><span class="ce">\r</span><span class="ce">\n</span><span
+      class="crd">"</span></span></code> and <code class="fsharp"><span class="cs"><span class="cld">"</span><span class="ce">\r</span><span
+      class="crd">"</span></span></code>, because that’s the notion of a newline used by most text applications. In combination both sets of methods
+      cover the needs of a majority of text parsers in a convenient and efficient manner.
+     </p>
+    </div>
+    <div class="para _8 lcinp">
+     <div class="admonition">
+      <div class="admonition-title">Note</div>
+      <div class="admonition-body">
+       <div class="para _1">
+        <p>
+         Maybe you wonder why we don’t just leave the line and column count completely to the user instead of complicating the <code class="fsharp"><a
+         href="../reference/charstream.html#CharStream"><span class="ci">CharStream</span></a></code> API. The reason we keep track of a line count in
+         the <code class="fsharp"><a href="../reference/charstream.html#CharStream"><span class="ci">CharStream</span></a></code> class is that most
+         non‐trivial text‐parsing applications require a line count for error reporting purposes. Implementing it at a relatively low API level brings
+         significant performance advantages and relieves higher‐level API users from constantly having to code around the special case of newline
+         chars.
+        </p>
+       </div>
+      </div>
+     </div>
+    </div>
+    <div class="para _9">
+     <p>
+      If you have a look at the reference documentation for <code class="fsharp"><a href="../reference/charstream.html#CharStream"><span
+      class="ci">CharStream</span></a></code>, you’ll see that the <code class="fsharp"><a href="../reference/charstream.html#CharStream"><span
+      class="ci">CharStream</span></a></code> methods that automatically detect newlines are easily discernible by their name. The <code
+      class="fsharp"><a href="../reference/charstream.html#CharStream.members.Skip"><span class="ci">Skip</span></a></code> method we used in the
+      above example does <em>not</em> belong to these methods, which is why we have to make sure in <span class="i">line 2</span> that the string
+      doen’t contain any newlines. In practice one hardly ever uses a parser like <code class="fsharp"><a
+      href="../reference/charparsers.html#members.stringReturn"><span class="ci">stringReturn</span></a></code> with a string containing a newline,
+      hence lifting this restriction wouldn’t be worth the effort, especially since simple workarounds are available.<sup class="fn-mark"><a
+      id="the-parser-state-and-the-line-and-column-count.:FN:4:B:" href="#the-parser-state-and-the-line-and-column-count.:FN:4">[4]</a></sup>
+     </p>
+    </div>
+   </div>
+  </div>
+  <div class="fn-list">
+   <div class="fn-title">Footnotes:</div>
+   <table class="fn">
+    <tr class="fn _1">
+     <th class="fn _1"><a class="footnote-backlink" id="the-code.:FN:1" href="#the-code.:FN:1:B:">[1]</a></th>
+     <td class="fn _2">
+      The library version is a bit more complicated because it contains optimized paths for argument strings with only 1 or 2 chars.
+     </td>
+    </tr>
+    <tr class="fn _2">
+     <th class="fn _1"><a class="footnote-backlink" id="the-code.:FN:2" href="#the-code.:FN:2:B:">[2]</a></th>
+     <td class="fn _2">
+      Even parsers without a parameter, like e.g. <code class="fsharp"><a href="../reference/charparsers.html#members.asciiLower"><span
+      class="ci">asciiLower</span></a></code>, are actually compiled as properties returning a new function object every time they are called. This is
+      because the user state type variable makes <code class="fsharp"><a href="../reference/charparsers.html#members.asciiLower"><span
+      class="ci">asciiLower</span></a></code> generic, while function values can only have a non‐generic type.
+     </td>
+    </tr>
+    <tr class="fn _3">
+     <th class="fn _1">
+      <a class="footnote-backlink" id="the-parser-state-and-the-line-and-column-count.:FN:3"
+      href="#the-parser-state-and-the-line-and-column-count.:FN:3:B:">[3]</a>
+     </th>
+     <td class="fn _2">
+      Strictly speaking, a <code class="fsharp"><a href="../reference/charstream.html#CharStream"><span class="ci">CharStream</span></a><span
+      class="cp">&lt;</span><span class="ctv">'a</span><span class="cp">&gt;</span></code> instance has a little more publically observable mutable
+      state than the one that is also exposed through the <code class="fsharp"><a href="../reference/charstream.html#CharStream_1.members.State"><span
+      class="ci">State</span></a></code> property. For example, the <code class="fsharp"><a
+      href="../reference/charstream.html#CharStream.members.MinRegexSpace"><span class="ci">MinRegexSpace</span></a></code> configuration parameter is
+      not tracked in the <code class="fsharp"><a href="../reference/charstream.html#CharStream_1.members.State"><span
+      class="ci">State</span></a></code> parameter. Another example is the value of the <code class="fsharp"><a
+      href="../reference/charstream.html#CharStream.members.IndexOfLastCharPlus1"><span class="ci">IndexOfLastCharPlus1</span></a></code> property
+      which changes once the last char of the stream is detected. However, there shouldn’t be a reason that a parser needs to restore the old values
+      of these properties upon backtracking, so we just treat these properties as constant and ignore them when we discuss the mutable <code
+      class="fsharp"><a href="../reference/charstream.html#CharStream"><span class="ci">CharStream</span></a></code> state.
+     </td>
+    </tr>
+    <tr class="fn _4">
+     <th class="fn _1">
+      <a class="footnote-backlink" id="the-parser-state-and-the-line-and-column-count.:FN:4"
+      href="#the-parser-state-and-the-line-and-column-count.:FN:4:B:">[4]</a>
+     </th>
+     <td class="fn _2">
+      For example, <code class="fsharp"><a href="../reference/charparsers.html#members.stringReturn"><span class="ci">stringReturn</span></a> <span
+      class="cs"><span class="cld">"</span>str1<span class="ce">\n</span>str2<span class="crd">"</span></span> <span class="ci">result</span></code>
+      can be replaced with <code class="fsharp"><a href="../reference/primitives.html#members.attempt"><span class="ci">attempt</span></a> <span
+      class="cp">(</span><span class="ci">skipString</span> <span class="cs"><span class="cld">"</span>str1<span class="crd">"</span></span> <a
+      href="../reference/primitives.html#members.:62::62:.."><span class="co">&gt;&gt;.</span></a> <a
+      href="../reference/charparsers.html#members.newline"><span class="ci">newline</span></a> <a
+      href="../reference/primitives.html#members.:62::62:.."><span class="co">&gt;&gt;.</span></a> <a
+      href="../reference/charparsers.html#members.stringReturn"><span class="ci">stringReturn</span></a> <span class="cs"><span
+      class="cld">"</span>str2<span class="crd">"</span></span> <span class="ci">result</span><span class="cp">)</span></code>.
+     </td>
+    </tr>
+   </table>
+  </div>
+ </div>
+ </div>
+ </div>   
+ </div>
+</body>
+</html>
+

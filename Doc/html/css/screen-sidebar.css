@@ -68,11 +68,28 @@ body {
     padding: 0 1.5em 1.5em 1.5em;
 }
 
+#top-links {
+    margin-left: 1.5em;
+    padding-top: 0.5em;
+    margin-bottom: 0.5em;    
+    margin-top: -0.07143em;
+}
+#top-links span {
+    font-size: 0.9286em;
+    color: #333;
+}
+#top-links a {
+    color: #333;
+}
 
 #nav-tree {
     margin-left: 1.5em;
     margin-right: 1.5em;
     margin-top: 1.5em;
+}
+
+#nav-tree > table {
+    margin-top: -0.07143em;
 }
 
 #nav-tree table,
@@ -92,6 +109,11 @@ body {
 
 .nav-number {
     white-space: nowrap;
+    min-width: 1em;
+}
+
+.nav-number.n1 {
+    min-width: 0;
 }
 
 .nav-number a {
@@ -117,6 +139,10 @@ tbody.selected {
     background-color: #f8f8f8;
 }
 
+.nav-entry a {
+    outline: none;
+}
+
 .nav-entry .selected a {
     color: #000000;
 }
@@ -126,6 +152,17 @@ tbody.selected {
     border-bottom: 1px solid;
 }
 
+#copyright {
+    margin-left: 1.5em;
+    margin-top: 0.8em;
+}
 
-
+#copyright span {
+    font-size: 0.9286em;
+    margin-left: 0.1em;
+    color: #333;    
+}
+#copyright a {
+    color: #333;
+}
 

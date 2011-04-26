@@ -1,6 +1,7 @@
-﻿namespace FParsec
+namespace FParsec
 
 open System.Reflection
+open System.Runtime.CompilerServices
 open System.Runtime.InteropServices
 
 [<assembly: ComVisible(false)>]
@@ -21,7 +22,8 @@ open System.Runtime.InteropServices
     #endif
 #endif
 [<assembly: AssemblyProduct("FParsec")>]
-[<assembly: AssemblyCopyright("Copyright \169 Stephan Tolksdorf 2007-2009")>]
-[<assembly: AssemblyVersion("0.8.0.0")>]
-[<assembly: AssemblyFileVersion("0.8.0.0")>]
+[<assembly: AssemblyCopyright("Copyright \169 Stephan Tolksdorf 2007-2011")>]
+[<assembly: AssemblyVersion("0.9.0.0")>]
+[<assembly: AssemblyFileVersion("0.9.0.0")>]
+[<assembly: InternalsVisibleTo("test_fparsec")>]
 do ()

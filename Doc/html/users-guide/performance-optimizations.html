@@ -1,0 +1,608 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+ <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+ <title>Performance optimizations</title>
+ <link rel="stylesheet" type="text/css" media="all" href="../css/style.css" /> 
+ <link rel="stylesheet" type="text/css" media="screen" href="../css/screen-sidebar.css" />  
+ <!--[if lt IE 9]>
+ <link rel="stylesheet" type="text/css" media="all" href="../css/style-ie.css" /> 
+ <![endif]-->
+ <!--[if IE 6]>
+ <link rel="stylesheet" type="text/css" media="all" href="../css/style-ie6.css" /> 
+ <![endif]-->
+ <link rel="stylesheet" type="text/css" media="print" href="../css/print.css" />
+</head>
+<body>
+ <div id="fixed-layer">
+ <div id="fixed-wrapper">
+ <div id="sidebar">
+  <div id="top-links"><span><a href="http://bitbucket.org/fparsec/main">FParsec @ BitBucket</a> | <a href="https://bitbucket.org/fparsec/main/issues">Report a bug</a> | <a href="mailto:fparsec [at] quanttec.com?subject=FParsec&body=Hello Stephan,%0A%0A[your feedback]">Feedback</a></span></div>
+  <div id="nav-tree">
+   <table class="nav n1">
+    <tbody class="nav-open n1">
+     <tr class="nav-entry n1 _1">
+      <td class="nav-number n1"></td>
+      <td class="nav-title n1"><a href="../index.html">FParsec Documentation</a></td>
+     </tr>
+     <tr class="nav-subentries n1 _1">
+      <td class="nav-subentries-number n1"></td>
+      <td class="nav-subentries n1">
+       <table class="nav n2">
+        <tbody class="nav-before-open n2">
+         <tr class="nav-entry n2 _1">
+          <td class="nav-number n2"><a href="../about/index.html"><span class="section-number">1</span><span class="nav-space"></span></a></td>
+          <td class="nav-title n2"><a href="../about/index.html">About FParsec</a></td>
+         </tr>
+         <tr class="nav-entry n2 _2">
+          <td class="nav-number n2"><a href="../license.html"><span class="section-number">2</span><span class="nav-space"></span></a></td>
+          <td class="nav-title n2"><a href="../license.html">License</a></td>
+         </tr>
+         <tr class="nav-entry n2 _3">
+          <td class="nav-number n2">
+           <a href="../download-and-installation.html"><span class="section-number">3</span><span class="nav-space"></span></a>
+          </td>
+          <td class="nav-title n2"><a href="../download-and-installation.html">Download and installation</a></td>
+         </tr>
+         <tr class="nav-entry n2 _4">
+          <td class="nav-number n2"><a href="../tutorial.html"><span class="section-number">4</span><span class="nav-space"></span></a></td>
+          <td class="nav-title n2"><a href="../tutorial.html">Tutorial</a></td>
+         </tr>
+        </tbody>
+        <tbody class="nav-open n2">
+         <tr class="nav-entry n2 _5">
+          <td class="nav-number n2"><a href="index.html"><span class="section-number">5</span><span class="nav-space"></span></a></td>
+          <td class="nav-title n2"><a href="index.html">User’s Guide</a></td>
+         </tr>
+         <tr class="nav-subentries n2 _5">
+          <td class="nav-subentries-number n2"></td>
+          <td class="nav-subentries n2">
+           <table class="nav n3">
+            <tbody class="nav-before-open n3">
+             <tr class="nav-entry n3 _1">
+              <td class="nav-number n3"><a href="parser-functions.html"><span class="section-number">1</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="parser-functions.html">Parser functions</a></td>
+             </tr>
+             <tr class="nav-entry n3 _2">
+              <td class="nav-number n3">
+               <a href="running-parsers-on-input.html"><span class="section-number">2</span><span class="nav-space"></span></a>
+              </td>
+              <td class="nav-title n3"><a href="running-parsers-on-input.html">Running parsers on input</a></td>
+             </tr>
+             <tr class="nav-entry n3 _3">
+              <td class="nav-number n3">
+               <a href="internals-of-a-simple-parser-function.html"><span class="section-number">3</span><span class="nav-space"></span></a>
+              </td>
+              <td class="nav-title n3">
+               <a href="internals-of-a-simple-parser-function.html">Internals of a simple <code class="fsharp"><span class="ci">Parser</span></code>
+               function</a>
+              </td>
+             </tr>
+             <tr class="nav-entry n3 _4">
+              <td class="nav-number n3">
+               <a href="applying-parsers-in-sequence.html"><span class="section-number">4</span><span class="nav-space"></span></a>
+              </td>
+              <td class="nav-title n3"><a href="applying-parsers-in-sequence.html">Applying parsers in sequence</a></td>
+             </tr>
+             <tr class="nav-entry n3 _5">
+              <td class="nav-number n3"><a href="parsing-sequences.html"><span class="section-number">5</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="parsing-sequences.html">Parsing sequences</a></td>
+             </tr>
+             <tr class="nav-entry n3 _6">
+              <td class="nav-number n3">
+               <a href="parsing-alternatives.html"><span class="section-number">6</span><span class="nav-space"></span></a>
+              </td>
+              <td class="nav-title n3"><a href="parsing-alternatives.html">Parsing alternatives</a></td>
+             </tr>
+             <tr class="nav-entry n3 _7">
+              <td class="nav-number n3">
+               <a href="looking-ahead-and-backtracking.html"><span class="section-number">7</span><span class="nav-space"></span></a>
+              </td>
+              <td class="nav-title n3"><a href="looking-ahead-and-backtracking.html">Looking ahead and backtracking</a></td>
+             </tr>
+             <tr class="nav-entry n3 _8">
+              <td class="nav-number n3">
+               <a href="customizing-error-messages.html"><span class="section-number">8</span><span class="nav-space"></span></a>
+              </td>
+              <td class="nav-title n3"><a href="customizing-error-messages.html">Customizing error messages</a></td>
+             </tr>
+             <tr class="nav-entry n3 _9">
+              <td class="nav-number n3">
+               <a href="parsing-with-user-state.html"><span class="section-number">9</span><span class="nav-space"></span></a>
+              </td>
+              <td class="nav-title n3"><a href="parsing-with-user-state.html">Parsing with user state</a></td>
+             </tr>
+             <tr class="nav-entry n3 _0">
+              <td class="nav-number n3">
+               <a href="where-is-the-monad.html"><span class="section-number">10</span><span class="nav-space"></span></a>
+              </td>
+              <td class="nav-title n3"><a href="where-is-the-monad.html">Where is the monad?</a></td>
+             </tr>
+             <tr class="nav-entry n3 _1">
+              <td class="nav-number n3">
+               <a href="debugging-a-parser.html"><span class="section-number">11</span><span class="nav-space"></span></a>
+              </td>
+              <td class="nav-title n3"><a href="debugging-a-parser.html">Debugging a parser</a></td>
+             </tr>
+            </tbody>
+            <tbody class="nav-open selected n3">
+             <tr class="nav-entry selected n3 _2">
+              <td class="nav-number selected n3"><a href="#"><span class="section-number">12</span><span class="nav-space"></span></a></td>
+              <td class="nav-title selected n3"><a href="#">Performance optimizations</a></td>
+             </tr>
+             <tr class="nav-subentries selected n3 _2">
+              <td class="nav-subentries-number selected n3"></td>
+              <td class="nav-subentries selected n3">
+               <table class="nav n4">
+                <tbody class="nav-before-open n4">
+                 <tr class="nav-entry n4 _1">
+                  <td class="nav-number n4">
+                   <a href="#performance-guidelines"><span class="section-number">1</span><span class="nav-space"></span></a>
+                  </td>
+                  <td class="nav-title n4"><a href="#performance-guidelines">Performance guidelines</a></td>
+                 </tr>
+                 <tr class="nav-entry n4 _2">
+                  <td class="nav-number n4">
+                   <a href="#low-level-parser-implementations"><span class="section-number">2</span><span class="nav-space"></span></a>
+                  </td>
+                  <td class="nav-title n4"><a href="#low-level-parser-implementations">Low‐level parser implementations</a></td>
+                 </tr>
+                </tbody>
+               </table>
+              </td>
+             </tr>
+            </tbody>
+            <tbody class="nav-after-open n3">
+             <tr class="nav-entry n3 _3">
+              <td class="nav-number n3"><a href="tips-and-tricks.html"><span class="section-number">13</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="tips-and-tricks.html">Tips and tricks</a></td>
+             </tr>
+            </tbody>
+           </table>
+          </td>
+         </tr>
+        </tbody>
+        <tbody class="nav-after-open n2">
+         <tr class="nav-entry n2 _6">
+          <td class="nav-number n2"><a href="../reference/index.html"><span class="section-number">6</span><span class="nav-space"></span></a></td>
+          <td class="nav-title n2"><a href="../reference/index.html">Reference</a></td>
+         </tr>
+        </tbody>
+       </table>
+      </td>
+     </tr>
+    </tbody>
+   </table>
+  </div>
+  <div id="copyright">
+    <span>Copyright © 2011 <a href="../about/contact.html">Stephan Tolksdorf</a></span>
+  </div>
+ </div>
+ </div>
+ </div>
+ <div id="wrapper">   
+ <div id="main">
+ <div id="main-content"> 
+ <div id="breadcrumbs">
+  <span class="breadcrumbs">
+   <span id="breadcrumbs-parents"><a href="../index.html">FParsec Documentation</a><span class="breadcrumbs-sep"> > </span><a href="index.html">User’s Guide</a></span><span class="breadcrumbs-sep"> > </span>Performance optimizations
+  </span>
+ </div>  
+ <div class="section s2">
+  <h1 class="title h2"><span><span class="section-number">5.12</span> Performance optimizations</span></h1>
+  <div class="intro i2">
+   <div class="para _1">
+    <p>
+     In the past, the relatively poor performance of parser combinator libraries has often been cited as the primary impediment to their more
+     widespread adoption. For this reason optimal performance stood front and center as a design goal during the development of FParsec and a lot of
+     effort has been spent on optimizing parsing speed. As a result, FParsec has become so fast that parsers implemented with FParsec often
+     significantly outperform parsers created by parser generator tools like fslex &amp; fsyacc.
+    </p>
+   </div>
+   <div class="para _2">
+    <p>
+     In general, a parser implemented in FParsec can get close to the performance of a hand‐optimized recursive‐descent parser written in C#. Due to
+     the multi‐layered architecture of the FParsec API, you always have the option to fall back to the lower‐level API should a particular parser
+     component implemented with the high‐level API turn out to be too slow. Hence, if you choose FParsec for implementing your parsers, you don’t have
+     to worry that performance will become a reason for switching away from FParsec.
+    </p>
+   </div>
+  </div>
+  <div id="performance-guidelines" class="section s3">
+   <h2 class="title h3"><span><span class="section-number">5.12.1</span> Performance guidelines</span></h2>
+   <div class="intro i3">
+    <div class="para _1 lcinp">
+     <p>If you strive for optimal performance in your parser applications, try to adhere to the following guidelines:</p>
+     <div class="dl multi-para">
+      <dl class="dl multi-para">
+       <dt class="_1">Avoid backtracking</dt>
+       <dd class="_1">
+        <div class="para _1">
+         <p>
+          Try to avoid backtracking where possible. Sometimes it’s already enough to factor out a common prefix from a parser expression to avoid
+          backtracking, e.g. by transforming <code class="fsharp"><span class="cp">(</span><span class="ci">prefix</span> <a
+          href="../reference/primitives.html#members.:62::62::63:"><span class="co">&gt;&gt;?</span></a> <span class="ci">p1</span><span
+          class="cp">)</span> <a href="../reference/primitives.html#members.:60::124::62:"><span class="co">&lt;|&gt;</span></a> <span
+          class="cp">(</span><span class="ci">prefix</span> <a href="../reference/primitives.html#members.:62::62::63:"><span
+          class="co">&gt;&gt;?</span></a> <span class="ci">p2</span><span class="cp">)</span></code> to <code class="fsharp"><span
+          class="ci">prefix</span> <a href="../reference/primitives.html#members.:62::62:.."><span class="co">&gt;&gt;.</span></a> <span
+          class="cp">(</span><span class="ci">p1</span> <a href="../reference/primitives.html#members.:60::124::62:"><span
+          class="co">&lt;|&gt;</span></a> <span class="ci">p2</span><span class="cp">)</span></code>. Some simple backtracking can also be avoided by
+          parsing whitespace as trailing whitespace instead of leading whitespace.
+         </p>
+        </div>
+        <div class="para _2">
+         <p>
+          If you’re designing a programming or markup language, you should try to minimize the need for backtracking, both to simplify parsing and to
+          avoid exponential worst‐case behaviour.
+         </p>
+        </div>
+       </dd>
+       <dt class="_2">Prefer specialized parsers</dt>
+       <dd class="_2">
+        <div class="para _1">
+         <p>
+          FParsec provides a number of specialized parsers and combinators for various purposes. Using more specialized primitives instead of
+          reimplementing them with generic combinators will often safe you time and improve parsing speed.
+         </p>
+        </div>
+        <div class="para _2 lcinp">
+         <p>In particular:</p>
+         <ul class="l1">
+          <li class="_1">
+           Prefer the <code class="fsharp"><span class="ci">skip</span><span class="co">...</span></code> variants of parsers and combinators if you
+           don’t need the parser results.
+          </li>
+          <li class="_2">Parse whitespace with the built‐in whitespace parsers.</li>
+          <li class="_3">Parse numbers with the built‐in number parsers.</li>
+          <li class="_4">
+           Prefer to parse strings with the <code class="fsharp"><a href="../reference/primitives.html#members.many"><span
+           class="ci">many</span></a><span class="cp">[</span><span class="cn">1</span><span class="cp">]</span><span class="ci">Satisfy</span><span
+           class="cp">[</span><span class="cn">2</span><span class="cp">]</span><span class="cp">[</span><span class="ci">L</span><span
+           class="cp">]</span></code> parsers.
+          </li>
+          <li class="_5">
+           Consider parsing unicode identifiers with the <code class="fsharp"><a href="../reference/charparsers.html#members.identifier"><span
+           class="ci">identifier</span></a></code> parser.
+          </li>
+         </ul>
+        </div>
+       </dd>
+       <dt class="_3">Construct parsers once</dt>
+       <dd class="_3">
+        <div class="para _1">
+         <p>
+          Constructing a parser can be relatively expensive in comparison to a single invocation of the parser. Hence, if you repeatedly apply the
+          same parser, you should make sure that you construct the parser only once, either by preconstructing it at the beginning or by lazily
+          constructing the parser and then caching it.
+         </p>
+        </div>
+        <div class="para _2">
+         <p>Usually the place where parsers get inadvertently constructed more than once is inside closures.</p>
+        </div>
+        <div class="para _3 lcinp">
+         <p>For example, if you have a local function like</p>
+<pre class="code fsharp"><span class="ck">fun</span> <span class="ci">stream</span> <span class="cr">-&gt;</span>
+    <span class="ck">let</span> <span class="ci">reply</span> <span class="cp">=</span> <span class="cp">(</span><span class="ci">parser1</span> <a href="../reference/primitives.html#members.:62::62:.."><span class="co">&gt;&gt;.</span></a> <span class="ci">parser2</span><span class="cp">)</span> <span class="ci">stream</span>
+    <span class="ck">if</span> <span class="ci">reply</span><span class="cm">.</span><a href="../reference/reply.html#members.Status"><span class="ci">Status</span></a> <span class="co">=</span> <a href="../reference/primitives.html#members.Ok"><span class="ci">Ok</span></a> <span class="ck">then</span> <span class="clc"><span class="cld">//</span> ...</span>
+    <span class="ck">else</span> <span class="clc"><span class="cld">//</span> ...</span>
+</pre>
+         <p>
+          you should avoid the repeated construction of <code class="fsharp"><span class="ci">parser1</span> <a
+          href="../reference/primitives.html#members.:62::62:.."><span class="co">&gt;&gt;.</span></a> <span class="ci">parser2</span></code> every
+          time the closure is called by moving the construction outside of the closure, as in
+         </p>
+<pre class="code fsharp"><span class="ck">let</span> <span class="ci">parser</span> <span class="cp">=</span> <span class="ci">parser1</span> <a href="../reference/primitives.html#members.:62::62:.."><span class="co">&gt;&gt;.</span></a> <span class="ci">parser2</span>
+<span class="ck">fun</span> <span class="ci">stream</span> <span class="cr">-&gt;</span>
+    <span class="ck">let</span> <span class="ci">reply</span> <span class="cp">=</span> <span class="ci">parser</span> <span class="ci">stream</span>
+    <span class="ck">if</span> <span class="ci">reply</span><span class="cm">.</span><a href="../reference/reply.html#members.Status"><span class="ci">Status</span></a> <span class="co">=</span> <a href="../reference/primitives.html#members.Ok"><span class="ci">Ok</span></a> <span class="ck">then</span> <span class="clc"><span class="cld">//</span>...</span>
+    <span class="ck">else</span> <span class="clc"><span class="cld">//</span> ...</span>
+</pre>
+        </div>
+        <div class="para _4 lcinp">
+         <p>
+          Also, you shouldn’t wrap a parser expression inside a function just to avoid F#’s value restriction if you can achieve the same goal with a
+          type annotation. For example, you should <strong>not</strong> try to fix the compiler error in the first example of the <a
+          href="../tutorial.html#fs-value-restriction">tutorial chapter on F#’s value restriction</a> by replacing
+         </p>
+<pre class="code fsharp"><span class="ck">let</span> <span class="ci">p</span> <span class="cp">=</span> <a href="../reference/charparsers.html#members.pstring"><span class="ci">pstring</span></a> <span class="cs"><span class="cld">"</span>test<span class="crd">"</span></span></pre>
+         <p>with</p>
+<pre class="code fsharp"><span class="ck">let</span> <span class="ci">p</span> <span class="ci">stream</span> <span class="cp">=</span> <a href="../reference/charparsers.html#members.pstring"><span class="ci">pstring</span></a> <span class="cs"><span class="cld">"</span>test<span class="crd">"</span></span> <span class="ci">stream</span></pre>
+        </div>
+       </dd>
+       <dt class="_4">
+        Avoid <code class="fsharp"><a href="../reference/primitives.html#members.parse"><span class="ci">parse</span></a> <span
+        class="cp">{</span><span class="co">...</span><span class="cp">}</span></code> expressions
+       </dt>
+       <dd class="_4">
+        <div class="para _1">
+         <p>See <a href="where-is-the-monad.html#why-the-monadic-syntax-is-slow">Why the monadic syntax is slow</a>.</p>
+        </div>
+       </dd>
+       <dt class="_5">
+        Avoid <code class="fsharp"><a href="../reference/charparsers.html#members.regex"><span class="ci">regex</span></a></code> parsers
+       </dt>
+       <dd class="_5">
+        <div class="para _1">
+         <p>
+          The <code class="fsharp"><a href="../reference/charparsers.html#members.regex"><span class="ci">regex</span></a></code> parser parses a
+          string by applying a .NET regular expression to the input. Since .NET regular expressions are relatively slow, you should reserve the use of
+          the <code class="fsharp"><a href="../reference/charparsers.html#members.regex"><span class="ci">regex</span></a></code> parser for patterns
+          that you can’t easily express with other FParsec parsers and combinators.
+         </p>
+        </div>
+       </dd>
+       <dt class="_6">
+        Consider optimizing large <code class="fsharp"><a href="../reference/primitives.html#members.choice"><span class="ci">choice</span></a></code>
+        parsers
+       </dt>
+       <dd class="_6">
+        <div class="para _1">
+         <p>
+          Formal grammars for programming languages or DSLs often have one or two grammar rules at their core that essentially just enumerate a long
+          list of possible ways to form a statement or expression in that language. A straightforward FParsec implementation of such a grammar rule
+          typically uses the <code class="fsharp"><a href="../reference/primitives.html#members.choice"><span class="ci">choice</span></a></code>
+          combinator to combine a list of parsers for all the alternatives.
+         </p>
+        </div>
+        <div class="para _2">
+         <p>
+          Usually such an implementation with a large <code class="fsharp"><a href="../reference/primitives.html#members.choice"><span
+          class="ci">choice</span></a></code>‐based parser will do just fine. However, if parsing performance is critical for your application,
+          replacing a large <code class="fsharp"><a href="../reference/primitives.html#members.choice"><span class="ci">choice</span></a></code>
+          parser with a custom‐made combinator can be an optimization with a high benefit‐cost ratio. The next section explains this optimization in
+          more detail.
+         </p>
+        </div>
+       </dd>
+      </dl>
+     </div>
+    </div>
+   </div>
+  </div>
+  <div id="low-level-parser-implementations" class="section s3">
+   <h2 class="title h3"><span><span class="section-number">5.12.2</span> Low‐level parser implementations</span></h2>
+   <div class="intro i3">
+    <div class="para _1">
+     <p>
+      FParsec’s high‐level API consists of its built‐in parsers and combinators in the <code class="fsharp"><a
+      href="../reference/primitives.html"><span class="ci">Primitives</span></a></code> and <code class="fsharp"><a
+      href="../reference/charparsers.html"><span class="ci">CharParsers</span></a></code> module. The high‐level API allows you to easily construct
+      parsers in a concise and rather declarative way. Usually you will author most of your parsers using the high‐level API, because that’s the most
+      productive way to do it.
+     </p>
+    </div>
+    <div class="para _2">
+     <p>
+      However, sometimes you might find that a specific piece of parser functionality is a bit inconvenient to express through the high‐level API or
+      that the high‐level implementation isn’t as fast as you had hoped for. In those situations it’s a great advantage that FParsec allows you to
+      drop down to the low‐level API, so that you can implement your own special‐purpose parser and combinator primitives.
+     </p>
+    </div>
+    <div class="para _3">
+     <p>
+      We have already covered the basics of the low‐level API in the chapters on the <a href="internals-of-a-simple-parser-function.html">internals of
+      a simple parser function</a> and <a href="applying-parsers-in-sequence.html">applying parsers in sequence</a>. In this section we will discuss
+      some examples that demonstrate how you can use low‐level parser implementations for optimization purposes.
+     </p>
+    </div>
+    <div class="para _4">
+     <p>
+      One example of a parser implemented using the low‐level API is contained in the samples folder of the FParsec distribution in <span
+      class="tt">samples/FSharpParsingSample/FParsecVersion/parser.fs</span>. It is a parser for an identifier string that is not identical with a
+      keyword.
+     </p>
+    </div>
+    <div class="para _5 lcinp">
+     <p>
+      The low‐level implementation uses another parser, <code class="fsharp"><span class="ci">identifierString</span></code>, to parse an identifier
+      string and then backtracks when the parsed string is a keyword:
+     </p>
+<pre class="code fsharp"><span class="ck">let</span> <a href="../reference/charparsers.html#members.identifier"><span class="ci">identifier</span></a> <span class="cp">:</span> <a href="../reference/primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">string</span><span class="cp">,</span> <span class="ci">unit</span><span class="cp">&gt;</span> <span class="cp">=</span>
+    <span class="ck">let</span> <span class="ci">expectedIdentifier</span> <span class="cp">=</span> <a href="../reference/error.html#members.expected"><span class="ci">expected</span></a> <span class="cs"><span class="cld">"</span>identifier<span class="crd">"</span></span>
+    <span class="ck">fun</span> <span class="ci">stream</span> <span class="cr">-&gt;</span>
+        <span class="ck">let</span> <span class="ci">state</span> <span class="cp">=</span> <span class="ci">stream</span><span class="cm">.</span><a href="../reference/charstream.html#CharStream_1.members.State"><span class="ci">State</span></a>
+        <span class="ck">let</span> <span class="ci">reply</span> <span class="cp">=</span> <span class="ci">identifierString</span> <span class="ci">stream</span>
+        <span class="ck">if</span> <span class="ci">reply</span><span class="cm">.</span><a href="../reference/reply.html#members.Status"><span class="ci">Status</span></a> <span class="co">&lt;&gt;</span> <a href="../reference/primitives.html#members.Ok"><span class="ci">Ok</span></a> <span class="co">||</span> <span class="ci">not</span> <span class="cp">(</span><span class="ci">isKeyword</span> <span class="ci">reply</span><span class="cm">.</span><a href="../reference/reply.html#members.Result"><span class="ci">Result</span></a><span class="cp">)</span> <span class="ck">then</span> <span class="ci">reply</span>
+        <span class="ck">else</span> <span class="clc"><span class="cld">//</span> result is keyword, so backtrack to before the string</span>
+            <span class="ci">stream</span><span class="cm">.</span><a href="../reference/charstream.html#CharStream_1.members.BacktrackTo"><span class="ci">BacktrackTo</span></a><span class="cp">(</span><span class="ci">state</span><span class="cp">)</span>
+            <a href="../reference/reply.html"><span class="ci">Reply</span></a><span class="cp">(</span><a href="../reference/primitives.html#members.Error"><span class="ci">Error</span></a><span class="cp">,</span> <span class="ci">expectedIdentifier</span><span class="cp">)</span>
+</pre>
+    </div>
+    <div class="para _6 lcinp">
+     <p>The same parser could also be implemented with the high‐level API:</p>
+<pre class="code fsharp"><span class="ck">let</span> <a href="../reference/charparsers.html#members.identifier"><span class="ci">identifier</span></a> <span class="cp">=</span>
+    <a href="../reference/primitives.html#members.attempt"><span class="ci">attempt</span></a> <span class="cp">(</span><span class="ci">identifierString</span>
+             <a href="../reference/primitives.html#members.:62::62::61:"><span class="co">&gt;&gt;=</span></a> <span class="ck">fun</span> <span class="ci">str</span> <span class="cr">-&gt;</span>
+                     <span class="ck">if</span> <span class="ci">isIdentifier</span> <span class="ci">str</span> <span class="ck">then</span> <a href="../reference/primitives.html#members.preturn"><span class="ci">preturn</span></a> <span class="ci">str</span>
+                     <span class="ck">else</span> <a href="../reference/primitives.html#members.pzero"><span class="ci">pzero</span></a><span class="cp">)</span> <a href="../reference/primitives.html#members.:60::63::62:"><span class="co">&lt;?&gt;</span></a> <span class="cs"><span class="cld">"</span>identifier<span class="crd">"</span></span>
+
+</pre>
+    </div>
+    <div class="para _7">
+     <p>
+      The high‐level version is a bit more concise, but whether it is also easier to understand is debatable. The low‐level version seems at least a
+      bit more self‐explanatory and hence is probably more accessible to new FParsec users. Since the low‐level implementation is also significantly
+      faster than the high‐level one, this is a good example for a parser that can be improved through a low‐level implementation.
+     </p>
+    </div>
+    <div class="para _8">
+     <p>
+      If you wanted to optimize the performance of the identifier parser even more, you could replace the <code class="fsharp"><span
+      class="ci">identifierString</span></code> parser invocation with direct calls to <code class="fsharp"><a
+      href="../reference/charstream.html#CharStream"><span class="ci">CharStream</span></a></code> methods. However, whether the potential performance
+      gain would be worth the loss in code modularity and maintainability is questionable. A more promising optimization often is to integrate the
+      identifier parser into a higher‐level <code class="fsharp"><a href="../reference/primitives.html#members.choice"><span
+      class="ci">choice</span></a></code>‐based parser, like it is done below in the last example of this section.
+     </p>
+    </div>
+    <div class="para _9">
+     <p>
+      <code class="fsharp"><a href="../reference/primitives.html#members.choice"><span class="ci">choice</span></a></code> parsers with long list of
+      argument parsers are performance‐wise one of the weakest spots of FParsec’s high‐level API. As we noted in the previous section, formal grammars
+      for programming languages or DSLs often have one or two grammar rules at their core that essentially just enumerate a long list of possible ways
+      to form a statement or expression in that language. A straightforward implementation of such a grammar rule using the <code class="fsharp"><a
+      href="../reference/primitives.html#members.choice"><span class="ci">choice</span></a></code> combinator yields only sub‐optimal performance,
+      since the <code class="fsharp"><a href="../reference/primitives.html#members.choice"><span class="ci">choice</span></a></code> parser has no
+      knowledge about its argument parsers and has to try one parser after another.
+     </p>
+    </div>
+    <div class="para _0">
+     <p>
+      This makes large <code class="fsharp"><a href="../reference/primitives.html#members.choice"><span class="ci">choice</span></a></code>‐based
+      parsers an excellent optimization opportunity. With your knowledge about the parser grammar you can often narrow down the set of possible
+      parsers just by peeking at the following one or two chars in the input. Having identified the set of possible parsers (often only consisting of
+      one parser), you can then considerably speed up the dispatch to the right subparser.
+     </p>
+    </div>
+    <div class="para _1 lcinp">
+     <p>For example, take a look at the <a href="../tutorial.html#parsing-json.json-value-parser">JSON‐value parser</a> from the tutorial:</p>
+<pre class="code fsharp"><a href="../reference/primitives.html#members.choice"><span class="ci">choice</span></a> <span class="cp">[</span><span class="ci">jobject</span>
+        <span class="ci">jlist</span>
+        <span class="ci">jstring</span>
+        <span class="ci">jnumber</span>
+        <span class="ci">jtrue</span>
+        <span class="ci">jfalse</span>
+        <span class="ci">jnull</span><span class="cp">]</span>
+</pre>
+    </div>
+    <div class="para _2">
+     <p>
+      If you look at the definitions for the argument parsers, you’ll see that in almost all cases one can decide which parser should handle the input
+      just based on the next char in the input. Hence, we could replace the <code class="fsharp"><a
+      href="../reference/primitives.html#members.choice"><span class="ci">choice</span></a></code>‐based parser with the following low‐level
+      implementation:
+     </p>
+    </div>
+    <div class="para _3 lcinp">
+<pre class="code fsharp"><span class="ck">let</span> <span class="ci">error</span> <span class="cp">=</span> <a href="../reference/error.html#members.expected"><span class="ci">expected</span></a> <span class="cs"><span class="cld">"</span>JSON value<span class="crd">"</span></span>
+<span class="ck">fun</span> <span class="cp">(</span><span class="ci">stream</span><span class="cp">:</span> <a href="../reference/charstream.html#CharStream"><span class="ci">CharStream</span></a><span class="cp">&lt;</span><span class="ci">_</span><span class="cp">&gt;</span><span class="cp">)</span> <span class="cr">-&gt;</span>
+    <span class="ck">match</span> <span class="ci">stream</span><span class="cm">.</span><a href="../reference/charstream.html#CharStream.members.Peek"><span class="ci">Peek</span></a><span class="cp">()</span> <span class="ck">with</span>
+    <span class="cp">|</span> <span class="cc"><span class="cld">'</span>{<span class="crd">'</span></span> <span class="cr">-&gt;</span> <span class="ci">jobject</span> <span class="ci">stream</span>
+    <span class="cp">|</span> <span class="cc"><span class="cld">'</span>[<span class="crd">'</span></span> <span class="cr">-&gt;</span> <span class="ci">jlist</span> <span class="ci">stream</span>
+    <span class="cp">|</span> <span class="cc"><span class="cld">'</span>"<span class="crd">'</span></span> <span class="cr">-&gt;</span> <span class="ci">jstring</span> <span class="ci">stream</span>
+    <span class="cp">|</span> <span class="cc"><span class="cld">'</span>t<span class="crd">'</span></span> <span class="ck">when</span> <span class="ci">stream</span><span class="cm">.</span><a href="../reference/charstream.html#CharStream.members.Skip"><span class="ci">Skip</span></a><span class="cp">(</span><span class="cs"><span class="cld">"</span>true<span class="crd">"</span></span><span class="cp">)</span>  <span class="cr">-&gt;</span> <a href="../reference/reply.html"><span class="ci">Reply</span></a><span class="cp">(</span><span class="ci">JBool</span> <span class="cb">true</span><span class="cp">)</span>
+    <span class="cp">|</span> <span class="cc"><span class="cld">'</span>f<span class="crd">'</span></span> <span class="ck">when</span> <span class="ci">stream</span><span class="cm">.</span><a href="../reference/charstream.html#CharStream.members.Skip"><span class="ci">Skip</span></a><span class="cp">(</span><span class="cs"><span class="cld">"</span>false<span class="crd">"</span></span><span class="cp">)</span> <span class="cr">-&gt;</span> <a href="../reference/reply.html"><span class="ci">Reply</span></a><span class="cp">(</span><span class="ci">JBool</span> <span class="cb">false</span><span class="cp">)</span>
+    <span class="cp">|</span> <span class="cc"><span class="cld">'</span>n<span class="crd">'</span></span> <span class="ck">when</span> <span class="ci">stream</span><span class="cm">.</span><a href="../reference/charstream.html#CharStream.members.Skip"><span class="ci">Skip</span></a><span class="cp">(</span><span class="cs"><span class="cld">"</span>null<span class="crd">"</span></span><span class="cp">)</span>  <span class="cr">-&gt;</span> <a href="../reference/reply.html"><span class="ci">Reply</span></a><span class="cp">(</span><span class="ci">JNull</span><span class="cp">)</span>
+    <span class="cp">|</span> <span class="ci">_</span> <span class="cr">-&gt;</span>
+        <span class="ck">let</span> <span class="ci">stateTag</span> <span class="cp">=</span> <span class="ci">reply</span><span class="cm">.</span><a href="../reference/charstream.html#CharStream.members.StateTag"><span class="ci">StateTag</span></a>
+        <span class="ck">let</span> <span class="ck">mutable</span> <span class="ci">reply</span> <span class="cp">=</span> <span class="ci">jnumber</span> <span class="ci">stream</span>
+        <span class="ck">if</span> <span class="ci">reply</span><span class="cm">.</span><a href="../reference/reply.html#members.Status"><span class="ci">Status</span></a> <span class="co">=</span> <a href="../reference/primitives.html#members.Error"><span class="ci">Error</span></a> <span class="co">&amp;&amp;</span> <span class="ci">stateTag</span> <span class="co">=</span> <span class="ci">stream</span><span class="cm">.</span><a href="../reference/charstream.html#CharStream.members.StateTag"><span class="ci">StateTag</span></a> <span class="ck">then</span>
+           <span class="ci">reply</span><span class="cm">.</span><a href="../reference/reply.html#members.Error"><span class="ci">Error</span></a> <span class="co">&lt;-</span> <span class="ci">error</span>
+        <span class="ci">reply</span>
+</pre>
+    </div>
+    <div class="para _4">
+     <p>
+      A drawback of such a low‐level implementation is that you have to be a bit careful not to overlook any of the possible grammar cases. This is
+      why we applied the <code class="fsharp"><span class="ci">jnumber</span></code> parser in the &#x201C;catch‐all&#x201D; case, so that we don’t
+      depend on the precise grammar rules for numbers.
+     </p>
+    </div>
+    <div class="para _5">
+     <p>
+      You also need to consider how the low‐level implementation affects error messages. When a <code class="fsharp"><a
+      href="../reference/primitives.html#members.choice"><span class="ci">choice</span></a></code> parser fails, it will generate an error message
+      with the error messages from all the argument parsers it tried. This gives a human reader usually enough context to understand the error. For a
+      low‐level implementation it can take a little more effort to ensure that the error messages for every case contain enough information about the
+      grammar context. For example, in our implementation above we had to replace the default error message by <code class="fsharp"><span
+      class="ci">jnumber</span></code> with a custom one, so that the error message generated by the catch‐all case doesn’t create the impression that
+      a JSON value can only be a number.
+     </p>
+    </div>
+    <div class="para _6">
+     <p>
+      By now it is probably obvious that a low‐level parser implementation can actually be quite simple to write, but that it also comes at a certain
+      cost in terms of code modularity and maintainability. Having the option of a low‐level implementation can certainly be what saves a project in
+      certain situations and should give you some peace of mind with regard to parser performance, but generally you should only consider it as a
+      backup option for those cases where you really need it.
+     </p>
+    </div>
+    <div class="para _7">
+     <p>
+      The following example shows again how you can replace a <code class="fsharp"><a href="../reference/primitives.html#members.choice"><span
+      class="ci">choice</span></a></code>‐based parser with a low‐level implementation, this time with a grammar that is a bit more representative of
+      a typical programming language:
+     </p>
+    </div>
+    <div class="para _8 lcinp">
+<pre class="code fsharp"><span class="ck">type</span> <span class="ci">Expr</span> <span class="cp">=</span> <span class="ci">Number</span> <span class="ci">float</span>
+          <span class="cp">|</span> <span class="ci">LetBinding</span> <span class="co">...</span>
+          <span class="cp">|</span> <span class="ci">IfThenElse</span> <span class="co">...</span>
+          <span class="cp">|</span> <span class="co">...</span>
+
+<span class="ck">type</span> <span class="ci">UserState</span> <span class="cp">=</span> <span class="clc"><span class="cld">//</span>...</span>
+
+<span class="ck">type</span> <a href="../reference/primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ctv">'result</span><span class="cp">&gt;</span> <span class="cp">=</span> <a href="../reference/primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ctv">'result</span><span class="cp">,</span> <span class="ci">UserState</span><span class="cp">&gt;</span>
+
+<span class="ck">type</span> <span class="ci">Keyword</span> <span class="cp">=</span> <span class="ci">None</span> <span class="cp">=</span> <span class="cn">0</span>
+             <span class="cp">|</span> <span class="ci">If</span>   <span class="cp">=</span> <span class="cn">1</span>
+             <span class="cp">|</span> <span class="ci">Let</span>  <span class="cp">=</span> <span class="cn">2</span>
+             <span class="clc"><span class="cld">//</span> ...</span>
+
+<span class="ck">let</span> <span class="ci">stringToKeyword</span> <span class="cp">=</span> <a href="../reference/staticmapping.html#members.createStaticStringMapping"><span class="ci">createStaticStringMapping</span></a>
+                          <span class="ci">Keyword</span><span class="cm">.</span><span class="ci">None</span>
+                          <span class="cp">[</span><span class="cs"><span class="cld">"</span>if<span class="crd">"</span></span><span class="cp">,</span> <span class="ci">Keyword</span><span class="cm">.</span><span class="ci">If</span>
+                           <span class="cs"><span class="cld">"</span>let<span class="crd">"</span></span><span class="cp">,</span> <span class="ci">Keyword</span><span class="cm">.</span><span class="ci">Let</span>
+                           <span class="clc"><span class="cld">//</span> ...</span>
+                          <span class="cp">]</span>
+
+<span class="ck">let</span> <span class="ci">str</span> <span class="ci">s</span> <span class="cp">=</span> <a href="../reference/charparsers.html#members.pstring"><span class="ci">pstring</span></a> <span class="ci">s</span>
+
+<span class="ck">let</span> <span class="ci">identifierString</span> <span class="cp">:</span> <a href="../reference/primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">string</span><span class="cp">&gt;</span> <span class="cp">=</span> <span class="clc"><span class="cld">//</span> ...</span>
+
+<span class="ck">let</span> <span class="ci">identifierRest</span> <span class="cp">(</span><span class="ci">id</span><span class="cp">:</span> <span class="ci">string</span><span class="cp">)</span> <span class="cp">:</span> <a href="../reference/primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">Expr</span><span class="cp">&gt;</span> <span class="cp">=</span> <span class="co">...</span>
+
+<span class="ck">let</span> <span class="ci">number</span> <span class="cp">:</span> <a href="../reference/primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">Expr</span><span class="cp">&gt;</span> <span class="cp">=</span> <span class="clc"><span class="cld">//</span> ... (parser for floating-point number)</span>
+
+<span class="ck">let</span> <span class="ci">ifThenElseRest</span>   <span class="cp">:</span> <a href="../reference/primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">Expr</span><span class="cp">&gt;</span> <span class="cp">=</span> <span class="clc"><span class="cld">//</span> ...</span>
+<span class="ck">let</span> <span class="ci">letBindingRest</span>   <span class="cp">:</span> <a href="../reference/primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">Expr</span><span class="cp">&gt;</span> <span class="cp">=</span> <span class="clc"><span class="cld">//</span> ...</span>
+<span class="ck">let</span> <span class="ci">exprInParensRest</span> <span class="cp">:</span> <a href="../reference/primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">Expr</span><span class="cp">&gt;</span> <span class="cp">=</span> <span class="clc"><span class="cld">//</span> ...</span>
+
+<span class="clc"><span class="cld">//</span> The parser after this comment is a replacement for</span>
+<span class="clc"><span class="cld">//</span>     let identifierStringButNoKeyword =</span>
+<span class="clc"><span class="cld">//</span>         (* implementation like identifier parser in the first example above *)</span>
+<span class="clc"><span class="cld">//</span></span>
+<span class="clc"><span class="cld">//</span>     let identifier   : Parser&lt;Expr&gt; = identifierStringButNoKeyword</span>
+<span class="clc"><span class="cld">//</span>                                       &gt;&gt;= identifierRest</span>
+<span class="clc"><span class="cld">//</span></span>
+<span class="clc"><span class="cld">//</span>     let ifThenElse   : Parser&lt;Expr&gt; = str "if"  &gt;&gt;. ifThenElseRest</span>
+<span class="clc"><span class="cld">//</span>     let letBinding   : Parser&lt;Expr&gt; = str "let" &gt;&gt;. letBindingRest</span>
+<span class="clc"><span class="cld">//</span>     let exprInParens : Parser&lt;Expr&gt; = str "("   &gt;&gt;. exprInParensRest</span>
+<span class="clc"><span class="cld">//</span></span>
+<span class="clc"><span class="cld">//</span>     let expr = choice [identifierStringNoKeyword</span>
+<span class="clc"><span class="cld">//</span>                        number</span>
+<span class="clc"><span class="cld">//</span>                        ifThenElse</span>
+<span class="clc"><span class="cld">//</span>                        exprInParens</span>
+<span class="clc"><span class="cld">//</span>                        // ...</span>
+<span class="clc"><span class="cld">//</span>                       ]</span>
+<span class="clc"><span class="cld">//</span></span>
+<span class="ck">let</span> <span class="ci">expr</span> <span class="cp">:</span> <a href="../reference/primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">Expr</span><span class="cp">&gt;</span> <span class="cp">=</span>
+  <span class="ck">fun</span> <span class="ci">stream</span> <span class="cr">-&gt;</span>
+    <span class="ck">let</span> <span class="ci">stateTag</span> <span class="cp">=</span> <span class="ci">stream</span><span class="cm">.</span><a href="../reference/charstream.html#CharStream.members.StateTag"><span class="ci">StateTag</span></a>
+    <span class="ck">let</span> <span class="ci">reply</span> <span class="cp">=</span> <span class="ci">identifierString</span> <span class="ci">stream</span>
+    <span class="ck">if</span> <span class="ci">reply</span><span class="cm">.</span><a href="../reference/reply.html#members.Status"><span class="ci">Status</span></a> <span class="co">=</span> <a href="../reference/primitives.html#members.Ok"><span class="ci">Ok</span></a> <span class="ck">then</span>
+      <span class="ck">match</span> <span class="ci">stringToKeyword</span> <span class="ci">reply</span><span class="cm">.</span><a href="../reference/reply.html#members.Result"><span class="ci">Result</span></a> <span class="ck">with</span>
+      <span class="cp">|</span> <span class="ci">Keyword</span><span class="cm">.</span><span class="ci">None</span> <span class="cr">-&gt;</span> <span class="ci">identifierRest</span> <span class="ci">reply</span><span class="cm">.</span><a href="../reference/reply.html#members.Result"><span class="ci">Result</span></a> <span class="ci">stream</span>
+      <span class="cp">|</span> <span class="ci">Keyword</span><span class="cm">.</span><span class="ci">If</span>   <span class="cr">-&gt;</span> <span class="ci">ifThenElseRest</span> <span class="ci">stream</span>
+      <span class="cp">|</span> <span class="ci">Keyword</span><span class="cm">.</span><span class="ci">Let</span>  <span class="cr">-&gt;</span> <span class="ci">letBindingRest</span> <span class="ci">stream</span>
+      <span class="clc"><span class="cld">//</span> ...</span>
+    <span class="ck">elif</span> <span class="ci">reply</span><span class="cm">.</span><a href="../reference/reply.html#members.Status"><span class="ci">Status</span></a> <span class="co">=</span> <a href="../reference/primitives.html#members.Error"><span class="ci">Error</span></a> <span class="co">&amp;&amp;</span> <span class="ci">stateTag</span> <span class="co">=</span> <span class="ci">stream</span><span class="cm">.</span><a href="../reference/charstream.html#CharStream.members.StateTag"><span class="ci">StateTag</span></a> <span class="ck">then</span> <span class="clc"><span class="cld">//</span> no identifier</span>
+      <span class="ck">match</span> <span class="ci">stream</span><span class="cm">.</span><a href="../reference/charstream.html#CharStream.members.Peek"><span class="ci">Peek</span></a><span class="cp">()</span> <span class="ck">with</span>
+      <span class="cp">|</span> <span class="cc"><span class="cld">'</span>(<span class="crd">'</span></span> <span class="cr">-&gt;</span> <span class="ci">stream</span><span class="cm">.</span><a href="../reference/charstream.html#CharStream.members.Skip"><span class="ci">Skip</span></a><span class="cp">()</span><span class="cp">;</span> <span class="ci">exprInParensRest</span> <span class="ci">stream</span>
+      <span class="cp">|</span> <span class="ci">c</span> <span class="ck">when</span> <a href="../reference/charparsers.html#members.isDigit"><span class="ci">isDigit</span></a> <span class="ci">c</span> <span class="cr">-&gt;</span> <span class="ci">number</span> <span class="ci">stream</span>
+      <span class="clc"><span class="cld">//</span> ...</span>
+    <span class="ck">else</span> <span class="clc"><span class="cld">//</span> error within identifier string</span>
+      <a href="../reference/reply.html"><span class="ci">Reply</span></a><span class="cp">(</span><span class="ci">reply</span><span class="cm">.</span><a href="../reference/reply.html#members.Status"><span class="ci">Status</span></a><span class="cp">,</span> <span class="ci">reply</span><span class="cm">.</span><a href="../reference/reply.html#members.Error"><span class="ci">Error</span></a><span class="cp">)</span>
+
+</pre>
+    </div>
+   </div>
+  </div>
+ </div>
+ </div>
+ </div>   
+ </div>
+</body>
+</html>
+

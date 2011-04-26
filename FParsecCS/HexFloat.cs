@@ -5,7 +5,7 @@ using System;
 
 namespace FParsec {
 
-internal static class HexFloat {
+public static class HexFloat {
 // see the documentation of floatToHexString and floatOfHexString for more info
 
 #pragma warning disable 0429 // unreachable expression code
@@ -34,9 +34,7 @@ public static string DoubleToHexString(double x) {
     const int maxFractNibbles = (maxBits - 1)/4 + (((maxBits - 1)%4) == 0 ? 0 : 1);
     const ulong mask  = (1UL << (maxBits - 1)) - 1; // mask for lower (maxBits - 1) bits
 
-#if SILVERLIGHT && !SILVERLIGHT4
-    ulong xn = BitConverter.ToUInt64(BitConverter.GetBytes(x), 0);
-#elif LOW_TRUST
+#if LOW_TRUST
     ulong xn = unchecked((ulong)BitConverter.DoubleToInt64Bits(x));
 #else
     ulong xn  = *((ulong*)(&x)); // reinterpret double as ulong
@@ -330,9 +328,7 @@ public static double DoubleFromHexString(string str) {
         }
         exp -= minExp - 1; // add bias
         xn = (((ulong)sign) << ((maxBits - 1) + expBits)) | (((ulong)exp) << (maxBits - 1)) | xn;
-    #if SILVERLIGHT && !SILVERLIGHT4
-        return BitConverter.ToDouble(BitConverter.GetBytes(xn), 0);
-    #elif LOW_TRUST
+    #if LOW_TRUST
         return BitConverter.Int64BitsToDouble(unchecked((long)xn));
     #else
         return *((double*)(&xn));

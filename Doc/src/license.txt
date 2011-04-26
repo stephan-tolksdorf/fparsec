@@ -1,0 +1,28 @@
+﻿[section License]
+
+Except where noted otherwise, the FParsec library in source and binary form is distributed under the @Simplified BSD License@. The Simplified BSD License (a.k.a. "2-clause BSD License") is a simple, permissive license that is [url "http://www.opensource.org/licenses/bsd-license.php" OSI-compliant] and [url "http://www.gnu.org/licenses/license-list.html" GPL 2-compatible].
+
+FParsec incorporates data derived from the [url "http://unicode.org/ucd/" Unicode Character Database] v. 6.0, Copyright (c) 1991-2010 Unicode, Inc., which is distributed under the following terms:[br][url "http://www.unicode.org/terms_of_use.html#Exhibit1"]
+
+The documentation in the =Doc= folder is licensed under the [@ Creative Commons Attribution-NonCommercial 3.0 Unported License]. This Creative Commons license does not allow you to use the documentation for commercial purposes without permission. This means, for example, that you cannot sell the documentation in book form for profit or put it on a web content farm in order to earn money with ads. However, *you can of course use the documentation in a commercial context* (e.g. put it on the intranet of a commercial corporation), as long as you're not trying to directly earn money from the text of the documentation.
+
+[section Simplified BSD License]
+
+Copyright (c) 2007-2011, Stephan Tolksdorf. All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+- Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+- Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+
+[* This software is provided by the copyright holders "as is" and any express or implied warranties, including, but not limited to, the implied warranties of merchantability and fitness for a particular purpose are disclaimed. In no event shall the copyright holders be liable for any direct, indirect, incidental, special, exemplary, or consequential damages (including, but not limited to, procurement of substitute goods or services; loss of use, data, or profits; or business interruption) however caused and on any theory of liability, whether in contract, strict liability, or tort (including negligence or otherwise) arising in any way out of the use of this software, even if advised of the possibility of such damage.]
+[/section]
+
+[section Creative Commons Attribution-NonCommercial 3.0 Unported License]
+
+Summary: [url "http://creativecommons.org/licenses/by-nc/3.0/"]
+
+The full license text: [url "http://creativecommons.org/licenses/by-nc/3.0/legalcode"]
+
+[/section]
+
+[/section]

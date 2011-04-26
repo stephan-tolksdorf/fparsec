@@ -1,0 +1,1400 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+ <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+ <title>Changelog</title>
+ <link rel="stylesheet" type="text/css" media="all" href="../css/style.css" /> 
+ <link rel="stylesheet" type="text/css" media="screen" href="../css/screen-sidebar.css" />  
+ <!--[if lt IE 9]>
+ <link rel="stylesheet" type="text/css" media="all" href="../css/style-ie.css" /> 
+ <![endif]-->
+ <!--[if IE 6]>
+ <link rel="stylesheet" type="text/css" media="all" href="../css/style-ie6.css" /> 
+ <![endif]-->
+ <link rel="stylesheet" type="text/css" media="print" href="../css/print.css" />
+</head>
+<body>
+ <div id="fixed-layer">
+ <div id="fixed-wrapper">
+ <div id="sidebar">
+  <div id="top-links"><span><a href="http://bitbucket.org/fparsec/main">FParsec @ BitBucket</a> | <a href="https://bitbucket.org/fparsec/main/issues">Report a bug</a> | <a href="mailto:fparsec [at] quanttec.com?subject=FParsec&body=Hello Stephan,%0A%0A[your feedback]">Feedback</a></span></div>
+  <div id="nav-tree">
+   <table class="nav n1">
+    <tbody class="nav-open n1">
+     <tr class="nav-entry n1 _1">
+      <td class="nav-number n1"></td>
+      <td class="nav-title n1"><a href="../index.html">FParsec Documentation</a></td>
+     </tr>
+     <tr class="nav-subentries n1 _1">
+      <td class="nav-subentries-number n1"></td>
+      <td class="nav-subentries n1">
+       <table class="nav n2">
+        <tbody class="nav-open n2">
+         <tr class="nav-entry n2 _1">
+          <td class="nav-number n2"><a href="index.html"><span class="section-number">1</span><span class="nav-space"></span></a></td>
+          <td class="nav-title n2"><a href="index.html">About FParsec</a></td>
+         </tr>
+         <tr class="nav-subentries n2 _1">
+          <td class="nav-subentries-number n2"></td>
+          <td class="nav-subentries n2">
+           <table class="nav n3">
+            <tbody class="nav-before-open n3">
+             <tr class="nav-entry n3 _1">
+              <td class="nav-number n3">
+               <a href="fparsec-vs-alternatives.html"><span class="section-number">1</span><span class="nav-space"></span></a>
+              </td>
+              <td class="nav-title n3"><a href="fparsec-vs-alternatives.html">FParsec vs alternatives</a></td>
+             </tr>
+             <tr class="nav-entry n3 _2">
+              <td class="nav-number n3"><a href="status-roadmap.html"><span class="section-number">2</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="status-roadmap.html">Status &amp; Roadmap</a></td>
+             </tr>
+            </tbody>
+            <tbody class="nav-open selected n3">
+             <tr class="nav-entry selected n3 _3">
+              <td class="nav-number selected n3"><a href="#"><span class="section-number">3</span><span class="nav-space"></span></a></td>
+              <td class="nav-title selected n3"><a href="#">Changelog</a></td>
+             </tr>
+             <tr class="nav-subentries selected n3 _3">
+              <td class="nav-subentries-number selected n3"></td>
+              <td class="nav-subentries selected n3">
+               <table class="nav n4">
+                <tbody class="nav-before-open n4">
+                 <tr class="nav-entry n4 _1">
+                  <td class="nav-number n4"></td>
+                  <td class="nav-title n4"><a href="#v0_9">Version 0.9.0, 2011‒04‒26</a></td>
+                 </tr>
+                 <tr class="nav-entry n4 _2">
+                  <td class="nav-number n4"></td>
+                  <td class="nav-title n4"><a href="#v0_8_x">Version 0.8.x, no release</a></td>
+                 </tr>
+                 <tr class="nav-entry n4 _3">
+                  <td class="nav-number n4"></td>
+                  <td class="nav-title n4"><a href="#v0_7_3_1">Version 0.7.3.1, 2009‒02‒26</a></td>
+                 </tr>
+                 <tr class="nav-entry n4 _4">
+                  <td class="nav-number n4"></td>
+                  <td class="nav-title n4"><a href="#v0_7_3">Version 0.7.3, 2008‒12‒08</a></td>
+                 </tr>
+                 <tr class="nav-entry n4 _5">
+                  <td class="nav-number n4"></td>
+                  <td class="nav-title n4"><a href="#v0_7_2">Version 0.7.2, 2008‒11‒17</a></td>
+                 </tr>
+                 <tr class="nav-entry n4 _6">
+                  <td class="nav-number n4"></td>
+                  <td class="nav-title n4"><a href="#v0_7_1">Version 0.7.1, 2008‒09‒29</a></td>
+                 </tr>
+                 <tr class="nav-entry n4 _7">
+                  <td class="nav-number n4"></td>
+                  <td class="nav-title n4"><a href="#v0_7_0_1">Version 0.7.0.1, 2008‒09‒23</a></td>
+                 </tr>
+                 <tr class="nav-entry n4 _8">
+                  <td class="nav-number n4"></td>
+                  <td class="nav-title n4"><a href="#v0_7">Version 0.7.0, 2008‒09‒13</a></td>
+                 </tr>
+                 <tr class="nav-entry n4 _9">
+                  <td class="nav-number n4"></td>
+                  <td class="nav-title n4"><a href="#v0_6">Version 0.6.0, 2008‒05‒20</a></td>
+                 </tr>
+                 <tr class="nav-entry n4 _0">
+                  <td class="nav-number n4"></td>
+                  <td class="nav-title n4"><a href="#v0_5_1">Version 0.5.1, 2008‒01‒20</a></td>
+                 </tr>
+                 <tr class="nav-entry n4 _1">
+                  <td class="nav-number n4"></td>
+                  <td class="nav-title n4"><a href="#v0_5">Version 0.5.0, 2008‒01‒15</a></td>
+                 </tr>
+                 <tr class="nav-entry n4 _2">
+                  <td class="nav-number n4"></td>
+                  <td class="nav-title n4"><a href="#v0_4_4">Version 0.4.4, 2008‒01‒13</a></td>
+                 </tr>
+                 <tr class="nav-entry n4 _3">
+                  <td class="nav-number n4"></td>
+                  <td class="nav-title n4"><a href="#v0_4_3">Version 0.4.3, 2008‒01‒12</a></td>
+                 </tr>
+                 <tr class="nav-entry n4 _4">
+                  <td class="nav-number n4"></td>
+                  <td class="nav-title n4"><a href="#v0_4_2">Version 0.4.2, 2008‒01‒04</a></td>
+                 </tr>
+                 <tr class="nav-entry n4 _5">
+                  <td class="nav-number n4"></td>
+                  <td class="nav-title n4"><a href="#v0_4_1">Version 0.4.1, 2008‒01‒02</a></td>
+                 </tr>
+                 <tr class="nav-entry n4 _6">
+                  <td class="nav-number n4"></td>
+                  <td class="nav-title n4"><a href="#v0_4">Version 0.4.0, 2007‒12‒30</a></td>
+                 </tr>
+                </tbody>
+               </table>
+              </td>
+             </tr>
+            </tbody>
+            <tbody class="nav-after-open n3">
+             <tr class="nav-entry n3 _4">
+              <td class="nav-number n3"><a href="contact.html"><span class="section-number">4</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="contact.html">Contact</a></td>
+             </tr>
+            </tbody>
+           </table>
+          </td>
+         </tr>
+        </tbody>
+        <tbody class="nav-after-open n2">
+         <tr class="nav-entry n2 _2">
+          <td class="nav-number n2"><a href="../license.html"><span class="section-number">2</span><span class="nav-space"></span></a></td>
+          <td class="nav-title n2"><a href="../license.html">License</a></td>
+         </tr>
+         <tr class="nav-entry n2 _3">
+          <td class="nav-number n2">
+           <a href="../download-and-installation.html"><span class="section-number">3</span><span class="nav-space"></span></a>
+          </td>
+          <td class="nav-title n2"><a href="../download-and-installation.html">Download and installation</a></td>
+         </tr>
+         <tr class="nav-entry n2 _4">
+          <td class="nav-number n2"><a href="../tutorial.html"><span class="section-number">4</span><span class="nav-space"></span></a></td>
+          <td class="nav-title n2"><a href="../tutorial.html">Tutorial</a></td>
+         </tr>
+         <tr class="nav-entry n2 _5">
+          <td class="nav-number n2"><a href="../users-guide/index.html"><span class="section-number">5</span><span class="nav-space"></span></a></td>
+          <td class="nav-title n2"><a href="../users-guide/index.html">User’s Guide</a></td>
+         </tr>
+         <tr class="nav-entry n2 _6">
+          <td class="nav-number n2"><a href="../reference/index.html"><span class="section-number">6</span><span class="nav-space"></span></a></td>
+          <td class="nav-title n2"><a href="../reference/index.html">Reference</a></td>
+         </tr>
+        </tbody>
+       </table>
+      </td>
+     </tr>
+    </tbody>
+   </table>
+  </div>
+  <div id="copyright">
+    <span>Copyright © 2011 <a href="../about/contact.html">Stephan Tolksdorf</a></span>
+  </div>
+ </div>
+ </div>
+ </div>
+ <div id="wrapper">   
+ <div id="main">
+ <div id="main-content"> 
+ <div id="breadcrumbs">
+  <span class="breadcrumbs">
+   <span id="breadcrumbs-parents"><a href="../index.html">FParsec Documentation</a><span class="breadcrumbs-sep"> > </span><a href="index.html">About FParsec</a></span><span class="breadcrumbs-sep"> > </span>Changelog
+  </span>
+ </div>  
+ <div class="section s2">
+  <h1 class="title h2"><span>Changelog</span></h1>
+  <div id="v0_9" class="section s3">
+   <h2 class="title h3"><span>Version 0.9.0, 2011‒04‒26</span></h2>
+   <div class="intro i3">
+    <div class="para _1 lcinp">
+     <ul class="l1">
+      <li class="_1"><a href="#v0_9.highlights">Highlights</a></li>
+      <li class="_2"><a href="#v0_9.changes-to-high-level-api">Changes to high‐level API</a></li>
+      <li class="_3">
+       <a href="#v0_9.removed-variants-of-many-sepby-sependby-and-manytill">Removed variants of <code class="fsharp"><span
+       class="ci">many</span></code>, <code class="fsharp"><span class="ci">sepBy</span></code>, <code class="fsharp"><span
+       class="ci">sepEndBy</span></code> and <code class="fsharp"><span class="ci">manyTill</span></code></a>
+      </li>
+      <li class="_4">
+       <a href="#v0_9.details-on-changes-to-manychars-manycharstill-and-their-variants">Details on changes to <code class="fsharp"><span
+       class="ci">manyChars</span></code>, <code class="fsharp"><span class="ci">manyCharsTill</span></code> and their variants</a>
+      </li>
+      <li class="_5"><a href="#v0_9.changes-to-low-level-api">Changes to low‐level API</a></li>
+      <li class="_6"><a href="#v0_9.background-on-low-level-api-changes">Background on low‐level API changes</a></li>
+     </ul>
+    </div>
+    <div class="para _2 lcinp">
+     <div class="dl multi-para">
+      <dl class="dl multi-para">
+       <dt class="_1"><span class="a" id="v0_9.highlights">Highlights</span></dt>
+       <dd class="_1">
+        <div class="para _1 lcinp">
+         <ul class="l1">
+          <li class="_1">a new <a href="../tutorial.html">tutorial</a> and <a href="../users-guide/index.html">user’s guide</a></li>
+          <li class="_2">2x performance improvements due to a refactored low‐level API</li>
+          <li class="_3">
+           new <code class="fsharp"><a href="../reference/charparsers.html#members.identifier"><span class="ci">identifier</span></a></code> parser
+           for parsing identifiers based on Unicode XID syntax
+          </li>
+          <li class="_4">
+           new <code class="fsharp"><a href="../reference/staticmapping.html"><span class="ci">StaticMapping</span></a></code> module for compiling
+           static key to value mappings into optimized functions (supports <code class="fsharp"><span class="ci">char</span></code>, <code
+           class="fsharp"><span class="ci">int</span></code> and <code class="fsharp"><span class="ci">string</span></code> as key types)
+          </li>
+         </ul>
+        </div>
+       </dd>
+       <dt class="_2"><span class="a" id="v0_9.changes-to-high-level-api">Changes to high‐level API</span></dt>
+       <dd class="_2">
+        <div class="para _1 lcinp">
+         <ul class="l1">
+          <li class="_1">
+           the modules <code class="fsharp"><span class="ci">FParsed</span><span class="cm">.</span><a href="../reference/primitives.html"><span
+           class="ci">Primitives</span></a></code>, <code class="fsharp"><a href="../reference/charparsers.html"><span class="ci">FParsec</span><span
+           class="cm">.</span><span class="ci">CharParsers</span></a></code> and <code class="fsharp"><a href="../reference/error.html"><span
+           class="ci">FParsec</span><span class="cm">.</span><span class="ci">Error</span></a></code> are now automatically opened when the <code
+           class="fsharp"><span class="ci">FParsec</span></code> namespace is opened
+          </li>
+          <li class="_2">
+           new combinators <code class="fsharp"><a href="../reference/primitives.html#members...:62::62:.."><span
+           class="co">.&gt;&gt;.</span></a></code>, <code class="fsharp"><a href="../reference/primitives.html#members...:62::62:..:63:"><span
+           class="co">.&gt;&gt;.?</span></a></code>, <code class="fsharp"><a href="../reference/primitives.html#members.notEmpty"><span
+           class="ci">notEmpty</span></a></code>, <code class="fsharp"><a href="../reference/charparsers.html#members.stringsSepBy"><span
+           class="ci">stringsSepBy</span></a></code>
+          </li>
+          <li class="_3">
+           new parsers <code class="fsharp"><a href="../reference/charparsers.html#members.identifier"><span class="ci">identifier</span></a></code>,
+           <code class="fsharp"><a href="../reference/charparsers.html#interface.unicodeSpaces-parsers"><span class="ci">unicodeSpaces</span><span
+           class="cp">[</span><span class="cn">1</span><span class="cp">]</span></a></code>, <code class="fsharp"><a
+           href="../reference/charparsers.html#members.notFollowedByEof"><span class="ci">notFollowedByEof</span></a></code>
+          </li>
+          <li class="_4">
+           <code class="fsharp"><span class="ci">whitespace</span></code> and <code class="fsharp"><span class="ci">unicodeWhitespace</span></code>
+           has been removed
+          </li>
+          <li class="_5">
+           <code class="fsharp"><a href="../reference/charparsers.html#members.unicodeNewline"><span class="ci">unicodeNewline</span></a></code> no
+           longer recognizes the form feed char <code class="fsharp"><span class="cc"><span class="cld">'</span><span class="ce">\f</span><span
+           class="crd">'</span></span></code> (<code class="fsharp"><span class="cc"><span class="cld">'</span><span class="ce">\u000C</span><span
+           class="crd">'</span></span></code>) as a newline character
+          </li>
+          <li class="_6">
+           some variants of <code class="fsharp"><a href="../reference/primitives.html#members.many"><span class="ci">many</span></a></code>, <code
+           class="fsharp"><a href="../reference/primitives.html#members.sepBy"><span class="ci">sepBy</span></a></code>, <code class="fsharp"><a
+           href="../reference/primitives.html#members.sepEndBy"><span class="ci">sepEndBy</span></a></code>and <code class="fsharp"><a
+           href="../reference/primitives.html#members.manyTill"><span class="ci">manyTill</span></a></code> <a
+           href="#v0_9.removed-variants-of-many-sepby-sependby-and-manytill">have been removed</a>
+          </li>
+          <li class="_7">
+           the <code class="fsharp"><span class="co">...</span><span class="ci">FoldApply</span></code> inline variants of <code class="fsharp"><a
+           href="../reference/primitives.html#members.many"><span class="ci">many</span></a></code>, <code class="fsharp"><a
+           href="../reference/primitives.html#members.sepBy"><span class="ci">sepBy</span></a></code>, <code class="fsharp"><a
+           href="../reference/primitives.html#members.sepEndBy"><span class="ci">sepEndBy</span></a></code> and <code class="fsharp"><a
+           href="../reference/primitives.html#members.manyTill"><span class="ci">manyTill</span></a></code> have been consolidated in the <code
+           class="fsharp"><a href="../reference/primitives.html#members.Inline"><span class="ci">FParsec</span><span class="cm">.</span><span
+           class="ci">Primitives</span><span class="cm">.</span><span class="ci">Inline</span></a></code> helper class
+          </li>
+          <li class="_8">
+           sequence parsers now throw a <code class="fsharp"><span class="ci">System</span><span class="cm">.</span><span
+           class="ci">InvalidOperationException</span></code> instead of a <code class="fsharp"><span class="ci">System</span><span
+           class="cm">.</span><span class="ci">Exception</span></code> to prevent an infinite loop
+          </li>
+          <li class="_9">
+           <code class="fsharp"><a href="../reference/charparsers.html#members.pstring"><span class="ci">pstring</span></a></code>, <code
+           class="fsharp"><a href="../reference/charparsers.html#members.notFollowedByString"><span class="ci">notFollowedByString</span></a></code>
+           and similar parsers now have optimized code paths for argument strings with only 1 char
+          </li>
+          <li class="_0">
+           the behaviour of <code class="fsharp"><a href="../reference/charparsers.html#members.manyChars"><span
+           class="ci">manyChars</span></a></code> and <code class="fsharp"><a href="../reference/charparsers.html#members.manyCharsTill"><span
+           class="ci">manyCharsTill</span></a></code> and their variants <a
+           href="#v0_9.details-on-changes-to-manychars-manycharstill-and-their-variants">has slightly changed</a>
+          </li>
+          <li class="_1">
+           the skip variants of <code class="fsharp"><a href="../reference/charparsers.html#members.manyChars"><span
+           class="ci">manyChars</span></a></code> and <code class="fsharp"><a href="../reference/charparsers.html#members.manyCharsTill"><span
+           class="ci">manyCharsTill</span></a></code> <a href="#v0_9.removed-skip-variants-of-manyChars">have been removed</a>
+          </li>
+          <li class="_2">
+           <p>Some renamings and function signature changes:</p>
+           <div id="v0_9.renamings" class="table">
+            <table cellspacing="0">
+             <caption><span class="table-caption-prefix">Table <span class="table-number">1.3.1.1</span></span></caption>
+             <thead>
+              <tr class="_1">
+               <th class="_1">Old</th>
+               <th class="_2">New</th>
+              </tr>
+             </thead>
+             <tbody>
+              <tr class="_1">
+               <td class="_1"><code class="fsharp"><span class="ci">restOfLine</span></code></td>
+               <td class="_2">
+                <code class="fsharp"><a href="../reference/charparsers.html#members.restOfLine"><span class="ci">restOfLine</span></a> <span
+                class="cb">true</span></code>
+               </td>
+              </tr>
+              <tr class="_2">
+               <td class="_1"><code class="fsharp"><span class="ci">skipRestOfLine</span></code></td>
+               <td class="_2">
+                <code class="fsharp"><a href="../reference/charparsers.html#members.skipRestOfLine"><span class="ci">skipRestOfLine</span></a> <span
+                class="cb">true</span></code>
+               </td>
+              </tr>
+              <tr class="_3">
+               <td class="_1"><code class="fsharp"><span class="ci">skipToEndOfLine</span></code></td>
+               <td class="_2">
+                <code class="fsharp"><a href="../reference/charparsers.html#members.skipRestOfLine"><span class="ci">skipRestOfLine</span></a> <span
+                class="cb">false</span></code>
+               </td>
+              </tr>
+              <tr class="_4">
+               <td class="_1">
+                <code class="fsharp"><span class="ci">skipToString</span><span class="cp">[</span><span class="ci">CI</span><span
+                class="cp">]</span> <span class="ci">str</span> <span class="ci">n</span></code>
+               </td>
+               <td class="_2">
+                <code class="fsharp"><a href="../reference/charparsers.html#members.skipCharsTillString"><span
+                class="ci">skipCharsTillString</span></a><span class="cp">[</span><span class="ci">CI</span><span class="cp">]</span> <span
+                class="ci">str</span> <span class="cb">false</span> <span class="ci">n</span></code>
+               </td>
+              </tr>
+              <tr class="_5">
+               <td class="_1">
+                <code class="fsharp"><span class="ci">charsTillString</span><span class="cp">[</span><span class="ci">CI</span><span
+                class="cp">]</span> <span class="ci">str</span> <span class="ci">n</span></code>
+               </td>
+               <td class="_2">
+                <code class="fsharp"><a href="../reference/charparsers.html#members.charsTillString"><span class="ci">charsTillString</span></a><span
+                class="cp">[</span><span class="ci">CI</span><span class="cp">]</span> <span class="ci">str</span> <span class="cb">true</span> <span
+                class="ci">n</span></code>
+               </td>
+              </tr>
+              <tr class="_6">
+               <td class="_1">
+                <code class="fsharp"><span class="ci">skipCharsTillString</span><span class="cp">[</span><span class="ci">CI</span><span
+                class="cp">]</span> <span class="ci">str</span> <span class="ci">n</span></code>
+               </td>
+               <td class="_2">
+                <code class="fsharp"><a href="../reference/charparsers.html#members.skipCharsTillString"><span
+                class="ci">skipCharsTillString</span></a><span class="cp">[</span><span class="ci">CI</span><span class="cp">]</span> <span
+                class="ci">str</span> <span class="cb">true</span> <span class="ci">n</span></code>
+               </td>
+              </tr>
+              <tr class="_7">
+               <td class="_1"><code class="fsharp"><span class="ci">followedByChar</span> <span class="ci">chr</span></code></td>
+               <td class="_2">
+<pre class="code fsharp"><span class="ck">if</span> <span class="ci">chr</span> <span class="co">=</span> <span class="cc"><span class="cld">'</span><span class="ce">\r</span><span class="crd">'</span></span> <span class="co">||</span> <span class="ci">chr</span> <span class="co">=</span> <span class="cc"><span class="cld">'</span><span class="ce">\n</span><span class="crd">'</span></span> <span class="ck">then</span> <a href="../reference/charparsers.html#members.followedByNewline"><span class="ci">followedByNewline</span></a>
+<span class="ck">else</span> <a href="../reference/charparsers.html#members.followedByString"><span class="ci">followedByString</span></a> <span class="cp">(</span><span class="ci">string</span> <span class="ci">chr</span><span class="cp">)</span>
+</pre>
+               </td>
+              </tr>
+              <tr class="_8">
+               <td class="_1"><code class="fsharp"><span class="ci">notFollowedByChar</span> <span class="ci">chr</span></code></td>
+               <td class="_2">
+<pre class="code fsharp"><span class="ck">if</span> <span class="ci">chr</span> <span class="co">=</span> <span class="cc"><span class="cld">'</span><span class="ce">\r</span><span class="crd">'</span></span> <span class="co">||</span> <span class="ci">chr</span> <span class="co">=</span> <span class="cc"><span class="cld">'</span><span class="ce">\n</span><span class="crd">'</span></span> <span class="ck">then</span> <a href="../reference/charparsers.html#members.notFollowedByNewline"><span class="ci">notFollowedByNewline</span></a>
+<span class="ck">else</span> <a href="../reference/charparsers.html#members.notFollowedByString"><span class="ci">notFollowedByString</span></a> <span class="cp">(</span><span class="ci">string</span> <span class="ci">chr</span><span class="cp">)</span>
+</pre>
+               </td>
+              </tr>
+              <tr class="_9">
+               <td class="_1"><code class="fsharp"><span class="ci">currentCharSatisfies</span> <span class="ci">f</span></code></td>
+               <td class="_2">
+                <code class="fsharp"><a href="../reference/charparsers.html#members.nextCharSatisfies"><span
+                class="ci">nextCharSatisfies</span></a> <span class="ci">f</span></code>
+               </td>
+              </tr>
+              <tr class="_0">
+               <td class="_1"><code class="fsharp"><span class="ci">nextCharSatisfies</span> <span class="ci">f</span></code></td>
+               <td class="_2">
+                <code class="fsharp"><a href="../reference/charparsers.html#members.next2CharsSatisfy"><span
+                class="ci">next2CharsSatisfy</span></a> <span class="cp">(</span><span class="ck">fun</span> <span class="ci">_</span> <span
+                class="ci">c1</span> <span class="cr">-&gt;</span> <span class="ci">f</span> <span class="ci">c1</span><span
+                class="cp">)</span></code>
+               </td>
+              </tr>
+             </tbody>
+            </table>
+           </div>
+          </li>
+         </ul>
+        </div>
+        <div class="para _2 lcinp">
+         <ul class="l1">
+          <li class="_1">
+           <p>
+            <code class="fsharp"><a href="../reference/operatorprecedenceparser.html#members.OperatorPrecedenceParser"><span
+            class="ci">OperatorPrecedenceParser</span></a></code> has changed:
+           </p>
+           <ul class="l2">
+            <li class="_1">
+             all types have been moved from the <code class="fsharp"><span class="ci">FParsec</span><span class="cm">.</span><span
+             class="ci">OperatorPrecedenceParser</span></code> module into the main <code class="fsharp"><span class="ci">FParsec</span></code>
+             namespace
+            </li>
+            <li class="_2">
+             the operator types <code class="fsharp"><span class="ci">InfixOp</span></code>, <code class="fsharp"><span
+             class="ci">PrefixOp</span></code>, … classes have been renamed to <code class="fsharp"><a
+             href="../reference/operatorprecedenceparser.html#members.InfixOperator"><span class="ci">InfixOperator</span></a></code>, <code
+             class="fsharp"><a href="../reference/operatorprecedenceparser.html#members.PrefixOperator"><span
+             class="ci">PrefixOperator</span></a></code>, …
+            </li>
+            <li class="_3">
+             <code class="fsharp"><span class="ci">Assoc</span></code> has been renamed to <code class="fsharp"><a
+             href="../reference/operatorprecedenceparser.html#interface.Associativity"><span class="ci">Associativity</span></a></code>
+            </li>
+            <li class="_4">
+             the &#x201C;whitespace‐parser&#x201D; argument of the operator types has been <a
+             href="../reference/operatorprecedenceparser.html#members.Operator">generalized into an &#x201C;after‐string‐parser&#x201D; argument</a>
+            </li>
+            <li class="_5">
+             if you previously used the <code class="fsharp"><span class="ci">InfixOp'</span></code>, <code class="fsharp"><span
+             class="ci">PrefixOp'</span></code>, … constructors to supply a mapping that read the text position of the parsed operator from the passed
+             <code class="fsharp"><span class="ci">State</span></code> instance, read <a
+             href="../reference/operatorprecedenceparser.html#members.get-position-with-after-string-parser">this</a>
+            </li>
+            <li class="_6">
+             the <code class="fsharp"><span class="ci">AddOperators</span></code> method has been removed, call <code class="fsharp"><a
+             href="../reference/operatorprecedenceparser.html#members.AddOperator"><span class="ci">AddOperator</span></a></code> instead
+            </li>
+            <li class="_7">
+             the <code class="fsharp"><a href="../reference/operatorprecedenceparser.html#members.OperatorConflictErrorFormatter"><span
+             class="ci">OperatorConflictErrorFormatter</span></a></code> replaced the <code class="fsharp"><span
+             class="ci">OperatorConflictHandler</span></code>
+            </li>
+           </ul>
+          </li>
+         </ul>
+        </div>
+       </dd>
+       <dt class="_3">
+        <span class="a" id="v0_9.removed-variants-of-many-sepby-sependby-and-manytill">Removed variants of <code class="fsharp"><span
+        class="ci">many</span></code>, <code class="fsharp"><span class="ci">sepBy</span></code>, <code class="fsharp"><span
+        class="ci">sepEndBy</span></code> and <code class="fsharp"><span class="ci">manyTill</span></code></span>
+       </dt>
+       <dd class="_3">
+        <div class="para _1">
+         <p>
+          The <code class="fsharp"><span class="co">...</span><span class="ci">Rev</span></code>, <code class="fsharp"><span
+          class="co">...</span><span class="ci">Fold</span></code> and <code class="fsharp"><span class="co">...</span><span
+          class="ci">Reduce</span></code> variants of <code class="fsharp"><a href="../reference/primitives.html#members.many"><span
+          class="ci">many</span></a></code>, <code class="fsharp"><a href="../reference/primitives.html#members.sepBy"><span
+          class="ci">sepBy</span></a></code>, <code class="fsharp"><a href="../reference/primitives.html#members.sepEndBy"><span
+          class="ci">sepEndBy</span></a></code>and <code class="fsharp"><a href="../reference/primitives.html#members.manyTill"><span
+          class="ci">manyTill</span></a></code> have been removed.
+         </p>
+        </div>
+        <div class="para _2 lcinp">
+         <p>
+          If you previously used these variants, you can easily define them in your own code using the <code class="fsharp"><a
+          href="../reference/primitives.html#members.:124::62::62:"><span class="co">|&gt;&gt;</span></a></code> combinator, as documented in the
+          reference documentation for the previous version. For example:
+         </p>
+<pre class="code fsharp"><span class="ck">let</span> <span class="ci">manyRev</span> <span class="ci">p</span> <span class="cp">=</span> <a href="../reference/primitives.html#members.many"><span class="ci">many</span></a> <span class="ci">p</span> <a href="../reference/primitives.html#members.:124::62::62:"><span class="co">|&gt;&gt;</span></a> <span class="ci">List</span><span class="cm">.</span><span class="ci">rev</span>
+<span class="ck">let</span> <span class="ci">manyFold</span> <span class="ci">acc0</span> <span class="ci">f</span> <span class="ci">p</span> <span class="cp">=</span> <a href="../reference/primitives.html#members.many"><span class="ci">many</span></a> <span class="ci">p</span> <a href="../reference/primitives.html#members.:124::62::62:"><span class="co">|&gt;&gt;</span></a> <span class="ci">List</span><span class="cm">.</span><span class="ci">fold</span> <span class="ci">f</span> <span class="ci">acc0</span>
+<span class="ck">let</span> <span class="ci">manyReduce</span> <span class="ci">f</span> <span class="ci">defVal</span> <span class="ci">p</span> <span class="cp">=</span> <span class="cp">(</span><a href="../reference/primitives.html#members.many1"><span class="ci">many1</span></a> <span class="ci">p</span> <a href="../reference/primitives.html#members.:124::62::62:"><span class="co">|&gt;&gt;</span></a> <span class="ci">List</span><span class="cm">.</span><span class="ci">reduce</span> <span class="ci">f</span><span class="cp">)</span> <a href="../reference/primitives.html#members.:60::124::62::37:"><span class="co">&lt;|&gt;%</span></a> <span class="ci">defVal</span><span class="cm">.</span>
+</pre>
+        </div>
+        <div class="para _3">
+         <p>
+          If you need <em>optimized</em> implementations, you can define them using the new <code class="fsharp"><a
+          href="../reference/primitives.html#members.Inline"><span class="ci">Inline</span></a></code> helper class. The file <a
+          href="https://bitbucket.org/fparsec/main/src/tip/Doc/optimized-many-variants.fs"><span class="tt">Doc/optimized‐many‐variants.fs</span></a>
+          contains optimized definitions for all removed variants.
+         </p>
+        </div>
+       </dd>
+       <dt class="_4">
+        <span class="a" id="v0_9.details-on-changes-to-manychars-manycharstill-and-their-variants">Details on changes to <code class="fsharp"><span
+        class="ci">manyChars</span></code>, <code class="fsharp"><span class="ci">manyCharsTill</span></code> and their variants</span>
+       </dt>
+       <dd class="_4">
+        <div class="para _1">
+         <p>
+          The behaviour of all variants of <code class="fsharp"><a href="../reference/charparsers.html#members.manyChars"><span
+          class="ci">manyChars</span></a></code> and <code class="fsharp"><a href="../reference/charparsers.html#members.manyCharsTill"><span
+          class="ci">manyCharsTill</span></a></code> has slightly changed. Now <code class="fsharp"><a
+          href="../reference/charparsers.html#members.manyChars"><span class="ci">manyChars</span></a> <span class="ci">cp</span></code> is equivalent
+          to <code class="fsharp"><a href="../reference/primitives.html#members.many"><span class="ci">many</span></a> <span
+          class="ci">cp</span></code>, except that it returns a string instead of char list. Previously, <code class="fsharp"><a
+          href="../reference/charparsers.html#members.manyChars"><span class="ci">manyChars</span></a> <span class="ci">cp</span></code> behaved like
+          <code class="fsharp"><a href="../reference/primitives.html#members.many"><span class="ci">many</span></a> <span class="cp">(</span><a
+          href="../reference/primitives.html#members.attempt"><span class="ci">attempt</span></a> <span class="ci">cp</span><span
+          class="cp">)</span></code>, i.e. it automatically backtracked if the char parser had failed after consuming input. The same change has been
+          made to the behaviour of all other variants of <code class="fsharp"><a href="../reference/charparsers.html#members.manyChars"><span
+          class="ci">manyChars</span></a></code> and <code class="fsharp"><a href="../reference/charparsers.html#members.manyCharsTill"><span
+          class="ci">manyCharsTill</span></a></code>. The new behaviour is more consistent with the rest of the libary and allows a faster
+          implementation with the new low‐level API.
+         </p>
+        </div>
+        <div class="para _2">
+         <p>There probably aren’t many parsers that relied on the old behaviour.</p>
+        </div>
+        <div class="para _3">
+         <p>
+          The behaviour change made the <code class="fsharp"><span class="ci">skip</span></code> variants of <code class="fsharp"><span
+          class="ci">manyChar</span></code> and <code class="fsharp"><a href="../reference/charparsers.html#members.manyCharsTill"><span
+          class="ci">manyCharsTill</span></a></code> obsolete, since e.g. <code class="fsharp"><span class="ci">skipManyChars</span></code> would do
+          exactly the same as <code class="fsharp"><a href="../reference/primitives.html#members.skipMany"><span class="ci">skipMany</span></a> <span
+          class="ci">cp</span></code>. <span class="a" id="v0_9.removed-skip-variants-of-manyChars">Hence, the <code class="fsharp"><span
+          class="ci">skip</span></code> variants have been removed</span>.
+         </p>
+        </div>
+       </dd>
+       <dt class="_5"><span class="a" id="v0_9.changes-to-low-level-api">Changes to low‐level API</span></dt>
+       <dd class="_5">
+        <div class="para _1 lcinp">
+         <ul class="l1">
+          <li class="_1">
+           The old <code class="fsharp"><span class="ci">CharStream</span></code> and <code class="fsharp"><span class="ci">State</span></code>
+           classes have been merged into a single <code class="fsharp"><a href="../reference/charstream.html#CharStream"><span
+           class="ci">CharStream</span></a></code> class with a mutable interface.
+          </li>
+          <li class="_2">
+           <code class="fsharp"><a href="../reference/primitives.html#members.Parser"><span class="ci">Parser</span></a></code> functions now take a
+           <code class="fsharp"><a href="../reference/charstream.html#CharStream_1"><span class="ci">CharStream</span><span
+           class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span></a></code> instance as the input argument.
+          </li>
+          <li class="_3">
+           The <code class="fsharp"><a href="../reference/reply.html"><span class="ci">Reply</span></a></code> type has been moved to the main <code
+           class="fsharp"><span class="ci">FParsec</span></code> namespace and no longer has a <code class="fsharp"><span
+           class="ci">State</span></code> member.
+          </li>
+          <li class="_4">
+           Parser state comparisons are now done with the help of the <code class="fsharp"><a href="../reference/charstream.html#CharStream"><span
+           class="ci">CharStream</span></a></code>’s <code class="fsharp"><a href="../reference/charstream.html#CharStream.members.StateTag"><span
+           class="ci">StateTag</span></a></code>.
+          </li>
+          <li class="_5">
+           <p>
+            Various methods from the old <code class="fsharp"><span class="ci">CharStream</span><span class="cm">.</span><span
+            class="ci">Iterator</span></code> and <code class="fsharp"><span class="ci">State</span></code> types have been renamed in the new <code
+            class="fsharp"><a href="../reference/charstream.html#CharStream"><span class="ci">CharStream</span></a></code> class and have new
+            signatures:
+           </p>
+           <ul class="l2">
+            <li class="_1">
+             <p>When you adapt old code, the following changes <strong>require particular attention</strong>:</p>
+             <ul class="l3">
+              <li class="_1">
+               the old <code class="fsharp"><span class="ci">Iterator</span><span class="cm">.</span><span class="ci">Read</span></code> methods
+               <em>did not</em> advance the input stream position, but the new <code class="fsharp"><a
+               href="../reference/charstream.html#CharStream"><span class="ci">CharStream</span></a><span class="cm">.</span><a
+               href="../reference/charstream.html#CharStream.members.Read"><span class="ci">Read</span></a></code> now <em>do</em> (as is the expected
+               behaviour in traditional stream classes)
+              </li>
+              <li class="_2">
+               the old <code class="fsharp"><span class="ci">Read</span><span class="cp">()</span></code> is equivalent to the new <code
+               class="fsharp"><a href="../reference/charstream.html#CharStream.members.Peek"><span class="ci">Peek</span></a><span
+               class="cp">()</span></code>
+              </li>
+              <li class="_3">
+               the old <code class="fsharp"><span class="ci">Read</span><span class="cp">(</span><span class="ci">int</span><span
+               class="cp">)</span></code> is equivalent to the new <code class="fsharp"><a
+               href="../reference/charstream.html#CharStream.members.PeekString"><span class="ci">PeekString</span></a><span class="cp">(</span><span
+               class="ci">int</span><span class="cp">)</span></code>
+              </li>
+              <li class="_4">
+               the old <code class="fsharp"><span class="ci">Peek</span><span class="cp">()</span></code> is equivalent to the new (and old) <code
+               class="fsharp"><a href="../reference/charstream.html#CharStream.members.Peek_int"><span class="ci">Peek</span></a><span
+               class="cp">(</span><span class="cn">1</span><span class="cp">)</span></code>
+              </li>
+             </ul>
+            </li>
+            <li class="_2">
+             <p>More renamings:</p>
+             <ul class="l3">
+              <li class="_1">
+               <code class="fsharp"><span class="ci">Next</span></code>, <code class="fsharp"><span class="ci">Advance</span></code> ? <code
+               class="fsharp"><a href="../reference/charstream.html#CharStream.interface.Skip-members"><span class="ci">Skip</span></a></code>
+              </li>
+              <li class="_2">
+               <code class="fsharp"><span class="ci">_Increment</span></code>, <code class="fsharp"><span class="ci">_Decrement</span></code> ? <code
+               class="fsharp"><a href="../reference/charstream.html#CharStream.interface.SkipAndPeek-members"><span
+               class="ci">SkipAndPeek</span></a></code>
+              </li>
+              <li class="_3">
+               <code class="fsharp"><span class="ci">SkipRestOfLine</span></code> with string output ? <code class="fsharp"><a
+               href="../reference/charstream.html#CharStream.members.ReadRestOfLine"><span class="ci">ReadRestOfLine</span></a></code>
+              </li>
+              <li class="_4">
+               <code class="fsharp"><span class="ci">SkipCharOrNewlines</span></code> with string output ? <code class="fsharp"><a
+               href="../reference/charstream.html#CharStream.members.ReadCharsOrNewlines"><span class="ci">ReadCharsOrNewlines</span></a></code>
+              </li>
+              <li class="_5">
+               <code class="fsharp"><span class="ci">SkipToString</span></code> ? <code class="fsharp"><a
+               href="../reference/charstream.html#CharStream.interface.SkipCharsOrNewlinesUntilString-members"><span
+               class="ci">SkipCharsOrNewlinesUntilString</span></a></code>
+              </li>
+              <li class="_6">
+               <code class="fsharp"><span class="ci">SkipToStringCI</span></code> ? <code class="fsharp"><a
+               href="../reference/charstream.html#CharStream.interface.SkipCharsOrNewlinesUntilCaseFoldedString-members"><span
+               class="ci">SkipCharsOrNewlinesUntilCaseFoldedString</span></a></code>
+              </li>
+              <li class="_7">
+               <code class="fsharp"><span class="ci">ReadUntil</span></code> ? <code class="fsharp"><a
+               href="../reference/charstream.html#CharStream_1.members.ReadFrom"><span class="ci">ReadFrom</span></a></code>
+              </li>
+              <li class="_8">
+               <code class="fsharp"><span class="ci">CharStream</span><span class="cm">.</span><span class="ci">FoldCase</span></code> ? <code
+               class="fsharp"><a href="../reference/text.html#members.FoldCase"><span class="ci">Text</span><span class="cm">.</span><span
+               class="ci">FoldCase</span></a></code>
+              </li>
+              <li class="_9">
+               <code class="fsharp"><span class="ci">CharStream</span><span class="cm">.</span><span class="ci">NormalizeNewlines</span></code> ?
+               <code class="fsharp"><a href="../reference/text.html#members.NormalizeNewlines"><span class="ci">Text</span><span
+               class="cm">.</span><span class="ci">NormalizeNewlines</span></a></code>
+              </li>
+             </ul>
+            </li>
+           </ul>
+          </li>
+          <li class="_6">
+           <p>New <code class="fsharp"><a href="../reference/charstream.html#CharStream"><span class="ci">CharStream</span></a></code> methods:</p>
+           <ul class="l2">
+            <li class="_1">
+             <code class="fsharp"><a href="../reference/charstream.html#CharStream.interface.Skip-members"><span class="ci">Skip</span></a></code>
+             methods with char and string arguments
+            </li>
+            <li class="_2">
+             <code class="fsharp"><a href="../reference/charstream.html#CharStream.members.SkipUnicodeWhitespace"><span
+             class="ci">SkipUnicodeWhitespace</span></a></code>
+            </li>
+            <li class="_3">
+             <code class="fsharp"><a href="../reference/charstream.html#CharStream.members.SkipNewlineThenWhitespace"><span
+             class="ci">SkipNewlineThenWhitespace</span></a></code>
+            </li>
+           </ul>
+          </li>
+          <li class="_7">
+           The <code class="fsharp"><a href="../reference/errormessage.html#members.ErrorMessage"><span class="ci">ErrorMessage</span></a></code> and
+           <code class="fsharp"><a href="../reference/errormessagelist.html"><span class="ci">ErrorMessageList</span></a></code> types are now defined
+           in the C# library part. This allows us to implement full parsers in C#. The <code class="fsharp"><a href="../reference/error.html"><span
+           class="ci">FParsec</span><span class="cm">.</span><span class="ci">Error</span></a></code> module contains type abbreviations and active
+           patters that provide the familiar interface to F# clients.
+          </li>
+          <li class="_8">
+           All error messages used by built‐in FParsec parsers are now defined in the C# classes <code class="fsharp"><span
+           class="ci">FParsec</span><span class="cm">.</span><span class="ci">Strings</span></code> and <code class="fsharp"><span
+           class="ci">FParsec</span><span class="cm">.</span><span class="ci">Errors</span></code>. This should simplify customization and
+           internationalization efforts.
+          </li>
+         </ul>
+        </div>
+       </dd>
+       <dt class="_6"><span class="a" id="v0_9.background-on-low-level-api-changes">Background on low‐level API changes</span></dt>
+       <dd class="_6">
+        <div class="para _1">
+         <p>
+          Previously parsers were implemented as functions operating on an immutable parser state in the form of a <code class="fsharp"><a
+          href="../reference/charstream.html#CharStream_1.members.State"><span class="ci">State</span></a></code> instance. A parser function received
+          a <code class="fsharp"><a href="../reference/charstream.html#CharStream_1.members.State"><span class="ci">State</span></a></code> instance
+          as the input and returned a <code class="fsharp"><a href="../reference/charstream.html#CharStream_1.members.State"><span
+          class="ci">State</span></a></code> instance as part of its return value. Since <code class="fsharp"><a
+          href="../reference/charstream.html#CharStream_1.members.State"><span class="ci">State</span></a></code> instances were immutable, a parser
+          function had to create a new <code class="fsharp"><a href="../reference/charstream.html#CharStream_1.members.State"><span
+          class="ci">State</span></a></code> instance to advance the input stream, e.g. by calling <code class="fsharp"><span
+          class="ci">state</span><span class="cm">.</span><span class="ci">Advance</span><span class="cp">(</span><span class="cn">2</span><span
+          class="cp">)</span></code>.
+         </p>
+        </div>
+        <div class="para _2">
+         <p>
+          This architecture was motivated by the desire to provide an API as &#x201C;functional&#x201D; as possible, an API that shields users from
+          the underlying imperative/mutable nature of input streams. When FParsec originally started as a relatively close port of Haskell’s Parsec
+          library, this design felt like a natural fit for a functional parser library. However, later, when FParsec moved away from its Parsec roots
+          (to improve performance and provide more features), it became increasingly clear that the immutable <code class="fsharp"><a
+          href="../reference/charstream.html#CharStream"><span class="ci">CharStream</span></a></code>‐<code class="fsharp"><a
+          href="../reference/charstream.html#CharStream_1.members.State"><span class="ci">State</span></a></code>‐design was the main obstacle
+          preventing FParsec from reaching the performance of hand‐optimized recursive‐descent parsers.
+         </p>
+        </div>
+        <div class="para _3">
+         <p>
+          Initial tests with some quick prototypes revealed that the allocation and garbage collection of temporary <code class="fsharp"><a
+          href="../reference/charstream.html#CharStream_1.members.State"><span class="ci">State</span></a></code> instances took up to 50% or more of
+          the run time of typical parsers – even though the <code class="fsharp"><a
+          href="../reference/charstream.html#CharStream_1.members.State"><span class="ci">State</span></a></code> class was already heavily optimized.
+          These tests also indicated that consolidating the stream and state classes into a classical imperative stream class simplified the overall
+          library implementation and made the library source code more accessible to new users.
+         </p>
+        </div>
+        <div class="para _4">
+         <p>
+          The main drawback of the API change is that it requires modifications to practically all low‐level parser code. Another drawback is that
+          backtracking is slightly less convenient with the new low‐level API (as the parser state has to be explicitly saved and restored, while
+          previously one could just continue with an old state instance).
+         </p>
+        </div>
+        <div class="para _5">
+         <p>Since FParsec’s high‐level API is only minimally affected by the change, the advantages seem to outweigh the costs.</p>
+        </div>
+       </dd>
+      </dl>
+     </div>
+    </div>
+   </div>
+  </div>
+  <div id="v0_8_x" class="section s3">
+   <h2 class="title h3"><span>Version 0.8.x, no release</span></h2>
+   <div class="intro i3">
+    <div class="para _1 lcinp">
+     <div class="dl multi-para">
+      <dl class="dl multi-para">
+       <dt class="_1">New features/ improvements</dt>
+       <dd class="_1">
+        <div class="para _1 lcinp">
+         <ul class="l1">
+          <li class="_1">
+           case‐insensitive matching with <code class="fsharp"><span class="ci">pstringCI</span></code>, <code class="fsharp"><span
+           class="ci">charsTillStringCI</span></code>, etc. (using the Unicode 1‐to‐1 case folding mappings for chars in the BMP)
+          </li>
+          <li class="_2">
+           various new parsers and combinators, including <code class="fsharp"><span class="ci">restOfLine</span></code>, <code class="fsharp"><span
+           class="ci">skipToString</span></code>, <code class="fsharp"><span class="ci">manySatisfyMinMax</span></code>, <code class="fsharp"><span
+           class="ci">manyStrings</span></code>, <code class="fsharp"><span class="ci">withSkippedString</span></code>
+          </li>
+          <li class="_3">
+           new functions <code class="fsharp"><span class="ci">runParserOnSubstring</span></code> and <code class="fsharp"><span
+           class="ci">runParserOnSubstream</span></code>
+          </li>
+          <li class="_4">various performance improvements</li>
+          <li class="_5">Silverlight support</li>
+          <li class="_6">F# 1.9.6.16 compatibility</li>
+         </ul>
+        </div>
+       </dd>
+       <dt class="_2">Design changes</dt>
+       <dd class="_2">
+        <div class="para _1 lcinp">
+         <ul class="l1">
+          <li class="_1">
+           standardized on a single input stream type (<code class="fsharp"><span class="ci">FParsec</span><span class="cm">.</span><span
+           class="ci">CharStream</span></code>) and a single concrete parser state type (<code class="fsharp"><span class="ci">FParsec</span><span
+           class="cm">.</span><span class="ci">State</span></code>)
+          </li>
+          <li class="_2">
+           <p>
+            refactored the <code class="fsharp"><span class="ci">Reply</span><span class="cp">&lt;</span><span class="ci">_</span><span
+            class="cp">,</span><span class="ci">_</span><span class="cp">&gt;</span></code>, <code class="fsharp"><span
+            class="ci">ErrorMessage</span></code> and <code class="fsharp"><span class="ci">ParserError</span></code> types:
+           </p>
+           <ul class="l2">
+            <li class="_1">error replies now also contain a complete <code class="fsharp"><span class="ci">State</span></code></li>
+            <li class="_2">
+             whether a parser has changed the state is now determined by checking the input and the output state for equality, instead of testing the
+             <code class="fsharp"><span class="ci">Consumed</span></code> flag
+            </li>
+            <li class="_3">
+             replaced the <code class="fsharp"><span class="ci">Reply</span><span class="cp">&lt;</span><span class="ci">_</span><span
+             class="cp">,</span><span class="ci">_</span><span class="cp">&gt;</span><span class="cp">.</span><span class="ci">Flags</span></code>
+             with a <code class="fsharp"><span class="ci">Status</span></code> field
+            </li>
+            <li class="_4">
+             replaced the various helper functions for constructing a <code class="fsharp"><span class="ci">Reply</span></code> with three overloaded
+             <code class="fsharp"><span class="ci">Reply</span><span class="cp">&lt;</span><span class="ci">_</span><span class="cp">,</span><span
+             class="ci">_</span><span class="cp">&gt;</span></code> constructors (with different arities)
+            </li>
+           </ul>
+          </li>
+          <li class="_3">
+           all char parsers are now &#x201C;newline aware&#x201D;, i.e. they normalize any of the three standard newline representations (<code
+           class="fsharp"><span class="cs"><span class="cld">"</span><span class="ce">\n</span><span class="crd">"</span></span></code>, <code
+           class="fsharp"><span class="cs"><span class="cld">"</span><span class="ce">\r</span><span class="ce">\n</span><span
+           class="crd">"</span></span></code>, <code class="fsharp"><span class="cs"><span class="cld">"</span><span class="ce">\r</span><span
+           class="crd">"</span></span></code>) to &#x201C;n&#x201D; and they properly increment the line count whenever they parse a newline;
+           <strong>this means that the behaviour of almost all char parsers has changed with regard to how newline chars are handled</strong>
+          </li>
+         </ul>
+        </div>
+       </dd>
+       <dt class="_3">Bug fixes</dt>
+       <dd class="_3">
+        <div class="para _1 lcinp">
+         <ul class="l1">
+          <li class="_1">
+           The <code class="fsharp"><span class="ci">CharStream</span></code> class now uses the serialization API to persist the decoder state for
+           backtracking purposes. Previously it relied on the decoder loosing its state at block boundaries after a certain sequence of method calls.
+           The previous approach works in practice for the .NET decoders of the standard unicode encodings and for simple stateless encodings like
+           ASCII and ANSI, but it relies on undocumented behaviour and it does not work reliably for encodings like GB18030, ISO‐2022 or ISCII.
+          </li>
+          <li class="_2">
+           In previous FParsec versions the <code class="fsharp"><span class="ci">CharStream</span></code> file path/System.IO.Stream constructors
+           failed with an <code class="fsharp"><span class="ci">IndexOutOfRange</span></code> exception when the file/stream was empty and encoding
+           detection was not turned off (reported by Vesa Karvonen ‐ thanks Vesa!).
+          </li>
+          <li class="_3">
+           In previous FParsec versions the <code class="fsharp"><span class="ci">NumberLiteral</span><span class="cm">.</span><span
+           class="ci">String</span></code> returned by the <code class="fsharp"><span class="ci">numberLiteral</span></code> parser included parsed
+           suffix chars despite the documentation claiming the opposite. (The testing code was buggy too.) Applications that rely on this behaviour
+           can now use the new <code class="fsharp"><span class="ci">NumberLiteralOptions</span><span class="cm">.</span><span
+           class="ci">IncludeSuffixCharsInString</span></code> to force the <code class="fsharp"><span class="ci">numberLiteral</span></code> parser
+           to include any suffix chars in the returned string.
+          </li>
+          <li class="_4">
+           Fixed behaviour of <code class="fsharp"><span class="co">&gt;&gt;=?</span></code>, <code class="fsharp"><span
+           class="co">&gt;&gt;?</span></code> and <code class="fsharp"><span class="co">.&gt;&gt;?</span></code> when second parser fails with fatal
+           error without changing the parser state.
+          </li>
+          <li class="_5">
+           Fixed behaviour of <code class="fsharp"><span class="ci">nextCharSatisfies</span><span class="cp">[</span><span class="ci">Not</span><span
+           class="cp">]</span></code> when current &#x201C;char&#x201D; is a <code class="fsharp"><span class="cs"><span class="cld">"</span><span
+           class="ce">\r</span><span class="ce">\n</span><span class="crd">"</span></span></code> newline.
+          </li>
+         </ul>
+        </div>
+       </dd>
+       <dt class="_4">Other breaking changes</dt>
+       <dd class="_4">
+        <div class="para _1 lcinp">
+         <ul class="l1">
+          <li class="_1">
+           renamed the module <code class="fsharp"><span class="ci">CharParser</span></code> to <code class="fsharp"><span
+           class="ci">CharParsers</span></code>
+          </li>
+          <li class="_2">
+           moved <code class="fsharp"><span class="ci">CharParser</span><span class="cm">.</span><span
+           class="ci">OperatorPrecedenceParser</span></code> into separate module
+          </li>
+         </ul>
+        </div>
+        <div class="para _2 lcinp">
+         <ul class="l1">
+          <li class="_1">
+           <p><code class="fsharp"><span class="ci">FParsec</span><span class="cm">.</span><span class="ci">Primitives</span></code>:</p>
+           <ul class="l2">
+            <li class="_1">
+             <strong>subtle change:</strong> renamed <code class="fsharp"><span class="ci">message</span></code> to <code class="fsharp"><span
+             class="ci">fail</span></code> and <code class="fsharp"><span class="ci">fail</span></code> to <code class="fsharp"><span
+             class="ci">failFatally</span></code>
+            </li>
+            <li class="_2">
+             renamed <code class="fsharp"><span class="ci">pair</span></code>, <code class="fsharp"><span class="ci">triple</span></code> and <code
+             class="fsharp"><span class="ci">quad</span></code> to <code class="fsharp"><span class="ci">tuple2</span></code>, <code
+             class="fsharp"><span class="ci">tuple3</span></code> and <code class="fsharp"><span class="ci">tuple4</span></code>
+            </li>
+            <li class="_3">
+             renamed <code class="fsharp"><span class="ci">manyFoldLeft</span></code> to <code class="fsharp"><span class="ci">manyFold</span></code>
+             and changed the argument order of the accumulator and function argument
+            </li>
+            <li class="_4">removed <code class="fsharp"><span class="ci">manyFoldRight</span></code></li>
+            <li class="_5">
+             renamed <code class="fsharp"><span class="ci">count</span></code> to <code class="fsharp"><span class="ci">parray</span></code> and
+             changed the return type, renamed <code class="fsharp"><span class="ci">skipCount</span></code> to <code class="fsharp"><span
+             class="ci">skipArray</span></code>
+            </li>
+            <li class="_6">
+             renamed <code class="fsharp"><span class="ci">followedBy</span></code> and <code class="fsharp"><span
+             class="ci">notFollowedBy</span></code> to <code class="fsharp"><span class="ci">followedByL</span></code> and <code class="fsharp"><span
+             class="ci">notFollowedByL</span></code> and introduced <code class="fsharp"><span class="ci">followedBy</span></code> and <code
+             class="fsharp"><span class="ci">notFollowedBy</span></code> functions that take no second argument
+            </li>
+            <li class="_7">
+             moved <code class="fsharp"><span class="ci">ParserResult</span><span class="cp">&lt;</span><span class="ci">_</span><span
+             class="cp">&gt;</span></code> to <code class="fsharp"><span class="ci">CharParsers</span></code> and changed constructor arguments
+            </li>
+            <li class="_8">removed applyParser</li>
+            <li class="_9">
+             removed <code class="fsharp"><span class="co">|&gt;&gt;=</span></code>, now <code class="fsharp"><span class="co">&gt;&gt;=</span></code>
+             automatically uses an optimized branch for uncurried functions
+            </li>
+            <li class="_0">
+             removed <code class="fsharp"><span class="ci">endBy</span></code> and <code class="fsharp"><span class="ci">endBy1</span></code> (<code
+             class="fsharp"><span class="ci">endBy</span> <span class="ci">p</span> <span class="ci">sep</span></code> can be replaced with <code
+             class="fsharp"><span class="ci">many</span> <span class="cp">(</span><span class="ci">p</span> <span class="co">.&gt;&gt;</span> <span
+             class="ci">sep</span><span class="cp">)</span></code> and <code class="fsharp"><span class="ci">endBy1</span> <span
+             class="ci">p</span> <span class="ci">sep</span></code> with <code class="fsharp"><span class="ci">many1</span> <span
+             class="cp">(</span><span class="ci">p</span> <span class="co">.&gt;&gt;</span> <span class="ci">sep</span><span
+             class="cp">)</span></code>)
+            </li>
+           </ul>
+          </li>
+         </ul>
+        </div>
+        <div class="para _3 lcinp">
+         <ul class="l1">
+          <li class="_1">
+           <p><code class="fsharp"><span class="ci">FParsec</span><span class="cm">.</span><span class="ci">CharParsers</span></code>:</p>
+           <ul class="l2">
+            <li class="_1">
+             renamed <code class="fsharp"><span class="ci">manyTillString</span></code> to <code class="fsharp"><span
+             class="ci">charsTillString</span></code>
+            </li>
+            <li class="_2">removed <code class="fsharp"><span class="ci">applyParser</span></code> from the public interface</li>
+            <li class="_3">
+             removed <code class="fsharp"><span class="ci">getIndex</span></code>, <code class="fsharp"><span class="ci">skip</span></code>, <code
+             class="fsharp"><span class="ci">registerNL</span></code>, <code class="fsharp"><span class="ci">extract</span></code>, <code
+             class="fsharp"><span class="ci">regexp</span></code> (these low‐level operations should be done directly through the <code
+             class="fsharp"><span class="ci">State</span><span class="cp">&lt;</span><span class="ci">_</span><span
+             class="cp">&gt;</span></code>/<code class="fsharp"><span class="ci">CharStream</span><span class="cm">.</span><span
+             class="ci">Iterator</span></code> interface)
+            </li>
+            <li class="_4">removed <code class="fsharp"><span class="ci">anyCharOrNL</span></code> (no longer needed, see design changes above)</li>
+            <li class="_5">
+             removed <code class="fsharp"><span class="ci">nSatisfy</span></code> (can be replaced with <code class="fsharp"><span
+             class="ci">manySatisfyMinMax</span></code>)
+            </li>
+            <li class="_6">
+             removed <code class="fsharp"><span class="ci">unicodeDigit</span></code> and <code class="fsharp"><span
+             class="ci">unicodeNumber</span></code> (can be replaced with <code class="fsharp"><span class="ci">satisfy</span> <span
+             class="ci">System</span><span class="cm">.</span><span class="ci">Char</span><span class="cm">.</span><span
+             class="ci">IsDigit</span></code> and <code class="fsharp"><span class="ci">satisfy</span> <span class="ci">System</span><span
+             class="cm">.</span><span class="ci">Char</span><span class="cm">.</span><span class="ci">IsNumber</span></code>)
+            </li>
+            <li class="_7">
+             moved the helper functions <code class="fsharp"><span class="ci">expectedError</span></code>, <code class="fsharp"><span
+             class="ci">unexpectedError</span></code> etc. into the <code class="fsharp"><span class="ci">Error</span></code> module
+            </li>
+           </ul>
+          </li>
+         </ul>
+        </div>
+        <div class="para _4 lcinp">
+         <ul class="l1">
+          <li class="_1">
+           <p><code class="fsharp"><span class="ci">FParsec</span><span class="cm">.</span><span class="ci">CharStream</span></code>:</p>
+           <ul class="l2">
+            <li class="_1">string constructor takes more arguments</li>
+            <li class="_2">
+             <code class="fsharp"><span class="ci">Iterator</span><span class="cm">.</span><span class="ci">Peek</span><span class="cp">(</span><span
+             class="ci">i</span><span class="cp">)</span></code> now returns the <code class="fsharp"><span class="ci">EndOfStreamChar</span></code>
+             char instead of throwing an exception if the char peeked at lies before the beginning of the stream
+            </li>
+           </ul>
+          </li>
+         </ul>
+        </div>
+       </dd>
+      </dl>
+     </div>
+    </div>
+   </div>
+  </div>
+  <div id="v0_7_3_1" class="section s3">
+   <h2 class="title h3"><span>Version 0.7.3.1, 2009‒02‒26</span></h2>
+   <div class="intro i3">
+    <div class="para _1 lcinp">
+     <ul class="multi-para l1">
+      <li class="_1">
+       <div class="para _1">
+        <p>
+         Fixed a bug in <code class="fsharp"><span class="ci">CharParser</span><span class="cm">.</span><span
+         class="ci">normalizeNewlines</span></code>/<code class="fsharp"><span class="ci">CharStream</span><span class="cm">.</span><span
+         class="ci">NormalizeNewlines</span></code>. This bug also affected the <code class="fsharp"><span class="ci">skipped</span></code> and <code
+         class="fsharp"><span class="ci">manyTillString</span></code> parsers, which internaly call <code class="fsharp"><span
+         class="ci">normalizeNewlines</span></code> to normalize the returned string.
+        </p>
+       </div>
+       <div class="para _2">
+        <p>The bug was reported by Greg Chapman ‐ thanks Greg!</p>
+       </div>
+       <div class="para _3">
+        <p>
+         When given a multi‐line string in which the lines are delimited by <code class="fsharp"><span class="cs"><span class="cld">"</span><span
+         class="ce">\r</span><span class="ce">\n</span><span class="crd">"</span></span></code> but the last line does not end in a newline, the buggy
+         <code class="fsharp"><span class="ci">normalizeNewlines</span></code> replaced the chars on the last line with <code class="fsharp"><span
+         class="cc"><span class="cld">'</span><span class="ce">\n</span><span class="crd">'</span></span></code> chars.
+        </p>
+       </div>
+      </li>
+     </ul>
+    </div>
+    <div class="para _2 lcinp">
+     <ul class="l1">
+      <li class="_1">
+       Changed the signature of <code class="fsharp"><span class="ci">Helper</span><span class="cm">.</span><span
+       class="ci">SkipOverWhitespace</span></code>.
+      </li>
+     </ul>
+    </div>
+   </div>
+  </div>
+  <div id="v0_7_3" class="section s3">
+   <h2 class="title h3"><span>Version 0.7.3, 2008‒12‒08</span></h2>
+   <div class="intro i3">
+    <div class="para _1 lcinp">
+     <p>Breaking changes (all of which should have little or no impact on existing code bases):</p>
+     <ul class="l1">
+      <li class="_1">
+       <code class="fsharp"><span class="ci">CharStream</span><span class="cm">.</span><span class="ci">Iterator</span></code> instances now compare
+       equal if and only if they belong to the same <code class="fsharp"><span class="ci">CharStream</span></code> and point to the same index
+       (previously they compared only equal if their internal representations were identical)
+      </li>
+      <li class="_2">
+       the constructor argument of <code class="fsharp"><span class="ci">Error</span><span class="cm">.</span><span
+       class="ci">otherError</span></code> is now expected to be comparable with F#’s structural comparison function <code class="fsharp"><span
+       class="ci">compare</span></code>, see http://research.microsoft.com/fsharp/manual/spec2.aspx#_Toc207785725
+      </li>
+      <li class="_3">
+       the signature of the second <code class="fsharp"><span class="ci">ParserError</span><span class="cm">.</span><span
+       class="ci">ToString</span></code> overload has changed
+      </li>
+      <li class="_4">
+       <code class="fsharp"><span class="ci">CharParser</span><span class="cm">.</span><span class="ci">errorToString</span></code> and <code
+       class="fsharp"><span class="ci">printErrorLine</span></code> have been deprecated
+      </li>
+     </ul>
+    </div>
+    <div class="para _2 lcinp">
+     <p>New features:</p>
+     <ul class="l1">
+      <li class="_1">
+       reimplemented the error formatting code in <code class="fsharp"><span class="ci">FParsec</span><span class="cm">.</span><span
+       class="ci">Error</span></code>
+      </li>
+      <li class="_2">
+       added new <code class="fsharp"><span class="ci">State</span><span class="cp">&lt;</span><span class="ci">_</span><span
+       class="cp">&gt;</span><span class="cp">.</span><span class="ci">AdvanceTo</span></code> and <code class="fsharp"><span
+       class="ci">CharStream</span><span class="cm">.</span><span class="ci">Iterator</span><span class="cm">.</span><span
+       class="ci">Advance</span></code> overloads
+      </li>
+      <li class="_3">
+       slightly modified the error reporting in <code class="fsharp"><span class="ci">Primitives</span><span class="cm">.</span><span
+       class="ci">sepEndBy</span></code>
+      </li>
+      <li class="_4">some documentation fixes</li>
+     </ul>
+    </div>
+   </div>
+  </div>
+  <div id="v0_7_2" class="section s3">
+   <h2 class="title h3"><span>Version 0.7.2, 2008‒11‒17</span></h2>
+   <div class="intro i3">
+    <div class="para _1 lcinp">
+     <ul class="l1">
+      <li class="_1">
+       added <code class="fsharp"><span class="ci">CharParser</span><span class="cm">.</span><span class="ci">OperatorPrecedenceParser</span></code>
+      </li>
+      <li class="_2">
+       changed the overflow checking in <code class="fsharp"><span class="ci">pint32</span></code> such that it will not be affected by an expected
+       future change in F#’s <code class="fsharp"><span class="ci">int32</span> <span class="cr">-&gt;</span> <span class="ci">uint64</span></code>
+       conversion behaviour
+      </li>
+      <li class="_3">
+       added <code class="fsharp"><span class="ci">CharParser</span><span class="cm">.</span><span class="ci">pint16</span></code>, <code
+       class="fsharp"><span class="ci">puint16</span></code>, <code class="fsharp"><span class="ci">pint8</span></code>, <code class="fsharp"><span
+       class="ci">puint8</span></code>
+      </li>
+      <li class="_4">
+       changed the signatures in CharParser.fsi to use the <code class="fsharp"><span class="ci">Parser</span><span class="cp">&lt;</span><span
+       class="ci">_</span><span class="cp">,</span><span class="ci">_</span><span class="cp">&gt;</span></code> type abbreviation
+      </li>
+      <li class="_5">
+       fixed outdated documentation of <code class="fsharp"><span class="ci">CharParser</span><span class="cm">.</span><span
+       class="ci">expectedError</span></code>
+      </li>
+      <li class="_6">some minor optimizations</li>
+     </ul>
+    </div>
+   </div>
+  </div>
+  <div id="v0_7_1" class="section s3">
+   <h2 class="title h3"><span>Version 0.7.1, 2008‒09‒29</span></h2>
+   <div class="intro i3">
+    <div class="para _1 lcinp">
+     <p>Breaking changes:</p>
+     <ul class="l1">
+      <li class="_1">
+       renamed <code class="fsharp"><span class="ci">Primitives</span><span class="cm">.</span><span class="ci">Reply</span><span
+       class="cm">.</span><span class="ci">_tag</span></code> member to <code class="fsharp"><span class="ci">Flags</span></code> and gave it a proper
+       enumeration type
+      </li>
+      <li class="_2">
+       <code class="fsharp"><span class="ci">CharParser</span><span class="cm">.</span><span class="ci">State</span></code> is now a reference type
+      </li>
+      <li class="_3">
+       Removed <code class="fsharp"><span class="ci">CharParser</span><span class="cm">.</span><span class="ci">State</span><span
+       class="cm">.</span><span class="ci">Flags</span></code> member
+      </li>
+      <li class="_4">
+       deprecated <code class="fsharp"><span class="ci">Primitives</span><span class="cm">.</span><span class="ci">reconstructError</span></code>
+      </li>
+     </ul>
+    </div>
+   </div>
+  </div>
+  <div id="v0_7_0_1" class="section s3">
+   <h2 class="title h3"><span>Version 0.7.0.1, 2008‒09‒23</span></h2>
+   <div class="intro i3">
+    <div class="para _1 lcinp">
+     <p>Breaking change:</p>
+     <ul class="l1">
+      <li class="_1">
+       changed the case of the <code class="fsharp"><span class="ci">FParsec</span><span class="cm">.</span><span class="ci">Error</span><span
+       class="cm">.</span><span class="ci">Pos</span></code> members (This wasn’t already done in 0.7 because of an oversight.)
+      </li>
+     </ul>
+    </div>
+   </div>
+  </div>
+  <div id="v0_7" class="section s3">
+   <h2 class="title h3"><span>Version 0.7.0, 2008‒09‒13</span></h2>
+   <div class="intro i3">
+    <div class="para _1 lcinp">
+     <p>Bugfixes:</p>
+     <ul class="l1">
+      <li class="_1">
+       made <code class="fsharp"><span class="ci">FParsec</span><span class="cm">.</span><span class="ci">Error</span><span class="cm">.</span><span
+       class="ci">Pos</span></code> IComparable to prevent <code class="fsharp"><span class="ci">ParserError</span><span class="cm">.</span><span
+       class="ci">ToString</span></code> from throwing an exception under rare circumstances
+      </li>
+      <li class="_2">
+       corrected the argument checking for some <code class="fsharp"><span class="ci">CharStream</span><span class="cm">.</span><span
+       class="ci">Iterator</span></code> methods for very large arguments
+      </li>
+     </ul>
+    </div>
+    <div class="para _2 lcinp">
+     <p>New features:</p>
+     <ul class="l1">
+      <li class="_1">compatibility with the F# CTP release</li>
+      <li class="_2">
+       a configurable parser for number literals: <code class="fsharp"><span class="ci">CharParser</span><span class="cm">.</span><span
+       class="ci">numberLiteral</span></code>
+      </li>
+      <li class="_3">
+       <code class="fsharp"><span class="ci">CharParser</span><span class="cm">.</span><span class="ci">pfloat</span></code> now also parses <code
+       class="fsharp"><span class="ci">NaN</span></code>, <code class="fsharp"><span class="ci">Infinity</span></code> and hexadecimal floating point
+       literals as supported by IEEE754r, C99 and Java (but different from the hex representation supported by F#)
+      </li>
+      <li class="_4">
+       new helper functions <code class="fsharp"><span class="ci">CharParser</span><span class="cm">.</span><span
+       class="ci">floatToHexString</span></code>, <code class="fsharp"><span class="ci">floatOfHexString</span></code>, <code class="fsharp"><span
+       class="ci">float32ToHexString</span></code> and <code class="fsharp"><span class="ci">float32OfHexString</span></code>
+      </li>
+      <li class="_5">
+       integer parsers: <code class="fsharp"><span class="ci">Charparser</span><span class="cm">.</span><span class="ci">pint32</span></code>, <code
+       class="fsharp"><span class="ci">puint64</span></code>, <code class="fsharp"><span class="ci">puint32</span></code>, <code class="fsharp"><span
+       class="ci">puint64</span></code>
+      </li>
+      <li class="_6">new sample: a JSON parser</li>
+      <li class="_7">various optimizations and some code cleanup</li>
+      <li class="_8">
+       new <code class="fsharp"><span class="ci">CharStream</span><span class="cm">.</span><span class="ci">Iterator</span></code> members <code
+       class="fsharp"><span class="ci">ReadUntil</span></code>, <code class="fsharp"><span class="ci">Increment</span></code> and <code
+       class="fsharp"><span class="ci">Decrement</span></code>
+      </li>
+      <li class="_9">
+       new <code class="fsharp"><span class="ci">State</span></code> member <code class="fsharp"><span class="ci">AdvanceTo</span></code>
+      </li>
+      <li class="_0">
+       new function <code class="fsharp"><span class="ci">Primitives</span><span class="cm">.</span><span
+       class="ci">createParserForwardedToRef</span></code>
+      </li>
+      <li class="_1">
+       new combinator <code class="fsharp"><span class="co">|&gt;&gt;=</span></code> in <code class="fsharp"><span class="ci">Primitives</span></code>
+      </li>
+     </ul>
+    </div>
+    <div class="para _3 lcinp">
+     <p>Breaking changes:</p>
+     <ul class="l1">
+      <li class="_1">
+       renamed the parsers <code class="fsharp"><span class="ci">char</span></code> and <code class="fsharp"><span class="ci">string</span></code> to
+       <code class="fsharp"><span class="ci">pchar</span></code> and <code class="fsharp"><span class="ci">pstring</span></code> (This is in deference
+       to the built‐in F# functions <code class="fsharp"><span class="ci">char</span></code> and <code class="fsharp"><span
+       class="ci">string</span></code>, which weren’t yet around when the first version of FParsec was released.)
+      </li>
+      <li class="_2">
+       changed the case of the properties of the <code class="fsharp"><span class="ci">Reply</span></code> and <code class="fsharp"><span
+       class="ci">State</span></code> types (This reflects the emerging consensus in the F# community that all public members of types should be named
+       in PascalCase.)
+      </li>
+      <li class="_3">
+       deprecated <code class="fsharp"><span class="ci">State</span><span class="cm">.</span><span class="ci">AdvanceNL</span></code> (use the 3
+       parameter Advance overload instead)
+      </li>
+      <li class="_4">
+       deprecated the <code class="fsharp"><span class="ci">Primitives</span></code> helper functions <code class="fsharp"><span
+       class="ci">isOk</span></code>, <code class="fsharp"><span class="ci">isEmpty</span></code>, … (the <code class="fsharp"><span
+       class="ci">Reply</span></code> properties <code class="fsharp"><span class="ci">IsOk</span></code>, <code class="fsharp"><span
+       class="ci">IsEmpty</span></code>,… should be used instead)
+      </li>
+      <li class="_5">
+       deprecated the <code class="fsharp"><span class="ci">CharParser</span></code> helper functions <code class="fsharp"><span
+       class="ci">matchChar</span></code>, <code class="fsharp"><span class="ci">readChar</span></code>, … (the <code class="fsharp"><span
+       class="ci">State</span><span class="cm">.</span><span class="ci">Iter</span></code> methods <code class="fsharp"><span
+       class="ci">Match</span></code>, <code class="fsharp"><span class="ci">Read</span></code>, … should be used instead)
+      </li>
+      <li class="_6">
+       deprecated <code class="fsharp"><span class="ci">Primitives</span><span class="cm">.</span><span class="ci">option</span></code>, <code
+       class="fsharp"><span class="co">&lt;|&gt;$</span></code> should be used instead
+      </li>
+      <li class="_7">
+       made <code class="fsharp"><span class="ci">CharParser</span><span class="cm">.</span><span class="ci">CharList</span></code> internal (If you
+       need this helper class for your code, just copy the implementation to your source.)
+      </li>
+      <li class="_8">
+       <code class="fsharp"><span class="ci">State</span><span class="cm">.</span><span class="ci">Flags</span><span class="cp">()</span></code> now
+       has more bits (and less bits are reset on a position change)
+      </li>
+     </ul>
+    </div>
+   </div>
+  </div>
+  <div id="v0_6" class="section s3">
+   <h2 class="title h3"><span>Version 0.6.0, 2008‒05‒20</span></h2>
+   <div class="intro i3">
+    <div class="para _1 lcinp">
+     <ul class="l1">
+      <li class="_1">
+       fixed a bug in <code class="fsharp"><span class="ci">manyTillString</span></code> (the code keeping track of newlines was buggy)
+      </li>
+      <li class="_2">
+       fixed a bug in <code class="fsharp"><span class="ci">CharParser</span><span class="co">.&lt;?&gt;</span></code> (the error reporting was
+       inconsistent with <code class="fsharp"><span class="ci">Primitives</span><span class="co">.&lt;?&gt;</span></code> in the rare case where <code
+       class="fsharp"><span class="co">&lt;?&gt;</span></code> is applied inside an <code class="fsharp"><span class="ci">attempt</span> <span
+       class="cp">(</span><span class="co">...</span><span class="cp">)</span> <span class="co">&lt;?&gt;</span> <span class="ci">label</span></code>
+       clause to a parser that returns an <code class="fsharp"><span class="ci">EmptyOk</span></code> reply)
+      </li>
+      <li class="_3">various changes for F# 1.9.4.15</li>
+      <li class="_4">
+       added <code class="fsharp"><span class="ci">skipped</span></code> parser to <code class="fsharp"><span class="ci">CharParser</span></code>
+      </li>
+      <li class="_5">
+       added <code class="fsharp"><span class="ci">nextCharSatifiesNot</span></code>, <code class="fsharp"><span
+       class="ci">prevCharSatifiesNot</span></code>, <code class="fsharp"><span class="ci">currCharSatisfies</span></code>, <code class="fsharp"><span
+       class="ci">currCharSatisfiesNot</span></code> to <code class="fsharp"><span class="ci">CharParser</span></code> module; the behaviours of the
+       existing <code class="fsharp"><span class="ci">nextCharSatisfies</span></code> and <code class="fsharp"><span
+       class="ci">prevCharSatisfies</span></code> were slightly changed (see <span class="tt">fparsec.html</span> for more details)
+      </li>
+      <li class="_6">
+       added <code class="fsharp"><span class="ci">TryWith</span></code> and <code class="fsharp"><span class="ci">TryFinally</span></code> members to
+       <code class="fsharp"><span class="ci">Primitivs</span><span class="cm">.</span><span class="ci">ParserCombinator</span></code>
+      </li>
+      <li class="_7">
+       added <code class="fsharp"><span class="ci">triple</span></code> and <code class="fsharp"><span class="ci">quad</span></code> parsers to <code
+       class="fsharp"><span class="ci">Primitives</span></code> module
+      </li>
+      <li class="_8">
+       set <code class="fsharp"><span class="ci">CompilationRepresentationFlags</span><span class="cm">.</span><span
+       class="ci">PermitNull</span></code> for <code class="fsharp"><span class="ci">Error</span><span class="cm">.</span><span
+       class="ci">ParserError</span></code>
+      </li>
+      <li class="_9">various optimizations</li>
+      <li class="_0">
+       some documentation fixes, including corrections for the docs of the <code class="fsharp"><span class="ci">CharParser</span></code> error
+       generation helper functions (<code class="fsharp"><span class="ci">expectedError</span></code> etc.)
+      </li>
+     </ul>
+    </div>
+   </div>
+  </div>
+  <div id="v0_5_1" class="section s3">
+   <h2 class="title h3"><span>Version 0.5.1, 2008‒01‒20</span></h2>
+   <div class="intro i3">
+    <div class="para _1 lcinp">
+     <ul class="l1">
+      <li class="_1">
+       added <code class="fsharp"><span class="ci">pipe2</span></code>, <code class="fsharp"><span class="ci">pipe3</span></code> and <code
+       class="fsharp"><span class="ci">pipe4</span></code> primitives
+      </li>
+      <li class="_2">
+       replaced <code class="fsharp"><span class="ci">count</span></code> and <code class="fsharp"><span class="ci">skipCount</span></code> primitives
+       with optimized versions
+      </li>
+      <li class="_3">
+       minor optimizations in <code class="fsharp"><span class="ci">spaces</span></code> and <code class="fsharp"><span
+       class="ci">spaces1</span></code>
+      </li>
+      <li class="_4">added <code class="fsharp"><span class="ci">pfloat</span></code> char parser</li>
+      <li class="_5">minor documentation fixes</li>
+     </ul>
+    </div>
+   </div>
+  </div>
+  <div id="v0_5" class="section s3">
+   <h2 class="title h3"><span>Version 0.5.0, 2008‒01‒15</span></h2>
+   <div class="intro i3">
+    <div class="para _1 lcinp">
+     <ul class="l1">
+      <li class="_1">
+       Major design change: all lazy computations were removed and the types <code class="fsharp"><span class="ci">Output</span></code> and <code
+       class="fsharp"><span class="ci">Reply</span></code> unified. The new implementation is considerably simpler and also compiles with F# 1.9.3.7.
+      </li>
+      <li class="_2">Fixed a bug in <span class="tt">build.bat</span> (reported by Santosh Zachariah ‐ thanks Santosh!)</li>
+     </ul>
+    </div>
+   </div>
+  </div>
+  <div id="v0_4_4" class="section s3">
+   <h2 class="title h3"><span>Version 0.4.4, 2008‒01‒13</span></h2>
+   <div class="intro i3">
+    <div class="para _1 lcinp">
+     <ul class="l1">
+      <li class="_1">fixed a minor issue in CharParser.attempt</li>
+      <li class="_2">
+       added <code class="fsharp"><span class="co">.&gt;&gt;!</span></code> and <code class="fsharp"><span class="co">&gt;&gt;.!</span></code>
+       primitives
+      </li>
+      <li class="_3">
+       added <code class="fsharp"><span class="ci">skipManySatisfy</span></code> and <code class="fsharp"><span
+       class="ci">skipMany1Satisfy</span></code> char parsers
+      </li>
+     </ul>
+    </div>
+   </div>
+  </div>
+  <div id="v0_4_3" class="section s3">
+   <h2 class="title h3"><span>Version 0.4.3, 2008‒01‒12</span></h2>
+   <div class="intro i3">
+    <div class="para _1 lcinp">
+     <ul class="l1">
+      <li class="_1">
+       fixed bugs in the CharParser versions of <code class="fsharp"><span class="co">&lt;?&gt;</span></code> and <code class="fsharp"><span
+       class="ci">attempt</span></code>.
+      </li>
+      <li class="_2">added <code class="fsharp"><span class="co">&gt;&gt;?</span></code> primitive</li>
+      <li class="_3">
+       added <code class="fsharp"><span class="ci">skipSatisfy</span></code> and <code class="fsharp"><span class="ci">skipSatisfyL</span></code> char
+       parsers
+      </li>
+      <li class="_4">minor documentation fixes</li>
+     </ul>
+    </div>
+   </div>
+  </div>
+  <div id="v0_4_2" class="section s3">
+   <h2 class="title h3"><span>Version 0.4.2, 2008‒01‒04</span></h2>
+   <div class="intro i3">
+    <div class="para _1 lcinp">
+     <ul class="l1">
+      <li class="_1">
+       performance improvements in <code class="fsharp"><span class="ci">CharStream</span><span class="cm">.</span><span
+       class="ci">Iterator</span></code>
+      </li>
+      <li class="_2">minor documentation fixes</li>
+     </ul>
+    </div>
+   </div>
+  </div>
+  <div id="v0_4_1" class="section s3">
+   <h2 class="title h3"><span>Version 0.4.1, 2008‒01‒02</span></h2>
+   <div class="intro i3">
+    <div class="para _1 lcinp">
+     <ul class="l1">
+      <li class="_1">documentation fixes</li>
+      <li class="_2">new sample application: a parser for Parsing Expression Grammars</li>
+      <li class="_3">
+       <code class="fsharp"><span class="ci">newline</span></code> and <code class="fsharp"><span class="ci">unicodeNewline</span></code> now return
+       <code class="fsharp"><span class="cc"><span class="cld">'</span><span class="ce">\n</span><span class="crd">'</span></span></code>, instead of
+       1 or 2
+      </li>
+      <li class="_4">
+       added <code class="fsharp"><span class="ci">whitespace</span></code> parser and changed <code class="fsharp"><span
+       class="ci">unicodeWhitespace</span></code>
+      </li>
+      <li class="_5">
+       added <code class="fsharp"><span class="ci">spaces</span></code> parser (equivalent to <code class="fsharp"><span
+       class="ci">skipManyChars</span> <span class="ci">whitespace</span></code>)
+      </li>
+      <li class="_6">
+       removed <code class="fsharp"><span class="ci">newlineRepl</span></code> parameter from <code class="fsharp"><span
+       class="ci">manyTillString</span></code>
+      </li>
+      <li class="_7">
+       added <code class="fsharp"><span class="ci">skipManyTill</span></code> and <code class="fsharp"><span
+       class="ci">skipManyCharsTill</span></code>
+      </li>
+      <li class="_8">generalized types of skipManyChars and skipManyChars1</li>
+     </ul>
+    </div>
+   </div>
+  </div>
+  <div id="v0_4" class="section s3">
+   <h2 class="title h3"><span>Version 0.4.0, 2007‒12‒30</span></h2>
+   <div class="intro i3">
+    <div class="para _1">
+     <p>Initial public release</p>
+    </div>
+   </div>
+  </div>
+ </div>
+ </div>
+ </div>   
+ </div>
+</body>
+</html>
+

@@ -1,11 +1,13 @@
-﻿// Copyright (c) Stephan Tolksdorf 2007-2009
+﻿// Copyright (c) Stephan Tolksdorf 2007-2011
 // License: Simplified BSD License. See accompanying documentation.
 
 module FParsec.Test.PrimitivesTests
 
+open FParsec
 open FParsec.Error
 
 module Reference =
+
     [<Literal>]
     let Ok         = FParsec.Primitives.Ok
     [<Literal>]
@@ -13,37 +15,30 @@ module Reference =
     [<Literal>]
     let FatalError = FParsec.Primitives.FatalError
 
-    type Reply<'a,'u>  = FParsec.Primitives.Reply<'a,'u>
     type Parser<'a,'u> = FParsec.Primitives.Parser<'a,'u>
 
-    type FParsec.Primitives.Reply<'a,'u>
+    type FParsec.Reply<'a>
       with
         member t.WithError(error: ErrorMessageList) =
-            new Reply<'a,'u>(t.Status, t.Result, error, t.State)
+            Reply(t.Status, t.Result, error)
 
-    let reconstructErrorReply (reply: Reply<_,_>) =
-        new Reply<_,_>(reply.Status, reply.Error, reply.State)
-
-    let backtrack stateWhereErrorOccured error stateBacktrackedTo =
-        let error = if stateWhereErrorOccured = stateBacktrackedTo then error
-                    else backtrackError stateWhereErrorOccured error
-        new Reply<_,_>(Error, error, stateBacktrackedTo)
+    let reconstructErrorReply (reply: Reply<_>) =
+        Reply(reply.Status, reply.Error)
 
     let preturn x =
-        fun state ->
-            new Reply<_,_>(x, state)
+        fun stream -> Reply(x)
 
     let pzero : Parser<'a,'u> =
-        fun state ->
-            new Reply<_,_>(Error, NoErrorMessages, state)
+        fun stream -> Reply(Error, NoErrorMessages)
 
     let (>>=) (p: Parser<'a,'u>) (f: 'a -> Parser<'b,'u>) =
-        fun state ->
-            let reply1 = p state
+        fun stream ->
+            let reply1 = p stream
             if reply1.Status = Ok then
                 let p2 = f reply1.Result
-                let reply2 = p2 reply1.State
-                if reply2.State <> reply1.State then reply2
+                let stateTag1 = stream.StateTag
+                let reply2 = p2 stream
+                if stateTag1 <> stream.StateTag then reply2
                 else reply2.WithError(mergeErrors reply1.Error reply2.Error)
             else reconstructErrorReply reply1
 
@@ -51,6 +46,10 @@ module Reference =
 
     let (>>.) p1 p2 = p1 >>= fun _ -> p2
     let (.>>) p1 p2 = p1 >>= fun x -> p2 >>% x
+
+    let (.>>.) p1 p2 =
+        p1 >>= fun x1 ->
+        p2 >>= fun x2 -> preturn (x1, x2)
 
     let between popen pclose p = popen >>. (p .>> pclose)
 
@@ -79,39 +78,45 @@ module Reference =
         p4 >>= fun x4 ->
         p5 >>= fun x5 -> preturn (f x1 x2 x3 x4 x5)
 
-    let (<?>) (p: Parser<'a,'u>) label  =
-        fun state ->
-            let reply = p state
-            if reply.State <> state then reply
-            else reply.WithError(expectedError label)
+    let (<?>) (p: Parser<'a,'u>) label : Parser<'a,'u> =
+        fun stream ->
+            let stateTag = stream.StateTag
+            let reply = p stream
+            if stateTag <> stream.StateTag then reply
+            else reply.WithError(expected label)
 
-    let (<??>) (p: Parser<'a,'u>) label  =
-        fun state ->
-            let reply = p state
+    let (<??>) (p: Parser<'a,'u>) label : Parser<'a,'u> =
+        fun stream ->
+            let mutable state = stream.State
+            let reply = p stream
             if reply.Status = Ok then
-                if reply.State <> state then reply
-                else reply.WithError(expectedError label)
-            elif reply.State <> state then
-                new Reply<_,_>(FatalError, compoundError label reply.State reply.Error, state)
+                if state.Tag <> stream.StateTag then reply
+                else reply.WithError(expected label)
             else
-                let error = match reply.Error with
-                            | AddErrorMessage(BacktrackPoint(pos, msgs), NoErrorMessages)
-                                -> AddErrorMessage(CompoundError(label, pos, msgs), NoErrorMessages)
-                            | _ -> expectedError label
-                reply.WithError(error)
+                if state.Tag <> stream.StateTag then
+                    let error = compoundError label stream reply.Error
+                    stream.BacktrackTo(&state)
+                    Reply(FatalError, error)
+                else
+                    let error = match reply.Error with
+                                | ErrorMessageList(NestedError(pos, ustate, msgs), NoErrorMessages)
+                                    -> ErrorMessageList(CompoundError(label, pos, ustate, msgs), NoErrorMessages)
+                                | _ -> expected label
+                    reply.WithError(error)
 
     let fail msg : Parser<'a,'u> =
-        fun state -> new Reply<_,_>(Error, messageError msg, state)
+        fun stream -> Reply(Error, messageError msg)
 
     let failFatally msg : Parser<'a,'u> =
-        fun state -> new Reply<_,_>(FatalError, messageError msg, state)
+        fun stream -> Reply(FatalError, messageError msg)
 
-    let (<|>) (p1: Parser<'a,'u>) (p2: Parser<'a,'u>) =
-        fun state ->
-            let reply1 = p1 state
-            if reply1.Status = Error && reply1.State = state then
-                let reply2 = p2 state
-                if reply2.State <> reply1.State then reply2
+    let (<|>) (p1: Parser<'a,'u>) (p2: Parser<'a,'u>) : Parser<'a,'u> =
+        fun stream ->
+            let stateTag = stream.StateTag
+            let reply1 = p1 stream
+            if reply1.Status = Error && stateTag = stream.StateTag then
+                let reply2 = p2 stream
+                if stateTag <> stream.StateTag then reply2
                 else reply2.WithError(mergeErrors reply1.Error reply2.Error)
             else reply1
 
@@ -124,53 +129,90 @@ module Reference =
 
     let optional p = (p >>% ()) <|>% ()
 
-    let attempt (p: Parser<'a,'u>) =
-        fun state ->
-            let reply = p state
-            if reply.Status = Ok then reply
-            else backtrack reply.State reply.Error state
+    let notEmpty (p: Parser<'a,'u>) : Parser<'a,'u> =
+        fun stream ->
+            let stateTag = stream.StateTag
+            let reply = p stream
+            if reply.Status <> Ok || stateTag <> stream.StateTag then reply
+            else Reply(Error, reply.Error)
 
-    let (>>=?) (p: Parser<'a,'u>) (f: 'a -> Parser<'b,'u>) =
-        fun state ->
-            let reply1 = p state
+    let attempt (p: Parser<'a,'u>) : Parser<'a,'u> =
+        fun stream ->
+            let mutable state = stream.State
+            let reply = p stream
+            if reply.Status = Ok then reply
+            elif state.Tag = stream.StateTag then
+                Reply(Error, reply.Error)
+            else
+                let error = nestedError stream reply.Error
+                stream.BacktrackTo(&state)
+                Reply(Error, error)
+
+    let (>>=?) (p: Parser<'a,'u>) (f: 'a -> Parser<'b,'u>) : Parser<'b,'u> =
+        fun stream ->
+            let mutable state = stream.State
+            let reply1 = p stream
             if reply1.Status = Ok then
                 let p2 = f reply1.Result
-                let reply2 = p2 reply1.State
-                if reply2.State <> reply1.State then reply2
+                let stateTag1 = stream.StateTag
+                let reply2 = p2 stream
+                if stateTag1 <> stream.StateTag then reply2
                 else
                     let error = mergeErrors reply1.Error reply2.Error
                     if reply2.Status <> Error then reply2.WithError(error)
-                    else backtrack reply2.State error state
+                    elif state.Tag = stateTag1 then Reply(Error, error)
+                    else
+                        let error = nestedError stream error
+                        stream.BacktrackTo(&state)
+                        Reply(Error, error)
             else reconstructErrorReply reply1
 
     let (>>?)  p1 p2 = p1 >>=? fun _ -> p2
     let (.>>?) p1 p2 = p1 >>=? fun x -> p2 >>% x
 
-    let lookAhead (p: Parser<'a,'u>) =
-        fun state ->
-            let reply = p state
-            if reply.Status = Ok then
-                new Reply<_,_>(reply.Result, state)
-            else
-                backtrack reply.State reply.Error state
+    let (.>>.?) p1 p2 =
+        p1 >>=? fun x1 ->
+        p2 >>=  fun x2 -> preturn (x1, x2)
 
-    let followedByE (p: Parser<'a,'u>) error =
-        fun state ->
-            let reply = p state
-            if reply.Status = Ok then new Reply<_,_>((), state)
-            else new Reply<_,_>(Error, error, state)
+    let lookAhead (p: Parser<'a,'u>) : Parser<'a,'u> =
+        fun stream ->
+            let mutable state = stream.State
+            let reply = p stream
+            if reply.Status = Ok then
+                if state.Tag <> stream.StateTag then
+                    stream.BacktrackTo(&state)
+                Reply(reply.Result)
+            else
+                if state.Tag = stream.StateTag then
+                    Reply(Error, reply.Error)
+                else
+                    let error = nestedError stream reply.Error
+                    stream.BacktrackTo(&state)
+                    Reply(Error, error)
+
+    let followedByE (p: Parser<'a,'u>) error : Parser<unit,'u> =
+        fun stream ->
+            let mutable state = stream.State
+            let reply = p stream
+            if state.Tag <> stream.StateTag then
+                stream.BacktrackTo(&state)
+            if reply.Status = Ok then Reply(())
+            else Reply(Error, error)
 
     let followedBy  p       = followedByE p NoErrorMessages
-    let followedByL p label = followedByE p (expectedError label)
+    let followedByL p label = followedByE p (expected label)
 
-    let notFollowedByE (p: Parser<'a,'u>) error =
-        fun state ->
-            let reply = p state
-            if reply.Status <> Ok then new Reply<_,_>((), state)
-            else new Reply<_,_>(Error, error, state)
+    let notFollowedByE (p: Parser<'a,'u>) error : Parser<unit,'u> =
+        fun stream ->
+            let mutable state = stream.State
+            let reply = p stream
+            if state.Tag <> stream.StateTag then
+                stream.BacktrackTo(&state)
+            if reply.Status <> Ok then Reply(())
+            else Reply(Error, error)
 
     let notFollowedBy  p       = notFollowedByE p NoErrorMessages
-    let notFollowedByL p label = notFollowedByE p (unexpectedError label)
+    let notFollowedByL p label = notFollowedByE p (unexpected label)
 
     let tuple2  p1 p2          = pipe2 p1 p2          (fun a b       -> (a, b))
     let tuple3  p1 p2 p3       = pipe3 p1 p2 p3       (fun a b c     -> (a, b, c))
@@ -188,62 +230,69 @@ module Reference =
 
     // Note that the actual implemention of `many` tries to guard against
     // an infinite loop/recursion by throwing an exception if the given parser
-    // argument succeeds without changing the state.
+    // argument succeeds without changing the stream.
 
     let rec many p = many1 p <|>% []
     and many1 p = p >>= fun hd -> many p |>> (fun tl -> hd::tl)
 
-    /// a version of `(p1 >>. p2) <|>% x` that does not succeed if `p1` succeeds
-    /// without changing the state and `p2` fails without changing the state
-    let ifP1ThenP2ElseReturnX p1 p2 x =
-        (p1 >>% p2 <|>% (preturn x)) >>= fun p -> p
+    // a version of many (p1 .>>. p2) that does not succeed if `p1` succeeds
+    /// without changing the parser state and `p2` fails without changing the state
+    let rec manyPair p1 p2 =
+        p1 |>> (fun x1 ->
+                    p2 >>= fun x2 ->
+                        manyPair p1 p2 |>> fun tl -> (x1, x2)::tl)
+        <|>% (preturn [])
+        >>= fun p -> p
 
     let rec sepBy p sep = sepBy1 p sep <|>% []
     and sepBy1 p sep =
-        p >>= fun hd -> ifP1ThenP2ElseReturnX sep (sepBy1 p sep) [] |>> fun tl -> hd::tl
+        p >>= fun hd -> manyPair sep p |>> fun sepPs -> hd::(List.map snd sepPs)
 
     let rec sepEndBy p sep = sepEndBy1 p sep <|>% []
-    and sepEndBy1 p sep = p >>= fun hd -> sep >>. sepEndBy p sep <|>% [] |>> fun tl -> hd::tl
-
-    let endBy  p sep = many  (p .>> sep)
-    let endBy1 p sep = many1 (p .>> sep)
+    and sepEndBy1 p sep =
+        p >>= fun hd -> sep >>. sepEndBy p sep <|>% [] |>> fun tl -> hd::tl
 
     let manyTill (p: Parser<'a,'u>) (endp: Parser<'b,'u>) =
-        let rec parse acc error (state: FParsec.State<'u>) =
-            let replyE = endp state
-            if replyE.Status = Ok then
-                let error = mergeErrorsIfNeeded state error replyE.State replyE.Error
-                new Reply<_,_>(Ok, List.rev acc, error, replyE.State)
-            else
-                // in case endp failed after changing the state we tentatively backtrack...
-                let replyP = p state
+        let rec parse (stream: CharStream<'u>) acc error  =
+            let stateTag = stream.StateTag
+            let replyE = endp stream
+            if replyE.Status = Error && stateTag = stream.StateTag then
+                let replyP = p stream
                 if replyP.Status = Ok then
-                    let error = mergeErrorsIfNeeded state error replyP.State replyP.Error
-                    parse (replyP.Result::acc) error replyP.State
-                elif replyP.Status = Error && replyP.State = state then
-                    // ... but then return endp's reply if p fails non-fatally without changing the state
-                    let error = if replyE.State <> state then replyE.Error
-                                else mergeErrors (mergeErrors error replyE.Error) replyP.Error
-                    new Reply<_,_>(replyE.Status, error, replyE.State)
+                    if stateTag = stream.StateTag then
+                        failwith "infinite loop"
+                    parse stream (replyP.Result::acc) replyP.Error
                 else
-                    let error = mergeErrorsIfNeeded state error replyP.State replyP.Error
-                    new Reply<_,_>(replyP.Status, error, replyP.State)
+                    let error = if stateTag <> stream.StateTag then replyP.Error
+                                else mergeErrors (mergeErrors error replyE.Error) replyP.Error
+                    Reply(replyP.Status, error)
+            else
+                let error = if stateTag <> stream.StateTag then replyE.Error
+                            else mergeErrors error replyE.Error
+                if replyE.Status = Ok then
+                    Reply(Ok, List.rev acc, error)
+                else
+                    Reply(replyE.Status, error)
 
-        fun state -> parse [] NoErrorMessages state
+        fun stream -> parse stream [] NoErrorMessages
+
+    let many1Till p endp = pipe2 p (manyTill p endp) (fun hd tl -> hd::tl)
 
     let chainl1 p op =
-        let rec fold x = (op >>= fun f ->
-                          p  >>= fun y -> fold (f x y)) <|>% x
-        p >>= fun x -> fold x
+        p >>= fun x -> manyPair op p |>> fun opPs ->
+            List.fold (fun x (f, y) -> f x y) x opPs
 
     let chainl p op x = chainl1 p op <|>% x
 
-    let rec chainr1 p op =
-        p >>= fun x ->
-            (op >>= fun f -> chainr1 p op
-                             |>> fun y -> f x y) <|>% x
+    let chainr1 p op =
+        let rec calc x rhs =
+            match rhs with
+            | (f, y)::tl -> f x (calc y tl)
+            | [] -> x
 
-    let rec chainr p op x = chainr1 p op <|>% x
+        pipe2 p (manyPair op p) calc
+
+    let chainr p op x = chainr1 p op <|>% x
 
 
 open FParsec.Primitives
@@ -252,13 +301,13 @@ open FParsec.Test.Test
 
 let testPrimitives() =
     let content = "the content doesn't matter"
-    use cs = new FParsec.CharStream(content, 0, content.Length)
-    let s0 = new FParsec.State<_>(cs, 0, "")
+    use stream = new FParsec.CharStream<int>(content, 0, content.Length)
 
-    let ps1  = constantTestParsers 1    (expectedError "1")
-    let ps1b = constantTestParsers 11   (expectedError "1b")
-    let ps1c = constantTestParsers 111  (expectedError "1c")
-    let ps1d = constantTestParsers 1111 (expectedError "1d")
+
+    let ps1  = Array.append (constantTestParsers 1    (expected "1")) [|(fun s -> s.UserState <- s.UserState + 1; Reply(1))|]
+    let ps1b = constantTestParsers 11   (expected "1b")
+    let ps1c = constantTestParsers 111  (expected "1c")
+    let ps1d = constantTestParsers 1111 (expected "1d")
 
     let parserSeq4 =
         seq {for p1 in ps1 do
@@ -267,14 +316,14 @@ let testPrimitives() =
              for p4 in ps1d do
              yield [p1;p2;p3;p4]}
 
-    let ps2  = constantTestParsers 2u   (expectedError "2")
-    let ps2b = constantTestParsers 22u  (expectedError "2b")
-    let ps2c = constantTestParsers 222u (expectedError "2c")
-    let ps3  = constantTestParsers 3s (expectedError "3")
-    let ps4  = constantTestParsers 4L (expectedError "4")
-    let ps5  = constantTestParsers 5y (expectedError "5")
+    let ps2  = constantTestParsers 2u   (expected "2")
+    let ps2b = constantTestParsers 22u  (expected "2b")
+    let ps2c = constantTestParsers 222u (expected "2c")
+    let ps3  = constantTestParsers 3s (expected "3")
+    let ps4  = constantTestParsers 4L (expected "4")
+    let ps5  = constantTestParsers 5y (expected "5")
 
-    let checkParser p1 p2 = checkParser p1 p2 s0
+    let checkParser p1 p2 = checkParser p1 p2 stream
 
     let checkComb comb1 comb2 =
         for p in ps1 do
@@ -345,6 +394,7 @@ let testPrimitives() =
         checkCombA  (>>%)   Reference.(>>%) "test"
         checkComb2  (>>.)   Reference.(>>.)
         checkComb2  (.>>)   Reference.(.>>)
+        checkComb2  (.>>.)  Reference.(.>>.)
         checkComb3  between Reference.between
         checkCombA  (|>>)   Reference.(|>>) (fun x -> x + 3)
         checkComb2A pipe2   Reference.pipe2 (fun a b       -> (a, b))
@@ -358,17 +408,24 @@ let testPrimitives() =
 
         checkCombA  (<?>)   Reference.(<?>)  "test"
         checkCombA  (<??>)  Reference.(<??>) "test"
-        let btestp = fun (state: FParsec.State<_>) -> new Reply<_,_>(Error, backtrackError (state.Advance(1)) (expectedError "test"), state)
+        let btestp : Parser<_,_> =
+            fun stream ->
+                let mutable state0 = stream.State
+                stream.Skip()
+                stream.UserState <- stream.UserState + 1
+                let error = nestedError stream (expected "test")
+                stream.BacktrackTo(&state0)
+                Reply(Error, error)
+
         checkParser ((<??>) btestp "btest") (Reference.(<??>) btestp "btest")
         checkParser (fail "test") (Reference.fail "test")
         checkParser (failFatally "test") (Reference.failFatally "test")
-
 
         for p1 in ps1 do
             for p2 in ps1b do
                 checkParser ((<|>) p1 p2) (Reference.(<|>) p1 p2)
 
-        for ps in parserSeq4 do
+        for ps in Seq.append (Seq.singleton []) parserSeq4 do
             let refChoice  = Reference.choice ps
             let refChoiceL = refChoice <?> "test"
 
@@ -377,6 +434,7 @@ let testPrimitives() =
             // so we must test all 3 input types.
             let psa = Array.ofSeq ps
             let pss = match ps with
+                      | [] -> Seq.empty
                       | [p1;p2;p3;p4] -> seq {yield p1
                                               yield p2
                                               yield p3
@@ -393,10 +451,12 @@ let testPrimitives() =
         checkCombA (<|>%)         Reference.(<|>%)          99
         checkComb  opt            Reference.opt
         checkComb  optional       Reference.optional
+        checkComb  notEmpty       Reference.notEmpty
         checkComb  attempt        Reference.attempt
         checkBind  (>>=?)         Reference.(>>=?)
         checkComb2 (>>?)          Reference.(>>?)
         checkComb2 (.>>?)         Reference.(.>>?)
+        checkComb2 (.>>.?)        Reference.(.>>.?)
         checkComb  followedBy     Reference.followedBy
         checkCombA followedByL    Reference.followedByL    "test"
         checkComb  notFollowedBy  Reference.notFollowedBy
@@ -439,26 +499,18 @@ let testPrimitives() =
         for ps in manySeq3 do
             let p1, p2, pr = seqParserAndReset2 ps
 
-            let reply = Reference.many p2 s0
-            let rMany = fun state -> reply
-            checkParser (many       p1)       rMany;                           pr()
-            checkParser (manyRev    p1)      (rMany |>> List.rev);             pr()
-            checkParser (skipMany   p1)      (rMany |>> ignore);               pr()
-            checkParser (manyFold   0  f p1) (rMany |>> List.fold f 0);        pr()
-            checkParser (manyReduce f -1 p1) (rMany |>> reduceOrDefault f -1); pr()
+            let rMany = Reference.many p2
+            checkParser (many       p1)    rMany;             pr()
+            checkParser (skipMany   p1)   (rMany |>> ignore); pr()
 
-            let reply1 = Reference.many1 p2 s0
-            let rMany1 = fun state -> reply1
-            checkParser (many1       p1)      rMany1;                    pr()
-            checkParser (many1Rev    p1)     (rMany1 |>> List.rev);      pr()
-            checkParser (skipMany1   p1)     (rMany1 |>> ignore);        pr()
-            checkParser (many1Fold   0 f p1) (rMany1 |>> List.fold f 0); pr()
-            checkParser (many1Reduce f p1)   (rMany1 |>> List.reduce f); pr()
+            let rMany1 = Reference.many1 p2
+            checkParser (many1       p1)   rMany1;             pr()
+            checkParser (skipMany1   p1)  (rMany1 |>> ignore); pr()
 
-        try many (preturn 0) s0 |> ignore; Fail ()
-        with Failure msg -> ()
-        try many1 (preturn 0) s0 |> ignore; Fail ()
-        with Failure msg -> ()
+        try many (preturn 0) stream |> ignore; Fail ()
+        with :? System.InvalidOperationException -> ()
+        try many1 (preturn 0) stream |> ignore; Fail ()
+        with :? System.InvalidOperationException -> ()
 
     testMany()
 
@@ -476,9 +528,9 @@ let testPrimitives() =
 
     let testSeqEndBy() =
         let sepEndSeq3 =
-            seq {for p1       in (constantTestParsers 1 (expectedError "p1")).[1..] do
-                 for sep1, p2 in sepByTestParsers 'a' (expectedError "sep1") 2 (expectedError "p2") do
-                 for sep2, p3 in sepByTestParsers 'b' (expectedError "sep2") 3 (expectedError "p3") do
+            seq {for p1       in (constantTestParsers 1 (expected "p1")).[1..] do
+                 for sep1, p2 in sepByTestParsers 'a' (expected "sep1") 2 (expected "p2") do
+                 for sep2, p3 in sepByTestParsers 'b' (expected "sep2") 3 (expected "p3") do
                  yield [p1; p2; p3;], [sep1; sep2;]}
 
         let f = foldTestF
@@ -489,47 +541,30 @@ let testPrimitives() =
             let p1, p2, pr = seqParserAndReset2 ps
             let s1, s2, sr = seqParserAndReset2 ss
 
-            let reply1 = Reference.sepBy p2 s2 s0
-            let rSepBy = fun state -> reply1
-            checkParser (sepBy       p1 s1)       rSepBy;                           pr(); sr()
-            checkParser (sepByRev    p1 s1)      (rSepBy |>> List.rev);             pr(); sr()
-            checkParser (skipSepBy   p1 s1)      (rSepBy |>> ignore);               pr(); sr()
-            checkParser (sepByFold   0 f  p1 s1) (rSepBy |>> List.fold f 0);        pr(); sr()
-            checkParser (sepByReduce f -1 p1 s1) (rSepBy |>> reduceOrDefault f -1); pr(); sr()
+            let rSepBy = Reference.sepBy p2 s2
+            checkParser (sepBy       p1 s1)      rSepBy;                 pr(); sr()
+            checkParser (skipSepBy   p1 s1)     (rSepBy |>> ignore);     pr(); sr()
 
-            let reply2 = Reference.sepBy1 p2 s2 s0
-            let rSepBy1 = fun state -> reply2
-            checkParser (sepBy1       p1 s1)      rSepBy1;                    pr(); sr()
-            checkParser (sepBy1Rev    p1 s1)     (rSepBy1 |>> List.rev);      pr(); sr()
-            checkParser (skipSepBy1   p1 s1)     (rSepBy1 |>> ignore);        pr(); sr()
-            checkParser (sepBy1Fold   0 f p1 s1) (rSepBy1 |>> List.fold f 0); pr(); sr()
-            checkParser (sepBy1Reduce f p1 s1)   (rSepBy1 |>> List.reduce f); pr(); sr()
+            let rSepBy1 = Reference.sepBy1 p2 s2
+            checkParser (sepBy1       p1 s1)     rSepBy1;                pr(); sr()
+            checkParser (skipSepBy1   p1 s1)    (rSepBy1 |>> ignore);    pr(); sr()
 
+            let rSepEndBy = Reference.sepEndBy p2 s2
+            checkParser (sepEndBy       p1 s1)   rSepEndBy;              pr(); sr()
+            checkParser (skipSepEndBy   p1 s1)  (rSepEndBy |>> ignore);  pr(); sr()
 
-            let reply3 = Reference.sepEndBy p2 s2 s0
-            let rSepEndBy = fun state -> reply3
-            checkParser (sepEndBy       p1 s1)       rSepEndBy;                           pr(); sr()
-            checkParser (sepEndByRev    p1 s1)      (rSepEndBy |>> List.rev);             pr(); sr()
-            checkParser (skipSepEndBy   p1 s1)      (rSepEndBy |>> ignore);               pr(); sr()
-            checkParser (sepEndByFold   0 f  p1 s1) (rSepEndBy |>> List.fold f 0);        pr(); sr()
-            checkParser (sepEndByReduce f -1 p1 s1) (rSepEndBy |>> reduceOrDefault f -1); pr(); sr()
+            let rSepEndBy1 = Reference.sepEndBy1 p2 s2
+            checkParser (sepEndBy1       p1 s1)  rSepEndBy1;             pr(); sr()
+            checkParser (skipSepEndBy1   p1 s1) (rSepEndBy1 |>> ignore); pr(); sr()
 
-            let reply4 = Reference.sepEndBy1 p2 s2 s0
-            let rSepEndBy1 = fun state -> reply4
-            checkParser (sepEndBy1       p1 s1)      rSepEndBy1;                    pr(); sr()
-            checkParser (sepEndBy1Rev    p1 s1)     (rSepEndBy1 |>> List.rev);      pr(); sr()
-            checkParser (skipSepEndBy1   p1 s1)     (rSepEndBy1 |>> ignore);        pr(); sr()
-            checkParser (sepEndBy1Fold   0 f p1 s1) (rSepEndBy1 |>> List.fold f 0); pr(); sr()
-            checkParser (sepEndBy1Reduce f p1 s1)   (rSepEndBy1 |>> List.reduce f); pr(); sr()
-
-        try sepBy (preturn 0) (preturn 0) s0 |> ignore; Fail ()
-        with Failure msg -> ()
-        try sepBy1 (preturn 0) (preturn 0) s0 |> ignore; Fail ()
-        with Failure msg -> ()
-        try sepEndBy (preturn 0) (preturn 0) s0 |> ignore; Fail ()
-        with Failure msg -> ()
-        try sepEndBy1 (preturn 0) (preturn 0) s0 |> ignore; Fail ()
-        with Failure msg -> ()
+        try sepBy (preturn 0) (preturn 0) stream |> ignore; Fail ()
+        with :? System.InvalidOperationException -> ()
+        try sepBy1 (preturn 0) (preturn 0) stream |> ignore; Fail ()
+        with :? System.InvalidOperationException -> ()
+        try sepEndBy (preturn 0) (preturn 0) stream |> ignore; Fail ()
+        with :? System.InvalidOperationException -> ()
+        try sepEndBy1 (preturn 0) (preturn 0) stream |> ignore; Fail ()
+        with :? System.InvalidOperationException -> ()
 
     testSeqEndBy()
 
@@ -552,16 +587,20 @@ let testPrimitives() =
             let p1, p2, pr = seqParserAndReset2 ps
             let e1, e2, er = seqParserAndReset2 es
 
-            let reply1 = Reference.manyTill p2 e2 s0
-            let rManyTill = fun state -> reply1
-            checkParser (manyTill       p1 e1)       rManyTill;                           pr(); er()
-            checkParser (manyTillRev    p1 e1)      (rManyTill |>> List.rev);             pr(); er()
-            checkParser (skipManyTill   p1 e1)      (rManyTill |>> ignore);               pr(); er()
-            checkParser (manyTillFold   0 f p1 e1)  (rManyTill |>> List.fold f 0);        pr(); er()
-            checkParser (manyTillReduce f -1 p1 e1) (rManyTill |>> reduceOrDefault f -1); pr(); er()
+            let rManyTill = Reference.manyTill p2 e2
+            checkParser (manyTill       p1 e1)  rManyTill;             pr(); er()
+            checkParser (skipManyTill   p1 e1) (rManyTill |>> ignore); pr(); er()
 
-        try manyTill (preturn 0) (fail "test") s0 |> ignore; Fail ()
-        with Failure msg -> ()
+            let rMany1Till = Reference.many1Till p2 e2
+            checkParser (many1Till       p1 e1)  rMany1Till;             pr(); er()
+            checkParser (skipMany1Till   p1 e1) (rMany1Till |>> ignore); pr(); er()
+
+
+        try manyTill (preturn 0) (fail "test") stream |> ignore; Fail ()
+        with :? System.InvalidOperationException -> ()
+
+        try many1Till (preturn 0) (fail "test") stream |> ignore; Fail ()
+        with :? System.InvalidOperationException -> ()
 
     testManyTill()
 
@@ -569,8 +608,8 @@ let testPrimitives() =
     let testChain() =
         let chainSeq3 =
             seq {for p1      in ps1 do
-                 for op1, p2 in sepByTestParsers (+) (expectedError "op1") 2 (expectedError "p2") do
-                 for op2, p3 in sepByTestParsers (*) (expectedError "op2") 3 (expectedError "p3") do
+                 for op1, p2 in sepByTestParsers (+) (expected "op1") 2 (expected "p2") do
+                 for op2, p3 in sepByTestParsers (*) (expected "op2") 3 (expected "p3") do
                  yield [p1; p2; p3;], [op1; op2;]}
 
         for ps, ops in chainSeq3 do
@@ -587,3 +626,4 @@ let testPrimitives() =
 
 let run() =
     testPrimitives()
+

@@ -1,0 +1,409 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+ <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+ <title>FParsec.Reply</title>
+ <link rel="stylesheet" type="text/css" media="all" href="../css/style.css" /> 
+ <link rel="stylesheet" type="text/css" media="screen" href="../css/screen-sidebar.css" />  
+ <!--[if lt IE 9]>
+ <link rel="stylesheet" type="text/css" media="all" href="../css/style-ie.css" /> 
+ <![endif]-->
+ <!--[if IE 6]>
+ <link rel="stylesheet" type="text/css" media="all" href="../css/style-ie6.css" /> 
+ <![endif]-->
+ <link rel="stylesheet" type="text/css" media="print" href="../css/print.css" />
+</head>
+<body>
+ <div id="fixed-layer">
+ <div id="fixed-wrapper">
+ <div id="sidebar">
+  <div id="top-links"><span><a href="http://bitbucket.org/fparsec/main">FParsec @ BitBucket</a> | <a href="https://bitbucket.org/fparsec/main/issues">Report a bug</a> | <a href="mailto:fparsec [at] quanttec.com?subject=FParsec&body=Hello Stephan,%0A%0A[your feedback]">Feedback</a></span></div>
+  <div id="nav-tree">
+   <table class="nav n1">
+    <tbody class="nav-open n1">
+     <tr class="nav-entry n1 _1">
+      <td class="nav-number n1"></td>
+      <td class="nav-title n1"><a href="../index.html">FParsec Documentation</a></td>
+     </tr>
+     <tr class="nav-subentries n1 _1">
+      <td class="nav-subentries-number n1"></td>
+      <td class="nav-subentries n1">
+       <table class="nav n2">
+        <tbody class="nav-before-open n2">
+         <tr class="nav-entry n2 _1">
+          <td class="nav-number n2"><a href="../about/index.html"><span class="section-number">1</span><span class="nav-space"></span></a></td>
+          <td class="nav-title n2"><a href="../about/index.html">About FParsec</a></td>
+         </tr>
+         <tr class="nav-entry n2 _2">
+          <td class="nav-number n2"><a href="../license.html"><span class="section-number">2</span><span class="nav-space"></span></a></td>
+          <td class="nav-title n2"><a href="../license.html">License</a></td>
+         </tr>
+         <tr class="nav-entry n2 _3">
+          <td class="nav-number n2">
+           <a href="../download-and-installation.html"><span class="section-number">3</span><span class="nav-space"></span></a>
+          </td>
+          <td class="nav-title n2"><a href="../download-and-installation.html">Download and installation</a></td>
+         </tr>
+         <tr class="nav-entry n2 _4">
+          <td class="nav-number n2"><a href="../tutorial.html"><span class="section-number">4</span><span class="nav-space"></span></a></td>
+          <td class="nav-title n2"><a href="../tutorial.html">Tutorial</a></td>
+         </tr>
+         <tr class="nav-entry n2 _5">
+          <td class="nav-number n2"><a href="../users-guide/index.html"><span class="section-number">5</span><span class="nav-space"></span></a></td>
+          <td class="nav-title n2"><a href="../users-guide/index.html">User’s Guide</a></td>
+         </tr>
+        </tbody>
+        <tbody class="nav-open n2">
+         <tr class="nav-entry n2 _6">
+          <td class="nav-number n2"><a href="index.html"><span class="section-number">6</span><span class="nav-space"></span></a></td>
+          <td class="nav-title n2"><a href="index.html">Reference</a></td>
+         </tr>
+         <tr class="nav-subentries n2 _6">
+          <td class="nav-subentries-number n2"></td>
+          <td class="nav-subentries n2">
+           <table class="nav n3">
+            <tbody class="nav-before-open n3">
+             <tr class="nav-entry n3 _1">
+              <td class="nav-number n3"><a href="parser-overview.html"><span class="section-number">1</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="parser-overview.html">Parser overview</a></td>
+             </tr>
+             <tr class="nav-entry n3 _2">
+              <td class="nav-number n3"><a href="primitives.html"><span class="section-number">2</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="primitives.html">FParsec.Primitives</a></td>
+             </tr>
+             <tr class="nav-entry n3 _3">
+              <td class="nav-number n3"><a href="charparsers.html"><span class="section-number">3</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="charparsers.html">FParsec.CharParsers</a></td>
+             </tr>
+             <tr class="nav-entry n3 _4">
+              <td class="nav-number n3">
+               <a href="operatorprecedenceparser.html"><span class="section-number">4</span><span class="nav-space"></span></a>
+              </td>
+              <td class="nav-title n3"><a href="operatorprecedenceparser.html">FParsec.OperatorPrecedenceParser</a></td>
+             </tr>
+             <tr class="nav-entry n3 _5">
+              <td class="nav-number n3"><a href="staticmapping.html"><span class="section-number">5</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="staticmapping.html">FParsec.StaticMapping</a></td>
+             </tr>
+            </tbody>
+            <tbody class="nav-open selected n3">
+             <tr class="nav-entry selected n3 _6">
+              <td class="nav-number selected n3"><a href="#"><span class="section-number">6</span><span class="nav-space"></span></a></td>
+              <td class="nav-title selected n3"><a href="#">FParsec.Reply</a></td>
+             </tr>
+             <tr class="nav-subentries selected n3 _6">
+              <td class="nav-subentries-number selected n3"></td>
+              <td class="nav-subentries selected n3">
+               <table class="nav n4">
+                <tbody class="nav-before-open n4">
+                 <tr class="nav-entry n4 _1">
+                  <td class="nav-number n4"><a href="#interface"><span class="section-number">1</span><span class="nav-space"></span></a></td>
+                  <td class="nav-title n4"><a href="#interface">Interface</a></td>
+                 </tr>
+                 <tr class="nav-entry n4 _2">
+                  <td class="nav-number n4"><a href="#remarks"><span class="section-number">2</span><span class="nav-space"></span></a></td>
+                  <td class="nav-title n4"><a href="#remarks">Remarks</a></td>
+                 </tr>
+                 <tr class="nav-entry n4 _3">
+                  <td class="nav-number n4"><a href="#members"><span class="section-number">3</span><span class="nav-space"></span></a></td>
+                  <td class="nav-title n4"><a href="#members">Members</a></td>
+                 </tr>
+                </tbody>
+               </table>
+              </td>
+             </tr>
+            </tbody>
+            <tbody class="nav-after-open n3">
+             <tr class="nav-entry n3 _7">
+              <td class="nav-number n3"><a href="error.html"><span class="section-number">7</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="error.html">FParsec.Error</a></td>
+             </tr>
+             <tr class="nav-entry n3 _8">
+              <td class="nav-number n3"><a href="errormessage.html"><span class="section-number">8</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="errormessage.html">FParsec.ErrorMessage</a></td>
+             </tr>
+             <tr class="nav-entry n3 _9">
+              <td class="nav-number n3"><a href="errormessagelist.html"><span class="section-number">9</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="errormessagelist.html">FParsec.ErrorMessageList</a></td>
+             </tr>
+             <tr class="nav-entry n3 _0">
+              <td class="nav-number n3"><a href="position.html"><span class="section-number">10</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="position.html">FParsec.Position</a></td>
+             </tr>
+             <tr class="nav-entry n3 _1">
+              <td class="nav-number n3"><a href="charstream.html"><span class="section-number">11</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="charstream.html">FParsec.CharStream</a></td>
+             </tr>
+             <tr class="nav-entry n3 _2">
+              <td class="nav-number n3"><a href="text.html"><span class="section-number">12</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="text.html">FParsec.Text</a></td>
+             </tr>
+            </tbody>
+           </table>
+          </td>
+         </tr>
+        </tbody>
+       </table>
+      </td>
+     </tr>
+    </tbody>
+   </table>
+  </div>
+  <div id="copyright">
+    <span>Copyright © 2011 <a href="../about/contact.html">Stephan Tolksdorf</a></span>
+  </div>
+ </div>
+ </div>
+ </div>
+ <div id="wrapper">   
+ <div id="main">
+ <div id="main-content"> 
+ <div id="breadcrumbs">
+  <span class="breadcrumbs">
+   <span id="breadcrumbs-parents"><a href="../index.html">FParsec Documentation</a><span class="breadcrumbs-sep"> > </span><a href="index.html">Reference</a></span><span class="breadcrumbs-sep"> > </span>FParsec.Reply
+  </span>
+ </div>  
+ <div class="section s2">
+  <h1 class="title h2"><span><span class="section-number">6.6</span> FParsec.Reply</span></h1>
+  <div class="intro i2">
+   <div class="para _1">
+    <p>
+     Represents the return value of a <code class="fsharp"><a href="primitives.html#members.Parser"><span class="ci">Parser</span></a></code>
+     function.
+    </p>
+   </div>
+  </div>
+  <div id="interface" class="section s3">
+   <h2 class="title h3"><span><span class="section-number">6.6.1</span> Interface</span></h2>
+   <div class="intro i3">
+    <div class="para _1 lcinp">
+     <div class="interface-code">
+<pre class="code fsharp"><span class="clc"><span class="cld">//</span> FParsecCS.dll</span>
+
+<span class="ck">namespace</span> <span class="ci">FParsec</span>
+
+<span class="ck">type</span> <span class="a" id="interface.ReplyStatus"><span class="ci">ReplyStatus</span></span> <span class="cp">=</span> <span class="a" id="interface.ReplyStatus..Ok"><span class="ci">Ok</span></span>         <span class="co">=</span>  <span class="cn">1</span>
+                 <span class="cp">|</span> <span class="a" id="interface.ReplyStatus..Error"><span class="ci">Error</span></span>      <span class="co">=</span>  <span class="cn">0</span>
+                 <span class="cp">|</span> <span class="a" id="interface.ReplyStatus..FatalError"><span class="ci">FatalError</span></span> <span class="co">=</span> <span class="co">-</span><span class="cn">1</span>
+
+
+<span class="ck">type</span> <span class="ci">Reply</span><span class="cp">&lt;</span><span class="ctv">'TResult</span><span class="cp">&gt;</span> <span class="cp">=</span> <span class="ck">struct</span>
+  <a id="interface.new-1:B:" href="#members.new-1"><span class="interface-member-marker"><span class="ck">new</span></span></a><span class="cp">:</span> <span class="ctv">'TResult</span> <span class="cr">-&gt;</span> <span class="ci">Reply</span><span class="cp">&lt;</span><span class="ctv">'TResult</span><span class="cp">&gt;</span>
+  <a id="interface.new-2:B:" href="#members.new-2"><span class="interface-member-marker"><span class="ck">new</span></span></a><span class="cp">:</span> <a href="#interface.ReplyStatus"><span class="ci">ReplyStatus</span></a> <span class="cp">*</span> <a href="errormessagelist.html"><span class="ci">ErrorMessageList</span></a> <span class="cr">-&gt;</span> <span class="ci">Reply</span><span class="cp">&lt;</span><span class="ctv">'TResult</span><span class="cp">&gt;</span>
+  <a id="interface.new-3:B:" href="#members.new-3"><span class="interface-member-marker"><span class="ck">new</span></span></a><span class="cp">:</span> <a href="#interface.ReplyStatus"><span class="ci">ReplyStatus</span></a> <span class="cp">*</span> <span class="ctv">'TResult</span> <span class="cp">*</span> <a href="errormessagelist.html"><span class="ci">ErrorMessageList</span></a> <span class="cr">-&gt;</span> <span class="ci">Reply</span><span class="cp">&lt;</span><span class="ctv">'TResult</span><span class="cp">&gt;</span>
+
+  <span class="ck">val</span> <span class="ck">mutable</span> <a id="interface.Status:B:" href="#members.Status"><span class="interface-member-marker"><span class="ci">Status</span></span></a><span class="cp">:</span> <a href="#interface.ReplyStatus"><span class="ci">ReplyStatus</span></a>
+  <span class="clc"><span class="cld">//</span>/ If Status &lt;&gt; Ok then the Result value is undefined and may be null.</span>
+  <span class="ck">val</span> <span class="ck">mutable</span> <a id="interface.Result:B:" href="#members.Result"><span class="interface-member-marker"><span class="ci">Result</span></span></a><span class="cp">:</span> <span class="ctv">'TResult</span>
+  <span class="ck">val</span> <span class="ck">mutable</span> <a id="interface.Error:B:" href="#members.Error"><span class="interface-member-marker"><span class="ci">Error</span></span></a><span class="cp">:</span> <a href="errormessagelist.html"><span class="ci">ErrorMessageList</span></a>
+
+  <span class="ck">override</span> <span class="ci">Equals</span><span class="cp">:</span> <span class="ci">obj</span> <span class="cr">-&gt;</span> <span class="ci">bool</span>
+  <span class="ck">override</span> <span class="ci">GetHashCode</span><span class="cp">:</span> <span class="ci">unit</span> <span class="cr">-&gt;</span> <span class="ci">int</span>
+  <span class="ck">interface</span> <a href="http://msdn.microsoft.com/en-us/library/ms131187.aspx"><span class="ci">System</span><span class="cm">.</span><span class="ci">IEquatable</span></a><span class="cp">&lt;</span><span class="ci">Reply</span><span class="cp">&lt;</span><span class="ctv">'TResult</span><span class="cp">&gt;</span><span class="cp">&gt;</span>
+<span class="ck">end</span>
+</pre>
+     </div>
+    </div>
+   </div>
+  </div>
+  <div id="remarks" class="section s3">
+   <h2 class="title h3"><span><span class="section-number">6.6.2</span> Remarks</span></h2>
+   <div class="intro i3">
+    <div class="para _1">
+     <p>
+      The <code class="fsharp"><span class="ci">Reply</span></code> type is the return type of <code class="fsharp"><a
+      href="primitives.html#members.Parser"><span class="ci">Parser</span></a></code> functions. Similar to a tuple, a <code class="fsharp"><span
+      class="ci">Reply</span></code> value can be viewed as a simple aggregate of its three fields <code class="fsharp"><a
+      href="#members.Status"><span class="ci">Status</span></a></code>, <code class="fsharp"><a href="#members.Result"><span
+      class="ci">Result</span></a></code> and <code class="fsharp"><a href="error.html"><span class="ci">Error</span></a></code>.
+     </p>
+    </div>
+    <div class="para _2">
+     <p>
+      The value of the <code class="fsharp"><a href="#members.Status"><span class="ci">Status</span></a></code> field indicates whether the parser
+      returning the reply succeeded (<code class="fsharp"><a href="#interface.ReplyStatus..Ok"><span class="ci">ReplyStatus</span><span
+      class="cm">.</span><span class="ci">Ok</span></a></code>) or failed (<code class="fsharp"><a href="#interface.ReplyStatus..Error"><span
+      class="ci">ReplyStatus</span><span class="cm">.</span><span class="ci">Error</span></a></code> or <code class="fsharp"><a
+      href="#interface.ReplyStatus..FatalError"><span class="ci">ReplyStatus</span><span class="cm">.</span><span
+      class="ci">FatalError</span></a></code>). If the value of the <code class="fsharp"><a href="#members.Status"><span
+      class="ci">Status</span></a></code> field is <code class="fsharp"><a href="primitives.html#members.Ok"><span class="ci">Ok</span></a></code>,
+      the <code class="fsharp"><a href="#members.Result"><span class="ci">Result</span></a></code> field contains a parser result value; otherwise,
+      its value is undefined.
+     </p>
+    </div>
+    <div class="para _3">
+     <p>
+      The <code class="fsharp"><span class="ci">Equals</span></code> override ignores the <code class="fsharp"><a href="#members.Result"><span
+      class="ci">Result</span></a></code> value when it compares two <code class="fsharp"><span class="ci">Reply</span></code> values with <code
+      class="fsharp"><a href="#members.Status"><span class="ci">Status</span></a> <span class="co">&lt;&gt;</span> <a
+      href="primitives.html#members.Ok"><span class="ci">Ok</span></a></code>.
+     </p>
+    </div>
+    <div class="para _4 lcinp">
+     <div class="admonition">
+      <div class="admonition-title">Note</div>
+      <div class="admonition-body">
+       <div class="para _1">
+        <p>
+         The <code class="fsharp"><span class="ci">Reply</span></code> fields are mutable because that allows us to implement library primitives with
+         more compact code, for which the .NET JIT produces faster machine code.
+        </p>
+       </div>
+       <div class="para _2">
+        <p>
+         Of course, if you object to mutable structs <a href="http://stackoverflow.com/questions/441309/why-are-mutable-structs-evil">on religious
+         grounds</a> or if you’re not familiar with the somewhat subtle behaviour of mutable structs in certain sitations, you can always treat the
+         <code class="fsharp"><span class="ci">Reply</span></code> type as if it was immutable.
+        </p>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div>
+  </div>
+  <div id="members" class="section s3">
+   <h2 class="title h3"><span><span class="section-number">6.6.3</span> Members</span></h2>
+   <div class="intro i3">
+    <div class="para _1 lcinp">
+     <div class="interface-members">
+      <div class="interface-member _1" id="members.new-1">
+       <div class="interface-member-code">
+        <a class="interface-member-backlink" href="#interface.new-1:B:">⇧</a>
+<pre class="code fsharp"><span class="interface-member-marker"><span class="ck">new</span></span><span class="cp">:</span> <span class="ctv">'TResult</span> <span class="cr">-&gt;</span> <span class="ci">Reply</span><span class="cp">&lt;</span><span class="ctv">'TResult</span><span class="cp">&gt;</span>
+</pre>
+       </div>
+       <div class="interface-member-description">
+        <div class="para _1">
+         <p>
+          Constructs a <code class="fsharp"><span class="ci">Reply</span></code> instance with the <code class="fsharp"><a
+          href="#members.Status"><span class="ci">Status</span></a></code> field set to <code class="fsharp"><a
+          href="primitives.html#members.Ok"><span class="ci">Ok</span></a></code>, the <code class="fsharp"><a href="#members.Result"><span
+          class="ci">Result</span></a></code> field set to the argument value and the <code class="fsharp"><a href="#members.Error"><span
+          class="ci">Error</span></a></code> field set to <code class="fsharp"><span class="cnu">null</span></code>.
+         </p>
+        </div>
+       </div>
+      </div>
+      <div class="interface-member _2" id="members.new-2">
+       <div class="interface-member-code">
+        <a class="interface-member-backlink" href="#interface.new-2:B:">⇧</a>
+<pre class="code fsharp"><span class="interface-member-marker"><span class="ck">new</span></span><span class="cp">:</span> <a href="#interface.ReplyStatus"><span class="ci">ReplyStatus</span></a> <span class="cp">*</span> <a href="errormessagelist.html"><span class="ci">ErrorMessageList</span></a> <span class="cr">-&gt;</span> <span class="ci">Reply</span><span class="cp">&lt;</span><span class="ctv">'TResult</span><span class="cp">&gt;</span>
+</pre>
+       </div>
+       <div class="interface-member-description">
+        <div class="para _1">
+         <p>
+          Constructs a <code class="fsharp"><span class="ci">Reply</span></code> instance with the <code class="fsharp"><a
+          href="#members.Status"><span class="ci">Status</span></a></code> and <code class="fsharp"><a href="#members.Error"><span
+          class="ci">Error</span></a></code> fields set to the respective argument values and the <code class="fsharp"><a href="#members.Result"><span
+          class="ci">Result</span></a></code> field initialized to <code class="fsharp"><span class="ci">Unchecked</span><span
+          class="cm">.</span><span class="ci">defaultof</span><span class="cp">&lt;</span><span class="ctv">'TResult</span><span
+          class="cp">&gt;</span></code>.
+         </p>
+        </div>
+        <div class="para _2">
+         <p>
+          This constructor is usually used for constructing an error reply, like in <code class="fsharp"><span class="ci">Reply</span><span
+          class="cp">(</span><a href="primitives.html#members.Error"><span class="ci">Error</span></a><span class="cp">,</span> <a
+          href="error.html#members.expected"><span class="ci">expected</span></a> <span class="cs"><span class="cld">"</span>something<span
+          class="crd">"</span></span><span class="cp">)</span></code>.
+         </p>
+        </div>
+       </div>
+      </div>
+      <div class="interface-member _3" id="members.new-3">
+       <div class="interface-member-code">
+        <a class="interface-member-backlink" href="#interface.new-3:B:">⇧</a>
+<pre class="code fsharp"><span class="interface-member-marker"><span class="ck">new</span></span><span class="cp">:</span> <a href="#interface.ReplyStatus"><span class="ci">ReplyStatus</span></a> <span class="cp">*</span> <span class="ctv">'TResult</span> <span class="cp">*</span> <a href="errormessagelist.html"><span class="ci">ErrorMessageList</span></a> <span class="cr">-&gt;</span> <span class="ci">Reply</span><span class="cp">&lt;</span><span class="ctv">'TResult</span><span class="cp">&gt;</span>
+</pre>
+       </div>
+       <div class="interface-member-description">
+        <div class="para _1">
+         <p>
+          Constructs a <code class="fsharp"><span class="ci">Reply</span></code> instance with the <code class="fsharp"><a
+          href="#members.Status"><span class="ci">Status</span></a></code>, <code class="fsharp"><a href="#members.Result"><span
+          class="ci">Result</span></a></code> and <code class="fsharp"><a href="#members.Error"><span class="ci">Error</span></a></code> fields set to
+          the respective argument values.
+         </p>
+        </div>
+       </div>
+      </div>
+      <div class="interface-member _4" id="members.Status">
+       <div class="interface-member-code">
+        <a class="interface-member-backlink" href="#interface.Status:B:">⇧</a>
+<pre class="code fsharp"><span class="ck">val</span> <span class="ck">mutable</span> <span class="interface-member-marker"><span class="ci">Status</span></span><span class="cp">:</span> <a href="#interface.ReplyStatus"><span class="ci">ReplyStatus</span></a>
+</pre>
+       </div>
+       <div class="interface-member-description">
+        <div class="para _1">
+         <p>
+          The <code class="fsharp"><span class="ci">Status</span></code> field contains a <code class="fsharp"><a href="#interface.ReplyStatus"><span
+          class="ci">ReplyStatus</span></a></code> enum value indicating whether a parser succeeded (<code class="fsharp"><a
+          href="primitives.html#members.Ok"><span class="ci">Ok</span></a></code>) or failed (<code class="fsharp"><a
+          href="primitives.html#members.Error"><span class="ci">Error</span></a></code> or <code class="fsharp"><a
+          href="primitives.html#members.FatalError"><span class="ci">FatalError</span></a></code>). By returning a <code class="fsharp"><a
+          href="primitives.html#members.FatalError"><span class="ci">FatalError</span></a></code> instead of an <code class="fsharp"><a
+          href="primitives.html#members.Error"><span class="ci">Error</span></a></code> a parser can signal that no error recovery should be tried
+          (except through backtracking mechanisms).
+         </p>
+        </div>
+       </div>
+      </div>
+      <div class="interface-member _5" id="members.Result">
+       <div class="interface-member-code">
+        <a class="interface-member-backlink" href="#interface.Result:B:">⇧</a>
+<pre class="code fsharp"><span class="ck">val</span> <span class="ck">mutable</span> <span class="interface-member-marker"><span class="ci">Result</span></span><span class="cp">:</span> <span class="ctv">'TResult</span>
+</pre>
+       </div>
+       <div class="interface-member-description">
+        <div class="para _1">
+         <p>
+          If the value of the <code class="fsharp"><a href="#members.Status"><span class="ci">Status</span></a></code> field is <code
+          class="fsharp"><a href="primitives.html#members.Ok"><span class="ci">Ok</span></a></code>, the <code class="fsharp"><span
+          class="ci">Result</span></code> field contains a parser result value; otherwise, its value is undefined and may be equal to <code
+          class="fsharp"><span class="ci">Unchecked</span><span class="cm">.</span><span class="ci">defaultof</span><span class="cp">&lt;</span><span
+          class="ctv">'TResult</span><span class="cp">&gt;</span></code>. (The result value in a <code class="fsharp"><span
+          class="ci">Reply</span></code> returned by an unsuccessful parser is generally an implementation detail of the parser that you should not
+          depend on.)
+         </p>
+        </div>
+       </div>
+      </div>
+      <div class="interface-member _6" id="members.Error">
+       <div class="interface-member-code">
+        <a class="interface-member-backlink" href="#interface.Error:B:">⇧</a>
+<pre class="code fsharp"><span class="ck">val</span> <span class="ck">mutable</span> <span class="interface-member-marker"><span class="ci">Error</span></span><span class="cp">:</span> <a href="errormessagelist.html"><span class="ci">ErrorMessageList</span></a>
+</pre>
+       </div>
+       <div class="interface-member-description">
+        <div class="para _1">
+         <p>
+          The <code class="fsharp"><span class="ci">Error</span></code> field holds a list of error messages in the form of an <code class="fsharp"><a
+          href="errormessagelist.html"><span class="ci">ErrorMessageList</span></a></code> value. An empty <code class="fsharp"><a
+          href="errormessagelist.html"><span class="ci">ErrorMessageList</span></a></code> is represented as a <code class="fsharp"><span
+          class="cnu">null</span></code> value.
+         </p>
+        </div>
+        <div class="para _2">
+         <p>
+          The error messages returned by a parser in a <code class="fsharp"><span class="ci">Reply</span></code> value implicitly refer to the state
+          of the <code class="fsharp"><a href="charstream.html#CharStream"><span class="ci">CharStream</span></a></code> as it is when the parser
+          returns. Since the <code class="fsharp"><a href="errormessage.html#members.ErrorMessage"><span class="ci">ErrorMessage</span></a></code>
+          values stored in the <code class="fsharp"><a href="errormessagelist.html"><span class="ci">ErrorMessageList</span></a></code> do not
+          themselves contain an error position, they can only be interpreted together with the position of the <code class="fsharp"><a
+          href="charstream.html#CharStream"><span class="ci">CharStream</span></a></code> as it is when the parser returns.
+         </p>
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div>
+  </div>
+ </div>
+ </div>
+ </div>   
+ </div>
+</body>
+</html>
+

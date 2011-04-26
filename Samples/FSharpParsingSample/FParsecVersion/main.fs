@@ -4,8 +4,11 @@
 // This is a port of the parsing sample that comes with F# 1.9.4.19
 // distribution (see http://research.microsoft.com/fsharp/release.aspx).
 
-open FParsec.Primitives
-open FParsec.CharParsers
+// This project requires the F# PowerPack available at
+// http://fsharppowerpack.codeplex.com/
+
+
+open FParsec
 
 open Ast
 

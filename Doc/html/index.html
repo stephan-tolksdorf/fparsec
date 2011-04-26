@@ -4,9 +4,8 @@
  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
  <title>FParsec Documentation</title>
  <link rel="stylesheet" type="text/css" media="all" href="css/style.css" /> 
- <link rel="stylesheet" type="text/css" media="screen" href="css/screen-sidebar.css" title="Sidebar" /> 
- <link rel="alternate stylesheet" type="text/css" media="screen" href="css/screen-no-sidebar.css" title="No sidebar" /> 
- <!--[if IE]>
+ <link rel="stylesheet" type="text/css" media="screen" href="css/screen-sidebar.css" />  
+ <!--[if lt IE 9]>
  <link rel="stylesheet" type="text/css" media="all" href="css/style-ie.css" /> 
  <![endif]-->
  <!--[if IE 6]>
@@ -18,7 +17,7 @@
  <div id="fixed-layer">
  <div id="fixed-wrapper">
  <div id="sidebar">
-  <div id="breadcrumbs-dummy"><span class="breadcrumbs">&nbsp;</span></div>
+  <div id="top-links"><span><a href="http://bitbucket.org/fparsec/main">FParsec @ BitBucket</a> | <a href="https://bitbucket.org/fparsec/main/issues">Report a bug</a> | <a href="mailto:fparsec [at] quanttec.com?subject=FParsec&body=Hello Stephan,%0A%0A[your feedback]">Feedback</a></span></div>
   <div id="nav-tree">
    <table class="nav n1">
     <tbody class="nav-open selected n1">
@@ -26,17 +25,35 @@
       <td class="nav-number selected n1"></td>
       <td class="nav-title selected n1"><a href="#">FParsec Documentation</a></td>
      </tr>
-     <tr class="nav-sub-entries selected n1 _1">
-      <td class="nav-sub-entries-number selected n1"></td>
-      <td class="nav-sub-entries selected n1">
+     <tr class="nav-subentries selected n1 _1">
+      <td class="nav-subentries-number selected n1"></td>
+      <td class="nav-subentries selected n1">
        <table class="nav n2">
         <tbody class="nav-before-open n2">
          <tr class="nav-entry n2 _1">
-          <td class="nav-number n2"><a href="tutorial.html"><span class="section-number">1</span><span class="nav-space"></span></a></td>
-          <td class="nav-title n2"><a href="tutorial.html">Tutorial</a></td>
+          <td class="nav-number n2"><a href="about/index.html"><span class="section-number">1</span><span class="nav-space"></span></a></td>
+          <td class="nav-title n2"><a href="about/index.html">About FParsec</a></td>
          </tr>
          <tr class="nav-entry n2 _2">
-          <td class="nav-number n2"><a href="reference/index.html"><span class="section-number">2</span><span class="nav-space"></span></a></td>
+          <td class="nav-number n2"><a href="license.html"><span class="section-number">2</span><span class="nav-space"></span></a></td>
+          <td class="nav-title n2"><a href="license.html">License</a></td>
+         </tr>
+         <tr class="nav-entry n2 _3">
+          <td class="nav-number n2">
+           <a href="download-and-installation.html"><span class="section-number">3</span><span class="nav-space"></span></a>
+          </td>
+          <td class="nav-title n2"><a href="download-and-installation.html">Download and installation</a></td>
+         </tr>
+         <tr class="nav-entry n2 _4">
+          <td class="nav-number n2"><a href="tutorial.html"><span class="section-number">4</span><span class="nav-space"></span></a></td>
+          <td class="nav-title n2"><a href="tutorial.html">Tutorial</a></td>
+         </tr>
+         <tr class="nav-entry n2 _5">
+          <td class="nav-number n2"><a href="users-guide/index.html"><span class="section-number">5</span><span class="nav-space"></span></a></td>
+          <td class="nav-title n2"><a href="users-guide/index.html">User’s Guide</a></td>
+         </tr>
+         <tr class="nav-entry n2 _6">
+          <td class="nav-number n2"><a href="reference/index.html"><span class="section-number">6</span><span class="nav-space"></span></a></td>
           <td class="nav-title n2"><a href="reference/index.html">Reference</a></td>
          </tr>
         </tbody>
@@ -45,6 +62,9 @@
      </tr>
     </tbody>
    </table>
+  </div>
+  <div id="copyright">
+    <span>Copyright © 2011 <a href="about/contact.html">Stephan Tolksdorf</a></span>
   </div>
  </div>
  </div>
@@ -58,20 +78,79 @@
   </span>
  </div>  
  <div class="section s0">
-  <h1 class="title h0">FParsec Documentation</h1>
+  <h1 class="title h0"><span>FParsec Documentation</span></h1>
   <div class="intro i0">
+   <div class="para _1">
+    <p>
+     FParsec is a <a href="http://en.wikipedia.org/wiki/Parser_combinator">parser combinator</a> library for <a
+     href="http://msdn.microsoft.com/fsharp">F#</a>.
+    </p>
+   </div>
+   <div class="para _2">
+    <p>
+     With FParsec you can implement <a href="http://en.wikipedia.org/wiki/Recursive_descent_parser">recursive‐descent</a> text parsers for <a
+     href="http://en.wikipedia.org/wiki/Formal_grammar">formal grammars</a>.
+    </p>
+   </div>
+   <div class="para _3 lcinp">
+    <p>FParsec’s features include:</p>
+    <ul class="l1">
+     <li class="_1">support for context‐sensitive, infinite look‐ahead grammars,</li>
+     <li class="_2">automatically generated, highly readable error messages,</li>
+     <li class="_3">Unicode support,</li>
+     <li class="_4">efficient support for very large files,</li>
+     <li class="_5">
+      an embeddable, runtime‐configurable <a href="http://en.wikipedia.org/wiki/Operator-precedence_parser">operator‐precedence parser</a> component,
+     </li>
+     <li class="_6">a simple, efficient and easily extensible API,</li>
+     <li class="_7">an implementation thoroughly optimized for performance,</li>
+     <li class="_8">comprehensive documentation,</li>
+     <li class="_9">a permissive open source <a href="license.html">license</a>.</li>
+    </ul>
+   </div>
+   <div class="para _4">
+    <p>
+     FParsec is an F# adaptation of <a href="http://www.haskell.org/haskellwiki/Parsec">Parsec</a>, the popular parser combinator library for Haskell
+     by <a href="http://research.microsoft.com/en-us/um/people/daan/">Daan Leijen</a>. While the implementations of Parsec and FParsec are completely
+     different, they share a similar top‐level API.
+    </p>
+   </div>
+   <div class="para _5">
+    <p>
+     <span class="i"><strong>Latest release:</strong></span> FParsec 0.9, 2011‒04‒26, <a
+     href="http://bitbucket.org/fparsec/main/downloads">Download</a>, <a href="about/changelog.html">Changes</a>
+    </p>
+   </div>
    <div class="local-toc">
-    <div class="toc-title">
+    <div class="toc-toc-title">
      Contents
     </div>
-    <ol class="toc t1">
-     <li class="toc t1 _0">
-      <a href="tutorial.html"><span class="toc-number t1">1</span> Tutorial</a>
-     </li>
-     <li class="toc t1 _1">
-      <a href="reference/index.html"><span class="toc-number t1">2</span> Reference</a>
-     </li>
-    </ol>
+    <table class="toc t1">
+     <tr class="toc-entry toc t1 _0">
+      <td class="toc-number toc t1"><a href="about/index.html"><span class="toc-number">1</span><span class="toc-space"></span></a></td>
+      <td class="toc-title toc t1"><a href="about/index.html">About FParsec</a></td>
+     </tr>
+     <tr class="toc-entry toc t1 _1">
+      <td class="toc-number toc t1"><a href="license.html"><span class="toc-number">2</span><span class="toc-space"></span></a></td>
+      <td class="toc-title toc t1"><a href="license.html">License</a></td>
+     </tr>
+     <tr class="toc-entry toc t1 _2">
+      <td class="toc-number toc t1"><a href="download-and-installation.html"><span class="toc-number">3</span><span class="toc-space"></span></a></td>
+      <td class="toc-title toc t1"><a href="download-and-installation.html">Download and installation</a></td>
+     </tr>
+     <tr class="toc-entry toc t1 _3">
+      <td class="toc-number toc t1"><a href="tutorial.html"><span class="toc-number">4</span><span class="toc-space"></span></a></td>
+      <td class="toc-title toc t1"><a href="tutorial.html">Tutorial</a></td>
+     </tr>
+     <tr class="toc-entry toc t1 _4">
+      <td class="toc-number toc t1"><a href="users-guide/index.html"><span class="toc-number">5</span><span class="toc-space"></span></a></td>
+      <td class="toc-title toc t1"><a href="users-guide/index.html">User’s Guide</a></td>
+     </tr>
+     <tr class="toc-entry toc t1 _5">
+      <td class="toc-number toc t1"><a href="reference/index.html"><span class="toc-number">6</span><span class="toc-space"></span></a></td>
+      <td class="toc-title toc t1"><a href="reference/index.html">Reference</a></td>
+     </tr>
+    </table>
    </div>
   </div>
  </div>

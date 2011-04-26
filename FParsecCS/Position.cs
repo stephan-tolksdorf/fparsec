@@ -16,21 +16,34 @@ public sealed class Position : IEquatable<Position>, IComparable, IComparable<Po
     }
 
     public override string ToString() {
-        return (String.IsNullOrEmpty(StreamName) ? "(Ln: " : "(\"" + StreamName + "\", Ln: ")
-               + Line.ToString() + ", Col: " + Column.ToString() + ")";
+        var ln = String.IsNullOrEmpty(StreamName) ? "(Ln: " : Text.Escape(StreamName, "", "(\"", "\", Ln: ", "", '"');
+        return ln + Line.ToString() + ", Col: " + Column.ToString() + ")";
     }
 
     public override bool Equals(object obj) {
         return Equals(obj as Position);
     }
     public bool Equals(Position other) {
-        return (object)other != null && Index == other.Index && Line == other.Line && Column == other.Column && StreamName == other.StreamName;
+        return    (object)this == (object)other
+               || (   (object)other != null
+                   && Index == other.Index
+                   && Line == other.Line
+                   && Column == other.Column
+                   && StreamName == other.StreamName);
     }
+    public static bool operator==(Position left, Position right) {
+        return (object)left == null ? (object)right == null : left.Equals(right);
+    }
+    public static bool operator!=(Position left, Position right) { return !(left == right); }
+
     public override int GetHashCode() {
         return Index.GetHashCode();
     }
-    public static bool operator==(Position left, Position right) { return  left.Equals(right); }
-    public static bool operator!=(Position left, Position right) { return !left.Equals(right); }
+
+    public static int Compare(Position left, Position right) {
+        if ((object)left != null) return left.CompareTo(right);
+        return (object)right == null ? 0 : -1;
+    }
 
     public int CompareTo(Position other) {
         if ((object)this == (object)other) return 0;
@@ -50,8 +63,5 @@ public sealed class Position : IEquatable<Position>, IComparable, IComparable<Po
         throw new ArgumentException("Object must be of type Position.");
     }
 }
-
-[Obsolete("FParsec.State.Pos has been renamed to FParsec.State.Position.", true)]
-public sealed class Pos {}
 
 }

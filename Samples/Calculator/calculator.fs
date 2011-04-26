@@ -1,51 +1,47 @@
-﻿// Copyright (c) Stephan Tolksdorf 2007-2008
+﻿
+// Copyright (c) Stephan Tolksdorf 2007-2011
 // License: Simplified BSD License. See accompanying documentation.
 
 // the parser definition
 ////////////////////////
 
-open FParsec.Primitives
-open FParsec.CharParsers
-open FParsec.OperatorPrecedenceParser
+open FParsec
 
 let ws = spaces // skips any whitespace
 
-let ch c = skipChar c >>. ws
+let str_ws s = pstring s >>. ws
 
 // we calculate with double precision floats
 let number = pfloat .>> ws
 
 // we set up an operator precedence parser for parsing the arithmetic expressions
-let opp = new OperatorPrecedenceParser<_,_>()
+let opp = new OperatorPrecedenceParser<float,unit,unit>()
 let expr = opp.ExpressionParser
-opp.TermParser <- number <|> between (ch '(') (ch ')') expr
+opp.TermParser <- number <|> between (str_ws "(") (str_ws ")") expr
 
 // operator definitions follow the schema
 // operator type, string, trailing whitespace parser, precedence, associativity, function to apply
 
-opp.AddOperator(InfixOp("+", ws, 1, Assoc.Left, fun x y -> x + y))
-opp.AddOperator(InfixOp("-", ws, 1, Assoc.Left, fun x y -> x - y))
-
-opp.AddOperator(InfixOp("*", ws, 2, Assoc.Left, fun x y -> x * y))
-opp.AddOperator(InfixOp("/", ws, 2, Assoc.Left, fun x y -> x / y))
-
-opp.AddOperator(InfixOp("^", ws, 3, Assoc.Right, fun x y -> System.Math.Pow(x, y)))
-
-opp.AddOperator(PrefixOp("-", ws, 4, true, fun x -> -x))
+opp.AddOperator(InfixOperator("+", ws, 1, Associativity.Left, (+)))
+opp.AddOperator(InfixOperator("-", ws, 1, Associativity.Left, (-)))
+opp.AddOperator(InfixOperator("*", ws, 2, Associativity.Left, (*)))
+opp.AddOperator(InfixOperator("/", ws, 2, Associativity.Left, (/)))
+opp.AddOperator(InfixOperator("^", ws, 3, Associativity.Right, fun x y -> System.Math.Pow(x, y)))
+opp.AddOperator(PrefixOperator("-", ws, 4, true, fun x -> -x))
 
 // we also want to accept the operators "exp" and "log", but we don't want to accept
 // expressions like "logexp" 2, so we require that non-symbolic operators are not
 // followed by letters
 
-let ws1 = notFollowedBy letter >>. ws
-opp.AddOperator(PrefixOp("log", ws1, 4, true, fun x -> System.Math.Log(x)))
-opp.AddOperator(PrefixOp("exp", ws1, 4, true, fun x -> System.Math.Exp(x)))
+let ws1 = nextCharSatisfiesNot isLetter >>. ws
+opp.AddOperator(PrefixOperator("log", ws1, 4, true, System.Math.Log))
+opp.AddOperator(PrefixOperator("exp", ws1, 4, true, System.Math.Exp))
 
 let completeExpression = ws >>. expr .>> eof // we append the eof parser to make
                                             // sure all input is consumed
 
 // running and testing the parser
-////////////////////////////////
+/////////////////////////////////
 
 let calculate s = run completeExpression s
 

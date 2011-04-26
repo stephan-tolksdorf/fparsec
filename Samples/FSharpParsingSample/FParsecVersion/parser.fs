@@ -6,10 +6,9 @@
 module Parser
 
 open System
+open System.Collections.Generic
 
-open FParsec.Error
-open FParsec.Primitives
-open FParsec.CharParsers
+open FParsec
 
 open Ast
 
@@ -18,30 +17,27 @@ open Ast
 
 let ws  = spaces // skips any whitespace
 
-let ch  c = skipChar c >>. ws
-let str s = skipString s >>. ws
+let str s = pstring s >>. ws
 
 // identifiers are strings of lower ascii chars that are not keywords
-let id : Parser<string, unit> =
-    let idStr = many1Satisfy isLower .>> ws // [a-z]+
+let identifierString = many1Satisfy isLower .>> ws // [a-z]+
+let keywords = ["while"; "begin"; "end"; "do"; "if"; "then"; "else"; "print"; "decr"]
+let keywordsSet = new HashSet<string>(keywords)
+let isKeyword str = keywordsSet.Contains(str)
 
-    let keyWordSet =
-        System.Collections.Generic.HashSet<_>(
-            [|"while"; "begin"; "end"; "do"; "if"; "then"; "else"; "print"; "decr"|]
-        )
+//open FParsec.StaticMapping
+//let isKeyword = createStaticStringMapping false [for kw in keywords -> (kw, true)]
 
-    let expectedId = expectedError "id"
+let identifier : Parser<string, unit> =
+    let expectedIdentifier = expected "identifier"
+    fun stream ->
+        let state = stream.State
+        let reply = identifierString stream
+        if reply.Status <> Ok || not (isKeyword reply.Result) then reply
+        else // result is keyword, so backtrack to before the string
+            stream.BacktrackTo(state)
+            Reply(Error, expectedIdentifier)
 
-    fun state -> // we define our own "primitive" that checks that the parsed id is no keyword
-        let reply = idStr state
-        if reply.Status = Ok then
-            let id = reply.Result
-            if not (keyWordSet.Contains(id)) then
-                Reply(reply.Result, reply.State)
-            else
-                Reply(Error, expectedId, state)
-        else // reconstruct error
-            Reply(reply.Status, reply.Error, reply.State)
 
 let numberFormat =     NumberLiteralOptions.AllowMinusSign
                    ||| NumberLiteralOptions.AllowFraction
@@ -52,7 +48,7 @@ let numberLit = numberLiteral numberFormat "number" .>> ws
 // parsers for the original grammar productions
 ///////////////////////////////////////////////
 
-let pval = id |>> Val
+let pval = identifier |>> Val
 
 let number =
     numberLit
@@ -65,20 +61,21 @@ let number =
 // forwards all calls to a parser in a reference cell.
 let expr, exprRef = createParserForwardedToRef() // initially exprRef holds a reference to a dummy parser
 
-let pdecr = str "decr" >>. ch '(' >>. expr .>> ch ')' |>> Decr
+let pdecr = str "decr" >>. str "(" >>. expr .>> str ")" |>> Decr
 
 // replace dummy parser reference in exprRef
-do exprRef:= choice [pval; pdecr; number] // we need to try pval first, so we don't 
+do exprRef:= choice [pval; pdecr; number] // we need to try pval first, so we don't
                                           // accidentally try to parse an identifier
                                           // starting with "decr..." as a Decr statement
                                           // (this is a disadvantage of not having a tokenizer)
 
+
 let stmt, stmtRef = createParserForwardedToRef()
 
-let stmtList = sepBy1 stmt (ch ';')
+let stmtList = sepBy1 stmt (str ";")
 
 let assign =
-    pipe2 id (str ":=" >>. expr) (fun id e -> Assign(id, e))
+    pipe2 identifier (str ":=" >>. expr) (fun id e -> Assign(id, e))
 
 let print = str "print" >>. expr |>> Print
 
@@ -95,10 +92,9 @@ let ifthen =
                | None    -> IfThen(e, s1)
                | Some s2 -> IfThenElse(e, s1, s2))
 
-do stmtRef:= choice [assign; ifthen; pwhile; seq; print] // try assign first, so that an 
-                                                         // identifier starting with a 
+do stmtRef:= choice [assign; ifthen; pwhile; seq; print] // try assign first, so that an
+                                                         // identifier starting with a
                                                          // keyword doesn't trigger an error
-
 let prog =
     ws >>. stmtList .>> eof |>> Prog
 

@@ -1,0 +1,634 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+ <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+ <title>FParsec.ErrorMessage</title>
+ <link rel="stylesheet" type="text/css" media="all" href="../css/style.css" /> 
+ <link rel="stylesheet" type="text/css" media="screen" href="../css/screen-sidebar.css" />  
+ <!--[if lt IE 9]>
+ <link rel="stylesheet" type="text/css" media="all" href="../css/style-ie.css" /> 
+ <![endif]-->
+ <!--[if IE 6]>
+ <link rel="stylesheet" type="text/css" media="all" href="../css/style-ie6.css" /> 
+ <![endif]-->
+ <link rel="stylesheet" type="text/css" media="print" href="../css/print.css" />
+</head>
+<body>
+ <div id="fixed-layer">
+ <div id="fixed-wrapper">
+ <div id="sidebar">
+  <div id="top-links"><span><a href="http://bitbucket.org/fparsec/main">FParsec @ BitBucket</a> | <a href="https://bitbucket.org/fparsec/main/issues">Report a bug</a> | <a href="mailto:fparsec [at] quanttec.com?subject=FParsec&body=Hello Stephan,%0A%0A[your feedback]">Feedback</a></span></div>
+  <div id="nav-tree">
+   <table class="nav n1">
+    <tbody class="nav-open n1">
+     <tr class="nav-entry n1 _1">
+      <td class="nav-number n1"></td>
+      <td class="nav-title n1"><a href="../index.html">FParsec Documentation</a></td>
+     </tr>
+     <tr class="nav-subentries n1 _1">
+      <td class="nav-subentries-number n1"></td>
+      <td class="nav-subentries n1">
+       <table class="nav n2">
+        <tbody class="nav-before-open n2">
+         <tr class="nav-entry n2 _1">
+          <td class="nav-number n2"><a href="../about/index.html"><span class="section-number">1</span><span class="nav-space"></span></a></td>
+          <td class="nav-title n2"><a href="../about/index.html">About FParsec</a></td>
+         </tr>
+         <tr class="nav-entry n2 _2">
+          <td class="nav-number n2"><a href="../license.html"><span class="section-number">2</span><span class="nav-space"></span></a></td>
+          <td class="nav-title n2"><a href="../license.html">License</a></td>
+         </tr>
+         <tr class="nav-entry n2 _3">
+          <td class="nav-number n2">
+           <a href="../download-and-installation.html"><span class="section-number">3</span><span class="nav-space"></span></a>
+          </td>
+          <td class="nav-title n2"><a href="../download-and-installation.html">Download and installation</a></td>
+         </tr>
+         <tr class="nav-entry n2 _4">
+          <td class="nav-number n2"><a href="../tutorial.html"><span class="section-number">4</span><span class="nav-space"></span></a></td>
+          <td class="nav-title n2"><a href="../tutorial.html">Tutorial</a></td>
+         </tr>
+         <tr class="nav-entry n2 _5">
+          <td class="nav-number n2"><a href="../users-guide/index.html"><span class="section-number">5</span><span class="nav-space"></span></a></td>
+          <td class="nav-title n2"><a href="../users-guide/index.html">User’s Guide</a></td>
+         </tr>
+        </tbody>
+        <tbody class="nav-open n2">
+         <tr class="nav-entry n2 _6">
+          <td class="nav-number n2"><a href="index.html"><span class="section-number">6</span><span class="nav-space"></span></a></td>
+          <td class="nav-title n2"><a href="index.html">Reference</a></td>
+         </tr>
+         <tr class="nav-subentries n2 _6">
+          <td class="nav-subentries-number n2"></td>
+          <td class="nav-subentries n2">
+           <table class="nav n3">
+            <tbody class="nav-before-open n3">
+             <tr class="nav-entry n3 _1">
+              <td class="nav-number n3"><a href="parser-overview.html"><span class="section-number">1</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="parser-overview.html">Parser overview</a></td>
+             </tr>
+             <tr class="nav-entry n3 _2">
+              <td class="nav-number n3"><a href="primitives.html"><span class="section-number">2</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="primitives.html">FParsec.Primitives</a></td>
+             </tr>
+             <tr class="nav-entry n3 _3">
+              <td class="nav-number n3"><a href="charparsers.html"><span class="section-number">3</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="charparsers.html">FParsec.CharParsers</a></td>
+             </tr>
+             <tr class="nav-entry n3 _4">
+              <td class="nav-number n3">
+               <a href="operatorprecedenceparser.html"><span class="section-number">4</span><span class="nav-space"></span></a>
+              </td>
+              <td class="nav-title n3"><a href="operatorprecedenceparser.html">FParsec.OperatorPrecedenceParser</a></td>
+             </tr>
+             <tr class="nav-entry n3 _5">
+              <td class="nav-number n3"><a href="staticmapping.html"><span class="section-number">5</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="staticmapping.html">FParsec.StaticMapping</a></td>
+             </tr>
+             <tr class="nav-entry n3 _6">
+              <td class="nav-number n3"><a href="reply.html"><span class="section-number">6</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="reply.html">FParsec.Reply</a></td>
+             </tr>
+             <tr class="nav-entry n3 _7">
+              <td class="nav-number n3"><a href="error.html"><span class="section-number">7</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="error.html">FParsec.Error</a></td>
+             </tr>
+            </tbody>
+            <tbody class="nav-open selected n3">
+             <tr class="nav-entry selected n3 _8">
+              <td class="nav-number selected n3"><a href="#"><span class="section-number">8</span><span class="nav-space"></span></a></td>
+              <td class="nav-title selected n3"><a href="#">FParsec.ErrorMessage</a></td>
+             </tr>
+             <tr class="nav-subentries selected n3 _8">
+              <td class="nav-subentries-number selected n3"></td>
+              <td class="nav-subentries selected n3">
+               <table class="nav n4">
+                <tbody class="nav-before-open n4">
+                 <tr class="nav-entry n4 _1">
+                  <td class="nav-number n4"><a href="#interface"><span class="section-number">1</span><span class="nav-space"></span></a></td>
+                  <td class="nav-title n4"><a href="#interface">Interface</a></td>
+                 </tr>
+                 <tr class="nav-entry n4 _2">
+                  <td class="nav-number n4"><a href="#remarks"><span class="section-number">2</span><span class="nav-space"></span></a></td>
+                  <td class="nav-title n4"><a href="#remarks">Remarks</a></td>
+                 </tr>
+                 <tr class="nav-entry n4 _3">
+                  <td class="nav-number n4"><a href="#members"><span class="section-number">3</span><span class="nav-space"></span></a></td>
+                  <td class="nav-title n4"><a href="#members">Members</a></td>
+                 </tr>
+                </tbody>
+               </table>
+              </td>
+             </tr>
+            </tbody>
+            <tbody class="nav-after-open n3">
+             <tr class="nav-entry n3 _9">
+              <td class="nav-number n3"><a href="errormessagelist.html"><span class="section-number">9</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="errormessagelist.html">FParsec.ErrorMessageList</a></td>
+             </tr>
+             <tr class="nav-entry n3 _0">
+              <td class="nav-number n3"><a href="position.html"><span class="section-number">10</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="position.html">FParsec.Position</a></td>
+             </tr>
+             <tr class="nav-entry n3 _1">
+              <td class="nav-number n3"><a href="charstream.html"><span class="section-number">11</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="charstream.html">FParsec.CharStream</a></td>
+             </tr>
+             <tr class="nav-entry n3 _2">
+              <td class="nav-number n3"><a href="text.html"><span class="section-number">12</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="text.html">FParsec.Text</a></td>
+             </tr>
+            </tbody>
+           </table>
+          </td>
+         </tr>
+        </tbody>
+       </table>
+      </td>
+     </tr>
+    </tbody>
+   </table>
+  </div>
+  <div id="copyright">
+    <span>Copyright © 2011 <a href="../about/contact.html">Stephan Tolksdorf</a></span>
+  </div>
+ </div>
+ </div>
+ </div>
+ <div id="wrapper">   
+ <div id="main">
+ <div id="main-content"> 
+ <div id="breadcrumbs">
+  <span class="breadcrumbs">
+   <span id="breadcrumbs-parents"><a href="../index.html">FParsec Documentation</a><span class="breadcrumbs-sep"> > </span><a href="index.html">Reference</a></span><span class="breadcrumbs-sep"> > </span>FParsec.ErrorMessage
+  </span>
+ </div>  
+ <div class="section s2">
+  <h1 class="title h2"><span><span class="section-number">6.8</span> FParsec.ErrorMessage</span></h1>
+  <div id="interface" class="section s3">
+   <h2 class="title h3"><span><span class="section-number">6.8.1</span> Interface</span></h2>
+   <div class="intro i3">
+    <div class="para _1 lcinp">
+     <div class="interface-code">
+<pre class="code fsharp"><span class="clc"><span class="cld">//</span> FParsecCS.dll</span>
+
+<span class="ck">namespace</span> <span class="ci">FParsec</span>
+
+<span class="ck">type</span> <span class="a" id="interface.ErrorMessageType"><span class="ci">ErrorMessageType</span></span> <span class="cp">=</span> <span class="a" id="interface.ErrorMessageType..Expected"><span class="ci">Expected</span></span>                        <span class="co">=</span> <span class="cn">0</span>
+                      <span class="cp">|</span> <span class="a" id="interface.ErrorMessageType..ExpectedString"><span class="ci">ExpectedString</span></span>                  <span class="co">=</span> <span class="cn">1</span>
+                      <span class="cp">|</span> <span class="a" id="interface.ErrorMessageType..ExpectedCaseInsensitiveString"><span class="ci">ExpectedCaseInsensitiveString</span></span>   <span class="co">=</span> <span class="cn">2</span>
+                      <span class="cp">|</span> <span class="a" id="interface.ErrorMessageType..Unexpected"><span class="ci">Unexpected</span></span>                      <span class="co">=</span> <span class="cn">3</span>
+                      <span class="cp">|</span> <span class="a" id="interface.ErrorMessageType..UnexpectedString"><span class="ci">UnexpectedString</span></span>                <span class="co">=</span> <span class="cn">4</span>
+                      <span class="cp">|</span> <span class="a" id="interface.ErrorMessageType..UnexpectedCaseInsensitiveString"><span class="ci">UnexpectedCaseInsensitiveString</span></span> <span class="co">=</span> <span class="cn">5</span>
+                      <span class="cp">|</span> <span class="a" id="interface.ErrorMessageType..Message"><span class="ci">Message</span></span>                         <span class="co">=</span> <span class="cn">6</span>
+                      <span class="cp">|</span> <span class="a" id="interface.ErrorMessageType..NestedError"><span class="ci">NestedError</span></span>                     <span class="co">=</span> <span class="cn">7</span>
+                      <span class="cp">|</span> <span class="a" id="interface.ErrorMessageType..CompoundError"><span class="ci">CompoundError</span></span>                   <span class="co">=</span> <span class="cn">8</span>
+                      <span class="cp">|</span> <span class="a" id="interface.ErrorMessageType..Other"><span class="ci">Other</span></span>                           <span class="co">=</span> <span class="cn">9</span>
+
+<span class="ck">type</span> <a id="interface.ErrorMessage:B:" href="#members.ErrorMessage"><span class="interface-member-marker"><span class="ci">ErrorMessage</span></span></a> <span class="cp">=</span>
+  <span class="ck">member</span> <span class="ci">Type</span><span class="cp">:</span> <a href="#interface.ErrorMessageType"><span class="ci">ErrorMessageType</span></a>
+
+  <span class="ck">override</span> <span class="ci">Equals</span><span class="cp">:</span> <span class="ci">obj</span> <span class="cr">-&gt;</span> <span class="ci">bool</span>
+  <span class="ck">override</span> <span class="ci">GetHashCode</span><span class="cp">:</span> <span class="ci">unit</span> <span class="cr">-&gt;</span> <span class="ci">int</span>
+  <span class="ck">interface</span> <a href="http://msdn.microsoft.com/en-us/library/ms131187.aspx"><span class="ci">System</span><span class="cm">.</span><span class="ci">IEquatable</span></a><span class="cp">&lt;</span><a href="errormessagelist.html"><span class="ci">ErrorMessageList</span></a><span class="cp">&gt;</span>
+
+<span class="a" id="interface.nested-types"></span><span class="clc"><span class="cld">//</span> nested types</span>
+<span class="ck">type</span> <a id="interface.ErrorMessage..Expected:B:" href="#members.ErrorMessage..Expected"><span class="interface-member-marker"><span class="ci">ErrorMessage</span><span class="cm">.</span><span class="ci">Expected</span></span></a> <span class="cp">=</span>
+  <span class="ck">inherit</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a>
+  <span class="ck">new</span><span class="cp">:</span> <span class="ci">label</span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="#members.ErrorMessage..Expected"><span class="ci">ErrorMessage</span><span class="cm">.</span><span class="ci">Expected</span></a>
+  <span class="ck">member</span> <span class="ci">Label</span><span class="cp">:</span> <span class="ci">string</span>
+
+<span class="ck">type</span> <a id="interface.ErrorMessage..ExpectedString:B:" href="#members.ErrorMessage..ExpectedString"><span class="interface-member-marker"><span class="ci">ErrorMessage</span><span class="cm">.</span><span class="ci">ExpectedString</span></span></a> <span class="cp">=</span>
+  <span class="ck">inherit</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a>
+  <span class="ck">new</span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="#members.ErrorMessage..ExpectedString"><span class="ci">ErrorMessage</span><span class="cm">.</span><span class="ci">ExpectedString</span></a>
+  <span class="ck">member</span> <a href="operatorprecedenceparser.html#members.String"><span class="ci">String</span></a><span class="cp">:</span> <span class="ci">string</span>
+
+<span class="ck">type</span> <a id="interface.ErrorMessage..ExpectedCaseInsensitiveString:B:" href="#members.ErrorMessage..ExpectedCaseInsensitiveString"><span class="interface-member-marker"><span class="ci">ErrorMessage</span><span class="cm">.</span><span class="ci">ExpectedCaseInsensitiveString</span></span></a> <span class="cp">=</span>
+  <span class="ck">inherit</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a>
+  <span class="ck">new</span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="#members.ErrorMessage..ExpectedCaseInsensitiveString"><span class="ci">ErrorMessage</span><span class="cm">.</span><span class="ci">ExpectedCaseInsensitiveString</span></a>
+  <span class="ck">member</span> <a href="operatorprecedenceparser.html#members.String"><span class="ci">String</span></a><span class="cp">:</span> <span class="ci">string</span>
+
+<span class="ck">type</span> <a id="interface.ErrorMessage..Unexpected:B:" href="#members.ErrorMessage..Unexpected"><span class="interface-member-marker"><span class="ci">ErrorMessage</span><span class="cm">.</span><span class="ci">Unexpected</span></span></a> <span class="cp">=</span>
+  <span class="ck">inherit</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a>
+  <span class="ck">new</span><span class="cp">:</span> <span class="ci">label</span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="#members.ErrorMessage..Unexpected"><span class="ci">ErrorMessage</span><span class="cm">.</span><span class="ci">Unexpected</span></a>
+  <span class="ck">member</span> <span class="ci">Label</span><span class="cp">:</span> <span class="ci">string</span>
+
+<span class="ck">type</span> <a id="interface.ErrorMessage..UnexpectedString:B:" href="#members.ErrorMessage..UnexpectedString"><span class="interface-member-marker"><span class="ci">ErrorMessage</span><span class="cm">.</span><span class="ci">UnexpectedString</span></span></a> <span class="cp">=</span>
+  <span class="ck">inherit</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a>
+  <span class="ck">new</span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="#members.ErrorMessage..UnexpectedString"><span class="ci">ErrorMessage</span><span class="cm">.</span><span class="ci">UnexpectedString</span></a>
+  <span class="ck">member</span> <a href="operatorprecedenceparser.html#members.String"><span class="ci">String</span></a><span class="cp">:</span> <span class="ci">string</span>
+
+<span class="ck">type</span> <a id="interface.ErrorMessage..UnexpectedCaseInsensitiveString:B:" href="#members.ErrorMessage..UnexpectedCaseInsensitiveString"><span class="interface-member-marker"><span class="ci">ErrorMessage</span><span class="cm">.</span><span class="ci">UnexpectedCaseInsensitiveString</span></span></a> <span class="cp">=</span>
+  <span class="ck">inherit</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a>
+  <span class="ck">new</span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="#members.ErrorMessage..UnexpectedCaseInsensitiveString"><span class="ci">ErrorMessage</span><span class="cm">.</span><span class="ci">UnexpectedCaseInsensitiveString</span></a>
+  <span class="ck">member</span> <a href="operatorprecedenceparser.html#members.String"><span class="ci">String</span></a><span class="cp">:</span> <span class="ci">string</span>
+
+<span class="ck">type</span> <a id="interface.ErrorMessage..Message:B:" href="#members.ErrorMessage..Message"><span class="interface-member-marker"><span class="ci">ErrorMessage</span><span class="cm">.</span><span class="ci">Message</span></span></a> <span class="cp">=</span>
+  <span class="ck">inherit</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a>
+  <span class="ck">new</span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="#members.ErrorMessage..Message"><span class="ci">ErrorMessage</span><span class="cm">.</span><span class="ci">Message</span></a>
+  <span class="ck">member</span> <a href="operatorprecedenceparser.html#members.String"><span class="ci">String</span></a><span class="cp">:</span> <span class="ci">string</span>
+
+<span class="ck">type</span> <a id="interface.ErrorMessage..NestedError:B:" href="#members.ErrorMessage..NestedError"><span class="interface-member-marker"><span class="ci">ErrorMessage</span><span class="cm">.</span><span class="ci">NestedError</span></span></a> <span class="cp">=</span>
+  <span class="ck">inherit</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a>
+
+  <span class="ck">new</span><span class="cp">:</span>   <span class="ci">position</span><span class="cp">:</span> <a href="charstream.html#CharStream.members.Position"><span class="ci">Position</span></a> <span class="cp">*</span> <span class="ci">userState</span><span class="cp">:</span> <span class="ci">obj</span> <span class="cp">*</span> <span class="ci">messages</span><span class="cp">:</span> <a href="errormessagelist.html"><span class="ci">ErrorMessageList</span></a>
+      <span class="cr">-&gt;</span> <a href="#members.ErrorMessage..NestedError"><span class="ci">ErrorMessage</span><span class="cm">.</span><span class="ci">NestedError</span></a>
+
+  <span class="ck">member</span> <a href="charstream.html#CharStream.members.Position"><span class="ci">Position</span></a><span class="cp">:</span>  <a href="charstream.html#CharStream.members.Position"><span class="ci">Position</span></a>
+  <span class="ck">member</span> <span class="ci">UserState</span><span class="cp">:</span> <span class="ci">obj</span>
+  <span class="ck">member</span> <span class="ci">Messages</span><span class="cp">:</span>  <a href="errormessagelist.html"><span class="ci">ErrorMessageList</span></a>
+
+<span class="ck">type</span> <a id="interface.ErrorMessage..CompoundError:B:" href="#members.ErrorMessage..CompoundError"><span class="interface-member-marker"><span class="ci">ErrorMessage</span><span class="cm">.</span><span class="ci">CompoundError</span></span></a> <span class="cp">=</span>
+  <span class="ck">inherit</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a>
+
+  <span class="ck">new</span><span class="cp">:</span>   <span class="ci">labelOfCompound</span><span class="cp">:</span> <span class="ci">string</span>
+       <span class="cp">*</span> <span class="ci">nestedErrorPosition</span><span class="cp">:</span> <a href="charstream.html#CharStream.members.Position"><span class="ci">Position</span></a>
+       <span class="cp">*</span> <span class="ci">nestedErrorUserState</span><span class="cp">:</span> <span class="ci">obj</span>
+       <span class="cp">*</span> <span class="ci">nestedErrorMessages</span><span class="cp">:</span> <a href="errormessagelist.html"><span class="ci">ErrorMessageList</span></a>
+      <span class="cr">-&gt;</span> <a href="#members.ErrorMessage..CompoundError"><span class="ci">ErrorMessage</span><span class="cm">.</span><span class="ci">CompoundError</span></a>
+
+  <span class="ck">member</span> <span class="ci">LabelOfCompound</span><span class="cp">:</span> <span class="ci">string</span>
+  <span class="ck">member</span> <span class="ci">NestedErrorPosition</span><span class="cp">:</span> <a href="charstream.html#CharStream.members.Position"><span class="ci">Position</span></a>
+  <span class="ck">member</span> <span class="ci">NestedErrorUserState</span><span class="cp">:</span> <span class="ci">obj</span>
+  <span class="ck">member</span> <span class="ci">NestedErrorMessages</span><span class="cp">:</span> <a href="errormessagelist.html"><span class="ci">ErrorMessageList</span></a>
+
+<span class="ck">type</span> <a id="interface.ErrorMessage..Other:B:" href="#members.ErrorMessage..Other"><span class="interface-member-marker"><span class="ci">ErrorMessage</span><span class="cm">.</span><span class="ci">Other</span></span></a> <span class="cp">=</span>
+  <span class="ck">inherit</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a>
+  <span class="ck">new</span><span class="cp">:</span> <span class="ci">data</span><span class="cp">:</span> <span class="ci">obj</span> <span class="cr">-&gt;</span> <a href="#members.ErrorMessage..Other"><span class="ci">ErrorMessage</span><span class="cm">.</span><span class="ci">Other</span></a>
+  <span class="ck">member</span> <span class="ci">Data</span><span class="cp">:</span> <span class="ci">obj</span>
+</pre>
+     </div>
+    </div>
+   </div>
+  </div>
+  <div id="remarks" class="section s3">
+   <h2 class="title h3"><span><span class="section-number">6.8.2</span> Remarks</span></h2>
+   <div class="intro i3">
+    <div class="para _1">
+     <p>
+      <code class="fsharp"><a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a></code> is the abstract base class for FParsec
+      error messages. <code class="fsharp"><a href="primitives.html#members.Parser"><span class="ci">Parser</span></a></code> functions return <code
+      class="fsharp"><a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a></code> values within an <code class="fsharp"><a
+      href="errormessagelist.html"><span class="ci">ErrorMessageList</span></a></code>.
+     </p>
+    </div>
+    <div class="para _2">
+     <p>
+      There are <a href="#interface.nested-types">several subtypes</a> of <code class="fsharp"><a href="#members.ErrorMessage"><span
+      class="ci">ErrorMessage</span></a></code> that represent specific kind of error messages. These subtypes are defined as nested classes within
+      <code class="fsharp"><a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a></code>.
+     </p>
+    </div>
+    <div class="para _3">
+     <p>
+      The <a href="error.html#interface.discriminated-union-type">active patterns and type abbreviations</a> in the <code class="fsharp"><a
+      href="error.html"><span class="ci">FParsec</span><span class="cm">.</span><span class="ci">Error</span></a></code> module allow you to treat the
+      <code class="fsharp"><a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a></code> type almost as if it was defined as an F#
+      discriminated union type.
+     </p>
+    </div>
+   </div>
+  </div>
+  <div id="members" class="section s3">
+   <h2 class="title h3"><span><span class="section-number">6.8.3</span> Members</span></h2>
+   <div class="intro i3">
+    <div class="para _1 lcinp">
+     <div class="interface-members">
+      <div class="interface-member _1" id="members.ErrorMessage">
+       <div class="interface-member-code">
+        <a class="interface-member-backlink" href="#interface.ErrorMessage:B:">⇧</a>
+<pre class="code fsharp"><span class="ck">type</span> <span class="interface-member-marker"><span class="ci">ErrorMessage</span></span></pre>
+       </div>
+       <div class="interface-member-description">
+        <div class="para _1">
+         <p><code class="fsharp"><span class="ci">ErrorMessage</span></code> is the abstract base class for FParsec error messages.</p>
+        </div>
+        <div class="para _2 lcinp">
+<pre class="code fsharp"><span class="ck">type</span> <span class="ci">ErrorMessage</span> <span class="cp">=</span>
+  <span class="ck">member</span> <span class="ci">Type</span><span class="cp">:</span> <a href="#interface.ErrorMessageType"><span class="ci">ErrorMessageType</span></a>
+
+  <span class="ck">override</span> <span class="ci">Equals</span><span class="cp">:</span> <span class="ci">obj</span> <span class="cr">-&gt;</span> <span class="ci">bool</span>
+  <span class="ck">override</span> <span class="ci">GetHashCode</span><span class="cp">:</span> <span class="ci">unit</span> <span class="cr">-&gt;</span> <span class="ci">int</span>
+  <span class="ck">interface</span> <a href="http://msdn.microsoft.com/en-us/library/ms131187.aspx"><span class="ci">System</span><span class="cm">.</span><span class="ci">IEquatable</span></a><span class="cp">&lt;</span><a href="errormessagelist.html"><span class="ci">ErrorMessageList</span></a><span class="cp">&gt;</span>
+</pre>
+        </div>
+        <div class="para _3">
+         <p>Please also see the <a href="#remarks">remarks</a> above.</p>
+        </div>
+       </div>
+      </div>
+      <div class="interface-member _2" id="members.ErrorMessage..Expected">
+       <div class="interface-member-code">
+        <a class="interface-member-backlink" href="#interface.ErrorMessage..Expected:B:">⇧</a>
+<pre class="code fsharp"><span class="ck">type</span> <span class="interface-member-marker"><span class="ci">ErrorMessage</span><span class="cm">.</span><span class="ci">Expected</span></span></pre>
+       </div>
+       <div class="interface-member-description">
+        <div class="para _1">
+         <p>
+          Parsers report this <code class="fsharp"><a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a></code> when the input does
+          not match the expected input.
+         </p>
+        </div>
+        <div class="para _2 lcinp">
+<pre class="code fsharp"><span class="ck">type</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a><span class="cm">.</span><a href="error.html#interface.Expected"><span class="ci">Expected</span></a> <span class="cp">=</span>
+  <span class="ck">inherit</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a>
+  <span class="ck">new</span><span class="cp">:</span> <span class="ci">label</span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a><span class="cm">.</span><a href="error.html#interface.Expected"><span class="ci">Expected</span></a>
+  <span class="ck">member</span> <span class="ci">Label</span><span class="cp">:</span> <span class="ci">string</span>
+</pre>
+        </div>
+        <div class="para _3">
+         <p>The string label describes the expected input.</p>
+        </div>
+        <div class="para _4">
+         <p>
+          This error message can be generated with the labeling operator <code class="fsharp"><a href="primitives.html#members.:60::63::62:"><span
+          class="co">&lt;?&gt;</span></a></code>.
+         </p>
+        </div>
+       </div>
+      </div>
+      <div class="interface-member _3" id="members.ErrorMessage..ExpectedString">
+       <div class="interface-member-code">
+        <a class="interface-member-backlink" href="#interface.ErrorMessage..ExpectedString:B:">⇧</a>
+<pre class="code fsharp"><span class="ck">type</span> <span class="interface-member-marker"><span class="ci">ErrorMessage</span><span class="cm">.</span><span class="ci">ExpectedString</span></span></pre>
+       </div>
+       <div class="interface-member-description">
+        <div class="para _1">
+         <p>
+          Parsers report this <code class="fsharp"><a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a></code> when the input does
+          not match an expected string constant.
+         </p>
+        </div>
+        <div class="para _2 lcinp">
+<pre class="code fsharp"><span class="ck">type</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a><span class="cm">.</span><a href="error.html#interface.ExpectedString"><span class="ci">ExpectedString</span></a> <span class="cp">=</span>
+  <span class="ck">inherit</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a>
+  <span class="ck">new</span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a><span class="cm">.</span><a href="error.html#interface.ExpectedString"><span class="ci">ExpectedString</span></a>
+  <span class="ck">member</span> <a href="operatorprecedenceparser.html#members.String"><span class="ci">String</span></a><span class="cp">:</span> <span class="ci">string</span>
+</pre>
+        </div>
+        <div class="para _3">
+         <p>
+          This <code class="fsharp"><a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a></code> is mainly generated by the <code
+          class="fsharp"><a href="charparsers.html#members.pstring"><span class="ci">pstring</span></a></code> parser and its variants.
+         </p>
+        </div>
+       </div>
+      </div>
+      <div class="interface-member _4" id="members.ErrorMessage..ExpectedCaseInsensitiveString">
+       <div class="interface-member-code">
+        <a class="interface-member-backlink" href="#interface.ErrorMessage..ExpectedCaseInsensitiveString:B:">⇧</a>
+<pre class="code fsharp"><span class="ck">type</span> <span class="interface-member-marker"><span class="ci">ErrorMessage</span><span class="cm">.</span><span class="ci">ExpectedCaseInsensitiveString</span></span></pre>
+       </div>
+       <div class="interface-member-description">
+        <div class="para _1">
+         <p>
+          Parsers report this <code class="fsharp"><a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a></code> when the input does
+          not match an expected case‐insensitive string constant.
+         </p>
+        </div>
+        <div class="para _2 lcinp">
+<pre class="code fsharp"><span class="ck">type</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a><span class="cm">.</span><span class="ci">ExpectedCaseInsensitiveString</span> <span class="cp">=</span>
+  <span class="ck">inherit</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a>
+  <span class="ck">new</span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a><span class="cm">.</span><span class="ci">ExpectedCaseInsensitiveString</span>
+  <span class="ck">member</span> <a href="operatorprecedenceparser.html#members.String"><span class="ci">String</span></a><span class="cp">:</span> <span class="ci">string</span>
+</pre>
+        </div>
+        <div class="para _3">
+         <p>
+          This <code class="fsharp"><a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a></code> is mainly generated by the <code
+          class="fsharp"><a href="charparsers.html#members.pstringCI"><span class="ci">pstringCI</span></a></code> parsers and its variants.
+         </p>
+        </div>
+       </div>
+      </div>
+      <div class="interface-member _5" id="members.ErrorMessage..Unexpected">
+       <div class="interface-member-code">
+        <a class="interface-member-backlink" href="#interface.ErrorMessage..Unexpected:B:">⇧</a>
+<pre class="code fsharp"><span class="ck">type</span> <span class="interface-member-marker"><span class="ci">ErrorMessage</span><span class="cm">.</span><span class="ci">Unexpected</span></span></pre>
+       </div>
+       <div class="interface-member-description">
+        <div class="para _1">
+         <p>
+          Parsers report this <code class="fsharp"><a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a></code> when they encounter
+          some unexpected input.
+         </p>
+        </div>
+        <div class="para _2 lcinp">
+<pre class="code fsharp"><span class="ck">type</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a><span class="cm">.</span><a href="error.html#interface.Unexpected"><span class="ci">Unexpected</span></a> <span class="cp">=</span>
+  <span class="ck">inherit</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a>
+  <span class="ck">new</span><span class="cp">:</span> <span class="ci">label</span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a><span class="cm">.</span><a href="error.html#interface.Unexpected"><span class="ci">Unexpected</span></a>
+  <span class="ck">member</span> <span class="ci">Label</span><span class="cp">:</span> <span class="ci">string</span>
+</pre>
+        </div>
+        <div class="para _3">
+         <p>The string label describes the unexpected input.</p>
+        </div>
+        <div class="para _4">
+         <p>
+          This <code class="fsharp"><a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a></code> is mainly generated by the <code
+          class="fsharp"><a href="primitives.html#members.notFollowedByL"><span class="ci">notFollowedByL</span></a></code> primitive.
+         </p>
+        </div>
+       </div>
+      </div>
+      <div class="interface-member _6" id="members.ErrorMessage..UnexpectedString">
+       <div class="interface-member-code">
+        <a class="interface-member-backlink" href="#interface.ErrorMessage..UnexpectedString:B:">⇧</a>
+<pre class="code fsharp"><span class="ck">type</span> <span class="interface-member-marker"><span class="ci">ErrorMessage</span><span class="cm">.</span><span class="ci">UnexpectedString</span></span></pre>
+       </div>
+       <div class="interface-member-description">
+        <div class="para _1">
+         <p>
+          Parsers report this <code class="fsharp"><a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a></code> when they encounter
+          an unexpected string constant.
+         </p>
+        </div>
+        <div class="para _2 lcinp">
+<pre class="code fsharp"><span class="ck">type</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a><span class="cm">.</span><a href="error.html#interface.UnexpectedString"><span class="ci">UnexpectedString</span></a> <span class="cp">=</span>
+  <span class="ck">inherit</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a>
+  <span class="ck">new</span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a><span class="cm">.</span><a href="error.html#interface.UnexpectedString"><span class="ci">UnexpectedString</span></a>
+  <span class="ck">member</span> <a href="operatorprecedenceparser.html#members.String"><span class="ci">String</span></a><span class="cp">:</span> <span class="ci">string</span>
+</pre>
+        </div>
+        <div class="para _3">
+         <p>
+          This <code class="fsharp"><a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a></code> is mainly generated by the <code
+          class="fsharp"><a href="charparsers.html#members.notFollowedByString"><span class="ci">notFollowedByString</span></a></code> parser.
+         </p>
+        </div>
+       </div>
+      </div>
+      <div class="interface-member _7" id="members.ErrorMessage..UnexpectedCaseInsensitiveString">
+       <div class="interface-member-code">
+        <a class="interface-member-backlink" href="#interface.ErrorMessage..UnexpectedCaseInsensitiveString:B:">⇧</a>
+<pre class="code fsharp"><span class="ck">type</span> <span class="interface-member-marker"><span class="ci">ErrorMessage</span><span class="cm">.</span><span class="ci">UnexpectedCaseInsensitiveString</span></span></pre>
+       </div>
+       <div class="interface-member-description">
+        <div class="para _1">
+         <p>
+          Parsers report this <code class="fsharp"><a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a></code> when they encounter
+          an unexpected case‐insensitive string constant.
+         </p>
+        </div>
+        <div class="para _2 lcinp">
+<pre class="code fsharp"><span class="ck">type</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a><span class="cm">.</span><span class="ci">UnexpectedCaseInsensitiveString</span> <span class="cp">=</span>
+  <span class="ck">inherit</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a>
+  <span class="ck">new</span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a><span class="cm">.</span><span class="ci">UnexpectedCaseInsensitiveString</span>
+  <span class="ck">member</span> <a href="operatorprecedenceparser.html#members.String"><span class="ci">String</span></a><span class="cp">:</span> <span class="ci">string</span>
+</pre>
+        </div>
+        <div class="para _3">
+         <p>
+          This <code class="fsharp"><a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a></code> is mainly generated by the <code
+          class="fsharp"><a href="charparsers.html#members.notFollowedByStringCI"><span class="ci">notFollowedByStringCI</span></a></code> parser.
+         </p>
+        </div>
+       </div>
+      </div>
+      <div class="interface-member _8" id="members.ErrorMessage..Message">
+       <div class="interface-member-code">
+        <a class="interface-member-backlink" href="#interface.ErrorMessage..Message:B:">⇧</a>
+<pre class="code fsharp"><span class="ck">type</span> <span class="interface-member-marker"><span class="ci">ErrorMessage</span><span class="cm">.</span><span class="ci">Message</span></span></pre>
+       </div>
+       <div class="interface-member-description">
+        <div class="para _1">
+         <p>
+          Parsers report this <code class="fsharp"><a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a></code> when an the error
+          does not fit the other <code class="fsharp"><a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a></code> types.
+         </p>
+        </div>
+        <div class="para _2 lcinp">
+<pre class="code fsharp"><span class="ck">type</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a><span class="cm">.</span><a href="error.html#interface.Message"><span class="ci">Message</span></a> <span class="cp">=</span>
+  <span class="ck">inherit</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a>
+  <span class="ck">new</span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a><span class="cm">.</span><a href="error.html#interface.Message"><span class="ci">Message</span></a>
+  <span class="ck">member</span> <a href="operatorprecedenceparser.html#members.String"><span class="ci">String</span></a><span class="cp">:</span> <span class="ci">string</span>
+</pre>
+        </div>
+        <div class="para _3">
+         <p>
+          This error message can be generated with the <code class="fsharp"><a href="primitives.html#members.fail"><span
+          class="ci">fail</span></a></code> and <code class="fsharp"><a href="primitives.html#members.failFatally"><span
+          class="ci">failFatally</span></a></code> primitives.
+         </p>
+        </div>
+       </div>
+      </div>
+      <div class="interface-member _9" id="members.ErrorMessage..NestedError">
+       <div class="interface-member-code">
+        <a class="interface-member-backlink" href="#interface.ErrorMessage..NestedError:B:">⇧</a>
+<pre class="code fsharp"><span class="ck">type</span> <span class="interface-member-marker"><span class="ci">ErrorMessage</span><span class="cm">.</span><span class="ci">NestedError</span></span></pre>
+       </div>
+       <div class="interface-member-description">
+        <div class="para _1">
+         <p>
+          Parsers report this <code class="fsharp"><a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a></code> when they
+          backtracked after an error occurred.
+         </p>
+        </div>
+        <div class="para _2 lcinp">
+<pre class="code fsharp"><span class="ck">type</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a><span class="cm">.</span><a href="error.html#interface.NestedError"><span class="ci">NestedError</span></a> <span class="cp">=</span>
+  <span class="ck">inherit</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a>
+
+  <span class="ck">new</span><span class="cp">:</span>   <span class="ci">position</span><span class="cp">:</span> <a href="charstream.html#CharStream.members.Position"><span class="ci">Position</span></a> <span class="cp">*</span> <span class="ci">userState</span><span class="cp">:</span> <span class="ci">obj</span> <span class="cp">*</span> <span class="ci">messages</span><span class="cp">:</span> <a href="errormessagelist.html"><span class="ci">ErrorMessageList</span></a>
+      <span class="cr">-&gt;</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a><span class="cm">.</span><a href="error.html#interface.NestedError"><span class="ci">NestedError</span></a>
+
+  <span class="ck">member</span> <a href="charstream.html#CharStream.members.Position"><span class="ci">Position</span></a><span class="cp">:</span>  <a href="charstream.html#CharStream.members.Position"><span class="ci">Position</span></a>
+  <span class="ck">member</span> <span class="ci">UserState</span><span class="cp">:</span> <span class="ci">obj</span>
+  <span class="ck">member</span> <span class="ci">Messages</span><span class="cp">:</span>  <a href="errormessagelist.html"><span class="ci">ErrorMessageList</span></a>
+</pre>
+        </div>
+        <div class="para _3">
+         <p>
+          The <code class="fsharp"><a href="charstream.html#CharStream.members.Position"><span class="ci">Position</span></a></code> property
+          describes the stream position where the original error occurred that triggered the backtracking. The <code class="fsharp"><span
+          class="ci">UserState</span></code> property contains the user state value from before the backtracking (upcasted to <code
+          class="fsharp"><span class="ci">obj</span></code>). The <code class="fsharp"><span class="ci">Messages</span></code> property contains the
+          error messages of the original error.
+         </p>
+        </div>
+        <div class="para _4">
+         <p>
+          This error message is mainly generated by the <code class="fsharp"><a href="primitives.html#members.attempt"><span
+          class="ci">attempt</span></a></code>, <code class="fsharp"><a href="primitives.html#members.:62::62::63:"><span
+          class="co">&gt;&gt;?</span></a></code> and <code class="fsharp"><a href="primitives.html#members...:62::62::63:"><span
+          class="co">.&gt;&gt;?</span></a></code> primitives.
+         </p>
+        </div>
+       </div>
+      </div>
+      <div class="interface-member _0" id="members.ErrorMessage..CompoundError">
+       <div class="interface-member-code">
+        <a class="interface-member-backlink" href="#interface.ErrorMessage..CompoundError:B:">⇧</a>
+<pre class="code fsharp"><span class="ck">type</span> <span class="interface-member-marker"><span class="ci">ErrorMessage</span><span class="cm">.</span><span class="ci">CompoundError</span></span></pre>
+       </div>
+       <div class="interface-member-description">
+        <div class="para _1">
+         <p>
+          Parsers report this <code class="fsharp"><a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a></code> when a
+          &#x201C;compound&#x201D; failed to parse.
+         </p>
+        </div>
+        <div class="para _2 lcinp">
+<pre class="code fsharp"><span class="ck">type</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a><span class="cm">.</span><a href="error.html#interface.CompoundError"><span class="ci">CompoundError</span></a> <span class="cp">=</span>
+  <span class="ck">inherit</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a>
+
+  <span class="ck">new</span><span class="cp">:</span>   <span class="ci">labelOfCompound</span><span class="cp">:</span> <span class="ci">string</span>
+       <span class="cp">*</span> <span class="ci">nestedErrorPosition</span><span class="cp">:</span> <a href="charstream.html#CharStream.members.Position"><span class="ci">Position</span></a>
+       <span class="cp">*</span> <span class="ci">nestedErrorUserState</span><span class="cp">:</span> <span class="ci">obj</span>
+       <span class="cp">*</span> <span class="ci">nestedErrorMessages</span><span class="cp">:</span> <a href="errormessagelist.html"><span class="ci">ErrorMessageList</span></a>
+      <span class="cr">-&gt;</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a><span class="cm">.</span><a href="error.html#interface.CompoundError"><span class="ci">CompoundError</span></a>
+
+  <span class="ck">member</span> <span class="ci">LabelOfCompound</span><span class="cp">:</span> <span class="ci">string</span>
+  <span class="ck">member</span> <span class="ci">NestedErrorPosition</span><span class="cp">:</span> <a href="charstream.html#CharStream.members.Position"><span class="ci">Position</span></a>
+  <span class="ck">member</span> <span class="ci">NestedErrorUserState</span><span class="cp">:</span> <span class="ci">obj</span>
+  <span class="ck">member</span> <span class="ci">NestedErrorMessages</span><span class="cp">:</span> <a href="errormessagelist.html"><span class="ci">ErrorMessageList</span></a>
+</pre>
+        </div>
+        <div class="para _3">
+         <p>
+          This error message is mainly generated by the compound‐labelling operator <code class="fsharp"><a
+          href="primitives.html#members.:60::63::63::62:"><span class="co">&lt;??&gt;</span></a></code>.
+         </p>
+        </div>
+       </div>
+      </div>
+      <div class="interface-member _1" id="members.ErrorMessage..Other">
+       <div class="interface-member-code">
+        <a class="interface-member-backlink" href="#interface.ErrorMessage..Other:B:">⇧</a>
+<pre class="code fsharp"><span class="ck">type</span> <span class="interface-member-marker"><span class="ci">ErrorMessage</span><span class="cm">.</span><span class="ci">Other</span></span></pre>
+       </div>
+       <div class="interface-member-description">
+        <div class="para _1">
+         <p>
+          User‐defined parsers can return this <code class="fsharp"><a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a></code> to
+          report application‐specific error data.
+         </p>
+        </div>
+        <div class="para _2 lcinp">
+<pre class="code fsharp"><span class="ck">type</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a><span class="cm">.</span><span class="ci">Other</span> <span class="cp">=</span>
+  <span class="ck">inherit</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a>
+  <span class="ck">new</span><span class="cp">:</span> <span class="ci">data</span><span class="cp">:</span> <span class="ci">obj</span> <span class="cr">-&gt;</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a><span class="cm">.</span><span class="ci">Other</span>
+  <span class="ck">member</span> <span class="ci">Data</span><span class="cp">:</span> <span class="ci">obj</span>
+</pre>
+        </div>
+        <div class="para _3">
+         <p>
+          To display <code class="fsharp"><span class="ci">OtherError</span></code> values in error messages, you will have to define your own error
+          printer, as <code class="fsharp"><a href="error.html#members.ParserError"><span class="ci">ParserError</span></a><span class="cm">.</span><a
+          href="error.html#interface.ToString:47:WriteTo"><span class="ci">ToString</span><span class="co">/</span><span
+          class="ci">WriteTo</span></a></code> ignores them.
+         </p>
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div>
+  </div>
+ </div>
+ </div>
+ </div>   
+ </div>
+</body>
+</html>
+

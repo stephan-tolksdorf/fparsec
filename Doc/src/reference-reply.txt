@@ -1,0 +1,109 @@
+﻿
+
+[section#Reply FParsec.Reply]
+
+Represents the return value of a `Parser` function.
+
+[interface-reference]
+
+[section Interface]
+[$$interface]
+[/section]
+
+[section Remarks]
+The `Reply` type is the return type of `Parser` functions. Similar to a tuple, a `Reply` value can be viewed as a simple aggregate of its three fields `Status`, `Result` and  `@Error@`.
+
+The value of the `Status` field indicates whether the parser returning the reply succeeded (`ReplyStatus.Ok`) or failed (`ReplyStatus.Error` or `ReplyStatus.FatalError`). If the value of the `Status` field is `Ok`, the `Result` field contains a parser result value; otherwise, its value is undefined.
+
+The `Equals` override ignores the `Result` value when it compares two `Reply` values with `Status <> Ok`.
+
+[note
+
+The `Reply` fields are mutable because that allows us to implement library primitives with more compact code, for which the .NET JIT produces faster machine code.
+
+Of course, if you object to mutable structs [url "http://stackoverflow.com/questions/441309/why-are-mutable-structs-evil" on religious grounds] or if you're not familiar with the somewhat subtle behaviour of mutable structs in certain sitations, you can always treat the `Reply` type as if it was immutable.
+]
+
+[/section]
+
+[section Members]
+[interface-members]
+
+[``
+// FParsecCS.dll
+
+namespace FParsec
+
+type #ReplyStatus# = [#ReplyStatus..Ok Ok]         =  1
+                 | [#ReplyStatus..Error Error]      =  0
+                 | [#ReplyStatus..FatalError FatalError] = -1
+
+
+type Reply<'TResult> = struct
+``]
+
+[``
+  @new@: 'TResult -> Reply<'TResult>
+``]
+[#new-1
+
+Constructs a `Reply` instance with the `Status` field set to `Ok`, the `Result` field set to the argument value and the `@Error@` field set to `null`.
+]
+
+[``
+  @new@: ReplyStatus * ErrorMessageList -> Reply<'TResult>
+``]
+[#new-2
+Constructs a `Reply` instance with the `Status` and `@Error@` fields set to the respective argument values and the `Result` field initialized to `Unchecked.defaultof<'TResult>`.
+
+This constructor is usually used for constructing an error reply, like in `Reply(Error, expected "something")`.
+]
+
+[``
+  @new@: ReplyStatus * 'TResult * ErrorMessageList -> Reply<'TResult>
+``]
+[#new-3
+Constructs a `Reply` instance with the `Status`, `Result` and `@Error@` fields set to the respective argument values.
+]
+
+[``
+
+  val mutable @Status@: ReplyStatus
+``]
+[
+The `Status` field contains a `ReplyStatus` enum value indicating whether a parser succeeded (`Ok`) or failed (`Error` or `FatalError`). By returning a `FatalError` instead of an `Error` a parser can signal that no error recovery should be tried (except through backtracking mechanisms).
+]
+
+[``
+  /// If Status <> Ok then the Result value is undefined and may be null.
+``]
+
+[``
+  val mutable @Result@: 'TResult
+``]
+[
+If the value of the `Status` field is `Ok`, the `Result` field contains a parser result value; otherwise, its value is undefined and may be equal to `Unchecked.defaultof<'TResult>`. (The result value in a `Reply` returned by an unsuccessful parser is generally an implementation detail of the parser that you should not depend on.)
+]
+
+[``
+  val mutable @Error@: ErrorMessageList
+``]
+[
+The `Error` field holds a list of error messages in the form of an `ErrorMessageList` value. An empty `ErrorMessageList` is represented as a `null` value.
+
+The error messages returned by a parser in a `Reply` value implicitly refer to the state of the `CharStream` as it is when the parser returns. Since the `ErrorMessage` values stored in the `ErrorMessageList` do not themselves contain an error position, they can only be interpreted together with the position of the `CharStream` as it is when the parser returns.
+]
+
+[``
+
+  override Equals: obj -> bool
+  override GetHashCode: unit -> int
+  interface System.IEquatable<Reply<'TResult>>
+end
+``]
+[/interface-members]
+
+[/section]
+[/interface-reference]
+
+[/section]

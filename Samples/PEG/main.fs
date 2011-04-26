@@ -4,8 +4,7 @@
 // This is a simple parser for PEG grammars.
 // See parser.fs for more information.
 
-open FParsec.Primitives
-open FParsec.CharParsers
+open FParsec
 
 open Ast
 

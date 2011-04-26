@@ -1,0 +1,1881 @@
+﻿
+[section#CharParsers FParsec.CharParsers]
+
+[interface-reference]
+[section Interface]
+[$$interface]
+[/section]
+
+[section Members]
+[interface-members]
+[``
+// FParsec.dll
+
+[<AutoOpen>] // module is automatically opened when FParsec namespace is opened
+module [no-auto-link FParsec.CharParsers]
+
+open FParsec.Error
+open FParsec.Primitives
+``]
+
+[``
+
+// Running parsers on input
+// ========================
+``]
+[``
+type @ParserResult@<'Result,'UserState>``]
+[
+Values of this union type are returned by the @runParser functions@ (not by `Parser<_,_>` functions).
+
+[interface-members]
+[``=
+``]
+
+[``
+     | @Success@ of 'Result * 'UserState * Position
+``]
+[`Success(result, userState, endPos)` holds the result and the user state returned by a successful parser, together with the position where the parser stopped.]
+
+[``
+     | @Failure@ of string * ParserError * 'UserState
+``]
+[
+`Failure(errorAsString, error, userState)` holds the parser error and the user state returned by a failing parser, together with the string representation of the parser error. The `ParserError` value `error` contains an `ErrorMessageList` and the position and user state value associated with the error.
+]
+[/interface-members]
+]
+
+[``
+[#runparser-functions]
+``]
+
+[``
+val @runParser@:
+        Parser<'a,'u> -> 'u -> streamName: string -> CharStream
+     -> ParserResult<'a,'u>
+``]
+[`runParser p ustate streamName charStream` runs the parser `p` on the content of `charStream`,
+starting with the initial user state `ustate`. The `streamName` is used in error messages to describe the source of the input (e.g. a file path) and may be empty. The parser's `Reply` is captured and returned as a `ParserResult` value.
+
+This function *does not* dispose the `CharStream` after use.
+]
+
+[``
+
+val @runParserOnString@:
+         Parser<'a,'u> -> 'u -> streamName: string -> string
+      -> ParserResult<'a,'u>
+``]
+[
+`runParserOnString p ustate streamName str` runs the parser `p` on the content of the string `str`, starting with the initial user state `ustate`. The `streamName` is used in error messages to describe the source of the input (e.g. a file path) and may be empty. The parser's `Reply` is captured and returned as a `ParserResult` value.
+
+`runParserOnString p ustate streamName str` is equivalent to
+``
+use cstream = [^CharStream.CharStream.members.new_string new CharStream](str, 0, str.Length)
+runParser p ustate streamName cstream
+``
+]
+
+[``
+
+val @runParserOnSubstring@:
+        Parser<'a,'u> -> 'u -> streamName: string -> string -> int -> int
+     -> ParserResult<'a,'u>
+``]
+[
+`runParserOnSubstring p ustate streamName str index count` runs the parser `p` directly on the content of the string
+`str` between the indices `index` (inclusive) and `index + count` (exclusive), starting with the initial user state `ustate`. The `streamName` is used in error messages to describe the source of the input (e.g. a file path) and may be empty. The parser's `Reply` is captured and returned as a `ParserResult` value.
+
+`runParserOnSubstring p ustate streamName str index count` is equivalent to
+``
+use cstream = [^CharStream.CharStream.members.new_string new CharStream](str, index, count)
+runParser p ustate streamName cstream
+``
+]
+
+[``
+
+val @runParserOnStream@:
+        Parser<'a,'u> -> 'u -> streamName: string
+     -> System.IO.Stream -> System.Text.Encoding
+     -> ParserResult<'a,'u>
+``]
+[
+`runParserOnStream p ustate streamName stream encoding` runs the parser `p` on the content of the `System.IO.Stream` `stream`, starting with the initial user state `ustate`. The `streamName` is used in error messages to describe the source of the input (e.g. a file path) and may be empty.  In case no Unicode byte order mark is found, the stream data is assumed to be encoded with the given `encoding`.  The parser's `Reply` is captured and returned as a `ParserResult` value.
+
+`runParserOnStream p ustate streamName stream encoding` is equivalent to
+``
+use cstream = [^CharStream.CharStream.members.new_stream new CharStream](stream, encoding)
+runParser p ustate streamName cstream
+``
+]
+
+[``
+
+val @runParserOnFile@:
+        Parser<'a,'u> -> 'u -> path: string -> System.Text.Encoding
+     -> ParserResult<'a,'u>
+``]
+[
+`runParserOnFile p ustate path encoding` runs the parser `p` on the content of the file at the given `path`, starting with the initial user state `ustate`. In case no Unicode byte order mark is found, the file data is assumed to be encoded with the given `encoding`. The parser's `Reply` is captured and returned as a `ParserResult` value.
+
+`runParserOnFile p ustate path encoding` is equivalent to
+``
+use cstream = [^CharStream.CharStream.members.new_file-path new CharStream](path, encoding)
+runParser p ustate path cstream
+``
+]
+
+[``
+
+val @run@: Parser<'a, unit> -> string -> ParserResult<'a,unit>
+``]
+[
+`run parser str` is a convenient abbreviation for `runParserOnString parser () "" str`.
+]
+
+[``
+
+// Reading the input stream position and handling the user state
+// =============================================================
+``]
+[``
+val @getPosition@: Parser<Position,'u>
+``]
+[
+The parser `getPosition` returns the current position in the input stream.
+
+`getPosition` is defined as `fun stream -> Reply(stream.Position)`.
+]
+
+[``
+
+val @getUserState@: Parser<'u,'u>
+``]
+[
+The parser `getUserState` returns the current user state.
+
+`getUserState` is defined as `fun stream -> Reply(stream.UserState)`.
+]
+
+[``val @setUserState@: 'u -> Parser<unit,'u>
+``]
+[
+The parser `setUserState u` sets the user state to `u`.
+
+`setUserState u` is defined as
+``
+fun stream ->
+    stream.UserState <- u
+    Reply(())
+``
+]
+
+[``
+val @updateUserState@: ('u -> 'u) -> Parser<unit,'u>
+``]
+[
+`updateUserState f` is defined as
+``
+fun stream ->
+    stream.UserState <- f stream.UserState
+    Reply(())
+``
+]
+
+[``
+
+val @userStateSatisfies@: ('u -> bool) -> Parser<unit,'u>
+``]
+[
+The parser `userStateSatisfies f` succeeds if the predicate function `f` returns `true` when applied to the current `UserState`, otherwise it fails.
+
+[note
+If the parser `userStateSatisfies f` fails, it returns no descriptive error message; hence it should only be used together with other parsers that take care of a potential error.
+]
+]
+
+
+[``
+
+// Parsing single chars
+// ====================
+``]
+
+[``
+val @pchar@:      char ->       Parser<char,'u>
+``] [`pchar c` parses the char `c` and returns `c`. If `c = '\r'` or `c = '\n'` then `pchar c` will parse any one newline (`"\n"`, `"\r\n"` or `"\r"`) and return `c`.
+]
+
+[``
+val @skipChar@:   char ->       Parser<unit,'u>
+``]
+[`skipChar c` is an optimized implementation of `pchar c |>> ignore`.]
+
+[``
+val @charReturn@: char -> 'a -> Parser<'a,'u>
+``]
+[`charReturn c result` is an optimized implementation of `pchar c >>% result`.]
+
+[``
+
+val @anyChar@:     Parser<char,'u>
+``]
+[`anyChar` parses any single char or newline (`"\n"`, `"\r\n"` or `"\r"`). Returns the parsed char, or `'\n'` in case a newline was parsed.
+]
+
+[``
+val @skipAnyChar@: Parser<unit,'u>
+``]
+[`skipAnyChar` is an optimized implementation of `anyChar |>> ignore`.
+]
+
+[``
+[#satisfy-parsers]
+val @satisfy@:      (char -> bool)           -> Parser<char,'u>
+``]
+[`satisfy f` parses any one char or newline for which the predicate function `f` returns `true`. It returns the parsed char. Any newline (`"\n"`, `"\r\n"` or `"\r"`) is converted to the single char `'\n'`. Thus, to accept a newline `f '\n'` must return `true`. `f` will never be called with `'\r'` and `satisfy f` will never return the result `'\r'`.
+
+For example, `satisfy (fun  c -> '0' <= c && c <= '9')` parses any decimal digit.
+
+[note
+If the parser `satisfy f` fails, it returns no descriptive error message (because it does not know what chars `f` accepts); hence it should only be used together with other parsers that take care of a potential error. Alternatively, `satisfyL f label` can be used to ensure a more descriptive error message.
+]
+]
+
+[``
+val @skipSatisfy@:  (char -> bool)           -> Parser<unit,'u>
+``]
+[`skipSatisfy f` is an optimized implementation of `satisfy f |>> ignore`.]
+
+[``
+val @satisfyL@:     (char -> bool) -> string -> Parser<char,'u>
+``]
+[`satisfy f label` is an optimized implementation of `satisfy f <?> label`.]
+
+[``
+val @skipSatisfyL@: (char -> bool) -> string -> Parser<unit,'u>
+``]
+[`skipSatisfyL f label` is an optimized implementation of `skipSatisfy f <?> label`.]
+
+[``
+
+val @anyOf@:      seq<char> -> Parser<char,'u>
+``]
+[`anyOf str` parses any char contained in the char sequence `chars`. It returns the parsed char. If `chars` contains the char `'\n'`, `anyOf chars` parses any newline (`"\n"`, `"\r\n"` or `"\r"`) and returns it as `'\n'`. (Note that it does not make a difference whether or not `chars` contains `'\r'` and that `anyOf chars` will never return `'\r'`.)
+
+For example, `anyOf ". \t\n"` will parse any of the chars `'.'`, `' '`, `'\t'` or any newline.
+
+`anyOf chars` is defined as `satisfy (isAnyOf chars)`.
+
+For performance critical parsers it might be worth replacing instances of `anyOf` in loops with a `manySatisfy`-based parser. For example, `manyChars (anyOf ". \t\n")` could be replaced with `manySatisfy (function '.'|' '|'\t'|'\n' -> true | _ -> false)`.
+
+[note
+[small [/ This note does not apply to the @Low-Trust version@ of FParsec.]][br]
+
+`anyOf` is implemented using `isAnyOf`, which uses runtime code generation to generate an optimized indicator function. Runtime code generation is a relatively expensive operation, so you should try to reuse `anyOf` parser instances where possible. Please see the [^StaticMapping.remarks remarks] for the `StaticMapping` module for more information.
+]
+]
+
+[``
+val @skipAnyOf@:  seq<char> -> Parser<unit,'u>
+``]
+[`skipAnyOf chars` is an optimized implementation of `anyOf chars |>> ignore`.]
+[``
+val @noneOf@:     seq<char> -> Parser<char,'u>
+``]
+[`noneOf chars` parses any char not contained in the char sequence `chars`. It returns the parsed char. If `chars` does not contain the char `'\n'`, `noneOf chars` parses any newline (`"\n"`, `"\r\n"` or `"\r"`) and returns it as  as `'\n'`. (Note that it does not make a difference whether or not `chars` contains `'\r'` and that `noneOf chars` will never return `'\r'`.)
+
+For example, `noneOf ". \t\n"` will parse any char other than `'.'`, `' '`, `'\t'`, `'\r'` or `'\n'`.
+
+`noneOf chars` is defined as `satisfy (isNoneOf chars)`.
+
+For performance critical parsers it might be worth replacing instances of `noneOf` in loops with a `manySatisfy`-based parser. For example, `manyChars (noneOf ". \t\n")` could be replaced with `manySatisfy (function '.'|' '|'\t'|'\n' -> false | _ -> true)`.
+
+[note
+[small [/ This note does not apply to the @Low-Trust version@ of FParsec.]][br]
+
+`noneOf` is implemented using `isNoneOf`, which uses runtime code generation to generate an optimized indicator function. Runtime code generation is a relatively expensive operation, so you should try to reuse `noneOf` parser instances where possible. Please see the [^StaticMapping.remarks remarks] for the `StaticMapping` module for more information.
+]
+]
+
+[``
+val @skipNoneOf@: seq<char> -> Parser<unit,'u>
+``]
+[`skipNoneOf chars` is an optimized implementation of `noneOf chars |>> ignore`.]
+
+[``
+
+val @asciiLower@:  Parser<char,'u>
+``]
+[Parses any char in the range `'a'` - `'z'`. Returns the parsed char.]
+[``
+val @asciiUpper@:  Parser<char,'u>
+``]
+[Parses any char in the range `'A'` - `'Z'`. Returns the parsed char.]
+[``
+val @asciiLetter@: Parser<char,'u>
+``]
+[Parses any char in the range `'a'` - `'z'` and `'A'` - `'Z'`. Returns the parsed char.]
+
+[``
+
+val @lower@:  Parser<char,'u>
+``]
+[Parses any UTF-16 lowercase letter char identified by `System.Char.IsLower`. Returns the parsed char.]
+[``
+val @upper@:  Parser<char,'u>
+``]
+[Parses any UTF-16 uppercase letter char identified by `System.Char.IsUpper`. Returns the parsed char.]
+
+[``
+val @letter@: Parser<char,'u>
+``]
+[Parses any UTF-16 letter char identified by `System.Char.IsLetter`. Returns the parsed char.]
+
+[``
+
+val @digit@: Parser<char,'u>``]
+[Parses any char in the range `'0'` - `'9'`. Returns the parsed char.]
+[`` // parses '0'-'9'
+``]
+[``
+val @hex@:   Parser<char,'u>``]
+[Parses any char in the range `'0'` - `'9'`, `'a'` - `'f'` and `'A'` - `'F'`. Returns the parsed char.]
+[`` // parses '0'-'9', 'a'-'f', 'A'-'F'
+``]
+[``
+val @octal@: Parser<char,'u>``]
+[Parses any char in the range `'0'` - `'7'`. Returns the parsed char.]
+[`` // parses '0'-'7'
+``]
+
+[``
+
+// predicate functions corresponding to the above parsers
+``]
+
+[``
+val @isAnyOf@:  seq<char> ->  (char -> bool)
+``]
+[`isAnyOf chars` returns a predicate function. When this predicate function is applied to a char, it returns `true` if and only if the char is contained in the char sequence `chars`.
+
+For example, the function `isAnyOf ".,;"` returns `true` when applied to the chars `'.'`, `','` or `';'`, and `false` for all other chars.
+
+[note
+[small [/ This note does not apply to the @Low-Trust version@ of FParsec.]][br]
+
+`isAnyOf` is implemented using `createStaticCharIndicatorFunction`, which uses runtime code generation to generate an optimized mapping function. Runtime code generation is a relatively expensive operation, please see the [^StaticMapping.remarks remarks] for the `StaticMapping` module for more information.
+]
+
+]
+
+[``
+val @isNoneOf@: seq<char> ->  (char -> bool)
+``]
+[`isNoneOf chars` returns a predicate function. When this predicate function is applied to a char, it returns `true` if and only if the char is not contained in char sequence `chars`.
+
+For example, the function `isNoneOf ".,;"` returns `false` when applied to the chars `'.'`, `','` or `';'`, and `true` for all other chars.
+
+[note
+[small [/ This note does not apply to the @Low-Trust version@ of FParsec.]][br]
+
+`isNoneOf` is implemented using `createStaticCharIndicatorFunction`, which uses runtime code generation to generate an optimized mapping function. Runtime code generation is a relatively expensive operation, please see the [^StaticMapping.remarks remarks] for the `StaticMapping` module for more information.
+]
+
+]
+
+[``
+val inline @isAsciiUpper@:  char -> bool
+``]
+[Returns `true` for any char in the range `'A'` - `'Z'` and `false` for all other chars.]
+
+
+[``
+val inline @isAsciiLower@:  char -> bool
+``]
+[Returns `true` for any char in the range `'a'` - `'z'` and `false` for all other chars.]
+
+[``
+val inline @isAsciiLetter@: char -> bool
+``]
+[Returns `true` for any char in the range `'a'` - `'z'`, `'A'` - `'Z'` and `false` for all other chars.]
+
+
+
+[``
+val inline @isUpper@:       char -> bool
+``]
+[`isUpper` is equivalent to `System.Char.IsUpper`.]
+
+[``
+val inline @isLower@:       char -> bool
+``]
+[`isLower` is equivalent to `System.Char.IsLower`.]
+
+[``
+val inline @isLetter@:      char -> bool
+``]
+[`isLetter` is equivalent to `System.Char.IsLetter`.]
+
+[``
+val inline @isDigit@:       char -> bool
+``]
+[Returns `true` for any char in the range `'0'` - `'9'` and `false` for all other chars.]
+
+[``
+val inline @isHex@:         char -> bool
+``]
+[Returns `true` for any char in the range `'0'` - `'9'`, `'a'` - `'f'`, `'A'` - `'F'` and `false` for all other chars.]
+
+[``
+val inline @isOctal@:       char -> bool
+``]
+[Returns `true` for any char in the range `'0'` - `'7'` and `false` for all other chars.]
+
+[``
+
+// Parsing whitespace
+// ==================
+``]
+
+[``
+val @tab@:                 Parser<char,'U>
+``]
+[Parses the tab char `'\t'` and returns `'\t'`.
+
+[note
+A tab char is treated like any other non-newline char: the column number is incremented by (only) 1.]
+]
+
+[``
+
+val @newline@:             Parser<char,'u>
+``]
+[Parses a newline (`"\n"`, `"\r\n"` or `"\r"`). Returns `'\n'`. Is equivalent to `pchar '\n'`.]
+
+[``
+val @skipNewline@:         Parser<unit,'u>
+``]
+[`skipNewline` is an optimized implementation of `newline |>> ignore`.]
+
+[``
+val @newlineReturn@: 'a -> Parser<'a,'u>
+``]
+[`newlineReturn result` is an optimized implementation of `newline >>% result`.]
+
+[``
+
+val @unicodeNewline@:             Parser<char,'u>
+``]
+[
+Parses a Unicode newline (`"\n"`, `"\r\n"`, `"\r"`, `"\u0085"`, `"\u2028"`, or `"\u2029"`). Returns `'\n'`. In contrast to all other parsers in FParsec except `unicodeWhitespace` this parser also increments the internal line count for Unicode newline characters other than `'\n'` and `'\r'`.
+
+[note This method does not recognize the form feed char `'\f'` (`'\u000C'`) as a newline character.]
+
+[note
+This parser is included only for the sake of completeness. If you design your own parser grammar, we  recommend not to accept any character sequence other than `"\n"`, `"\r\n"` or `"\r"` for a newline. The three usual newline representations already make text parsing complicated enough.
+]
+]
+[``
+val @skipUnicodeNewline@:         Parser<unit,'u>
+``]
+[`skipUnicodeNewline` is an optimized implementation of `newline |>> ignore`.]
+
+[``
+val @unicodeNewlineReturn@: 'a -> Parser<'a,'u>
+``]
+[`unicodeNewlineReturn result` is an optimized implementation of `newline >>% result`.]
+
+[``
+
+val @spaces@:  Parser<unit,'u>
+``]
+[Skips over any sequence of *zero* or more whitespaces (space (`' '`), tab (`'\t'`) or newline (`"\n"`, `"\r\n"` or `"\r"`)).]
+
+[``
+val @spaces1@: Parser<unit,'u>
+``]
+[Skips over any sequence of *one* or more whitespaces (space (`' '`), tab(`'\t'`) or newline (`"\n"`, `"\r\n"` or `"\r"`)).]
+
+
+[``
+[#unicodeSpaces-parsers]
+val @unicodeSpaces@:  Parser<unit,'u>
+``]
+[
+Skips over any sequence of *zero* or more Unicode whitespace chars and registers any Unicode newline (`"\n"`, `"\r\n"`, `"\r"`, `"\u0085"`, `"\u2028"`or `"\u2029"`) as a newline.
+
+[note This method does not recognize the form feed char `'\f'` (`'\u000C'`) as a newline character.]
+
+[note
+This parser is included only for the sake of completeness. If you design your own parser grammar, we recommend not to accept any whitespace character other than `' '`, `'\t'`, `'\r'` and `'\n'`. There is no need to make whitespace parsing unnecessary complicated and slow.
+]
+]
+
+[``
+val @unicodeSpaces1@: Parser<unit,'u>
+``]
+[
+Skips over any sequence of *one* or more Unicode whitespace char and registers any Unicode newline (`"\n"`, `"\r\n"`, `"\r"`, `"\u0085"`, `"\u2028"`or `"\u2029"`) as a newline.
+
+See also the notes above for `unicodeSpaces`.
+]
+
+[``
+
+val @eof@: Parser<unit,'u>
+``]
+[The parser `eof` only succeeds at the end of the input. It never consumes input.]
+
+
+[``
+
+// Parsing strings directly
+// ========================
+``]
+[``
+val @pstring@:      string ->       Parser<string,'u>
+``]
+[`pstring str` parses the string `str` and returns `str`. It is an atomic parser: either it succeeds or it fails without consuming any input.
+
+`str` may not contain newline chars (`'\n'` or `'\r'`), otherwise `pstring str` raises an `ArgumentException`.
+]
+
+[``
+val @skipString@:   string ->       Parser<unit,'u>
+``]
+[`skipString str` is an optimized implementation of `pstring str |>> ignore`.]
+
+[``
+val @stringReturn@: string -> 'a -> Parser<'a,'u>
+``]
+[`stringReturn str result` is an optimized implementation of `pstring str >>% result`.]
+
+[``
+
+val @pstringCI@:      string ->       Parser<string,'u>
+``]
+[`pstringCI str` parses any string that case-insensitively matches the string `str`. It returns the *parsed* string.
+ `pstringCI str` is an atomic parser: either it succeeds or it fails without consuming any input.
+
+`str` may not contain newline chars (`'\n'` or `'\r'`), otherwise `pstringCI str` raises an `ArgumentException`.
+]
+
+[``
+val @skipStringCI@:   string ->       Parser<unit,'u>
+``]
+[`skipStringCI str` is an optimized implementation of `pstringCI str |>> ignore`.]
+
+[``
+val @stringCIReturn@: string -> 'a -> Parser<'a,'u>
+``]
+[`stringCIReturn str result` is an optimized implementation of `pstringCI str >>% result`.]
+
+[``
+
+val @anyString@:     int32 -> Parser<string,'u>
+``]
+[`anyString n` parses any sequence of `n` chars or newlines (`"\n"`, `"\r\n"` or `"\r"`). It returns the parsed string. In the returned string all newlines are normalized to `"\n"`. `anyString n` is an atomic parser: either it succeeds or it fails without consuming any input.
+]
+
+[``
+val @skipAnyString@: int32 -> Parser<unit,'u>
+``]
+[`skipAnyString n` is an optimized implementation of `anyString n |>> ignore`.]
+
+[``
+
+val @restOfLine@:     skipNewline: bool -> Parser<string,'u>
+``]
+[`restOfLine skipNewline` parses any chars before the end of the line and,
+if `skipNewline` is `true`, skips to the beginning of the next line (if there is one).
+It returns the parsed chars before the end of the line as a string (without a newline).
+A line is terminated by a newline (`"\n"`, `"\r\n"` or `"\r"`) or the end of the input stream.
+
+For example, `sepBy (restOfLine false) newline` will parse an input file  and split it into lines:
+
+``{fsi}
+> run (sepBy (restOfLine false) newline) "line1\nline2\n";;
+val it : ParserResult<string list,unit> = Success: ["line1"; "line2"; ""]
+``
+
+Note that you could not use `many (restOfLine true)` in this example, because at the end of the input `restOfLine` succeeds without consuming input, which would cause `many` to throw an exception.
+]
+
+[``
+val @skipRestOfLine@: skipNewline: bool -> Parser<unit,'u>
+``]
+[`skipRestOfLine skipNewline` is an optimized implementation of `restOfLine skipNewline |>> ignore`.]
+
+
+[``
+[#charsTillString-parsers]
+val @charsTillString@:
+    string -> skipString: bool -> maxCount: int -> Parser<string,'u>
+``]
+[`charsTillString skipString maxCount` parses all chars before the first occurance of the string `str` and, if `skipString` is `true`, skips over `str`. It returns the parsed chars before the string. If more than `maxCount` chars come before the first occurance of `str`, the parser *fails after consuming* `maxCount` chars.
+
+Newlines (`"\n"`, `"\r\n"` or `"\r"`) are counted as single chars and in the returned string all newlines are normalized to `"\n"`, but `str` may not contain any newline.
+
+`charsTillString str maxCount` raises
+- an `ArgumentException`, if `str` contains a newline char (`'\n'` or `'\r'`),
+- an `ArgumentOutOfRangeException`, if `maxCount` is negative.
+]
+
+[``
+val @skipCharsTillString@:
+    string -> skipString: bool -> maxCount: int -> Parser<unit,'u>
+``]
+[`skipCharsTillString str maxCount` is an optimized implementation of `charsTillString str maxCount |>> ignore`.]
+
+
+[``
+
+val @charsTillStringCI@:
+    string -> skipString: bool -> maxCount: int -> Parser<string,'u>
+``]
+[
+`charsTillStringCI str maxCount` parses all chars before the first case-insensitive occurance of the string `str` and, if `skipString` is `true`, skips over it. It returns the parsed chars before the string. If more than `maxCount` chars come before the first case-insensitive occurance of `str` the parser *fails after consuming* `maxCount` chars.
+
+Newlines (`"\n"`, `"\r\n"` or `"\r"`) are counted as single chars, but `str` may not contain any newline.
+
+`charsTillStringCI str maxCount` raises
+- an `ArgumentException`, if `str` contains a newline char (`'\n'` or `'\r'`),
+- an `ArgumentOutOfRangeException`, if `maxCount` is negative.
+]
+
+[``
+val @skipCharsTillStringCI@:
+    string -> skipString: bool -> maxCount: int -> Parser<unit,'u>
+``]
+[`skipCharsTillStringCI str maxCount` is an optimized implementation of `charsTillStringCI str maxCount |>> ignore`.]
+
+[``
+
+val @manySatisfy@:       (char -> bool)                   -> Parser<string,'u>
+``]
+[
+`manySatisfy f` parses a sequence of *zero* or more chars that satisfy the predicate function `f` (i.e.  chars for which `f` returns `true`). It returns the parsed chars as a string.
+
+Any newline (`"\n"`, `"\r\n"` or `"\r"`) is converted to the single char `'\n'`.  Thus, to accept a newline `f '\n'` must return `true`. `f` will never be called with `'\r'` and the string returned by `manySatisfy f` will never contain an `'\r'`.
+
+For example, `manySatisfy (function ' '|'\t'|'\n' -> true | _ -> false)` parses zero or more whitespaces and returns them as a string.
+
+[caution
+The function predicate `f` must not access the currently used `CharStream` itself, because `manySatisfy` relies on `f` not having any side-effect on the internal state of the stream.
+]
+]
+
+[``
+val @manySatisfy2@:      (char -> bool) -> (char -> bool) -> Parser<string,'u>
+``]
+[`manySatisfy2 f1 f` behaves like `manySatisfy f`, except that the first char of the parsed string must satisfy `f1` instead of `f`.
+
+For example, `manySatisfy ((=) '.') isDigit` will parse a dot followed by zero or more decimal digits. If there is no dot, the parser succeeds with an empty string.
+]
+
+[``
+val @skipManySatisfy@:   (char -> bool)                   -> Parser<unit,'u>
+``]
+[`skipManySatisfy f` is an optimized implementation of `manySatisfy f |>> ignore`.]
+
+[``
+val @skipManySatisfy2@:  (char -> bool) -> (char -> bool) -> Parser<unit,'u>
+``]
+[`skipManySatisfy2 f1 f` is an optimized implementation of `manySatisfy2 f1 f |>> ignore`.]
+
+[``
+[#many1Satisfy-parsers]
+val @many1Satisfy@:      (char -> bool)                   -> Parser<string,'u>
+``]
+[`many1Satisfy f` parses a sequence of *one* or more chars that satisfy the predicate function `f` (i.e. chars for which `f` returns `true`). It returns the parsed chars as a string. If the first char does not satisfy `f`, this parser fails without consuming input.
+
+Any newline (`"\n"`, `"\r\n"` or `"\r"`) is converted to the single char `'\n'`.  Thus, to accept a newline `f '\n'` must return `true`. `f` will never be called with `'\r'` and the string returned by `many1Satisfy f` will never contain an `'\r'`.
+
+For example, `many1Satisfy isDigit` parses a number consisting of one or more decimal digits and returns it as a string.
+
+[caution
+The function predicate `f` must not access the currently used `CharStream` itself, because `many1Satisfy` relies on `f` not having any side-effect on the internal state of the stream.
+]
+
+[note
+If the parser `many1Satisfy f` fails, it returns no descriptive error message (because it does not know what chars `f` accepts); hence it should only be used together with other parsers that take care of a potential error. Alternatively, `many1SatisfyL f label` can be used to ensure a more descriptive error message.
+]
+]
+
+[``
+val @many1Satisfy2@:     (char -> bool) -> (char -> bool) -> Parser<string,'u>
+``]
+[`many1Satisfy2 f1 f` behaves like `many1Satisfy f`, except that the first char of the parsed string must satisfy `f1` instead of `f`.
+
+For example, `many1Satisfy2 isLetter (fun c -> isLetter c || isDigit c)` will parse any string consisting of one letter followed by zero or more letters or digits.
+]
+
+[``
+val @skipMany1Satisfy@:  (char -> bool)                   -> Parser<unit,'u>
+``]
+[`skipMany1Satisfy f` is an optimized implementation of `many1Satisfy f |>> ignore`.]
+
+[``
+val @skipMany1Satisfy2@: (char -> bool) -> (char -> bool) -> Parser<unit,'u>
+``]
+[`skipMany1Satisfy2 f1 f` is an optimized implementation of `many1Satisfy2 f1 f |>> ignore`.]
+
+[``
+
+val @many1SatisfyL@:
+    (char -> bool)                   -> string -> Parser<string,'u>
+``]
+[`many1SatisfyL f label` is an optimized implementation of `many1Satisfy f <?> label`.]
+
+[``
+val @many1Satisfy2L@:
+    (char -> bool) -> (char -> bool) -> string -> Parser<string,'u>
+``]
+[`many1Satisfy2L f1 f label` is an optimized implementation of `many1Satisfy2 f1 f <?> label`.]
+
+[``
+val @skipMany1SatisfyL@:
+    (char -> bool)                   -> string -> Parser<unit,'u>
+``]
+[`skipMany1SatisfyL f label` is an optimized implementation of `skipMany1Satisfy f <?> label`.]
+
+[``
+val @skipMany1Satisfy2L@:
+    (char -> bool) -> (char -> bool) -> string -> Parser<unit,'u>
+``]
+[`skipMany1Satisfy2L f1 f label` is an optimized implementation of `skipMany1Satisfy2 f1 f <?> label`.]
+
+[``
+[#manyMinMaxSatisfy-parsers]
+val @manyMinMaxSatisfy@:
+    int -> int -> (char -> bool)                   -> Parser<string,'u>
+``]
+[`manyMinMaxSatisfy minCount maxCount f` parses a sequence of `minCount` or more chars that satisfy the predicate function `f` (i.e. chars for which `f` returns `true`), but not more than `maxCount` chars. It returns the parsed chars as a string. This parser is atomic, i.e. if the first `minCount` chars do not all satisfy `f`, the parser fails without consuming any input.
+
+Any newline (`"\n"`, `"\r\n"` or `"\r"`) is converted to the single char `'\n'`. Thus, to accept a newline `f '\n'` must return `true`. `f` will never be called with `'\r'` and the string returned by `manyMinMaxSatisfy minCount maxCount f` will never contain an `'\r'`.
+
+`manyMinMaxSatisfy minCount maxCount f` raises an `ArgumentOutOfRangeException` if `maxCount` is negative.
+
+For example, `manyMinMaxSatisfy 4 8 isHex` parses a string that consists of at least 4 hexadecimal digits. If there are 8 or more hex chars, this parser stops after the 8th.
+
+[caution
+The function predicate `f` must not access the currently used `CharStream` itself, because `manyMinMaxSatisfy` relies on `f` not having any side-effect on the internal state of the stream.
+]
+
+[note
+If the parser `manyMinMaxSatisfy minCount maxCount f` fails, it returns no descriptive error message (because it does not know what chars `f` accepts); hence it should only be used together with other parsers that take care of a potential error. Alternatively, `manyMinMaxSatisfyL f label` can be used to ensure a more descriptive error message.
+]
+
+]
+
+[``
+val @manyMinMaxSatisfy2@:
+    int -> int -> (char -> bool) -> (char -> bool) -> Parser<string,'u>
+``]
+[`manyMinMaxSatisfy2 minCount maxCount f1 f` behaves like `manyMinMaxSatisfy minCount maxCount f`, except that the first char of the parsed string must satisfy `f1` instead of `f`.
+
+For example, `manyMinMaxSatisfy2 3 5 ((=) '.') isDigit` parses a dot followed by 2-4 decimal digits.
+]
+
+[``
+val @skipManyMinMaxSatisfy@:
+    int -> int -> (char -> bool)                   -> Parser<unit,'u>
+``]
+[`skipManyMinMaxSatisfy minCount maxCount f` is an optimized implementation of `manyMinMaxSatisfy minCount maxCount f |>> ignore`.]
+
+[``
+val @skipManyMinMaxSatisfy2@:
+    int -> int -> (char -> bool) -> (char -> bool) -> Parser<unit,'u>
+``]
+[`skipManyMinMaxSatisfy2 minCount maxCount f1 f` is an optimized implementation of `manyMinMaxSatisfy2 minCount maxCount f1 f |>> ignore`.]
+
+[``
+val @manyMinMaxSatisfyL@:
+    int -> int -> (char -> bool)                   -> string -> Parser<string,'u>
+``]
+[`manyMinMaxSatisfyL minCount maxCount f label` is an optimized implementation of `manyMinMaxSatisfy minCount maxCount f <?> label`.]
+
+[``
+val @manyMinMaxSatisfy2L@:
+    int -> int -> (char -> bool) -> (char -> bool) -> string -> Parser<string,'u>
+``]
+[`manyMinMaxSatisfy2L minCount maxCount f1 f label` is an optimized implementation of `manyMinMaxSatisfy2 minCount maxCount f1 f <?> label`.]
+
+[``
+val @skipManyMinMaxSatisfyL@:
+    int -> int -> (char -> bool)                   -> string -> Parser<unit,'u>
+``]
+[`skipManyMinMaxSatisfyL minCount maxCount f label` is an optimized implementation of `skipManyMinMaxSatisfy minCount maxCount f <?> label`.]
+
+[``
+val @skipManyMinMaxSatisfy2L@:
+    int -> int -> (char -> bool) -> (char -> bool) -> string -> Parser<unit,'u>
+``]
+[`skipManyMinMaxSatisfy2L minCount maxCount f1 f label` is an optimized implementation of `skipManyMinMaxSatisfy2 minCount maxCount f1 f <?> label`.]
+
+[``
+
+val @regex@:  string -> Parser<string,'u>
+``]
+[
+`regex pattern` matches the .NET [url "http://msdn.microsoft.com/en-us/library/az24scfc.aspx" regular expression] given by the string `pattern` on the chars beginning at the current index in the input stream. If the regular expression matches, the parser skips the matched chars and returns them as a string. If the regular expression does not match, the parser fails without consuming input.
+
+The `System.Text.RegularExpressions.Regex` object that is internally used to match the pattern is constructed with the `[url "http://msdn.microsoft.com/en-us/library/system.text.regularexpressions.regexoptions.aspx" RegexOptions]` `MultiLine` and `ExplicitCapture`. In order to ensure that the regular expression can only match at the beginning of a string, `"\\A"` is automatically prepended to the pattern. You should avoid the use of greedy expressions like `".*"`, because these might trigger a scan of the complete input every time the regex is matched.
+
+Newline chars (`'\r'` and `'\n'`) in the pattern are interpreted literally. For example, an `'\n'` char in the pattern will only match `"\n"`, not `"\r"` or `"\r\n"`. However, in the returned string all newlines (`"\n"`, `"\r\n"` or `"\r"`) are normalized to `"\n"`.
+
+For large files the regular expression is *not* applied to a string containing *all* the remaining chars in the stream. The number of chars that are guaranteed to be visible to the regular expression is specified during construction of the `CharStream`. If one of the @runParser functions@ is used to run the parser, this number is 43690.
+]
+
+[``
+
+type @IdentifierOptions@ =
+    new: ?isAsciiIdStart: (char -> bool) *
+         ?isAsciiIdContinue: (char -> bool) *
+         ?normalization: System.Text.NormalizationForm *
+         ?normalizeBeforeValidation: bool *
+         ?allowJoinControlChars: bool *
+         ?preCheckStart: (char -> bool) *
+         ?preCheckContinue: (char -> bool) *
+         ?allowAllNonAsciiCharsInPreCheck: bool *
+         ?label: string *
+         ?invalidCharMessage: string -> IdentifierOptions
+``]
+[
+
+The configuration options for the `identifier` parser.
+
+[dl
+[`isAsciiIdStart`]
+[
+Specifies the ASCII characters that are valid as the first character of an identifier. This predicate function is called once for each char in the range `'\u0001'`--`'\u007f'` during construction of the `IdentifierOptions` object. By default, the ASCII chars `'A'`--`'Z'` and `'a'`--`'z'` can start an identifier.
+]
+
+[`isAsciiIdContinue`]
+[
+Specifies the ASCII characters that are valid as non-first characters of an identifier. This predicate function is called once for each char in the range `'\u0001'`--`'\u007f'` during construction of the `IdentifierOptions` object. Normally the chars for which `isAsciiIdContinue` returns `true` should include all chars for which `isAsciiIdStart` returns `true`. By default, the ASCII chars `'A'`--`'Z'`, `'a'`--`'z'`, `'0'`--`'9'` and `'_'` are accepted at non-start positions.
+]
+
+[`normalization`]
+[
+[small [/ This option is not supported in the Silverlight version of FParsec.]][br]
+The [url "http://www.Unicode.org/reports/tr15/" normalization form] to which identifier strings are normalized. The value must be one of the four enum values of `System.Text.NormalizationForm`. If no `normalization` parameter is given, no normalization is performed.
+
+The normalization is performed with the [url "http://msdn.microsoft.com/en-us/library/ebza6ck1.aspx" `System.String.Normalize`] method provided by the Base Class Library.
+]
+
+[`normalizeBeforeValidation`]
+[
+[small [/ This option is not supported in the Silverlight version of FParsec.]][br]
+Indicates whether the identifier string should be normalized before validation (but after the pre-check). By default, identifiers are normalized after they have been validated. Normalization before validation will only work properly with non-default pre-check options.
+]
+
+[`allowJoinControlChars`]
+[
+Indicates whether the two join control characters ([url "http://en.wikipedia.org/wiki/Zero-width_non-joiner" zero-width non-joiner] and [url "http://en.wikipedia.org/wiki/Zero-width_joiner" zero-width joiner]) are allowed at any non-start character position in the identifier.
+]
+
+[`preCheckStart`, `preCheckContinue`]
+[
+These two char predicates are used to identify potential identifier strings in the input. The first UTF-16 char of an identifier must satisfy `preCheckStart`, the following chars must satify `preCheckContinue`. Input chars that don't pass the pre-check aren't included in the identifier string, while characters that pass the pre-check but not the identifier validation trigger a parser error. For the `identifier` parser to work properly, the pre-check functions must accept a superset of valid identifier characters.
+
+If you specify no `preCheckStart` (`preCheckContinue`) parameter, a default function will be used that accepts all chars that satisfy `isAsciiIdStart` (`isAsciiIdContinue`) as well as all non-ASCII characters in the Basic Multilingual Plane with the =XID_Start= (=XID_Continue=) property and all surrogate chars. `preCheckContinue` by default also accepts the two join control characters.
+
+If you pass the option `allowAllNonAsciiCharsInPreCheck = true`, the pre-check predicates are only called once for each char in the range `'\u0001'` - `'\u007f'` during construction of the `IdentifierOptions` object (in order to construct a lookup table).
+]
+
+[`allowAllNonAsciiCharsInPreCheck`]
+[
+Indicates whether all non-ASCII chars should be accepted in the pre-check, irrespective of whether the (default) pre-check functions return `true` for these chars.
+]
+
+[`label`]
+[
+The string label that is used in error messages if no identifier is found. The default is `"identifier"`.
+]
+
+[`invalidCharMessage`]
+[
+The error message that is reported when an invalid char is found during validation of an identifier (after the pre-check). The default is `"The identifier contains an invalid character at the indicated position."`.
+]
+]
+
+The following example implements a parser for [url "http://docs.python.org/dev/py3k/index.html" Python] identifiers as described in [url "http://www.python.org/dev/peps/pep-3131/" PEP-3131]:
+``
+let pythonIdentifier =
+    let isAsciiIdStart    = fun c -> isAsciiLetter c || c = '_'
+    let isASciiIdContinue = fun c -> isAsciiLetter c || isDigit c || c = '_'
+
+    identifier (IdentifierOptions(
+                    isAsciiIdStart = isAsciiIdStart,
+                    isAsciiIdContinue = isAsciiIdContinue,
+                    normalization = [url "http://msdn.microsoft.com/en-us/library/system.text.normalizationform.aspx" System.Text.NormalizationForm].FormKC,
+                    normalizeBeforeValidation = true,
+                    allowAllNonAsciiCharsInPreCheck = true))
+``
+
+
+]
+
+[``
+
+val @identifier@: IdentifierOptions -> Parser<string, 'u>
+``]
+[The `identifier` parser is a configurable parser for the XID identifier syntax specified in the [url "http://www.Unicode.org/reports/tr31/" Unicode Standard Annex #31].
+
+By default, a valid identifier string must begin with a Unicode character with the =XID_Start= property and continue with zero or more characters with the =XID_Continue= property. The specification of which characters have these properties can be found in the [url "http://www.Unicode.org/Public/6.0.0/ucd/DerivedCoreProperties.txt" DerivedCoreProperties] file in the [url "http://www.Unicode.org/usc" Unicode Character Database]. Currently FParsec implements the XID specification of Unicode 6.0.0.
+
+Within the ASCII character range `'\u0001'`--`'\u007f'` you can customize the set of accepted characters through the `isASciiIdStart` and `isASciiIdContinue` parameters (the XID default allows `'a'`--`'z'` and `'A'`--`'Z'` at any position and `'_'` and `'0'`--`'9'` only in non-start positions). For example, to accept the same ASCII characters that are valid in F# identifiers, you could use the following `IdentifierOptions`:
+``
+let isAsciiIdStart c =
+    isAsciiLetter c || c = '_'
+
+let isAsciiIdContinue c =
+    isAsciiLetter c || isDigit c || c = '_' || c = '\''
+
+identifier (IdentifierOptions(isAsciiIdStart    = isAsciiIdStart,
+                              isAsciiIdContinue = isAsciiIdContinue))
+``
+
+By default, identifiers cannot contain the two join control characters [url "http://en.wikipedia.org/wiki/Zero-width_non-joiner" zero-width non-joiner] and [url "http://en.wikipedia.org/wiki/Zero-width_joiner" zero-width joiner]. While these characters can be abused to create distinct identifiers that look confusingly similar or even identical, they are also necessary to create identifiers with the correct visual appearance for common words or phrases in certain languages. [url "http://www.Unicode.org/reports/tr31/#Layout_and_Format_Control_Characters" Section 2.3] of the Unicode Standard Annex #31 recommends to accept join control characters if the identifier system is supposed to support "natural representations of terms in modern, customary use". However, in order to minimize the potential for abuse it also recommends accepting these characters only in some very specific contexts.
+
+Unfortunately, the proposed rules describing the contexts in which join control character should be allowed are rather difficult to implement, especially with the limited Unicode support in .NET. For this reason the `identifier` parser currently only supports a simpler option: if you set the parameter `allowJoinControlChars` to `true`, the parser accepts the two join control characters in any non-start position.  Whether this setting is a reasonable compromise between not supporting join control characters at all and implementing the complicated rules proposed in Annex #31 obviously depends on the individual requirements of your project. An example of a programming language that [url "https://mail.mozilla.org/pipermail/es5-discuss/2009-June/002832.html" adopted] the same compromise is [url "http://www.ecma-international.org/publications/standards/Ecma-262.htm" ECMAScript 5].
+
+Apart from the joint control characters, no layout or format control characters are allowed in identifiers. This is in accordance to the recommendation of the Unicode Standard Annex #31, but contrary to what Annex #15 [url "http://www.Unicode.org/reports/tr15/tr15-23.html#Programming_Language_Identifiers" recommended] prior to Unicode version 4.1. Programming languages whose identifier syntax is based on the recommendations of earlier versions of the Unicode standard may require that layout and format control characters are ignored or filtered out, as for example is the case for C\#. However, since the identifier syntax of these languages isn't based on the XID properties, one can't parse their identifiers with this parser anyway.
+
+By providing a value for the `normalization` parameter, you can ensure that identifiers are returned in a particular Unicode [url "http://www.Unicode.org/reports/tr15/" normalization form]. By default, an identifier is normalized *after* it has been validated. Since XID identifiers are "closed under normalization", a valid identifier is guaranteed to stay valid after normalization. The reverse, however, is not true, since not all identifier strings that are valid after normalization are also valid prior to normalization. If you want the identifier string to be normalized before validation, you have to set the `normalizeBeforeValidation` parameter to `true` and specify appropriate `preCheckStart` and `preCheckContinue` parameters.
+
+Silverlight does not support Unicode normalization, so the Silverlight version of FParsec does not support the `normalization` and `normalizeBeforeValidation` parameters.
+
+The `identifier` parser uses the `preCheckStart` and `preCheckContinue` predicate functions to identify potential identifier strings in the input. The first UTF-16 char of the identifier must satisfy `preCheckStart`, the following chars must satifsy `preCheckContinue`. Input chars that don't pass the pre-check aren't included in the identifier string, while characters that pass the pre-check but not the identifier validation trigger a parser error (`FatalError`). For the `identifier` parser to work properly, the `preCheck` functions must accept a superset of valid identifier characters.
+
+If you specify no `preCheckStart` (`preCheckContinue`) parameter, a default function will be used that accepts all chars that satisfy `isAsciiIdStart` (`isAsciiIdContinue`) as well as all non-ASCII characters in the Basic Multilingual Plane with the =XID_Start= (=XID_Continue=) property and all surrogate chars. `preCheckContinue` by default also accepts the two join control characters. If you set the parameter `allowAllNonAsciiCharsInPreCheck` to `true`, all non-ASCII chars will be accepted in the pre-check, irrespective of whether the (default) pre-check functions return `true` for these chars.
+
+By passing custom `preCheckStart` and `preCheckContinue` functions you can modify the error reporting behaviour and support identifier strings that are only valid after normalization. You can also exclude specific UTF-16 chars that would otherwise be valid in identifiers, though you'd have to be careful to cover all (pre-)normalization forms.
+
+In the following examples we will demonstrate the effect of custom pre-check functions on identifier parsing. For this we first set up two identifier parsers, `ident` and `identP`, with differing sets of options. Both parsers accept the same ASCII chars in identifiers. In particular, both do not accept the underscore char `'_'` in identifiers. However, only `identP` lets underscores through the pre-check.
+
+``
+// we don't allow underscores in identifiers ...
+let isAsciiIdStart c    = isAsciiLetter c
+let isAsciiIdContinue c = isAsciiLetter c || isDigit c
+
+// ... but accept them in in the pre-check
+let preCheckStart c    = isAsciiLetter c || c = '_'
+let preCheckContinue c = isAsciiLetter c || isDigit c || c = '_'
+
+type NF = System.Text.NormalizationForm
+
+let opts = IdentifierOptions(isAsciiIdStart    = isAsciiIdStart,
+                             isAsciiIdContinue = isAsciiIdContinue,
+                             normalization = NF.FormKC,
+                             // The following option isn't really useful without
+                             // modified pre-check options. We only set the
+                             // option here to prove this point in an example below.
+                             normalizeBeforeValidation = true)
+
+let optsWithPreCheck = IdentifierOptions(isAsciiIdStart = isAsciiIdStart,
+                                         isAsciiIdContinue = isAsciiIdContinue,
+                                         preCheckStart = preCheckStart,
+                                         preCheckContinue = preCheckContinue,
+                                         allowAllNonAsciiCharsInPreCheck = true,
+                                         normalization = NF.FormKC,
+                                         normalizeBeforeValidation = true)
+
+let ident  : Parser<string, unit> = identifier opts
+let identP : Parser<string, unit> = identifier optsWithPreCheck
+``
+
+Both `ident` and `identP` parse simple identifiers without a problem:
+``{fsi}
+> run (ident .>> eof) "täst1";;
+val it : ParserResult<string,unit> = Success: "täst1"
+> run (identP .>> eof) "täst2";;
+val it : ParserResult<string,unit> = Success: "täst2"
+``
+
+The identifier parser with the default pre-check functions will treat underscores just like whitespace or any other non-identifier character:
+``{fsi}
+> run (ident .>> eof) "test_id";;
+val it : ParserResult<string,unit> = Failure:
+Error in Ln: 1 Col: 5
+test_id
+    ^
+Expecting: end of input
+``
+
+Since `ident` only consumed the `"test"` part of the input string, the `eof` parser complained that it was expecting to be applied at the end of the input.
+
+When we use `identP` instead, we get a different error message:
+``{fsi}
+> run (identP .>> eof) "test_id";;
+val it : ParserResult<string,unit> = Failure:
+Error in Ln: 1 Col: 5
+test_id
+    ^
+The identifier contains an invalid character at the indicated position.
+``
+This time the underscore passed the pre-check, but not the identifier validation.
+
+As mentioned above, a custom pre-check is also neccessary to make the `normalizeBeforeValidation` option work properly. With the default pre-check options the identifier parser doesn't accept `"MC²"` as an identifier, even with the normalization set to NFKC:
+``{fsi}
+> run (ident .>> eof) "MC²";;
+val it : ParserResult<string,unit> = Failure:
+Error in Ln: 1 Col: 3
+MC²
+  ^
+Expecting: end of input
+``
+
+`identP` on the other hand doesn't have this issue, because it accepts all non-ASCII chars in the pre-check:
+``{fsi}
+> run (identP .>> eof) "MC²";;
+val it : ParserResult<string,unit> = Success: "MC2"
+``
+]
+
+[``
+
+// Parsing strings with the help of other parsers
+// ==============================================
+``]
+
+[``
+
+val @manyChars@:   Parser<char,'u>                    -> Parser<string,'u>
+``]
+[
+`manyChars cp` parses a sequence of *zero* or more chars with the char parser `cp`. It returns the parsed chars as a string.
+
+`manyChars cp` is an optimized implementation of `many cp` that returns the chars as a string instead of a char list.
+
+Many string parsers can be conveniently implemented with both `manyChars` and `manySatisfy`. In these cases you should generally prefer the faster `manySatisfy`. For example, the parser `manySatisfyL isHex "hex integer"` is more efficient than `manyChars hex`.
+
+If you are using `manyChars` for a parser similar to `manyChars (notFollowedBy endp >>. p)`, you should check whether this use of `manyChars` can be replaced with the more specialized `manyCharsTill` parser.
+]
+
+[``
+val @manyChars2@:  Parser<char,'u> -> Parser<char,'u> -> Parser<string,'u>
+``]
+[
+`manyChars2 cp1 cp` behaves like `manyChars2 cp`, except that it parses the first char with `cp1` instead of `cp`.
+
+For example, `manyChars2 letter (letter <|> digit)` will parse a letter followed by letters or digits and return the chars as a string. If the first char is not a letter, the parser succeeds with an empty string. Note, however, that this parser could be more efficiently implemented using `manySatisfy2L`.
+]
+
+[``
+
+val @many1Chars@:  Parser<char,'u>                    -> Parser<string,'u>
+``]
+[
+`many1Chars cp` parses a sequence of *one* or more chars with the char parser `cp`. It returns the parsed chars as a string.
+
+`many1Chars cp` is an optimized implementation of `many1 cp` that returns the chars as a string instead of a char list.
+
+Many string parsers can be conveniently implemented with both `many1Chars` and `many1Satisfy`. In these cases you should generally prefer the faster `many1Satisfy`. For example, the parser `many1SatisfyL isHex "hex integer"` is more efficient than `many1Chars hex`.
+]
+
+[``
+val @many1Chars2@: Parser<char,'u> -> Parser<char,'u> -> Parser<string,'u>
+``]
+[
+`many1Chars2 cp1 cp` behaves like `many1Chars2 cp`, except that it parses the first char with `cp1` instead of `cp`.
+
+For example, `many1Chars2 letter (letter <|> digit)` will parse a letter followed by letters or digits and return the chars as a string. Note, however, that this parser could be more efficiently implemented using `many1Satisfy2L`.
+]
+
+[``
+[#manyCharsTill-parsers]
+val @manyCharsTill@:
+       Parser<char,'u>                    -> Parser<'b,'u> -> Parser<string,'u>
+``]
+[
+`manyCharsTill cp endp` parses chars with the char parser `cp` until the parser `endp` succeeds. It stops after `endp` and returns the parsed chars as a string.
+
+`manyCharsTill cp endp` is an optimized implementation of `manyTill cp endp` that returns the chars as a string instead of a char list.
+]
+[``
+val @manyCharsTill2@:
+       Parser<char,'u> -> Parser<char,'u> -> Parser<'b,'u> -> Parser<string,'u>
+``]
+[
+`manyCharsTill2 cp1 cp endp` behaves like `manyCharsTill cp endp`, except that it parses the first char with `cp1` instead of `cp`.
+]
+
+
+[``
+val @manyCharsTillApply@:
+       Parser<char,'u>                    -> Parser<'b,'u> -> (string -> 'b -> 'c)
+    -> Parser<'c,'u>
+``]
+[
+`manyCharsTillApply cp endp f` behaves like `manyCharsTill cp endp`, except that it returns the result of the function application `f str b`, where `str` is the parsed string and `b` is result returned by `endp`.
+]
+
+[``
+val @manyCharsTillApply2@:
+       Parser<char,'u> -> Parser<char,'u> -> Parser<'b,'u> -> (string -> 'b -> 'c)
+    -> Parser<'c,'u>
+``]
+[
+`manyCharsTillApply2 cp1 cp endp f` behaves like `manyCharsTillApply cp endp f`, except that it parses the first char with `cp1` instead of `cp`.
+]
+
+
+
+[``
+
+val @many1CharsTill@:
+       Parser<char,'u>                    -> Parser<'b,'u> -> Parser<string,'u>
+``]
+[
+`many1CharsTill cp endp` parses one char with the char parser `cp`. Then it parses more chars with `cp` until the parser `endp` succeeds. It stops after `endp` and returns the parsed chars as a string.
+
+`many1CharsTill cp endp` is an optimized implementation of `many1Till cp endp` that returns the chars as a string instead of a char list.
+]
+[``
+val @many1CharsTill2@:
+       Parser<char,'u> -> Parser<char,'u> -> Parser<'b,'u> -> Parser<string,'u>
+``]
+[
+`many1CharsTill2 cp1 cp endp` behaves like `many1CharsTill cp endp`, except that it parses the first char with `cp1` instead of `cp`.
+]
+
+[``
+val @many1CharsTillApply@:
+       Parser<char,'u>                    -> Parser<'b,'u> -> (string -> 'b -> 'c)
+    -> Parser<'c,'u>
+``]
+[
+`many1CharsTillApply cp endp f` behaves like `many1CharsTill cp endp`, except that it returns the result of the function application `f str b`, where `str` is the parsed string and `b` is result returned by `endp`.
+]
+
+[``
+val @many1CharsTillApply2@:
+       Parser<char,'u> -> Parser<char,'u> -> Parser<'b,'u> -> (string -> 'b -> 'c)
+    -> Parser<'c,'u>
+``]
+[
+`many1CharsTillApply2 cp1 cp endp f` behaves like `many1CharsTillApply cp endp f`, except that it parses the first char with `cp1` instead of `cp`.
+]
+
+[``
+[#manyStrings-parsers]
+val @manyStrings@:   Parser<string,'u>                      -> Parser<string,'u>
+``]
+[
+`manyStrings sp` parses a sequence of *zero* or more strings with the string parser `sp`. It returns the strings in concatenated form.
+
+ `manyStrings sp` is an optimized implementation of `many sp |>> List.fold (fun acc s -> acc + s) ""`.
+]
+
+[``
+val @manyStrings2@:  Parser<string,'u> -> Parser<string,'u> -> Parser<string,'u>
+``]
+[
+`manyStrings2 sp1 sp` behaves like `manyStrings sp`, except that it parses the first string with `sp1` instead of `sp`.
+]
+
+[``
+val @many1Strings@:  Parser<string,'u>                      -> Parser<string,'u>
+``]
+[
+`many1Strings sp` parses a sequence of *one* or more strings with the string parser `sp`. It returns the strings in concatenated form.
+Note that `many1Strings sp` does not require the first string to be non-empty.
+
+`many1Strings sp` is an optimized implementation of `many1 sp |>> List.reduce (+)`.
+]
+
+
+[``
+val @many1Strings2@: Parser<string,'u> -> Parser<string,'u> -> Parser<string,'u>
+``]
+[
+`many1Strings2 sp1 sp` behaves like `many1Strings sp`, except that it parses the first string with `sp1` instead of `sp`.
+]
+
+
+[``
+
+val @stringsSepBy@: Parser<string,'u> -> Parser<string,'u> -> Parser<string,'u>
+``]
+[
+`stringsSepBy sp sep` parses *zero* or more occurrences of `p` separated by `sep`
+(in EBNF: `{EBNF}(p (sep p)*)?`). It returns the strings parsed by `p` *and* `sep` in concatenated form.
+
+`stringsSepBy` behaves like `sepBy`, except that instead of returning a list of the results of only the first argument parser it returns a concatenated string of all strings returned by both argument parsers (in the sequence they occurred).
+
+With `stringsSepBy` you can for example implement an efficient parser for the following string literal format:
+
+``{other}
+  stringLiteral: '"' (normalChar|escapedChar)* '"'
+  normalChar:    any char except '\' and '"'
+  escapedChar:   '\\' ('\\'|'"'|'n'|'r'|'t')
+``
+
+The parser implementation exploits the fact that two (possibly empty) normal char snippets must be separated by an escaped char:
+
+``
+let stringLiteral =
+    let str s = pstring s
+    let normalCharSnippet = manySatisfy (fun c -> c <> '\\' && c <> '"')
+    let escapedChar = str "\\" >>. (anyOf "\\\"nrt" |>> function
+                                                        | 'n' -> "\n"
+                                                        | 'r' -> "\r"
+                                                        | 't' -> "\t"
+                                                        | c   -> string c)
+    between (str "\"") (str "\"")
+            (stringsSepBy normalCharSnippet escapedChar)
+``
+
+]
+
+[``
+
+val @skipped@: Parser<unit,'u> -> Parser<string,'u>
+``]
+[`skipped p` applies the parser `p` and returns the chars skipped over by `p` as a string.
+All newlines (`"\r\n"`, `"\r"` or `"\n"`) are normalized to `"\n"`.]
+
+[``
+
+val @withSkippedString@: (string -> 'a -> 'b) -> Parser<'a,'u> -> Parser<'b,'u>
+``]
+[`p |> withSkippedString f` applies the parser `p` and returns the result `f str x`,
+where `str` is the string skipped over by `p` and `x` is the result returned by `p`.]
+
+[``
+
+// Parsing numbers
+// ===============
+``]
+
+[``
+type @NumberLiteralOptions@``]
+[
+
+An enum type that encodes the various options of the `numberLiteral` parser:
+
+``
+type NumberLiteralOptions =
+| None                       = 0
+| AllowSuffix                = 0b000000000001
+| AllowMinusSign             = 0b000000000010
+| AllowPlusSign              = 0b000000000100
+| AllowFraction              = 0b000000001000
+| AllowFractionWOIntegerPart = 0b000000010000
+| AllowExponent              = 0b000000100000
+| AllowHexadecimal           = 0b000001000000
+| AllowBinary                = 0b000010000000
+| AllowOctal                 = 0b000100000000
+| AllowInfinity              = 0b001000000000
+| AllowNaN                   = 0b010000000000
+
+| IncludeSuffixCharsInString = 0b100000000000
+
+| DefaultInteger             = 0b000111000110
+| DefaultUnsignedInteger     = 0b000111000000
+| DefaultFloat               = 0b011001101110
+``
+
+If all flags are set any literal matching the following regular expression is accepted:
+
+``{regex}
+[+-]?((([0-9]+(\.[0-9]*)?|\.[0-9]+)([eE][+-]?[0-9]+)?
+      |0[xX]([0-9a-fA-F]+(\.[0-9a-fA-F]*)?|\.[0-9a-fA-F]+)([pP][+-]?[0-9]+)?
+      |0[oO][0-7]+
+      |0[bB][01]+
+      )[a-zA-Z]?[a-zA-Z]?[a-zA-Z]?[a-zA-Z]?
+     |[iI][nN][fF]([iI][nN][iI][tT][yY])?
+     |[nN][aA][nN]
+     )
+``
+
+
+Hexadecimal literals must begin with `{regex}0x` or `{regex}0X`, octal literals with `{regex}0o` or `{regex}0O` and binary literals with `{regex}0b` or `{regex}0B`. If the respective flags are set, hexadecimal *floating-point* literals as supported by IEEE 754r, C99 and Java are accepted.
+
+Some remarks on the individual flags:
+[dl
+
+[`AllowSuffix`]
+[Allows up to 4 suffix chars. Such chars are used in many programming languages to determine the type of a number. For example, in F# the literal `"123UL"` represents the unsigned 64-bit integer 123.]
+
+[`AllowFraction`]
+[Allows a fraction in decimal and hexadecimal literals.]
+
+[`AllowFractionWOIntegerPart`]
+[Allows number literals with a fraction but no integer part, e.g. `".123"` or `"0x.abc"`. This flag can only be used together with `AllowFraction`.]
+
+[`AllowExponent`]
+[Allows exponents in decimal literals (beginning with an `"e"` or `"E"`) and in hexadecimal literals (beginning with a `"p"` or `"P"`).]
+
+[`AllowInfinity`]
+[Allows `"Inf"` or `"Infinity"` literals (case-insensitive).]
+
+[`AllowNaN`]
+[Allows `"NaN"` literals (case-insensitive).]
+
+[`IncludeSuffixCharsInString`]
+[Instructs the `numberLiteral` parser to include any parsed suffix chars in the `NumberLiteral.String` member.]
+
+]
+]
+
+[`` = //...
+``]
+
+
+[``
+
+type @NumberLiteral@``]
+[
+The return type of the `numberLiteral` parser. An instance contains the parsed number literal and various bits of information about it.
+Note that the `String` member contains the string literal *without* the suffix chars,
+except if the `NumberLiteralOptions` passed to the `numberLiteral` parser have the
+`IncludeSuffixCharsInString` flag set.
+Any parsed suffix chars are always available through the `SuffixChar1` - `4` members.
+
+``
+type NumberLiteral =
+    member String: string
+
+    member #SuffixLength#: int
+    member #SuffixChar1#: char // EOS if no suffix char was parsed
+    member #SuffixChar2#: char // EOS if less than 2 suffix chars were parsed
+    member #SuffixChar3#: char ...
+    member #SuffixChar4#: char
+
+    member Info: NumberLiteralResultFlags
+    member #HasMinusSign#: bool
+    member #HasPlusSign#: bool
+    member #HasIntegerPart#: bool
+    member #HasFraction#: bool
+    member #HasExponent#: bool
+    member #IsInteger#: bool // not (HasFraction || HasExponent)
+    member #IsDecimal#: bool
+    member #IsHexadecimal#: bool
+    member #IsBinary#: bool
+    member #IsOctal#: bool
+    member #IsNaN#: bool
+    member #IsInfinity#: bool
+
+and NumberLiteralResultFlags =
+    | None             = 0
+    | SuffixLengthMask = 0b0000000000001111
+    | HasMinusSign     = 0b0000000000010000
+    | HasPlusSign      = 0b0000000000100000
+    | HasIntegerPart   = 0b0000000001000000
+    | HasFraction      = 0b0000000010000000
+    | HasExponent      = 0b0000000100000000
+    | IsDecimal        = 0b0000001000000000
+    | IsHexadecimal    = 0b0000010000000000
+    | IsBinary         = 0b0000100000000000
+    | IsOctal          = 0b0001000000000000
+    | BaseMask         = 0b0001111000000000
+    | IsInfinity       = 0b0010000000000000
+    | IsNaN            = 0b0100000000000000
+``
+]
+
+[`` = //...
+``]
+
+
+[``
+
+val @numberLiteral@:  NumberLiteralOptions -> string -> Parser<NumberLiteral,'u>
+``]
+[
+`numberLiteral options label` parses a number literal and returns the result in form of a `NumberLiteral` value. The given `NumberLiteralOptions` argument determines the kind of number literals accepted. The string `label` is used in the `Expected` error message that is generated when the parser fails without consuming input.
+
+The parser fails without consuming input if not at least one digit (including the =0= in the format specifiers `"0x"` etc.) can be parsed. It fails after consuming input, if no decimal digit comes after an exponent marker or no valid digit comes after a format specifier.
+
+The parser in the following example employs `numberLiteral` to parse decimal numbers as either `integer` or `float` values:
+``
+open FParsec
+open FParsec.Primitives
+open FParsec.CharParsers
+
+type Number = Int   of int64
+            | Float of float
+
+                    // -?[0-9]+(\.[0-9]*)?([eE][+-]?[0-9]+)?
+let numberFormat =     NumberLiteralOptions.AllowMinusSign
+                   ||| NumberLiteralOptions.AllowFraction
+                   ||| NumberLiteralOptions.AllowExponent
+
+let pnumber : Parser<Number, unit> =
+    numberLiteral numberFormat "number"
+    |>> fun nl ->
+            if nl.IsInteger then Int (int64 nl.String)
+            else Float (float nl.String)
+``
+
+Some test runs:
+``{fsi}
+> run pnumber "123";;
+val it : ParserResult<Number,unit> = Success: Int 123L
+
+> run pnumber "-123.456E-7";;
+val it : ParserResult<Number,unit> = Success: Float -1.23456e-05
+
+> run pnumber "-";;
+val it : ParserResult<Number,unit> = Failure:
+Error in Ln: 1 Col: 1
+-
+^
+Expecting: number
+
+> run pnumber "123.456E-a";;
+val it : ParserResult<Number,unit> = Failure:
+Error in Ln: 1 Col: 10
+123.456E-a
+         ^
+Expecting: decimal digit
+
+> run pnumber "1E9999";;
+System.OverflowException:
+   Value was either too large or too small for a Double.
+   at (... stack trace ...)
+stopped due to error
+``
+
+The next example improves on the error reporting in case of overflows. It also demonstrates how to support hexadecimal numbers and a suffix to indicate the integer format:
+``
+open FParsec
+open FParsec.Error
+open FParsec.Primitives
+open FParsec.CharParsers
+
+type Number = Int32 of int32
+            | Int64 of int64
+            | Float of float
+
+// We want to support decimal or hexadecimal numbers with an optional minus
+// sign. Integers may have an 'L' suffix to indicate that the number should
+// be parsed as a 64-bit integer.
+let numberFormat =     NumberLiteralOptions.AllowMinusSign
+                   ||| NumberLiteralOptions.AllowFraction
+                   ||| NumberLiteralOptions.AllowExponent
+                   ||| NumberLiteralOptions.AllowHexadecimal
+                   ||| NumberLiteralOptions.AllowSuffix
+
+let pnumber : Parser<Number, unit> =
+    let parser = numberLiteral numberFormat "number"
+    fun stream ->
+        let reply = parser stream
+        if reply.Status = Ok then
+            let nl = reply.Result // the parsed NumberLiteral
+            if nl.SuffixLength = 0
+               || (   nl.IsInteger
+                   && nl.SuffixLength = 1 && nl.SuffixChar1 = 'L')
+            then
+                try
+                    let result = if nl.IsInteger then
+                                     if nl.SuffixLength = 0 then
+                                         Int32 (int32 nl.String)
+                                     else
+                                         Int64 (int64 nl.String)
+                                 else
+                                     if nl.IsHexadecimal then
+                                         Float (floatOfHexString nl.String)
+                                     else
+                                         Float (float nl.String)
+                    Reply(result)
+                with
+                | :? System.OverflowException as e ->
+                    stream.Skip(-nl.String.Length)
+                    Reply(FatalError, messageError e.Message)
+            else
+                stream.Skip(-nl.SuffixLength)
+                Reply(Error, messageError "invalid number suffix")
+        else // reconstruct error reply
+            Reply(reply.Status, reply.Error)
+``
+
+Some test runs:
+``{fsi}
+> run pnumber "123";;
+val it : ParserResult<Number,unit> = Success: Int32 123
+
+> run pnumber "-0xffL";;
+val it : ParserResult<Number,unit> = Success: Int64 -255L
+
+> run pnumber "123.123";;
+val it : ParserResult<Number,unit> = Success: Float 123.123
+
+> run pnumber "0xabc.defP-4";;
+val it : ParserResult<Number,unit> = Success: Float 171.8044281
+
+> run pnumber "-0x";;
+val it : ParserResult<Number,unit> = Failure:
+Error in Ln: 1 Col: 4
+-0x
+   ^
+Note: The error occurred at the end of the input stream.
+Expecting: hexadecimal digit
+
+> run pnumber "0x123UL";;
+val it : ParserResult<Number,unit> = Failure:
+Error in Ln: 1 Col: 6
+0x123UL
+     ^
+invalid number suffix
+
+> run pnumber "1E9999";;
+val it : ParserResult<Number,unit> = Failure:
+Error in Ln: 1 Col: 1
+1E9999
+^
+Value was either too large or too small for a Double.
+``
+]
+
+[``
+val @numberLiteralE@:
+       NumberLiteralOptions -> errorInCaseNoLiteralFound: ErrorMessageList
+    -> CharStream<'u> -> Reply<NumberLiteral>
+``]
+[`numberLiteralE` is an uncurried version of `numberLiteral` that can be used to implement number parsers without having to construct a `numberLiteral` closure.]
+
+[``
+
+val @pfloat@: Parser<float,'u>
+``]
+[
+Parses a floating point number in the decimal format (in regular expression notation)
+``{regex}
+[0-9]+(\.[0-9]*)?([eE][+-]?[0-9]+)?
+``
+or the hexadecimal format
+``{regex}
+0[xX][0-9a-fA-F]+(\.[0-9a-fA-F]*)?([pP][+-]?[0-9]+)?
+``
+(as supported by IEEE 754r, C99 and Java, where e.g. `{regex}0x1f.cP-5` represents 31.75 * 2[sup -5]).
+
+The special values `{regex}NaN` and `{regex}Inf(inity)?` (case-insensitive) are also recognized. All recognized numbers may be prefixed with a plus or minus sign.
+
+Fractions without a leading digit, as for example ".5", are *not* supported.
+
+The parser fails
+- without consuming input, if not at least one digit (including the `{regex}0` in `{regex}0x`) can be parsed,
+- after consuming input, if no digit comes after an exponent marker or no hex digit comes after `{regex}0x`,
+- after consuming input, if the value represented by the input string (after rounding) is greater than `System.Double.MaxValue` or less than `System.Double.MinValue`.
+
+[note The `pfloat` parser is based on the configurable `numberLiteral` parser. If you'd like to support a  different floating-point format, there's a good chance you can implement a parser for that format by some simple changes to a copy of the `pfloat` source.]
+
+]
+
+[``
+[#pint-parsers]
+val @pint64@: Parser<int64,'u>
+``]
+[
+Parses a 64-bit signed integer number in the decimal, hexadecimal (`{regex}0[xX]`), octal (`{regex}0[oO]`) and binary (`{regex}0[bB]`) formats (in regular expression notation):
+``{regex}
+[+-]?([0-9]+
+     |0[xX][0-9a-fA-F]+
+     |0[oO][0-7]+
+     |0[bB][01]+
+     )
+``
+
+
+The parser fails
+- without consuming input, if not at least one digit (including the `{regex}0` in the format specifiers `{regex}0x` etc.) can be parsed,
+- after consuming input, if no digit comes after an exponent marker or no digit comes after a format specifier,
+- after consuming input, if the value represented by the input string is greater than `System.Int64.MaxValue` or less than `System.Int64.MinValue`.
+]
+
+[``
+val @pint32@: Parser<int32,'u>
+``]
+[
+`pint32` parses a 32-bit signed integer and behaves like `pint64`, except for the different return type and smaller integer range.
+]
+
+[``
+val @pint16@: Parser<int16,'u>
+``]
+[
+`pint16` parses a 16-bit signed integer and behaves like `pint64`, except for the different return type and smaller integer range.
+]
+
+[``
+val @pint8@:  Parser<int8,'u>
+``]
+[
+`pint8` parses an 8-bit signed integer and behaves like `pint64`, except for the different return type and smaller integer range.]
+
+[``
+[#puint-parsers]
+val @puint64@: Parser<uint64,'u>
+``]
+[
+ Parses numbers in the decimal, hexadecimal (`{regex}0[xX]`), octal (`{regex}0[oO]`) and binary (`{regex}0[bB]`) formats  (in regular expression notation):
+``{regex}
+[0-9]+
+|0[xX][0-9a-fA-F]+
+|0[oO][0-7]+
+|0[bB][01]+
+``
+Note that the parser does not accept a leading plus sign.
+
+The parser fails
+- without consuming input, if not at least one digit (including the `{regex}0` in the format specifiers `{regex}0x` etc.) can be parsed,
+- after consuming input, if no digit comes after an exponent marker or no digit comes after a format specifier,
+- after consuming input, if the value represented by the input string is greater than `System.UInt64.MaxValue`.
+]
+
+[``
+val @puint32@: Parser<uint32,'u>
+``]
+[
+`puint32` parses a 32-bit unsigned integer and behaves like `puint64`, except for the different return type and smaller integer range.
+]
+
+[``
+val @puint16@: Parser<uint16,'u>
+``]
+[
+`puint16` parses a 16-bit unsigned integer and behaves like `puint64`, except for the different return type and smaller integer range.
+]
+
+[``
+val @puint8@:  Parser<uint8,'u>
+``]
+[
+`puint8` parses an 8-bit unsigned integer and behaves like `puint64`, except for the different return type and smaller integer range.
+]
+
+[``
+
+// Conditional parsing
+// ===================
+``]
+
+[``
+
+val @notFollowedByEof@: Parser<unit,'u>
+``]
+[
+`notFollowedByEof` is an optimized implementation of `notFollowedByL eof "end of input"`.
+]
+
+[``
+
+val @followedByNewline@: Parser<unit,'u>
+``]
+[`followedByNewline` is an optimized implementation of `followedByL newline "newline"`.]
+[``
+val @notFollowedByNewline@: Parser<unit,'u>
+``]
+[`notFollowedByNewline` is an optimized implementation of `notFollowedByL newline "newline"`.]
+
+
+[``
+[#followedByString-parsers]
+val @followedByString@:      string -> Parser<unit,'u>
+``]
+[`followedByString str` is an optimized implementation of `followedByL (pstring str) ("'" + str + "'")`.]
+
+[``
+val @followedByStringCI@:    string -> Parser<unit,'u>
+``]
+[`followedByStringCI str` is an optimized implementation of `followedByL (pstringCI str) ("'" + str + "'")`.]
+
+[``
+val @notFollowedByString@:   string -> Parser<unit,'u>
+``]
+[`notFollowedByString str` is an optimized implementation of `notFollowedByL (pstring str) ("'" + str + "'")`.]
+
+[``
+val @notFollowedByStringCI@: string -> Parser<unit,'u>
+``]
+[`notFollowedByStringCI str` is an optimized implementation of `notFollowedByL (pstringCI str) ("'" + str + "'")`.]
+
+
+[``
+[#charSatisfies-parsers]
+val @nextCharSatisfies@:        (char -> bool)         -> Parser<unit,'u>
+``]
+[
+`nextCharSatisfies f` is an optimized implementation of `followedBy (satisfy f)`.
+
+[note
+If this parser fails, it returns no descriptive error message; hence it should only be used together with parsers that take care of a potential error.
+]
+
+]
+
+[``
+val @nextCharSatisfiesNot@:     (char -> bool)         -> Parser<unit,'u>
+``]
+[
+`nextCharSatisfiesNot f` is an optimized implementation of `notFollowedBy (satisfy f)`.
+
+[note
+If this parser fails, it returns no descriptive error message; hence it should only be used together with parsers that take care of a potential error.
+]
+]
+
+[``
+val @next2CharsSatisfy@:        (char -> char -> bool) -> Parser<unit,'u>
+``]
+[
+`next2CharsSatisfy f` succeeds if the predicate function `f` returns `true`
+when applied to the next 2 chars in the input stream, otherwise it fails.
+If there aren't 2 chars remaining in the input stream, this parser fails (as opposed to `next2CharsSatisfyNot`).
+This parser never changes the parser state.
+Any newline (`"\n"`, `"\r\n"` or `"\r"`) in the input is interpreted as a single char `'\n'`.
+
+[note
+If this parser fails, it returns no descriptive error message; hence it should only be used together with parsers that take care of a potential error.
+]
+]
+
+[``
+val @next2CharsSatisfyNot@:     (char -> char -> bool) -> Parser<unit,'u>
+``]
+[
+`next2CharsSatisfy f` succeeds if the predicate function `f` returns `false`
+when applied to the next 2 chars in the input stream, otherwise it fails.
+If there aren't 2 chars remaining in the input stream, this parser succeeds (as opposed to `next2CharsSatisfy`).
+This parser never changes the parser state.
+Any newline (`"\n"`, `"\r\n"` or `"\r"`) in the input is interpreted as a single char `'\n'`.
+
+[note
+If this parser fails, it returns no descriptive error message; hence it should only be used together with parsers that take care of a potential error.
+]
+]
+
+[``
+val @previousCharSatisfies@:    (char -> bool)         -> Parser<unit,'u>
+``]
+[
+`previousCharSatisfies f` succeeds if the predicate function `f` returns `true`
+when applied to the previous char in the stream, otherwise it fails.
+If there is no previous char (because the input stream is at the beginning),
+this parser fails (as opposed to `previousCharSatisfiesNot`).
+This parser never changes the parser state.
+Any newline (`"\n"`, `"\r\n"` or `"\r"`) in the input is interpreted as a single char `'\n'`.
+
+[note
+If this parser fails, it returns no descriptive error message; hence it should only be used together with parsers that take care of a potential error.
+]
+]
+
+[``
+val @previousCharSatisfiesNot@: (char -> bool)         -> Parser<unit,'u>
+``]
+[
+`previousCharSatisfies f` succeeds if the predicate function `f` returns `false`
+when applied to the previous char in the stream, otherwise it fails.
+If there is no previous char (because the stream is at the beginning),If this parser fails, it returns no descriptive error message; hence it should only be used
+this parser succeeds (as opposed to `previousCharSatisfies`).
+This parser never changes the parser state.
+Any newline (`"\n"`, `"\r\n"` or `"\r"`) in the input is interpreted as a single char `'\n'`.
+
+[note
+If this parser fails, it returns no descriptive error message; hence it should only be used together with parsers that take care of a potential error.
+]
+]
+
+[``
+
+// Helper functions
+// ================
+``]
+
+[``
+[<Literal>]
+val #EOS#: char = CharStream.Iterator.EndOfStreamChar
+``]
+
+[``
+
+val @foldCase@: string -> string
+``]
+[
+Forwards all calls to `FParsec.Text.FoldCase`.
+]
+
+[``
+
+val @normalizeNewlines@: string -> string
+``]
+[
+Forwards all calls to `FParsec.Text.NormalizeNewlines`.
+]
+
+[``
+
+val @floatToHexString@:   float -> string
+``]
+[
+ Returns a hexadecimal string representation of the `float` argument. The hexadecimal format is the one supported by IEEE 754r, C99 and Java. This function produces the same output as the [url "http://java.sun.com/javase/6/docs/api/java/lang/Double.html#toHexString(double)" `Double.toHexString`] method in Java.
+]
+
+[``
+val @floatOfHexString@:   string -> float
+``]
+[
+ Returns the float value represented by the given string in hexadecimal format. The supported input format is (in regular expression notation):
+``{regex}
+[+-]?((0[xX])?([0-9a-fA-F]+(\.[0-9a-fA-F]*)?|\.[0-9a-fA-F]+)([pP][+-]?[0-9]+)?
+     |[iI][nN][fF]([iI][nN][iI][tT][yY])?
+     |[nN][aA][nN]
+     )
+``
+
+
+Note that no leading or trailing whitespace is allowed, neither are trailing format specifiers such as `{regex}f` or `{regex}d`.
+
+For example, a valid input string is `{regex}0x1f.cP-5`, which represents the value 31.75 * 2[sup -5].
+
+The numerical value represented by the input string is conceptually converted to an "infinitely precise" binary value that is then rounded to type `float` by the usual round-to-nearest (and ties-to-even) rule of IEEE 754 floating-point arithmetic. The special values `{regex}NaN` and `{regex}Inf(inity)?` (case insensitive) are also recognized. Signs of zero and Infinity values are preserved.
+
+    A `System.FormatException` is raised if the string representation is invalid. A `System.OverflowException` is raised, if the value represented by the input string (after rounding) is greater than `System.Double.MaxValue` or less than `System.Double.MinValue`.
+]
+
+[``
+val @float32ToHexString@: float32 -> string
+``]
+[
+Returns a hexadecimal string representation of the `float32` argument. The hexadecimal format is the one supported by IEEE 754r, C99 and Java. This function produces the same output as the `[url "http://java.sun.com/javase/6/docs/api/java/lang/Float.html#toHexString(float)" Float.toHexString] ` method in Java.
+]
+
+[``
+val @float32OfHexString@: string -> float32
+``]
+[
+Returns the `float32` value represented by the given string in hexadecimal format. The supported input format is (in regular expression notation):
+
+``{regex}
+[+-]?((0[xX])?([0-9a-fA-F]+(\.[0-9a-fA-F]*)?|\.[0-9a-fA-F]+)([pP][+-]?[0-9]+)?
+     |[iI][nN][fF]([iI][nN][iI][tT][yY])?
+     |[nN][aA][nN]
+     )
+``
+
+Note that no leading or trailing whitespace is allowed, neither are trailing format specifiers such as `{regex}f` or `{regex}d`.
+
+For example, a valid input string is `{regex}0x1f.cP-5`, which represents the value 31.75 * 2[sup -5].
+
+The numerical value represented by the input string is conceptually converted to an "infinitely precise" binary value that is then rounded to type `float32` by the usual round-to-nearest (and ties-to-even) rule of IEEE 754 floating-point arithmetic. The special values `NaN` and `Inf(inity)?` (case insensitive) are also recognized. Signs of zero and Infinity values are preserved.
+
+
+Note that in general `float32OfHexString(str)` is *not* equivalent to `float32 (floatOfHexString(str))`, because the latter version rounds twice.
+
+A `System.FormatException` is raised if the string representation is invalid. A `System.OverflowException` is raised, if the value represented by the input string (after rounding) is greater than `System.Float.MaxValue` or less than `System.Float.MinValue`.
+]
+
+[/interface-members]
+[/section]
+
+[/interface-reference]
+[/section]
+

@@ -1,0 +1,408 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+ <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+ <title>Debugging a parser</title>
+ <link rel="stylesheet" type="text/css" media="all" href="../css/style.css" /> 
+ <link rel="stylesheet" type="text/css" media="screen" href="../css/screen-sidebar.css" />  
+ <!--[if lt IE 9]>
+ <link rel="stylesheet" type="text/css" media="all" href="../css/style-ie.css" /> 
+ <![endif]-->
+ <!--[if IE 6]>
+ <link rel="stylesheet" type="text/css" media="all" href="../css/style-ie6.css" /> 
+ <![endif]-->
+ <link rel="stylesheet" type="text/css" media="print" href="../css/print.css" />
+</head>
+<body>
+ <div id="fixed-layer">
+ <div id="fixed-wrapper">
+ <div id="sidebar">
+  <div id="top-links"><span><a href="http://bitbucket.org/fparsec/main">FParsec @ BitBucket</a> | <a href="https://bitbucket.org/fparsec/main/issues">Report a bug</a> | <a href="mailto:fparsec [at] quanttec.com?subject=FParsec&body=Hello Stephan,%0A%0A[your feedback]">Feedback</a></span></div>
+  <div id="nav-tree">
+   <table class="nav n1">
+    <tbody class="nav-open n1">
+     <tr class="nav-entry n1 _1">
+      <td class="nav-number n1"></td>
+      <td class="nav-title n1"><a href="../index.html">FParsec Documentation</a></td>
+     </tr>
+     <tr class="nav-subentries n1 _1">
+      <td class="nav-subentries-number n1"></td>
+      <td class="nav-subentries n1">
+       <table class="nav n2">
+        <tbody class="nav-before-open n2">
+         <tr class="nav-entry n2 _1">
+          <td class="nav-number n2"><a href="../about/index.html"><span class="section-number">1</span><span class="nav-space"></span></a></td>
+          <td class="nav-title n2"><a href="../about/index.html">About FParsec</a></td>
+         </tr>
+         <tr class="nav-entry n2 _2">
+          <td class="nav-number n2"><a href="../license.html"><span class="section-number">2</span><span class="nav-space"></span></a></td>
+          <td class="nav-title n2"><a href="../license.html">License</a></td>
+         </tr>
+         <tr class="nav-entry n2 _3">
+          <td class="nav-number n2">
+           <a href="../download-and-installation.html"><span class="section-number">3</span><span class="nav-space"></span></a>
+          </td>
+          <td class="nav-title n2"><a href="../download-and-installation.html">Download and installation</a></td>
+         </tr>
+         <tr class="nav-entry n2 _4">
+          <td class="nav-number n2"><a href="../tutorial.html"><span class="section-number">4</span><span class="nav-space"></span></a></td>
+          <td class="nav-title n2"><a href="../tutorial.html">Tutorial</a></td>
+         </tr>
+        </tbody>
+        <tbody class="nav-open n2">
+         <tr class="nav-entry n2 _5">
+          <td class="nav-number n2"><a href="index.html"><span class="section-number">5</span><span class="nav-space"></span></a></td>
+          <td class="nav-title n2"><a href="index.html">User’s Guide</a></td>
+         </tr>
+         <tr class="nav-subentries n2 _5">
+          <td class="nav-subentries-number n2"></td>
+          <td class="nav-subentries n2">
+           <table class="nav n3">
+            <tbody class="nav-before-open n3">
+             <tr class="nav-entry n3 _1">
+              <td class="nav-number n3"><a href="parser-functions.html"><span class="section-number">1</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="parser-functions.html">Parser functions</a></td>
+             </tr>
+             <tr class="nav-entry n3 _2">
+              <td class="nav-number n3">
+               <a href="running-parsers-on-input.html"><span class="section-number">2</span><span class="nav-space"></span></a>
+              </td>
+              <td class="nav-title n3"><a href="running-parsers-on-input.html">Running parsers on input</a></td>
+             </tr>
+             <tr class="nav-entry n3 _3">
+              <td class="nav-number n3">
+               <a href="internals-of-a-simple-parser-function.html"><span class="section-number">3</span><span class="nav-space"></span></a>
+              </td>
+              <td class="nav-title n3">
+               <a href="internals-of-a-simple-parser-function.html">Internals of a simple <code class="fsharp"><span class="ci">Parser</span></code>
+               function</a>
+              </td>
+             </tr>
+             <tr class="nav-entry n3 _4">
+              <td class="nav-number n3">
+               <a href="applying-parsers-in-sequence.html"><span class="section-number">4</span><span class="nav-space"></span></a>
+              </td>
+              <td class="nav-title n3"><a href="applying-parsers-in-sequence.html">Applying parsers in sequence</a></td>
+             </tr>
+             <tr class="nav-entry n3 _5">
+              <td class="nav-number n3"><a href="parsing-sequences.html"><span class="section-number">5</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="parsing-sequences.html">Parsing sequences</a></td>
+             </tr>
+             <tr class="nav-entry n3 _6">
+              <td class="nav-number n3">
+               <a href="parsing-alternatives.html"><span class="section-number">6</span><span class="nav-space"></span></a>
+              </td>
+              <td class="nav-title n3"><a href="parsing-alternatives.html">Parsing alternatives</a></td>
+             </tr>
+             <tr class="nav-entry n3 _7">
+              <td class="nav-number n3">
+               <a href="looking-ahead-and-backtracking.html"><span class="section-number">7</span><span class="nav-space"></span></a>
+              </td>
+              <td class="nav-title n3"><a href="looking-ahead-and-backtracking.html">Looking ahead and backtracking</a></td>
+             </tr>
+             <tr class="nav-entry n3 _8">
+              <td class="nav-number n3">
+               <a href="customizing-error-messages.html"><span class="section-number">8</span><span class="nav-space"></span></a>
+              </td>
+              <td class="nav-title n3"><a href="customizing-error-messages.html">Customizing error messages</a></td>
+             </tr>
+             <tr class="nav-entry n3 _9">
+              <td class="nav-number n3">
+               <a href="parsing-with-user-state.html"><span class="section-number">9</span><span class="nav-space"></span></a>
+              </td>
+              <td class="nav-title n3"><a href="parsing-with-user-state.html">Parsing with user state</a></td>
+             </tr>
+             <tr class="nav-entry n3 _0">
+              <td class="nav-number n3">
+               <a href="where-is-the-monad.html"><span class="section-number">10</span><span class="nav-space"></span></a>
+              </td>
+              <td class="nav-title n3"><a href="where-is-the-monad.html">Where is the monad?</a></td>
+             </tr>
+            </tbody>
+            <tbody class="nav-open selected n3">
+             <tr class="nav-entry selected n3 _1">
+              <td class="nav-number selected n3"><a href="#"><span class="section-number">11</span><span class="nav-space"></span></a></td>
+              <td class="nav-title selected n3"><a href="#">Debugging a parser</a></td>
+             </tr>
+             <tr class="nav-subentries selected n3 _1">
+              <td class="nav-subentries-number selected n3"></td>
+              <td class="nav-subentries selected n3">
+               <table class="nav n4">
+                <tbody class="nav-before-open n4">
+                 <tr class="nav-entry n4 _1">
+                  <td class="nav-number n4">
+                   <a href="#setting-a-breakpoint"><span class="section-number">1</span><span class="nav-space"></span></a>
+                  </td>
+                  <td class="nav-title n4"><a href="#setting-a-breakpoint">Setting a breakpoint</a></td>
+                 </tr>
+                 <tr class="nav-entry n4 _2">
+                  <td class="nav-number n4"><a href="#tracing-a-parser"><span class="section-number">2</span><span class="nav-space"></span></a></td>
+                  <td class="nav-title n4"><a href="#tracing-a-parser">Tracing a parser</a></td>
+                 </tr>
+                </tbody>
+               </table>
+              </td>
+             </tr>
+            </tbody>
+            <tbody class="nav-after-open n3">
+             <tr class="nav-entry n3 _2">
+              <td class="nav-number n3">
+               <a href="performance-optimizations.html"><span class="section-number">12</span><span class="nav-space"></span></a>
+              </td>
+              <td class="nav-title n3"><a href="performance-optimizations.html">Performance optimizations</a></td>
+             </tr>
+             <tr class="nav-entry n3 _3">
+              <td class="nav-number n3"><a href="tips-and-tricks.html"><span class="section-number">13</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="tips-and-tricks.html">Tips and tricks</a></td>
+             </tr>
+            </tbody>
+           </table>
+          </td>
+         </tr>
+        </tbody>
+        <tbody class="nav-after-open n2">
+         <tr class="nav-entry n2 _6">
+          <td class="nav-number n2"><a href="../reference/index.html"><span class="section-number">6</span><span class="nav-space"></span></a></td>
+          <td class="nav-title n2"><a href="../reference/index.html">Reference</a></td>
+         </tr>
+        </tbody>
+       </table>
+      </td>
+     </tr>
+    </tbody>
+   </table>
+  </div>
+  <div id="copyright">
+    <span>Copyright © 2011 <a href="../about/contact.html">Stephan Tolksdorf</a></span>
+  </div>
+ </div>
+ </div>
+ </div>
+ <div id="wrapper">   
+ <div id="main">
+ <div id="main-content"> 
+ <div id="breadcrumbs">
+  <span class="breadcrumbs">
+   <span id="breadcrumbs-parents"><a href="../index.html">FParsec Documentation</a><span class="breadcrumbs-sep"> > </span><a href="index.html">User’s Guide</a></span><span class="breadcrumbs-sep"> > </span>Debugging a parser
+  </span>
+ </div>  
+ <div class="section s2">
+  <h1 class="title h2"><span><span class="section-number">5.11</span> Debugging a parser</span></h1>
+  <div class="intro i2">
+   <div class="para _1">
+    <p>
+     Debugging a parser implemented with the help of a combinator library has its special challenges. In particular, setting a breakpoint and stepping
+     through the code is not as straightforward as in a regular recursive descent parser. Furthermore, stack traces can be difficult to decipher
+     because of the ubiquitous use of anonymous functions.<sup class="fn-mark"><a id=":FN:1:B:" href="#:FN:1">[1]</a></sup> However, with the help of
+     the techniques we explain in this chapter, working around these issues should be easy.
+    </p>
+   </div>
+  </div>
+  <div id="setting-a-breakpoint" class="section s3">
+   <h2 class="title h3"><span><span class="section-number">5.11.1</span> Setting a breakpoint</span></h2>
+   <div class="intro i3">
+    <div class="para _1">
+     <p>Suppose you have a combined parser like</p>
+<pre class="code fsharp"><span class="ck">let</span> <span class="ci">buggyParser</span> <span class="cp">=</span> <a href="../reference/primitives.html#members.pipe2"><span class="ci">pipe2</span></a> <span class="ci">parserA</span> <span class="ci">parserB</span> <span class="cp">(</span><span class="ck">fun</span> <span class="ci">a</span> <span class="ci">b</span> <span class="cr">-&gt;</span> <span class="co">...</span><span class="cp">)</span></pre>
+     <p>
+      and you would like to break into the debugger whenever <code class="fsharp"><span class="ci">buggyParser</span></code> calls <code
+      class="fsharp"><span class="ci">parserB</span></code>. One thing you could try is to set a breakpoint at the beginning of <code
+      class="fsharp"><span class="ci">parserB</span></code>. However, that’s only possible if <code class="fsharp"><span
+      class="ci">parserB</span></code> is not itself a combined parser, and even then you still have the problem that your breakpoint is also
+      triggered whenever <code class="fsharp"><span class="ci">parserB</span></code> is called from any other place in your source. Similarly, a
+      breakpoint you set in <code class="fsharp"><a href="../reference/primitives.html#members.pipe2"><span class="ci">pipe2</span></a></code> will
+      probably be triggered by many other parsers besides <code class="fsharp"><span class="ci">buggyParser</span></code>.
+     </p>
+    </div>
+    <div class="para _2 lcinp">
+     <p>Fortunately there’s a simple workaround if you can modify and recompile the code. Just define a wrapper function like the following</p>
+<pre class="code fsharp"><span class="ck">let</span> <span class="ci">BP</span> <span class="cp">(</span><span class="ci">p</span><span class="cp">:</span> <a href="../reference/primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">_</span><span class="cp">,</span><span class="ci">_</span><span class="cp">&gt;</span><span class="cp">)</span> <span class="ci">stream</span> <span class="cp">=</span>
+    <span class="ci">p</span> <span class="ci">stream</span> <span class="clc"><span class="cld">//</span> set a breakpoint here</span>
+</pre>
+    </div>
+    <div class="para _3 lcinp">
+     <p>Then redefine the buggy parser as</p>
+<pre class="code fsharp"><span class="ck">let</span> <span class="ci">buggyParser</span> <span class="cp">=</span> <a href="../reference/primitives.html#members.pipe2"><span class="ci">pipe2</span></a> <span class="ci">parserA</span> <span class="cp">(</span><span class="ci">BP</span> <span class="ci">parserB</span><span class="cp">)</span> <span class="cp">(</span><span class="ck">fun</span> <span class="ci">a</span> <span class="ci">b</span> <span class="cr">-&gt;</span> <span class="co">...</span><span class="cp">)</span>
+</pre>
+    </div>
+    <div class="para _4">
+     <p>
+      If you now set a breakpoint at the body of the BP function, it will be triggered whenever <code class="fsharp"><span
+      class="ci">parserB</span></code> is called from <code class="fsharp"><span class="ci">buggyParser</span></code>.
+     </p>
+    </div>
+    <div class="para _5">
+     <p>
+      With such a wrapper it’s also easy define a precise conditional breakpoint. For example, if you only want to break once the parser has reached
+      line 100 of the input file, you could use the breakpoint condition <code class="fsharp"><span class="ci">stream</span><span
+      class="cm">.</span><a href="../reference/charstream.html#CharStream.members.Line"><span class="ci">Line</span></a> <span
+      class="co">&gt;=</span> <span class="cn">100</span></code>.
+     </p>
+    </div>
+    <div class="para _6 lcinp">
+     <p>By the way, you don’t need to set the breakpoint in the debugger. You can also write it directly into the code:</p>
+<pre class="code fsharp"><span class="ck">let</span> <span class="ci">BP</span> <span class="cp">(</span><span class="ci">p</span><span class="cp">:</span> <a href="../reference/primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">_</span><span class="cp">,</span><span class="ci">_</span><span class="cp">&gt;</span><span class="cp">)</span> <span class="cp">(</span><span class="ci">stream</span><span class="cp">:</span> <a href="../reference/charstream.html#CharStream"><span class="ci">CharStream</span></a><span class="cp">&lt;</span><span class="ci">_</span><span class="cp">&gt;</span><span class="cp">)</span> <span class="cp">=</span>
+    <span class="clc"><span class="cld">//</span> this will execute much faster than a</span>
+    <span class="clc"><span class="cld">//</span> conditional breakpoint set in the debugger</span>
+    <span class="ck">if</span> <span class="ci">stream</span><span class="cm">.</span><a href="../reference/charstream.html#CharStream.members.Line"><span class="ci">Line</span></a> <span class="co">&gt;=</span> <span class="cn">100L</span> <span class="ck">then</span>
+        <span class="ci">System</span><span class="cm">.</span><span class="ci">Diagnostics</span><span class="cm">.</span><span class="ci">Debugger</span><span class="cm">.</span><span class="ci">Break</span><span class="cp">()</span>
+    <span class="ci">p</span> <span class="ci">stream</span>
+</pre>
+    </div>
+    <div class="para _7 lcinp">
+     <div class="admonition">
+      <div class="admonition-title">Note</div>
+      <div class="admonition-body">
+       <div class="para _1">
+        <p>
+         There are some issues with setting breakpoints in or stepping into anonymous or curried F# functions in Visual Studio 2008. In Visual Studio
+         2010 many of these issues have been fixed.
+        </p>
+       </div>
+       <div class="para _2">
+        <p>
+         If you’re using Visual Studio, don’t forget to switch on the &#x201C;Suppress JIT optimization on module load&#x201D; option in the Tools –
+         Options – Debugging – General dialog. And, when possible, use a debug build (of FParsec) for debugging.
+        </p>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div>
+  </div>
+  <div id="tracing-a-parser" class="section s3">
+   <h2 class="title h3"><span><span class="section-number">5.11.2</span> Tracing a parser</span></h2>
+   <div class="intro i3">
+    <div class="para _1">
+     <p>
+      Occasionally you have a parser that doesn’t work as expected and playing around with the input or staring at the code long enough just isn’t
+      enough for figuring out what’s wrong. In such cases the best way to proceed usually is to trace the execution of the parser. Unfortunately,
+      stepping through the parser under a debugger can be quite tedious, because it involves stepping through long sequences of nested invocations of
+      parser combinators. A more convenient approach often is to output tracing information to the console or a logging service.
+     </p>
+    </div>
+    <div class="para _2 lcinp">
+     <p>A simple helper function for printing trace information to the console could like the following example:</p>
+<pre class="code fsharp"><span class="ck">let</span> <span class="cp">(</span><span class="co">&lt;!&gt;</span><span class="cp">)</span> <span class="cp">(</span><span class="ci">p</span><span class="cp">:</span> <a href="../reference/primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">_</span><span class="cp">,</span><span class="ci">_</span><span class="cp">&gt;</span><span class="cp">)</span> <span class="ci">label</span> <span class="cp">:</span> <a href="../reference/primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">_</span><span class="cp">,</span><span class="ci">_</span><span class="cp">&gt;</span> <span class="cp">=</span>
+    <span class="ck">fun</span> <span class="ci">stream</span> <span class="cr">-&gt;</span>
+        <span class="ci">printfn</span> <span class="cs"><span class="cld">"</span>%A: Entering %s<span class="crd">"</span></span> <span class="ci">stream</span><span class="cm">.</span><a href="../reference/charstream.html#CharStream.members.Position"><span class="ci">Position</span></a> <span class="ci">label</span>
+        <span class="ck">let</span> <span class="ci">reply</span> <span class="cp">=</span> <span class="ci">p</span> <span class="ci">stream</span>
+        <span class="ci">printfn</span> <span class="cs"><span class="cld">"</span>%A: Leaving %s (%A)<span class="crd">"</span></span> <span class="ci">stream</span><span class="cm">.</span><a href="../reference/charstream.html#CharStream.members.Position"><span class="ci">Position</span></a> <span class="ci">label</span> <span class="ci">reply</span><span class="cm">.</span><a href="../reference/reply.html#members.Status"><span class="ci">Status</span></a>
+        <span class="ci">reply</span>
+</pre>
+    </div>
+    <div class="para _3">
+     <p>To demonstrate how you could use such a tracing operator, let’s try to debug the following buggy (and completely silly) parser:</p>
+    </div>
+    <div class="para _4 lcinp">
+<pre class="code fsharp"><span class="ck">let</span> <span class="ci">number</span> <span class="cp">=</span> <a href="../reference/charparsers.html#members.many1Satisfy"><span class="ci">many1Satisfy</span></a> <a href="../reference/charparsers.html#members.isDigit"><span class="ci">isDigit</span></a>
+
+<span class="ck">let</span> <span class="ci">emptyElement</span> <span class="cp">=</span> <a href="../reference/charparsers.html#members.pstring"><span class="ci">pstring</span></a> <span class="cs"><span class="cld">"</span>[]<span class="crd">"</span></span> <span class="cp">:</span> <a href="../reference/primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">_</span><span class="cp">,</span><span class="ci">unit</span><span class="cp">&gt;</span>
+<span class="ck">let</span> <span class="ci">numberElement</span> <span class="cp">=</span> <a href="../reference/charparsers.html#members.pstring"><span class="ci">pstring</span></a> <span class="cs"><span class="cld">"</span>[<span class="crd">"</span></span> <a href="../reference/primitives.html#members.:62::62:.."><span class="co">&gt;&gt;.</span></a> <span class="ci">number</span> <a href="../reference/primitives.html#members...:62::62:"><span class="co">.&gt;&gt;</span></a> <a href="../reference/charparsers.html#members.pstring"><span class="ci">pstring</span></a> <span class="cs"><span class="cld">"</span>]<span class="crd">"</span></span>
+<span class="ck">let</span> <span class="ci">nanElement</span> <span class="cp">=</span> <a href="../reference/charparsers.html#members.pstring"><span class="ci">pstring</span></a> <span class="cs"><span class="cld">"</span>[NaN]<span class="crd">"</span></span>
+
+<span class="ck">let</span> <span class="ci">element</span> <span class="cp">=</span> <a href="../reference/primitives.html#members.choice"><span class="ci">choice</span></a> <span class="cp">[</span><span class="ci">emptyElement</span>
+                      <span class="ci">numberElement</span>
+                      <span class="ci">nanElement</span><span class="cp">]</span> <a href="../reference/primitives.html#members...:62::62:"><span class="co">.&gt;&gt;</span></a> <a href="../reference/charparsers.html#members.spaces"><span class="ci">spaces</span></a>
+
+<span class="ck">let</span> <span class="ci">elements</span> <span class="cp">:</span> <a href="../reference/primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">_</span><span class="cp">,</span><span class="ci">unit</span><span class="cp">&gt;</span> <span class="cp">=</span> <a href="../reference/primitives.html#members.many"><span class="ci">many</span></a> <span class="ci">element</span>
+</pre>
+    </div>
+    <div class="para _5 lcinp">
+     <p>The following test run shows that the above parser is indeed buggy:</p>
+<pre class="code fsharp"><span class="cmd"><span class="cmdp">&gt;</span> <a href="../reference/charparsers.html#members.run"><span class="ci">run</span></a> <span class="ci">elements</span> <span class="cs"><span class="cld">"</span>[] [123] [NaN]<span class="crd">"</span></span><span class="cp">;;</span></span>
+<span class="cout">val it : ParserResult&lt;string list,unit&gt; = Failure:
+Error in Ln: 1 Col: 11
+[] [123] [NaN]
+          ^
+Unknown Error(s)
+</span></pre>
+    </div>
+    <div class="para _6">
+     <p>
+      You probably don’t need trace information to figure out why the <code class="fsharp"><span class="cs"><span class="cld">"</span>NaN<span
+      class="crd">"</span></span></code> bit of the string doesn’t get parsed, but let’s pretend you do. Obviously, there’s something wrong with the
+      <code class="fsharp"><span class="ci">element</span></code> parser. To find out what’s wrong, let’s decorate the <code class="fsharp"><span
+      class="ci">element</span></code> parser and all subparsers with the <code class="fsharp"><span class="co">&lt;!&gt;</span></code> operator and
+      an appropriate label:
+     </p>
+    </div>
+    <div class="para _7 lcinp">
+<pre class="code fsharp"><span class="ck">let</span> <span class="ci">number</span> <span class="cp">=</span> <a href="../reference/charparsers.html#members.many1Satisfy"><span class="ci">many1Satisfy</span></a> <a href="../reference/charparsers.html#members.isDigit"><span class="ci">isDigit</span></a> <span class="co">&lt;!&gt;</span> <span class="cs"><span class="cld">"</span>number<span class="crd">"</span></span>
+
+<span class="ck">let</span> <span class="ci">emptyElement</span>  <span class="cp">=</span> <a href="../reference/charparsers.html#members.pstring"><span class="ci">pstring</span></a> <span class="cs"><span class="cld">"</span>[]<span class="crd">"</span></span>                           <span class="co">&lt;!&gt;</span> <span class="cs"><span class="cld">"</span>emptyElement<span class="crd">"</span></span>
+<span class="ck">let</span> <span class="ci">numberElement</span> <span class="cp">=</span> <a href="../reference/charparsers.html#members.pstring"><span class="ci">pstring</span></a> <span class="cs"><span class="cld">"</span>[<span class="crd">"</span></span> <a href="../reference/primitives.html#members.:62::62:.."><span class="co">&gt;&gt;.</span></a> <span class="ci">number</span> <a href="../reference/primitives.html#members...:62::62:"><span class="co">.&gt;&gt;</span></a> <a href="../reference/charparsers.html#members.pstring"><span class="ci">pstring</span></a> <span class="cs"><span class="cld">"</span>]<span class="crd">"</span></span> <span class="co">&lt;!&gt;</span> <span class="cs"><span class="cld">"</span>numberElement<span class="crd">"</span></span>
+<span class="ck">let</span> <span class="ci">nanElement</span>    <span class="cp">=</span> <a href="../reference/charparsers.html#members.pstring"><span class="ci">pstring</span></a> <span class="cs"><span class="cld">"</span>[NaN]<span class="crd">"</span></span>                        <span class="co">&lt;!&gt;</span> <span class="cs"><span class="cld">"</span>nanElement<span class="crd">"</span></span>
+
+<span class="ck">let</span> <span class="ci">element</span> <span class="cp">=</span> <a href="../reference/primitives.html#members.choice"><span class="ci">choice</span></a> <span class="cp">[</span><span class="ci">emptyElement</span>
+                      <span class="ci">numberElement</span>
+                      <span class="ci">nanElement</span><span class="cp">]</span> <a href="../reference/primitives.html#members...:62::62:"><span class="co">.&gt;&gt;</span></a> <a href="../reference/charparsers.html#members.spaces"><span class="ci">spaces</span></a> <span class="co">&lt;!&gt;</span> <span class="cs"><span class="cld">"</span>element<span class="crd">"</span></span>
+
+<span class="ck">let</span> <span class="ci">elements</span>  <span class="cp">:</span> <a href="../reference/primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">_</span><span class="cp">,</span><span class="ci">unit</span><span class="cp">&gt;</span> <span class="cp">=</span> <a href="../reference/primitives.html#members.many"><span class="ci">many</span></a> <span class="ci">element</span>
+</pre>
+    </div>
+    <div class="para _8 lcinp">
+     <p>If you now run the parser on the same input as before, you get the following output:</p>
+<pre class="code fsharp"><span class="cmd"><span class="cmdp">&gt;</span> <a href="../reference/charparsers.html#members.run"><span class="ci">run</span></a> <span class="ci">elements</span> <span class="cs"><span class="cld">"</span>[] [123] [NaN]<span class="crd">"</span></span><span class="cp">;;</span></span>
+<span class="cout">(Ln: 1, Col: 1): Entering element
+(Ln: 1, Col: 1): Entering emptyElement
+(Ln: 1, Col: 3): Leaving emptyElement (Ok)
+(Ln: 1, Col: 4): Leaving element (Ok)
+(Ln: 1, Col: 4): Entering element
+(Ln: 1, Col: 4): Entering emptyElement
+(Ln: 1, Col: 4): Leaving emptyElement (Error)
+(Ln: 1, Col: 4): Entering numberElement
+(Ln: 1, Col: 5): Entering number
+(Ln: 1, Col: 8): Leaving number (Ok)
+(Ln: 1, Col: 9): Leaving numberElement (Ok)
+(Ln: 1, Col: 10): Leaving element (Ok)
+(Ln: 1, Col: 10): Entering element
+(Ln: 1, Col: 10): Entering emptyElement
+(Ln: 1, Col: 10): Leaving emptyElement (Error)
+(Ln: 1, Col: 10): Entering numberElement
+(Ln: 1, Col: 11): Entering number
+(Ln: 1, Col: 11): Leaving number (Error)
+(Ln: 1, Col: 11): Leaving numberElement (Error)
+(Ln: 1, Col: 11): Leaving element (Error)
+val it : ParserResult&lt;string list,unit&gt; = Failure:
+Error in Ln: 1 Col: 11
+[] [123] [NaN]
+          ^
+Unknown Error(s)
+</span></pre>
+    </div>
+    <div class="para _9">
+     <p>
+      This trace log clearly reveals that the <code class="fsharp"><span class="ci">element</span></code> parser failed because the <code
+      class="fsharp"><span class="ci">numberElement</span></code> parser failed after consuming the left bracket and thus the <code class="fsharp"><a
+      href="../reference/primitives.html#members.choice"><span class="ci">choice</span></a></code> parser never got to try the the <code
+      class="fsharp"><span class="ci">nanElement</span></code> parser. Of course, this issue could be easily avoided by factoring out the bracket
+      parsers from the <code class="fsharp"><span class="ci">emptyElement</span></code>, <code class="fsharp"><span
+      class="ci">numberElement</span></code> and <code class="fsharp"><span class="ci">nanElement</span></code> parsers. Also, if we had used <code
+      class="fsharp"><a href="../reference/charparsers.html#members.many1SatisfyL"><span class="ci">many1SatisfyL</span></a></code> instead of <code
+      class="fsharp"><a href="../reference/charparsers.html#members.manySatisfy"><span class="ci">manySatisfy</span></a></code> for the <code
+      class="fsharp"><span class="ci">number</span></code> parser, we would have gotten an error message more descriptive than &#x201C;Unknown
+      error(s)&#x201D; (see the chapter on <a href="customizing-error-messages.html">customizing error messages</a>).
+     </p>
+    </div>
+   </div>
+  </div>
+  <div class="fn-list">
+   <div class="fn-title">Footnotes:</div>
+   <table class="fn">
+    <tr class="fn _1">
+     <th class="fn _1"><a class="footnote-backlink" id=":FN:1" href="#:FN:1:B:">[1]</a></th>
+     <td class="fn _2">
+      Although, debugging a parser written with a combinator library is often still easier than debugging one generated by an opaque parser generator
+      tool.
+     </td>
+    </tr>
+   </table>
+  </div>
+ </div>
+ </div>
+ </div>   
+ </div>
+</body>
+</html>
+

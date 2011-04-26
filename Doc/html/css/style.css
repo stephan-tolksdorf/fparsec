@@ -53,7 +53,7 @@ body {
     line-height: 1.429em;
 }
 
-pre, code, tt {
+pre, code, .tt {
    font-family: Consolas, "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Lucida Sans Typewriter", "Courier New", "Courier"; /* can't put monospace in there because otherwise WebKit browsers would change the default size */
    font-size: 0.9286em; /* 13px */
    font-size-adjust: 0.461; /* at the same font size Consolas and Courier New have a considerably smaller x-height than the other fonts*/
@@ -83,18 +83,6 @@ h2, h3 {
     margin-bottom: 0.6666em;
 }
 
-.toc-title {
-    font-size: 1.5em;
-    line-height: 1em;
-    margin-top: 1em;
-    margin-bottom: 0.3333em;
-}
-
-.local-toc ol {
-    list-style-type:none;
-    padding-left: 0;
-}
-
 .para {
     margin-bottom: 1em;
 }
@@ -106,9 +94,20 @@ ul, ol {
 ul { list-style-type: disc; }
 ol { list-style-type: decimal; }
 
-dl {
+ul.l2 { list-style-type: circle; }
+ul.l3 { list-style-type: square; }
+ul.l4 { list-style-type: circle; }
+ul.l5 { list-style-type: square; }
+
+div.dl {
     margin-top: 1em;
     margin-bottom: 1em;
+}
+
+.dl-title {
+    font-size: 1.3em;
+    line-height: 1em;
+    
 }
 
 dt {
@@ -120,9 +119,13 @@ dd {
     padding-left: 2em;
 }
 
+dd > .para > ul:first-child {
+    padding-left: 0em;
+}
+
 .fn-title {
     font-weight: bold;
-    margin-top: 1em;
+    margin-top: 3em;
     margin-bottom: 0.5em;
 }
 
@@ -134,29 +137,93 @@ th.fn, td.fn {
     padding-bottom: 1em;
 }
 
-em, .italic {
+em, .i {
     font-style: italic;
 }
 
-strong, .bold  {
+strong, .b  {
     font-weight: bold;
+}
+
+.s {
+    text-decoration: line-through;
 }
 
 .small {
     font-size: 0.9em;
 }
 
+sup {
+    font-size: 0.85em;
+    line-height: 1em;
+}
+
+sup.fn-mark {
+    font-size: 0.8em;
+    line-height: 1em;
+}
+
 /* design */
 
-#breadcrumbs,
-#breadcrumbs-dummy {
+#breadcrumbs {
     padding-top: 0.5em;
     margin-bottom: 0.5em;
 }
 
+.toc-toc-title {
+    font-size: 1.5em;
+    line-height: 1em;
+    margin-top: 1em;
+    margin-bottom: 0.3333em;
+}
 
-a, a code {
-   color: #003399;
+.local-toc ol {
+    list-style-type:none;
+    padding-left: 0;
+}
+
+td.toc-title  {
+    width: 100%;
+}
+
+.toc-number {
+    white-space: nowrap;
+    min-width: 1em;
+}
+
+.toc-number a {
+    padding-right: 0.5em;
+}
+
+.toc-number {
+    text-align: right; /* must be right, even for left aligned number (for a continuous underline between number and title) */
+}
+
+.toc-space {
+    display: none;
+    /*uncomment for left-aligned numbers*/
+    /*
+    display: inline-block;
+    width: 100%;
+    height: 0px;
+    vertical-align: middle;
+    */
+}
+.toc-entry .selected a {
+    color: #000000;
+}
+
+.toc-entry a {
+    outline: none;
+}
+
+.toc-entry:hover a {
+    text-decoration: none;
+    border-bottom: 1px solid;
+}
+
+a {
+    color: #003399;
 }
 
 a:hover {
@@ -164,10 +231,19 @@ a:hover {
     border-bottom-width: 1px;
 }
 
-a:target,
+a:target, span:target, a:target code, span:target code,
 .interface-member:target > .interface-member-code .interface-member-marker,
 .table:target > table > caption .table-title {
     background-color: #dddddd;
+}
+
+div:target > .title > span, div:target > .title > span > code {
+    background-color: #e4e4e4;
+}
+
+
+.para.lcinp + .para>.admonition {
+    margin-top: 1.36em;
 }
 
 .admonition {
@@ -175,6 +251,7 @@ a:target,
     border-bottom: 1px solid #999999;
     padding-top: 0.2em;
     padding-bottom: 0.3em;
+    margin-top: 1em;
     margin-bottom: 1em;
 }
 
@@ -183,12 +260,12 @@ a:target,
     font-style: italic;
 }
 
-.admonition p {
+.admonition .para {
     margin-top: 1em;
     margin-bottom: 0em;
 }
 
-.admonition p._1 {
+.admonition .para._1 {
     margin-top: 0em;
 }
 
@@ -201,8 +278,23 @@ code {
 
 .code {
    background-color : #f8f8f8;
-   margin-top: 3px;
-   margin-bottom: 3px;
+   padding-bottom: 4px;
+}
+
+.code + .code {
+    border-top: 1px solid #dcdcdc;
+    padding-top: 3px;
+}
+
+p + .code {
+    margin-top: 1px;
+}
+
+.code + p {
+    margin-top: 1px;
+}
+
+.interface-member-code .code, .interface-code .code {
    padding: 2px;
    border-top: 1px solid #dcdcdc;
    border-bottom: 1px solid #dcdcdc;
@@ -217,6 +309,23 @@ code a, .code a {
 code a:hover, .code a:hover {
     text-decoration: none;
     border-bottom-style: solid;
+}
+
+a code, .title code {
+   color: inherit;
+   background-color: transparent;
+}
+
+.title code a {
+    border-bottom-style:none;
+}
+
+.title code a:hover {
+    border-bottom-style:solid;
+}
+
+a code span, .title code span {
+    color: inherit !important;    
 }
 
 /*
@@ -297,7 +406,7 @@ span.cp {
 span.co {
     color: Fuchsia;
 }
-*/s
+*/
 
 /* interface reference */
 
@@ -315,6 +424,8 @@ span.co {
     font-family: "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans", "DejaVu Sans", sans-serif;
     text-decoration: none;
     font-size: 16px;
+    line-height: 20px;
+    margin-bottom: -2px;
 }
 
 .interface-member-backlink:hover {
@@ -329,89 +440,84 @@ span.co {
     font-weight: bold;
 }
 
-/* parser overview tables */
-
-.api-table {
-    margin-top: 2em;
+.interface-member-marker .ck {
+   color: #003C85;
 }
 
-.api-table table {
+
+/* tables */
+
+.table  {
+    margin-top: 0.2em;
+}
+
+.table table {
     width: 100%;
     border-top: 1px solid #000000;
     border-bottom: 1px solid #000000;
 }
 
-.api-table thead th {
+.table thead th {
     font-size: 1.1em;
     font-weight: bold;
     border-top: 1px solid #000000;
     border-bottom: 1px solid #000000;
 }
 
-.api-table .table-caption-prefix {
+.table .table-caption-prefix {
     font-style: normal;
     margin-right: 0.2em;
     font-weight: bold;
 }
 
-.api-table caption {
+.table caption {
     font-style: italic;
     padding-bottom: 0.3em;
 }
 
-.api-table td, .api-table th {
+.table td, .api-table th {
     padding-top: 0.3em;
     padding-bottom: 0.2em;
 }
 
-.api-table tbody td {
+.table tbody td {
     border-top: 1px solid #dddddd;
 }
 
-.api-table td._1 {
+.table td._1 {
     padding-right: 1em;
 }
 
-#parsing-single-chars td._1 {
-    width: 35%;
+.api-table {
+    margin-top: 2em;
 }
 
-#parsing-strings-directly td._1 {
-    width: 38.5%;
+#v0_9\.renamings caption {
+    display: none;
 }
 
-#parsing-strings-with-the-help-of-other-parsers td._1 {
-    width: 36%;
+.table td > ul {
+    padding-left: 1em;
 }
 
-#parsing-whitespace td._1 {
-    width: 35%;
-}
+#relative-advantages thead th { padding-left: 1em; }
+#relative-advantages td._1 { width: 34%; padding-right: 1em; }
+#relative-advantages td._2 { width: 35%; padding-right: 1em; }
 
-#chaining-and-piping-parsers td._1 {
-    width: 27%;
-}
+#relative-disadvantages { margin-top: 1.5em; }
+#relative-disadvantages thead th { padding-left: 1em; }
+#relative-disadvantages td._1 { width: 34%; padding-right: 1em; }
+#relative-disadvantages td._2 { width: 35%; padding-right: 1em; }
 
-#parsing-sequences td._1 {
-    width: 25%;
-}
-
-#parsing-sequences td._2 {
-    width: 22%;
-}
-
-#parsing-alternatives-and-recovering-from-errors td._1 {
-    width: 23%;
-}
-
-#conditional-parsing-and-looking-ahead td._1 {
-    width: 44%;
-}
-
-#customizing-error-messages td._1 {
-    width: 28%;
-}
-
-#user-state-handling td._1 {
-    width: 24%;
-}
+/* parser overview tables */
+#parsing-single-chars td._1 { width: 35%; }
+#parsing-strings-directly td._1 { width: 38.5%; }
+#parsing-strings-with-the-help-of-other-parsers td._1 { width: 36%; }
+#parsing-whitespace td._1 { width: 35%; }
+#chaining-and-piping-parsers td._1 { width: 27%; }
+#parsing-sequences td._1 { width: 23%; }
+#parsing-sequences td._2 { width: 22%; }
+#parsing-alternatives-and-recovering-from-errors td._1 { width: 28%; }
+#conditional-parsing-and-looking-ahead td._1 { width: 35%; }
+#customizing-error-messages td._1 { width: 28%; }
+#user-state-handling-and-getting-the-input-stream-position td._1 { width: 24%; }

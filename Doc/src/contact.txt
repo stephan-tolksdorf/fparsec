@@ -1,0 +1,24 @@
+﻿[section Contact]
+
+[section Contact]
+FParsec currently doesn't have its own discussion forum or mailing list.[br] (Please let me know if you'd like that to be changed.)
+
+Currently the best place to get a quick answer to any FParsec-related question is: [url "http://stackoverflow.com/search?q=fparsec" StackOverflow.com].
+
+You can also email me (Stephan) directly at: [url "mailto:fparsec [at] quanttec.com" fparsec \[at\] quanttec.com]. Please don't hesitate to contact me with any feedback or question regarding FParsec. I'm always happy to hear from FParsec users.
+
+[/section]
+
+[section Impressum]
+*Author:* Stephan Tolksdorf
+
+*Address:*[br]
+Geschwister-Scholl-Allee 253[br]
+25524 Itzehoe[br]
+Germany[br]
+
+[url "mailto:fparsec [at] quanttec.com" fparsec \[at\] quanttec.com]
+[/section]
+
+[/section]
+

@@ -1,0 +1,589 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+ <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+ <title>Tips and tricks</title>
+ <link rel="stylesheet" type="text/css" media="all" href="../css/style.css" /> 
+ <link rel="stylesheet" type="text/css" media="screen" href="../css/screen-sidebar.css" />  
+ <!--[if lt IE 9]>
+ <link rel="stylesheet" type="text/css" media="all" href="../css/style-ie.css" /> 
+ <![endif]-->
+ <!--[if IE 6]>
+ <link rel="stylesheet" type="text/css" media="all" href="../css/style-ie6.css" /> 
+ <![endif]-->
+ <link rel="stylesheet" type="text/css" media="print" href="../css/print.css" />
+</head>
+<body>
+ <div id="fixed-layer">
+ <div id="fixed-wrapper">
+ <div id="sidebar">
+  <div id="top-links"><span><a href="http://bitbucket.org/fparsec/main">FParsec @ BitBucket</a> | <a href="https://bitbucket.org/fparsec/main/issues">Report a bug</a> | <a href="mailto:fparsec [at] quanttec.com?subject=FParsec&body=Hello Stephan,%0A%0A[your feedback]">Feedback</a></span></div>
+  <div id="nav-tree">
+   <table class="nav n1">
+    <tbody class="nav-open n1">
+     <tr class="nav-entry n1 _1">
+      <td class="nav-number n1"></td>
+      <td class="nav-title n1"><a href="../index.html">FParsec Documentation</a></td>
+     </tr>
+     <tr class="nav-subentries n1 _1">
+      <td class="nav-subentries-number n1"></td>
+      <td class="nav-subentries n1">
+       <table class="nav n2">
+        <tbody class="nav-before-open n2">
+         <tr class="nav-entry n2 _1">
+          <td class="nav-number n2"><a href="../about/index.html"><span class="section-number">1</span><span class="nav-space"></span></a></td>
+          <td class="nav-title n2"><a href="../about/index.html">About FParsec</a></td>
+         </tr>
+         <tr class="nav-entry n2 _2">
+          <td class="nav-number n2"><a href="../license.html"><span class="section-number">2</span><span class="nav-space"></span></a></td>
+          <td class="nav-title n2"><a href="../license.html">License</a></td>
+         </tr>
+         <tr class="nav-entry n2 _3">
+          <td class="nav-number n2">
+           <a href="../download-and-installation.html"><span class="section-number">3</span><span class="nav-space"></span></a>
+          </td>
+          <td class="nav-title n2"><a href="../download-and-installation.html">Download and installation</a></td>
+         </tr>
+         <tr class="nav-entry n2 _4">
+          <td class="nav-number n2"><a href="../tutorial.html"><span class="section-number">4</span><span class="nav-space"></span></a></td>
+          <td class="nav-title n2"><a href="../tutorial.html">Tutorial</a></td>
+         </tr>
+        </tbody>
+        <tbody class="nav-open n2">
+         <tr class="nav-entry n2 _5">
+          <td class="nav-number n2"><a href="index.html"><span class="section-number">5</span><span class="nav-space"></span></a></td>
+          <td class="nav-title n2"><a href="index.html">User’s Guide</a></td>
+         </tr>
+         <tr class="nav-subentries n2 _5">
+          <td class="nav-subentries-number n2"></td>
+          <td class="nav-subentries n2">
+           <table class="nav n3">
+            <tbody class="nav-before-open n3">
+             <tr class="nav-entry n3 _1">
+              <td class="nav-number n3"><a href="parser-functions.html"><span class="section-number">1</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="parser-functions.html">Parser functions</a></td>
+             </tr>
+             <tr class="nav-entry n3 _2">
+              <td class="nav-number n3">
+               <a href="running-parsers-on-input.html"><span class="section-number">2</span><span class="nav-space"></span></a>
+              </td>
+              <td class="nav-title n3"><a href="running-parsers-on-input.html">Running parsers on input</a></td>
+             </tr>
+             <tr class="nav-entry n3 _3">
+              <td class="nav-number n3">
+               <a href="internals-of-a-simple-parser-function.html"><span class="section-number">3</span><span class="nav-space"></span></a>
+              </td>
+              <td class="nav-title n3">
+               <a href="internals-of-a-simple-parser-function.html">Internals of a simple <code class="fsharp"><span class="ci">Parser</span></code>
+               function</a>
+              </td>
+             </tr>
+             <tr class="nav-entry n3 _4">
+              <td class="nav-number n3">
+               <a href="applying-parsers-in-sequence.html"><span class="section-number">4</span><span class="nav-space"></span></a>
+              </td>
+              <td class="nav-title n3"><a href="applying-parsers-in-sequence.html">Applying parsers in sequence</a></td>
+             </tr>
+             <tr class="nav-entry n3 _5">
+              <td class="nav-number n3"><a href="parsing-sequences.html"><span class="section-number">5</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="parsing-sequences.html">Parsing sequences</a></td>
+             </tr>
+             <tr class="nav-entry n3 _6">
+              <td class="nav-number n3">
+               <a href="parsing-alternatives.html"><span class="section-number">6</span><span class="nav-space"></span></a>
+              </td>
+              <td class="nav-title n3"><a href="parsing-alternatives.html">Parsing alternatives</a></td>
+             </tr>
+             <tr class="nav-entry n3 _7">
+              <td class="nav-number n3">
+               <a href="looking-ahead-and-backtracking.html"><span class="section-number">7</span><span class="nav-space"></span></a>
+              </td>
+              <td class="nav-title n3"><a href="looking-ahead-and-backtracking.html">Looking ahead and backtracking</a></td>
+             </tr>
+             <tr class="nav-entry n3 _8">
+              <td class="nav-number n3">
+               <a href="customizing-error-messages.html"><span class="section-number">8</span><span class="nav-space"></span></a>
+              </td>
+              <td class="nav-title n3"><a href="customizing-error-messages.html">Customizing error messages</a></td>
+             </tr>
+             <tr class="nav-entry n3 _9">
+              <td class="nav-number n3">
+               <a href="parsing-with-user-state.html"><span class="section-number">9</span><span class="nav-space"></span></a>
+              </td>
+              <td class="nav-title n3"><a href="parsing-with-user-state.html">Parsing with user state</a></td>
+             </tr>
+             <tr class="nav-entry n3 _0">
+              <td class="nav-number n3">
+               <a href="where-is-the-monad.html"><span class="section-number">10</span><span class="nav-space"></span></a>
+              </td>
+              <td class="nav-title n3"><a href="where-is-the-monad.html">Where is the monad?</a></td>
+             </tr>
+             <tr class="nav-entry n3 _1">
+              <td class="nav-number n3">
+               <a href="debugging-a-parser.html"><span class="section-number">11</span><span class="nav-space"></span></a>
+              </td>
+              <td class="nav-title n3"><a href="debugging-a-parser.html">Debugging a parser</a></td>
+             </tr>
+             <tr class="nav-entry n3 _2">
+              <td class="nav-number n3">
+               <a href="performance-optimizations.html"><span class="section-number">12</span><span class="nav-space"></span></a>
+              </td>
+              <td class="nav-title n3"><a href="performance-optimizations.html">Performance optimizations</a></td>
+             </tr>
+            </tbody>
+            <tbody class="nav-open selected n3">
+             <tr class="nav-entry selected n3 _3">
+              <td class="nav-number selected n3"><a href="#"><span class="section-number">13</span><span class="nav-space"></span></a></td>
+              <td class="nav-title selected n3"><a href="#">Tips and tricks</a></td>
+             </tr>
+             <tr class="nav-subentries selected n3 _3">
+              <td class="nav-subentries-number selected n3"></td>
+              <td class="nav-subentries selected n3">
+               <table class="nav n4">
+                <tbody class="nav-before-open n4">
+                 <tr class="nav-entry n4 _1">
+                  <td class="nav-number n4"><a href="#parallel-parsing"><span class="section-number">1</span><span class="nav-space"></span></a></td>
+                  <td class="nav-title n4"><a href="#parallel-parsing">Parallel parsing</a></td>
+                 </tr>
+                 <tr class="nav-entry n4 _2">
+                  <td class="nav-number n4">
+                   <a href="#dispatching-parsers-through-a-dictionary"><span class="section-number">2</span><span class="nav-space"></span></a>
+                  </td>
+                  <td class="nav-title n4"><a href="#dispatching-parsers-through-a-dictionary">Dispatching parsers through a dictionary</a></td>
+                 </tr>
+                 <tr class="nav-entry n4 _3">
+                  <td class="nav-number n4"><a href="#memoizing-parsers"><span class="section-number">3</span><span class="nav-space"></span></a></td>
+                  <td class="nav-title n4"><a href="#memoizing-parsers">Memoizing parsers</a></td>
+                 </tr>
+                 <tr class="nav-entry n4 _4">
+                  <td class="nav-number n4">
+                   <a href="#parsing-f-infix-operators"><span class="section-number">4</span><span class="nav-space"></span></a>
+                  </td>
+                  <td class="nav-title n4"><a href="#parsing-f-infix-operators">Parsing F# infix operators</a></td>
+                 </tr>
+                </tbody>
+               </table>
+              </td>
+             </tr>
+            </tbody>
+           </table>
+          </td>
+         </tr>
+        </tbody>
+        <tbody class="nav-after-open n2">
+         <tr class="nav-entry n2 _6">
+          <td class="nav-number n2"><a href="../reference/index.html"><span class="section-number">6</span><span class="nav-space"></span></a></td>
+          <td class="nav-title n2"><a href="../reference/index.html">Reference</a></td>
+         </tr>
+        </tbody>
+       </table>
+      </td>
+     </tr>
+    </tbody>
+   </table>
+  </div>
+  <div id="copyright">
+    <span>Copyright © 2011 <a href="../about/contact.html">Stephan Tolksdorf</a></span>
+  </div>
+ </div>
+ </div>
+ </div>
+ <div id="wrapper">   
+ <div id="main">
+ <div id="main-content"> 
+ <div id="breadcrumbs">
+  <span class="breadcrumbs">
+   <span id="breadcrumbs-parents"><a href="../index.html">FParsec Documentation</a><span class="breadcrumbs-sep"> > </span><a href="index.html">User’s Guide</a></span><span class="breadcrumbs-sep"> > </span>Tips and tricks
+  </span>
+ </div>  
+ <div class="section s2">
+  <h1 class="title h2"><span><span class="section-number">5.13</span> Tips and tricks</span></h1>
+  <div class="intro i2">
+   <div class="para _1 lcinp">
+    <div class="local-toc">
+     <div class="toc-toc-title">
+      Contents
+     </div>
+     <table class="toc t1">
+      <tr class="toc-entry toc t1 _0">
+       <td class="toc-number toc t1"><a href="#parallel-parsing"><span class="toc-number">1</span><span class="toc-space"></span></a></td>
+       <td class="toc-title toc t1"><a href="#parallel-parsing">Parallel parsing</a></td>
+      </tr>
+      <tr class="toc-entry toc t1 _1">
+       <td class="toc-number toc t1">
+        <a href="#dispatching-parsers-through-a-dictionary"><span class="toc-number">2</span><span class="toc-space"></span></a>
+       </td>
+       <td class="toc-title toc t1"><a href="#dispatching-parsers-through-a-dictionary">Dispatching parsers through a dictionary</a></td>
+      </tr>
+      <tr class="toc-entry toc t1 _2">
+       <td class="toc-number toc t1"><a href="#memoizing-parsers"><span class="toc-number">3</span><span class="toc-space"></span></a></td>
+       <td class="toc-title toc t1"><a href="#memoizing-parsers">Memoizing parsers</a></td>
+      </tr>
+      <tr class="toc-entry toc t1 _3">
+       <td class="toc-number toc t1"><a href="#parsing-f-infix-operators"><span class="toc-number">4</span><span class="toc-space"></span></a></td>
+       <td class="toc-title toc t1"><a href="#parsing-f-infix-operators">Parsing F# infix operators</a></td>
+      </tr>
+     </table>
+    </div>
+   </div>
+  </div>
+  <div id="parallel-parsing" class="section s3">
+   <h2 class="title h3"><span><span class="section-number">5.13.1</span> Parallel parsing</span></h2>
+   <div class="intro i3">
+    <div class="para _1">
+     <p>
+      If your parser grammar is suitable for parallel parsing, parallelizing the parser has the potential to dramatically accelerate parsing on
+      multi‐core machines. In the following we will shortly discuss requirements and strategies for parallelizing an FParsec parser.
+     </p>
+    </div>
+    <div class="para _2 lcinp">
+     <p>For a parser grammar to be well suited for parallel parsing, the grammar and the typical input must satisfy the following two criteria:</p>
+     <ul class="l1">
+      <li class="_1">Parts of the input must be independently parseable, i.e. parts must be parseable without knowlege about the other parts.</li>
+      <li class="_2">These parts must be large enough and easily enough identifiable within the total input.</li>
+     </ul>
+    </div>
+    <div class="para _3">
+     <p>
+      Often, the easiest and most beneficial way to parallelize the parsing stage of an application is to parse multiple input files in parallel. In
+      the simplest case you have multiple independent &#x201C;compilation units&#x201D; that can be parsed in parallel. This works even for C/C++,
+      where a badly designed preprocesser generally makes efficient parsing quite hard. In many programming languages and markup languages you can
+      also parse in parallel files that are &#x201C;included&#x201D;, &#x201C;opened&#x201D; or &#x201C;imported&#x201D; within source files. However,
+      this usually only works if the language allows such includes only at well‐defined points in the grammar. In languages like C/C++, where the
+      unstructured text content of other files can be included at essentially arbitrary positions in the source, parsing the included files in
+      parallel is generally quite hard. (In C/C++ it’s even hard to avoid parsing the same file multiple times when it is included multiple times).
+     </p>
+    </div>
+    <div class="para _4">
+     <p>
+      If you’re dealing with large input files or very slow parsers, it might also be worth trying to parse multiple sections within a single file in
+      parallel. For this to be efficient there must be a fast way to find the start and end points of such sections. For example, if you are parsing a
+      large serialized data structure, the format might allow you to easily skip over segments within the file, so that you can chop up the input into
+      multiple independent parts that can be parsed in parallel. Another example could be a programming languages whose grammar makes it easy to skip
+      over a complete class or function definition, e.g. by finding the closing brace or by interpreting the indentation. In this case it
+      <em>might</em> be worth not to parse the definitions directly when they are encountered, but instead to skip over them, push their text content
+      into a queue and then to process that queue in parallel.
+     </p>
+    </div>
+    <div class="para _5 lcinp">
+     <p>Here are some tips for parallel parsing with FParsec:</p>
+     <ul class="l1">
+      <li class="_1">
+       All FParsec parsers are thread‐safe and can be safely applied concurrently to different <code class="fsharp"><a
+       href="../reference/charstream.html#CharStream"><span class="ci">CharStream</span></a></code> instances, as long as you don’t introduce mutable
+       shared state yourself.
+      </li>
+      <li class="_2">
+       <code class="fsharp"><a href="../reference/charstream.html#CharStream"><span class="ci">CharStream</span></a></code> instances are not
+       thread‐safe and a single instance must not be accessed concurrently.
+      </li>
+      <li class="_3">
+       However, you can call the <code class="fsharp"><a href="../reference/charstream.html#CharStream_1.members.CreateSubstream"><span
+       class="ci">CreateSubstream</span></a></code> method to create a substream for a <code class="fsharp"><a
+       href="../reference/charstream.html#CharStream"><span class="ci">CharStream</span></a></code>. A <code class="fsharp"><a
+       href="../reference/charstream.html#CharStream"><span class="ci">CharStream</span></a></code> and its substreams can be safely accessed
+       concurrently.
+      </li>
+      <li class="_4">
+       If you want to parse multiple files in parallel, you should also create the <code class="fsharp"><a
+       href="../reference/charstream.html#CharStream"><span class="ci">CharStream</span></a></code> instances in parallel, because the <code
+       class="fsharp"><a href="../reference/charstream.html#CharStream"><span class="ci">CharStream</span></a></code> constructors that accept file
+       paths or binary streams perform I/O operations that benefit from parallelization.
+      </li>
+      <li class="_5">
+       If you parallelize your parser, consider introducing an option for switching off parallel execution, since debugging a multi‐threaded parser is
+       harder than debugging a single‐threaded one.
+      </li>
+     </ul>
+    </div>
+   </div>
+  </div>
+  <div id="dispatching-parsers-through-a-dictionary" class="section s3">
+   <h2 class="title h3"><span><span class="section-number">5.13.2</span> Dispatching parsers through a dictionary</span></h2>
+   <div class="intro i3">
+    <div class="para _1">
+     <p>
+      A technique that is often useful for making a parser modular and easily extensible is to store <code class="fsharp"><a
+      href="../reference/primitives.html#members.Parser"><span class="ci">Parser</span></a></code> functions in dictionaries and then to delegate
+      parsing to one of the <code class="fsharp"><a href="../reference/primitives.html#members.Parser"><span class="ci">Parser</span></a></code>
+      functions in the dictionary based on the input.
+     </p>
+    </div>
+    <div class="para _2">
+     <p>
+      For example, a parser for a markup language could be implemented by defining a generic tag parser that delegates the parsing of the tagged
+      content to a specific parser for the respective tag name. The following code shows how this could be done:
+     </p>
+    </div>
+    <div class="para _3 lcinp">
+<pre class="code fsharp"><span class="ck">open</span> <span class="ci">FParsec</span>
+<span class="ck">open</span> <span class="ci">System</span><span class="cm">.</span><span class="ci">Collections</span><span class="cm">.</span><span class="ci">Generic</span>
+
+<span class="clc"><span class="cld">//</span> For simplicity we don't define a full-blown markup language here,</span>
+<span class="clc"><span class="cld">//</span> just a parser for two simple non-recursive "tags" in square brackets.</span>
+<span class="clc"><span class="cld">//</span> The chapter on "parsing with user state" contains a slightly more developed</span>
+<span class="clc"><span class="cld">//</span> sample for a markup language, though without a dictionary-based tag parser.</span>
+
+<span class="ck">type</span> <span class="ci">Tag</span> <span class="cp">=</span> <span class="ci">Bold</span> <span class="ck">of</span> <span class="ci">string</span>
+         <span class="cp">|</span> <span class="ci">Url</span> <span class="ck">of</span> <span class="ci">string</span> <span class="cp">*</span> <span class="ci">string</span>
+
+<span class="clc"><span class="cld">//</span> We store the tag parser dictionary in the user state, so that we can</span>
+<span class="clc"><span class="cld">//</span> concurrently parse multiple input streams with the same parser instance</span>
+<span class="clc"><span class="cld">//</span> but differerent tag dictionaries.</span>
+
+<span class="ck">type</span> <span class="ci">TagParserMap</span> <span class="cp">=</span> <span class="ci">Dictionary</span><span class="cp">&lt;</span><span class="ci">string</span><span class="cp">,</span><a href="../reference/primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">Tag</span><span class="cp">,</span><span class="ci">UserState</span><span class="cp">&gt;</span><span class="cp">&gt;</span>
+
+<span class="ck">and</span> <span class="ci">UserState</span> <span class="cp">=</span> <span class="cp">{</span>
+        <span class="ci">TagParsers</span><span class="cp">:</span> <span class="ci">TagParserMap</span>
+     <span class="cp">}</span>
+
+<span class="ck">let</span> <span class="ci">defaultTagParsers</span> <span class="cp">=</span> <span class="ci">TagParserMap</span><span class="cp">()</span>
+
+<span class="ck">let</span> <span class="ci">isTagNameChar1</span> <span class="cp">=</span> <span class="ck">fun</span> <span class="ci">c</span> <span class="cr">-&gt;</span> <a href="../reference/charparsers.html#members.isLetter"><span class="ci">isLetter</span></a> <span class="ci">c</span> <span class="co">||</span> <span class="ci">c</span> <span class="co">=</span> <span class="cc"><span class="cld">'</span>_<span class="crd">'</span></span>
+<span class="ck">let</span> <span class="ci">isTagNameChar</span> <span class="cp">=</span> <span class="ck">fun</span> <span class="ci">c</span> <span class="cr">-&gt;</span> <span class="ci">isTagNameChar1</span> <span class="ci">c</span> <span class="co">||</span> <a href="../reference/charparsers.html#members.isDigit"><span class="ci">isDigit</span></a> <span class="ci">c</span>
+<span class="ck">let</span> <span class="ci">expectedTag</span> <span class="cp">=</span> <a href="../reference/error.html#members.expected"><span class="ci">expected</span></a> <span class="cs"><span class="cld">"</span>tag starting with '['<span class="crd">"</span></span>
+
+<span class="ck">let</span> <span class="ci">tag</span> <span class="cp">:</span> <a href="../reference/primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">Tag</span><span class="cp">,</span> <span class="ci">UserState</span><span class="cp">&gt;</span> <span class="cp">=</span>
+  <span class="ck">fun</span> <span class="ci">stream</span> <span class="cr">-&gt;</span>
+    <span class="ck">if</span> <span class="ci">stream</span><span class="cm">.</span><a href="../reference/charstream.html#CharStream.members.Skip"><span class="ci">Skip</span></a><span class="cp">(</span><span class="cc"><span class="cld">'</span>[<span class="crd">'</span></span><span class="cp">)</span> <span class="ck">then</span>
+        <span class="ck">let</span> <span class="ci">name</span> <span class="cp">=</span> <span class="ci">stream</span><span class="cm">.</span><a href="../reference/charstream.html#CharStream.members.ReadCharsOrNewlinesWhile"><span class="ci">ReadCharsOrNewlinesWhile</span></a><span class="cp">(</span><span class="ci">isTagNameChar1</span><span class="cp">,</span> <span class="ci">isTagNameChar</span><span class="cp">,</span>
+                                                   <span class="cb">false</span><span class="cp">)</span>
+        <span class="ck">if</span> <span class="ci">name</span><span class="cm">.</span><span class="ci">Length</span> <span class="co">&lt;&gt;</span> <span class="cn">0</span> <span class="ck">then</span>
+            <span class="ck">let</span> <span class="ck">mutable</span> <span class="ci">p</span> <span class="cp">=</span> <span class="ci">Unchecked</span><span class="cm">.</span><span class="ci">defaultof</span><span class="cp">&lt;</span><span class="ci">_</span><span class="cp">&gt;</span>
+            <span class="ck">if</span> <span class="ci">stream</span><span class="cm">.</span><a href="../reference/charstream.html#CharStream_1.members.UserState"><span class="ci">UserState</span></a><span class="cm">.</span><span class="ci">TagParsers</span><span class="cm">.</span><span class="ci">TryGetValue</span><span class="cp">(</span><span class="ci">name</span><span class="cp">,</span> <span class="co">&amp;</span><span class="ci">p</span><span class="cp">)</span> <span class="ck">then</span> <span class="ci">p</span> <span class="ci">stream</span>
+            <span class="ck">else</span>
+                <span class="ci">stream</span><span class="cm">.</span><a href="../reference/charstream.html#CharStream.members.Skip"><span class="ci">Skip</span></a><span class="cp">(</span><span class="co">-</span><span class="ci">name</span><span class="cm">.</span><span class="ci">Length</span><span class="cp">)</span>
+                <a href="../reference/reply.html"><span class="ci">Reply</span></a><span class="cp">(</span><a href="../reference/primitives.html#members.Error"><span class="ci">Error</span></a><span class="cp">,</span> <a href="../reference/error.html#members.messageError"><span class="ci">messageError</span></a> <span class="cp">(</span><span class="cs"><span class="cld">"</span>unknown tag name '<span class="crd">"</span></span> <span class="co">+</span> <span class="ci">name</span> <span class="co">+</span> <span class="cs"><span class="cld">"</span>'<span class="crd">"</span></span><span class="cp">)</span><span class="cp">)</span>
+        <span class="ck">else</span> <a href="../reference/reply.html"><span class="ci">Reply</span></a><span class="cp">(</span><a href="../reference/primitives.html#members.Error"><span class="ci">Error</span></a><span class="cp">,</span> <a href="../reference/error.html#members.expected"><span class="ci">expected</span></a> <span class="cs"><span class="cld">"</span>tag name<span class="crd">"</span></span><span class="cp">)</span>
+    <span class="ck">else</span> <a href="../reference/reply.html"><span class="ci">Reply</span></a><span class="cp">(</span><a href="../reference/primitives.html#members.Error"><span class="ci">Error</span></a><span class="cp">,</span> <span class="ci">expectedTag</span><span class="cp">)</span>
+
+<span class="ck">let</span> <span class="ci">str</span> <span class="ci">s</span> <span class="cp">=</span> <a href="../reference/charparsers.html#members.pstring"><span class="ci">pstring</span></a> <span class="ci">s</span>
+<span class="ck">let</span> <span class="ci">ws</span> <span class="cp">=</span> <a href="../reference/charparsers.html#members.spaces"><span class="ci">spaces</span></a>
+<span class="ck">let</span> <span class="ci">text</span> <span class="cp">=</span> <a href="../reference/charparsers.html#members.manySatisfy"><span class="ci">manySatisfy</span></a> <span class="cp">(</span><span class="ck">function</span> <span class="cc"><span class="cld">'</span>[<span class="crd">'</span></span><span class="cp">|</span><span class="cc"><span class="cld">'</span>]<span class="crd">'</span></span> <span class="cr">-&gt;</span> <span class="cb">false</span> <span class="cp">|</span> <span class="ci">_</span> <span class="cr">-&gt;</span> <span class="cb">true</span><span class="cp">)</span>
+
+<span class="ci">defaultTagParsers</span><span class="cm">.</span><span class="ci">Add</span><span class="cp">(</span><span class="cs"><span class="cld">"</span>b<span class="crd">"</span></span><span class="cp">,</span> <span class="ci">str</span> <span class="cs"><span class="cld">"</span>]<span class="crd">"</span></span> <a href="../reference/primitives.html#members.:62::62:.."><span class="co">&gt;&gt;.</span></a> <span class="ci">text</span> <a href="../reference/primitives.html#members...:62::62:"><span class="co">.&gt;&gt;</span></a> <span class="ci">str</span> <span class="cs"><span class="cld">"</span>[/b]<span class="crd">"</span></span> <a href="../reference/primitives.html#members.:124::62::62:"><span class="co">|&gt;&gt;</span></a> <span class="ci">Bold</span><span class="cp">)</span>
+
+<span class="ci">defaultTagParsers</span><span class="cm">.</span><span class="ci">Add</span><span class="cp">(</span><span class="cs"><span class="cld">"</span>url<span class="crd">"</span></span><span class="cp">,</span>      <span class="cp">(</span><span class="ci">str</span> <span class="cs"><span class="cld">"</span>=<span class="crd">"</span></span> <a href="../reference/primitives.html#members.:62::62:.."><span class="co">&gt;&gt;.</span></a> <a href="../reference/charparsers.html#members.manySatisfy"><span class="ci">manySatisfy</span></a> <span class="cp">(</span><span class="cp">(</span><span class="co">&lt;&gt;</span><span class="cp">)</span><span class="cc"><span class="cld">'</span>]<span class="crd">'</span></span><span class="cp">)</span> <a href="../reference/primitives.html#members...:62::62:"><span class="co">.&gt;&gt;</span></a> <span class="ci">str</span> <span class="cs"><span class="cld">"</span>]<span class="crd">"</span></span><span class="cp">)</span>
+                             <a href="../reference/primitives.html#members...:62::62:.."><span class="co">.&gt;&gt;.</span></a> <span class="cp">(</span><span class="ci">text</span> <a href="../reference/primitives.html#members...:62::62:"><span class="co">.&gt;&gt;</span></a> <span class="ci">str</span> <span class="cs"><span class="cld">"</span>[/url]<span class="crd">"</span></span><span class="cp">)</span>
+                             <a href="../reference/primitives.html#members.:124::62::62:"><span class="co">|&gt;&gt;</span></a> <span class="ci">Url</span><span class="cp">)</span>
+
+<span class="ck">let</span> <span class="ci">parseTagString</span> <span class="ci">str</span> <span class="cp">=</span>
+    <a href="../reference/charparsers.html#members.runParserOnString"><span class="ci">runParserOnString</span></a> <span class="ci">tag</span> <span class="cp">{</span><span class="ci">TagParsers</span> <span class="co">=</span> <span class="ci">TagParserMap</span><span class="cp">(</span><span class="ci">defaultTagParsers</span><span class="cp">)</span><span class="cp">}</span> <span class="cs"><span class="cld">"</span><span class="crd">"</span></span> <span class="ci">str</span>
+
+</pre>
+<pre class="code fsharp"><span class="cmd"><span class="cmdp">&gt;</span> <span class="ci">parseTagString</span> <span class="cs"><span class="cld">"</span>[b]bold text[/b]<span class="crd">"</span></span><span class="cp">;;</span></span>
+<span class="cout">val it : ParserResult&lt;Tag,UserState&gt; = Success: Bold "bold text"
+
+</span><span class="cmd"><span class="cmdp">&gt;</span> <span class="ci">parseTagString</span> <span class="cs"><span class="cld">"</span>[url=http://tryfsharp.org]try F#[/url]<span class="crd">"</span></span><span class="cp">;;</span></span>
+<span class="cout">val it : ParserResult&lt;Tag,UserState&gt; =
+  Success: Url ("http://tryfsharp.org","try F#")
+
+</span><span class="cmd"><span class="cmdp">&gt;</span> <span class="ci">parseTagString</span> <span class="cs"><span class="cld">"</span>[bold]test[/bold]<span class="crd">"</span></span><span class="cp">;;</span></span>
+<span class="cout">val it : ParserResult&lt;Tag,UserState&gt; = Failure:
+Error in Ln: 1 Col: 2
+[bold]test[/bold]
+ ^
+unknown tag name 'bold'
+</span></pre>
+    </div>
+   </div>
+  </div>
+  <div id="memoizing-parsers" class="section s3">
+   <h2 class="title h3"><span><span class="section-number">5.13.3</span> Memoizing parsers</span></h2>
+   <div class="intro i3">
+    <div class="para _1">
+     <p>
+      If your parser implementation backtracks a lot when parsing typical inputs and as a result repeatedly applies some <code class="fsharp"><a
+      href="../reference/primitives.html#members.Parser"><span class="ci">Parser</span></a></code> functions at the same input position, it can be
+      beneficial to memoize these <code class="fsharp"><a href="../reference/primitives.html#members.Parser"><span class="ci">Parser</span></a></code>
+      functions, i.e. cache their results for each input position.
+     </p>
+    </div>
+    <div class="para _2">
+     <p>
+      In the extreme case, <a href="http://en.wikipedia.org/wiki/Memoization">memoization</a> can mean the difference between linear and exponential
+      execution times. In practice, FParsec is typically used for formal grammars that hardly require any extensive backtracking, so that memoization
+      would usually only have a negative affect on performance.
+     </p>
+    </div>
+    <div class="para _3">
+     <p>
+      In situation where you really do need to memoize parsers, you can work with a generic <code class="fsharp"><span
+      class="ci">memoize</span></code> combinator like the one in the following example:
+     </p>
+    </div>
+    <div class="para _4 lcinp">
+<pre class="code fsharp"><span class="ck">open</span> <span class="ci">FParsec</span>
+<span class="ck">open</span> <span class="ci">System</span><span class="cm">.</span><span class="ci">Collections</span><span class="cm">.</span><span class="ci">Generic</span>
+
+<span class="clc"><span class="cld">//</span> We need a place to store the cached parser results. Since we want parser</span>
+<span class="clc"><span class="cld">//</span> instances to be able to concurrently access different caches for different</span>
+<span class="clc"><span class="cld">//</span> input streams, we will use a user state variable for this purpose. Since we</span>
+<span class="clc"><span class="cld">//</span> don't want the backtracking to undo changes to the cache,  we will use a</span>
+<span class="clc"><span class="cld">//</span> mutable dictionary for this purpose.</span>
+
+<span class="ck">type</span> <span class="ci">UserState</span> <span class="cp">=</span> <span class="cp">{</span>
+        <span class="ci">MemoCache</span><span class="cp">:</span> <span class="ci">Dictionary</span><span class="cp">&lt;</span><span class="ci">MemoKey</span><span class="cp">,</span> <span class="ci">obj</span><span class="cp">&gt;</span>
+        <span class="clc"><span class="cld">//</span> ...</span>
+    <span class="cp">}</span>
+
+<span class="clc"><span class="cld">//</span> An entry in the MemoCache must be uniquely identified by its MemoKey. In this</span>
+<span class="clc"><span class="cld">//</span> example the MemoKey includes the stream index value and a reference to the</span>
+<span class="clc"><span class="cld">//</span> memoized parser instance. Should the result of a memoized Parser function in</span>
+<span class="clc"><span class="cld">//</span> your implementation also depend on the UserState value, you will have to</span>
+<span class="clc"><span class="cld">//</span> extend the MemoKey with a UserState member. Similarly, if you want to cache</span>
+<span class="clc"><span class="cld">//</span> results for more than one stream in the MemoCache, you'll have to extend the</span>
+<span class="clc"><span class="cld">//</span> MemoKey with an identifier for the stream.</span>
+
+<span class="ck">and</span> <span class="cp">[&lt;</span><span class="ci">CustomEquality</span><span class="cp">;</span> <span class="ci">NoComparison</span><span class="cp">&gt;]</span>
+    <span class="ci">MemoKey</span> <span class="cp">=</span> <span class="ck">struct</span>
+        <span class="ck">new</span> <span class="cp">(</span><span class="ci">parser</span><span class="cp">:</span> <span class="ci">obj</span><span class="cp">,</span> <span class="ci">stream</span><span class="cp">:</span> <a href="../reference/charstream.html#CharStream"><span class="ci">CharStream</span></a><span class="cp">)</span> <span class="cp">=</span>
+            <span class="cp">{</span><span class="ci">Parser</span> <span class="co">=</span> <span class="ci">parser</span><span class="cp">;</span> <span class="ci">Index</span> <span class="co">=</span> <span class="ci">stream</span><span class="cm">.</span><a href="../reference/charstream.html#CharStream.members.Index"><span class="ci">Index</span></a><span class="cp">}</span>
+
+        <span class="ck">val</span> <span class="ci">Parser</span><span class="cp">:</span> <span class="ci">obj</span>
+        <span class="ck">val</span> <span class="ci">Index</span><span class="cp">:</span> <span class="ci">int64</span>
+
+        <span class="ck">interface</span> <a href="http://msdn.microsoft.com/en-us/library/ms131187.aspx"><span class="ci">System</span><span class="cm">.</span><span class="ci">IEquatable</span></a><span class="cp">&lt;</span><span class="ci">MemoKey</span><span class="cp">&gt;</span> <span class="ck">with</span>
+            <span class="ck">member</span> <span class="ci">t</span><span class="cm">.</span><span class="ci">Equals</span><span class="cp">(</span><span class="ci">other</span><span class="cp">:</span> <span class="ci">MemoKey</span><span class="cp">)</span> <span class="cp">=</span>
+                <span class="ci">t</span><span class="cm">.</span><span class="ci">Index</span> <span class="co">=</span> <span class="ci">other</span><span class="cm">.</span><span class="ci">Index</span> <span class="co">&amp;&amp;</span> <span class="ci">t</span><span class="cm">.</span><span class="ci">Parser</span> <span class="co">=</span> <span class="ci">other</span><span class="cm">.</span><span class="ci">Parser</span>
+
+        <span class="ck">override</span> <span class="ci">t</span><span class="cm">.</span><span class="ci">Equals</span><span class="cp">(</span><span class="ci">otherObj</span><span class="cp">:</span> <span class="ci">obj</span><span class="cp">)</span> <span class="co">=</span>
+            <span class="ck">match</span> <span class="ci">otherObj</span> <span class="ck">with</span>
+            <span class="cp">|</span> <span class="cp">:?</span> <span class="ci">MemoKey</span> <span class="ck">as</span> <span class="ci">other</span> <span class="cr">-&gt;</span>
+                <span class="ci">t</span><span class="cm">.</span><span class="ci">Index</span> <span class="co">=</span> <span class="ci">other</span><span class="cm">.</span><span class="ci">Index</span> <span class="co">&amp;&amp;</span> <span class="ci">t</span><span class="cm">.</span><span class="ci">Parser</span> <span class="co">=</span> <span class="ci">other</span><span class="cm">.</span><span class="ci">Parser</span>
+            <span class="cp">|</span> <span class="ci">_</span> <span class="cr">-&gt;</span> <span class="cb">false</span>
+
+        <span class="ck">override</span> <span class="ci">t</span><span class="cm">.</span><span class="ci">GetHashCode</span><span class="cp">()</span> <span class="co">=</span> <span class="ci">int32</span> <span class="ci">t</span><span class="cm">.</span><span class="ci">Index</span>
+<span class="ck">end</span>
+
+<span class="clc"><span class="cld">//</span>/ Returns a memoized version of the argument parser</span>
+<span class="ck">let</span> <span class="ci">memoize</span> <span class="cp">(</span><span class="ci">p</span><span class="cp">:</span> <a href="../reference/primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ctv">'a</span><span class="cp">,</span><span class="ci">UserState</span><span class="cp">&gt;</span><span class="cp">)</span> <span class="cp">:</span> <a href="../reference/primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ctv">'a</span><span class="cp">,</span><span class="ci">UserState</span><span class="cp">&gt;</span> <span class="cp">=</span>
+    <span class="ck">fun</span> <span class="ci">stream</span> <span class="cr">-&gt;</span>
+        <span class="ck">let</span> <span class="ci">key</span> <span class="cp">=</span> <span class="ci">MemoKey</span><span class="cp">(</span><span class="ci">p</span><span class="cp">,</span> <span class="ci">stream</span><span class="cp">)</span>
+        <span class="ck">let</span> <span class="ci">memoCache</span> <span class="cp">=</span> <span class="ci">stream</span><span class="cm">.</span><a href="../reference/charstream.html#CharStream_1.members.UserState"><span class="ci">UserState</span></a><span class="cm">.</span><span class="ci">MemoCache</span>
+        <span class="ck">let</span> <span class="ck">mutable</span> <span class="ci">boxedReply</span> <span class="cp">=</span> <span class="cnu">null</span>
+        <span class="ck">if</span> <span class="ci">memoCache</span><span class="cm">.</span><span class="ci">TryGetValue</span><span class="cp">(</span><span class="ci">key</span><span class="cp">,</span> <span class="co">&amp;</span><span class="ci">boxedReply</span><span class="cp">)</span> <span class="ck">then</span>
+            <span class="ci">boxedReply</span> <span class="co">:?&gt;</span> <a href="../reference/reply.html"><span class="ci">Reply</span></a><span class="cp">&lt;</span><span class="ctv">'a</span><span class="cp">&gt;</span>
+        <span class="ck">else</span>
+            <span class="ck">let</span> <span class="ci">reply</span> <span class="cp">=</span> <span class="ci">p</span> <span class="ci">stream</span>
+            <span class="ci">memoCache</span><span class="cm">.</span><span class="ci">Add</span><span class="cp">(</span><span class="ci">key</span><span class="cp">,</span> <span class="ci">box</span> <span class="ci">reply</span><span class="cp">)</span>
+            <span class="ci">reply</span>
+</pre>
+    </div>
+   </div>
+  </div>
+  <div id="parsing-f-infix-operators" class="section s3">
+   <h2 class="title h3"><span><span class="section-number">5.13.4</span> Parsing F# infix operators</span></h2>
+   <div class="intro i3">
+    <div class="para _1">
+     <p>
+      F# supports user‐definable infix operators whose precedence and associativity depend on the first chars of the operator name. For example, the
+      <a href="http://research.microsoft.com/en-us/um/cambridge/projects/fsharp/manual/spec.html#_Toc257733507">F# spec</a> states that operators that
+      start with <code class="fsharp"><span class="co">*</span></code> are left‐associative, while operators that start with <code
+      class="fsharp"><span class="co">**</span></code> are right associative and have a higher precedence, so that <code class="fsharp"><span
+      class="cn">1</span><span class="co">*</span><span class="cn">2</span><span class="co">*.</span><span class="cn">3</span><span
+      class="co">**</span><span class="cn">4</span><span class="co">**.</span><span class="cn">5</span></code> is parsed as <code class="fsharp"><span
+      class="cp">(</span><span class="cp">(</span><span class="cn">1</span><span class="co">*</span><span class="cn">2</span><span
+      class="cp">)</span><span class="co">*.</span><span class="cp">(</span><span class="cn">3</span><span class="co">**</span><span
+      class="cp">(</span><span class="cn">4</span> <span class="co">**.</span><span class="cn">5</span><span class="cp">)</span><span
+      class="cp">)</span><span class="cp">)</span></code>.
+     </p>
+    </div>
+    <div class="para _2">
+     <p>
+      Since the precedence and associativity rules are fixed, you can parse F# expressions with a static operator precedence grammar, i.e. without
+      having to reconfigure the parser when a new operator is defined in the parsed source code. However, it’s probably not immediately obvious how to
+      do this with FParsec’s <code class="fsharp"><a href="../reference/operatorprecedenceparser.html#members.OperatorPrecedenceParser"><span
+      class="ci">OperatorPrecedenceParser</span></a></code> class (OPP), since the OPP normally expects all possible operators to be (individually)
+      specified before they are used.
+     </p>
+    </div>
+    <div class="para _3">
+     <p>
+      The trick to supporting whole classes of operator names without having to reconfigure the OPP at run‐time is to shift part of the operator
+      parsing to the <a href="../reference/operatorprecedenceparser.html#members.Operator">after‐string‐parser</a>, like in the following example:
+     </p>
+    </div>
+    <div class="para _4 lcinp">
+<pre class="code fsharp"><span class="ck">open</span> <span class="ci">FParsec</span>
+
+<span class="ck">type</span> <span class="ci">Expr</span> <span class="cp">=</span> <span class="ci">InfixOpExpr</span> <span class="ck">of</span> <span class="ci">string</span> <span class="cp">*</span> <span class="ci">Expr</span> <span class="cp">*</span> <span class="ci">Expr</span>
+          <span class="cp">|</span> <span class="ci">Number</span> <span class="ck">of</span> <span class="ci">int</span>
+
+<span class="ck">let</span> <span class="ci">ws</span>  <span class="cp">=</span> <a href="../reference/charparsers.html#members.spaces"><span class="ci">spaces</span></a>  <span class="clc"><span class="cld">//</span> whitespace parser</span>
+
+<span class="ck">let</span> <span class="ci">isSymbolicOperatorChar</span> <span class="cp">=</span> <a href="../reference/charparsers.html#members.isAnyOf"><span class="ci">isAnyOf</span></a> <span class="cs"><span class="cld">"</span>!%&amp;*+-./&lt;=&gt;@^|~?<span class="crd">"</span></span>
+<span class="ck">let</span> <span class="ci">remainingOpChars_ws</span> <span class="cp">=</span> <a href="../reference/charparsers.html#members.manySatisfy"><span class="ci">manySatisfy</span></a> <span class="ci">isSymbolicOperatorChar</span> <a href="../reference/primitives.html#members...:62::62:"><span class="co">.&gt;&gt;</span></a> <span class="ci">ws</span>
+
+<span class="ck">let</span> <span class="ci">opp</span> <span class="cp">=</span> <span class="ck">new</span> <a href="../reference/operatorprecedenceparser.html#members.OperatorPrecedenceParser"><span class="ci">OperatorPrecedenceParser</span></a><span class="cp">&lt;</span><span class="ci">Expr</span><span class="cp">,</span> <span class="ci">string</span><span class="cp">,</span> <span class="ci">unit</span><span class="cp">&gt;</span><span class="cp">()</span>
+<span class="ci">opp</span><span class="cm">.</span><a href="../reference/operatorprecedenceparser.html#members.TermParser"><span class="ci">TermParser</span></a> <span class="co">&lt;-</span> <a href="../reference/charparsers.html#members.pint32"><span class="ci">pint32</span></a> <a href="../reference/primitives.html#members...:62::62:"><span class="co">.&gt;&gt;</span></a> <span class="ci">ws</span> <a href="../reference/primitives.html#members.:124::62::62:"><span class="co">|&gt;&gt;</span></a> <span class="ci">Number</span>
+
+<span class="clc"><span class="cld">//</span> a helper function for adding infix operators to opp</span>
+<span class="ck">let</span> <span class="ci">addSymbolicInfixOperators</span> <span class="ci">prefix</span> <span class="ci">precedence</span> <span class="ci">associativity</span> <span class="cp">=</span>
+    <span class="ck">let</span> <span class="ci">op</span> <span class="cp">=</span> <a href="../reference/operatorprecedenceparser.html#members.InfixOperator"><span class="ci">InfixOperator</span></a><span class="cp">(</span><span class="ci">prefix</span><span class="cp">,</span> <span class="ci">remainingOpChars_ws</span><span class="cp">,</span>
+                           <span class="ci">precedence</span><span class="cp">,</span> <span class="ci">associativity</span><span class="cp">,</span> <span class="cp">()</span><span class="cp">,</span>
+                           <span class="ck">fun</span> <span class="ci">remOpChars</span> <span class="ci">expr1</span> <span class="ci">expr2</span> <span class="cr">-&gt;</span>
+                               <span class="ci">InfixOpExpr</span><span class="cp">(</span><span class="ci">prefix</span> <span class="co">+</span> <span class="ci">remOpChars</span><span class="cp">,</span> <span class="ci">expr1</span><span class="cp">,</span> <span class="ci">expr2</span><span class="cp">)</span><span class="cp">)</span>
+    <span class="ci">opp</span><span class="cm">.</span><a href="../reference/operatorprecedenceparser.html#members.AddOperator"><span class="ci">AddOperator</span></a><span class="cp">(</span><span class="ci">op</span><span class="cp">)</span>
+
+<span class="clc"><span class="cld">//</span> the operator definitions:</span>
+<span class="ci">addSymbolicInfixOperators</span> <span class="cs"><span class="cld">"</span>*<span class="crd">"</span></span>  <span class="cn">10</span> <a href="../reference/operatorprecedenceparser.html#interface.Associativity..Left"><span class="ci">Associativity</span><span class="cm">.</span><span class="ci">Left</span></a>
+<span class="ci">addSymbolicInfixOperators</span> <span class="cs"><span class="cld">"</span>**<span class="crd">"</span></span> <span class="cn">20</span> <a href="../reference/operatorprecedenceparser.html#interface.Associativity..Right"><span class="ci">Associativity</span><span class="cm">.</span><span class="ci">Right</span></a>
+<span class="clc"><span class="cld">//</span> ...</span>
+
+</pre>
+<pre class="code fsharp"><span class="cmd"><span class="cmdp">&gt;</span> <a href="../reference/charparsers.html#members.run"><span class="ci">run</span></a> <span class="ci">opp</span><span class="cm">.</span><a href="../reference/operatorprecedenceparser.html#members.ExpressionParser"><span class="ci">ExpressionParser</span></a> <span class="cs"><span class="cld">"</span>1*2*.3**4**.5<span class="crd">"</span></span><span class="cp">;;</span></span>
+<span class="cout">val it : ParserResult&lt;Expr,unit&gt; = Success
+InfixOpExpr
+  ("*.", InfixOpExpr ("*", Number 1, Number 2),
+         InfixOpExpr ("**", Number 3, InfixOpExpr ("**.", Number 4, Number 5)))
+</span></pre>
+    </div>
+    <div class="para _5">
+     <p>
+      If you use the after‐string‐parser in this manner for operators that can lead to operator conflicts in the input, e.g. non‐associative
+      operators, then you also need to replace the default <code class="fsharp"><a
+      href="../reference/operatorprecedenceparser.html#members.OperatorConflictErrorFormatter"><span
+      class="ci">OperatorConflictErrorFormatter</span></a></code>, since otherwise the default formatter may print truncated operator names:
+     </p>
+    </div>
+    <div class="para _6 lcinp">
+<pre class="code fsharp"><span class="ci">addSymbolicInfixOperators</span> <span class="cs"><span class="cld">"</span>&lt;<span class="crd">"</span></span>  <span class="cn">1</span> <a href="../reference/operatorprecedenceparser.html#interface.Associativity..None"><span class="ci">Associativity</span><span class="cm">.</span><span class="ci">None</span></a>
+</pre>
+<pre class="code fsharp"><span class="cmd"><span class="cmdp">&gt;</span> <a href="../reference/charparsers.html#members.run"><span class="ci">run</span></a> <span class="ci">opp</span><span class="cm">.</span><a href="../reference/operatorprecedenceparser.html#members.ExpressionParser"><span class="ci">ExpressionParser</span></a> <span class="cs"><span class="cld">"</span>1 &lt;= 2 &lt;=. 3<span class="crd">"</span></span><span class="cp">;;</span></span>
+<span class="cout">val it : ParserResult&lt;Expr,unit&gt; = Failure:
+Error in Ln: 1 Col: 9
+1 &lt;= 2 &lt;=. 3
+        ^
+The infix operator '&lt;' (precedence: 1, non-associative) conflicts with the
+infix operator '&lt;' (precedence: 1, non-associative) on the same line at column 3.
+</span></pre>
+    </div>
+    <div class="para _7">
+     <p>An error formatter that prints the full operator names could look like the following:</p>
+    </div>
+    <div class="para _8 lcinp">
+<pre class="code fsharp"><span class="ci">opp</span><span class="cm">.</span><a href="../reference/operatorprecedenceparser.html#members.OperatorConflictErrorFormatter"><span class="ci">OperatorConflictErrorFormatter</span></a> <span class="co">&lt;-</span>
+  <span class="ck">fun</span> <span class="cp">(</span><span class="ci">pos1</span><span class="cp">,</span> <span class="ci">op1</span><span class="cp">,</span> <span class="ci">afterString1</span><span class="cp">)</span> <span class="cp">(</span><span class="ci">pos2</span><span class="cp">,</span> <span class="ci">op2</span><span class="cp">,</span> <span class="ci">afterString2</span><span class="cp">)</span> <span class="cr">-&gt;</span>
+    <span class="ck">let</span> <span class="ci">msg</span> <span class="cp">=</span> <span class="ci">sprintf</span> <span class="cs"><span class="cld">"</span>The operator '%s' conflicts with the previous operator '%s' at %A.<span class="crd">"</span></span>
+                       <span class="cp">(</span><span class="ci">op2</span><span class="cm">.</span><a href="../reference/operatorprecedenceparser.html#members.String"><span class="ci">String</span></a> <span class="co">+</span> <span class="ci">afterString2</span><span class="cp">)</span>
+                       <span class="cp">(</span><span class="ci">op1</span><span class="cm">.</span><a href="../reference/operatorprecedenceparser.html#members.String"><span class="ci">String</span></a> <span class="co">+</span> <span class="ci">afterString1</span><span class="cp">)</span> <span class="ci">pos1</span>
+    <a href="../reference/error.html#members.messageError"><span class="ci">messageError</span></a> <span class="ci">msg</span>
+</pre>
+<pre class="code fsharp"><span class="cmd"><span class="cmdp">&gt;</span> <a href="../reference/charparsers.html#members.run"><span class="ci">run</span></a> <span class="ci">opp</span><span class="cm">.</span><a href="../reference/operatorprecedenceparser.html#members.ExpressionParser"><span class="ci">ExpressionParser</span></a> <span class="cs"><span class="cld">"</span>1 &lt;= 2 &lt;=. 3<span class="crd">"</span></span><span class="cp">;;</span></span>
+<span class="cout">val it : ParserResult&lt;Expr,unit&gt; = Failure:
+Error in Ln: 1 Col: 9
+1 &lt;= 2 &lt;=. 3
+        ^
+The operator '&lt;=.' conflicts with the previous operator '&lt;=' at (Ln: 1, Col: 3).
+</span></pre>
+    </div>
+   </div>
+  </div>
+ </div>
+ </div>
+ </div>   
+ </div>
+</body>
+</html>
+

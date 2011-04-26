@@ -18,7 +18,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;NOINLINE</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;NOINLINE;DEBUG_STATIC_MAPPING</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>3</WarningLevel>
   </PropertyGroup>
@@ -48,6 +48,18 @@
     <Compile Include="..\..\FParsec\Internals.fs">
       <Link>Internals.fs</Link>
     </Compile>
+    <Compile Include="..\..\FParsec\Range.fs">
+      <Link>Range.fs</Link>
+    </Compile>
+    <Compile Include="..\..\FParsec\Emit.fs">
+      <Link>Emit.fs</Link>
+    </Compile>
+    <Compile Include="..\..\FParsec\StaticMapping.fsi">
+      <Link>StaticMapping.fsi</Link>
+    </Compile>
+    <Compile Include="..\..\FParsec\StaticMapping.fs">
+      <Link>StaticMapping.fs</Link>
+    </Compile>
     <Compile Include="..\..\FParsec\Error.fsi">
       <Link>Error.fsi</Link>
     </Compile>
@@ -65,12 +77,6 @@
     </Compile>
     <Compile Include="..\..\FParsec\CharParsers.fs">
       <Link>CharParsers.fs</Link>
-    </Compile>
-    <Compile Include="..\..\FParsec\OperatorPrecedenceParser.fsi">
-      <Link>OperatorPrecedenceParser.fsi</Link>
-    </Compile>
-    <Compile Include="..\..\FParsec\OperatorPrecedenceParser.fs">
-      <Link>OperatorPrecedenceParser.fs</Link>
     </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\FSharp\1.0\Microsoft.FSharp.Targets" />

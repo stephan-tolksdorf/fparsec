@@ -1,0 +1,513 @@
+﻿
+[interface-reference]
+[section#OperatorPrecedenceParser FParsec.OperatorPrecedenceParser]
+
+[section Interface]
+[$$interface]
+[/section]
+
+[section Members]
+[interface-members]
+[``
+// FParsecCS.dll
+
+namespace FParsec
+
+type #Associativity#  = [#Associativity..None None]  = 0
+                    | [#Associativity..Left Left]  = 1
+                    | [#Associativity..Right Right] = 2
+
+type #OperatorType#  = [#OperatorType..Infix Infix]   = 0
+                   | [#OperatorType..Prefix Prefix]  = 1
+                   | [#OperatorType..Postfix Postfix] = 2
+``]
+
+[``
+
+
+type @Operator@<'TTerm, 'TAfterString, 'TUserState>``]
+[
+
+The `Operator` type represents an immutable operator definition for the `OperatorPrecedenceParser<'TTerm, 'TAfterString, 'TUserState>` (OPP) class.
+
+``
+[<ReferenceEquality>]
+type Operator<'TTerm, 'TAfterString, 'TUserState> =
+  member Type: OperatorType
+  member Associativity: Associativity
+  member Precedence: int
+
+  member IsAssociative: bool
+  member IsTernary: bool
+
+  member String: string
+  member TernaryRightString: string // null for non-ternary operators
+``
+
+
+The `Operator` class is the abstract base class of the `InfixOperator`, `PrefixOperator`, `PostfixOperator` and `TernaryOperator` classes. With these four concrete classes you can define binary infix (e.g. "1 + 1"), unary prefix (e.g. "-1"), unary postfix (e.g. "1++") and C-style ternary operators (e.g. "a ? b : c") for the `OperatorPrecedenceParser` (OPP) class.
+
+If you have look at the constructors for the concrete operator classes, you'll see that operators are constructed from an operator string, an "after-string-parser", a precedence level, an associativity value and a mapping function that is applied after the expression is parsed.
+
+Ternary operators are treated as special infix operators and require a string and associated after-string-parser parser for each of the two operator parts.
+
+[dl
+[Associativity and precedence]
+[
+While infix operators can be left-, right- and non-associative (see the `Associativity` type), prefix and postfix operators can only be associative (`true`) or non-associative (`false`). See below for details on [^precedence-associativity how precedence and associativity influence the operator precedence parser].
+]
+
+[Textual representation of operators]
+[
+The operator string and the after-string-parser determine the textual representation of an operator. Usually, the after-string-parser is used for parsing the whitespace after an operator string.
+
+OPP instances have separate "namespaces" for prefix operators on the one hand and infix, postfix or ternary operators on the other hand. Hence, you can configure an OPP instance to recognize a prefix operator with the same string as the (first) string of an infix, postfix or ternary operator. However, no two prefix operators and no two infix, postfix or ternary operators can have the same (first) string. The second string of a ternary operator cannot be used for any other operator at the same time.
+
+The OPP class parses operator strings greedily. This means, for example, that if you define a prefix operator with the string `"-"` and another prefix operator with the string `"--"`, then the input `--` in a prefix location will always be parsed as a `--` operator, never as two successive `-` operators.
+]
+
+[How the OPP applies the after-string-parser]
+[
+If the OPP encounters the operator string in the input, it will apply the after-string-parser directly after the operator string. If the after-string-parser succeeds, the operator will be accepted. If the after-string-parser fails without consuming input (or changing the parser state any another way), the OPP will backtrack to before the operator string and will not try to parse any other operator at this location. If the after-string-parser parser fails after consuming input, the OPP will itself fail with this error.
+
+This backtracking behaviour can be exploited to conditionally accept an operator depending on the input following the operator string. For example, the after-string-parser definition in `PrefixOperator("not", notFollowedBy letter >>. spaces, 1, true, (* ... *))` will ensure that the `"not"` in `"notAnOperator"` cannot be parsed as an operator.
+]
+
+[The mapping function argument of the operator constructors]
+[
+When an OPP instance has finished parsing a sub-expresssion involving an operator, it uses the mapping function supplied as the last argument to the operator constructor to map the parsed term(s) to a new term. Usually this mapping function constructs an AST node or directly transforms the terminal values.
+
+The operator classes `InfixOperator`, `PrefixOperator`, etc. all support two alternative types of mapping functions. The simpler type of mapping function only gets passed the parsed term(s). The other type of mapping function also gets passed the result(s) of the after-string-parser(s).
+]
+
+[More uses of the after-string-parser]
+[
+The combination of individually configurable after-string-parsers and mapping functions make the OPP class quite flexible in addressing various practical parsing needs.
+
+One use of the after-string-parser is discussed in the user's guide section on [@ parsing F# infix operators].
+
+Another use is demonstrated in the following example. It shows [#get-position-with-after-string-parser how you can use the after-string-parser to get hold of the precise text location of the parsed operator] (which is often useful for diagnostic purposes in your application):
+
+``
+open FParsec
+open FParsec.Primitives
+open FParsec.CharParsers
+
+let opp = new OperatorPrecedenceParser<_,_,_>()
+
+let ws = spaces
+
+type Assoc = Associativity
+
+let adjustPosition offset (pos: Position) =
+    Position(pos.[^Position..StreamName StreamName], pos.[^Position..Index Index] + int64 offset,
+             pos.[^Position..Line Line], pos.[^Position..Column Column] + int64 offset)
+
+// To simplify infix operator definitions, we define a helper function.
+let addInfixOperator str prec assoc mapping =
+    let op = InfixOperator(str, getPosition .>> ws, prec, assoc, (),
+                           fun opPos leftTerm rightTerm ->
+                               mapping
+                                   (adjustPosition -str.Length opPos)
+                                   leftTerm rightTerm)
+    opp.AddOperator(op)
+
+// Of course, you can define similar functions for other operator types.
+
+// With the helper function in place, you can define an operator with
+// a mapping function that gets passed the text location of the
+// parsed operator as the first argument.
+addInfixOperator "+" 1 Assoc.Left (fun opPos leftTerm rightTerm -> (* ... *))
+``
+]
+]
+
+[br]Members of `Operator<'TTerm, 'TAfterString, 'TUserState>`:
+
+[interface-members]
+[``=
+``]
+[``
+  member @Type@: OperatorType
+``]
+[
+The operator's type: `[^OperatorType..Infix Infix]`, `[^OperatorType..Prefix Prefix]` or `[^OperatorType..Postfix Postfix]`.
+
+Ternary operators are treated as special infix operators.
+]
+[``
+  member @`Associativity@: @Associativity@
+``]
+[#Operator..Associativity
+The operator's associativity: `[^Associativity..None None]`, `[^Associativity..None Left]` or `[^Associativity..None Right]`.
+
+For associative prefix operators this value is `Associativity.Right`, for associative postfix operators this value is `Associativity.Left`.
+]
+
+[``
+  member @Precedence@: int
+``]
+[
+ The operator's precedence value. The value is always greater zero. Operators with a numerically higher precedence value take precedence over operators with lower precedence values.
+]
+
+[``
+
+  member @IsAssociative@: bool
+``]
+[Is equivalent to `[^Operator..Associativity Associativity] != Associativity.None`.]
+
+[``
+  member @IsTernary@: bool
+``]
+[Indicates whether the operator is a `TernaryOperator`.]
+
+[``
+
+  member @String@: string
+``]
+[The operator's string specified during construction.
+
+For ternary operators this property returns the left string.
+]
+
+[``
+  member @TernaryRightString@: string``]
+[
+The right string of a `TernaryOperator`.
+
+For non-ternary operators this property is null.
+]
+
+[`` // null for non-ternary operators
+``]
+[/interface-members]
+
+]
+
+[``
+
+// the following four types inherit from Operator<_,_,_>
+``]
+[``
+type @InfixOperator@<'TTerm, 'TAfterString, 'TUserState>``]
+[
+
+The `InfixOperator<'TTerm, 'TAfterString, 'TUserState>` type represents a binary infix operator definition (e.g. the `+` in `1 + 1`) for the `OperatorPrecedenceParser` class.
+
+``
+type InfixOperator<'TTerm, 'TAfterString, 'TUserState> =
+  inherit Operator<'TTerm, 'TAfterString, 'TUserState>
+
+  new:   operatorString: string
+       * afterStringParser: Parser<'TAfterString,'TUserState>
+       * precedence: int
+       * associativity: Associativity
+       * mapping: 'TTerm -> 'TTerm -> 'TTerm
+      -> InfixOperator<'TTerm, 'TAfterString, 'TUserState>
+
+  new:   operatorString: string
+       * afterStringParser: Parser<'TAfterString,'TUserState>
+       * precedence: int
+       * associativity: Associativity
+       * dummy: unit // disambiguates overloads in F#
+       * mapping: 'TAfterString -> 'TTerm -> 'TTerm -> 'TTerm
+      -> InfixOperator<'TTerm, 'TAfterString, 'TUserState>
+``
+
+[* The two constructors only differ in the type of the mapping they accept. To help F#'s type inference discern both constructors, the second constructor accepts an additional dummy argument.]
+
+Please see the documentation for the `Operator` base class for more information.
+
+]
+[`` = // ...
+``]
+[``
+type @PrefixOperator@<'TTerm, 'TAfterString, 'TUserState>``]
+[
+The `PrefixOperator<'TTerm, 'TAfterString, 'TUserState>` type represents a unary prefix operator definition (e.g. the `-` in `-1`) for the `OperatorPrecedenceParser` class.
+
+``
+type PrefixOperator<'TTerm, 'TAfterString, 'TUserState> =
+  inherit Operator<'TTerm, 'TAfterString, 'TUserState>
+
+  new:   operatorString: string
+       * afterStringParser: Parser<'TAfterString,'TUserState>
+       * precedence: int
+       * isAssociative: bool
+       * mapping: 'TTerm -> 'TTerm
+      -> PrefixOperator<'TTerm, 'TAfterString, 'TUserState>
+
+  new:   operatorString: string
+       * afterStringParser: Parser<'TAfterString,'TUserState>
+       * precedence: int
+       * isAssociative: bool
+       * dummy: unit // disambiguates overloads in F#
+       * mapping: 'TAfterString -> 'TTerm -> 'TTerm
+      -> PrefixOperator<'TTerm, 'TAfterString, 'TUserState>
+``
+
+[* The two constructors only differ in the type of the mapping they accept. To help F#'s type inference discern both constructors, the second constructor accepts an additional dummy argument.]
+
+Please see the documentation for the `Operator` base class for more information.
+]
+[`` = // ...
+``]
+[``
+type @PostfixOperator@<'TTerm, 'TAfterString, 'TUserState>``]
+[
+The `PostfixOperator<'TTerm, 'TAfterString, 'TUserState>` type represents a unary postfix operator definition (e.g. the `++` in `1++`) for the `OperatorPrecedenceParser` class.
+
+``
+type PostfixOperator<'TTerm, 'TAfterString, 'TUserState> =
+  inherit Operator<'TTerm, 'TAfterString, 'TUserState>
+
+  new:   operatorString: string
+       * afterStringParser: Parser<'TAfterString,'TUserState>
+       * precedence: int
+       * isAssociative: bool
+       * mapping: 'TTerm -> 'TTerm
+      -> PostfixOperator<'TTerm, 'TAfterString, 'TUserState>
+
+  new:   operatorString: string
+       * afterStringParser: Parser<'TAfterString,'TUserState>
+       * precedence: int
+       * isAssociative: bool
+       * dummy: unit // disambiguates overloads in F#
+       * mapping: 'TAfterString -> 'TTerm -> 'TTerm
+      -> PostfixOperator<'TTerm, 'TAfterString, 'TUserState>
+``
+
+[* The two constructors only differ in the type of the mapping they accept. To help F#'s type inference discern both constructors, the second constructor accepts an additional dummy argument.]
+
+Please see the documentation for the `Operator` base class for more information.
+
+]
+[`` = // ...
+``]
+[``
+type @TernaryOperator@<'TTerm, 'TAfterString, 'TUserState>``]
+[
+The `TernaryOperator<'TTerm, 'TAfterString, 'TUserState>` type represents a C-style ternary operator definition (e.g. the `{none}? :` in `{c++}a ? b : c`) for the `OperatorPrecedenceParser` class.
+
+``
+type TernaryOperator<'TTerm, 'TAfterString, 'TUserState> =
+  inherit Operator<'TTerm, 'TAfterString, 'TUserState>
+
+  new:   leftString: string
+       * afterLeftStringParser: Parser<'TAfterString,'TUserState>
+       * rightString: string
+       * afterRightStringParser: Parser<'TAfterString,'TUserState>
+       * precedence: int
+       * associativity: Associativity
+       * mapping: 'TTerm -> 'TTerm -> 'TTerm -> 'TTerm
+      -> TernaryOperator<'TTerm, 'TAfterString, 'TUserState>
+
+  new:   operatorString: string
+       * afterStringParser: Parser<'TAfterString,'TUserState>
+       * precedence: int
+       * isAssociative: bool
+       * dummy: unit // disambiguates overloads in F#
+       * mapping:   'TAfterString -> 'TAfterString -> 'TTerm -> 'TTerm -> 'TTerm
+                 -> 'TTerm
+      -> TernaryOperator<'TTerm, 'TAfterString, 'TUserState>
+``
+
+[* The two constructors only differ in the type of the mapping they accept. To help F#'s type inference discern both constructors, the second constructor accepts an additional dummy argument.]
+
+Please see the documentation for the `Operator` base class for more information.
+
+]
+
+[`` = // ...
+``]
+
+[``
+
+
+type @OperatorPrecedenceParser@<'TTerm, 'TAfterString, 'TUserState>``]
+[
+
+The `OperatorPrecedenceParser` class (OPP) represents a dynamically configurable parser for parsing expression grammars involving binary infix (e.g. `1 + 1`), unary prefix (e.g. `-1`), unary postfix (e.g. `1++`) and C-style ternary operators (e.g. `{c++}a ? b : c`).
+
+You can configure an OPP instance by adding and removing operator definitions in the form of [** `Operator`] values. If you add an operator that conflicts with a previous operator definition, `AddOperator` will raise an `ArgumentException`. The `Operators` property returns a snapshot of the currently defined set of operators. The `RemoveInfixOperator`, `RemovePrefixOperator`, etc. members remove operator definitions based only on their text representation. All `Remove...` members return `false` if no matching operator was previously defined, otherwise `true`.
+
+The actual expression parser of the OPP is exposed through the `[** ExpressionParser]` property.
+The `ExpressionParser` value is a constant closure that forwards all work to internal instance methods. This ensures that the behaviour of the expression parser always reflects the latest configuration of the OPP instance. You can safely call the `ExpressionParser` concurrently from multiple threads, as long as the configuration of the OPP instance is not changed at the same time.
+
+Before you can call the `ExpressionParser` you first need to set the `[** TermParser]`. The OPP instance uses the `TermParser` to parse the terms in between the operators. Often the `TermParser` will not just parse terminal values but will also recursively call the `ExpressionParser`, for example to parse an expression between parentheses. Note that the `TermParser` also needs to consume any trailing whitespace.
+
+This example shows how to define a parser for very simple arithmetic expressions:
+``
+open FParsec
+open FParsec.Primitives
+open FParsec.CharParsers
+
+let ws = spaces
+let str_ws s = pstring s >>. ws
+
+let opp = new OperatorPrecedenceParser<float,unit,unit>()
+let expr = opp.ExpressionParser
+let term = (pfloat .>> ws) <|> between (str_ws "(") (str_ws ")") expr
+opp.TermParser <- term
+
+type Assoc = Associativity
+
+opp.AddOperator(InfixOperator("+", ws, 1, Assoc.Left, fun x y -> x + y))
+opp.AddOperator(InfixOperator("*", ws, 2, Assoc.Left, fun x y -> x * y))
+``
+``{fsi}
+> run expr "1 + 2*(3 + 4)";;
+val it : ParserResult<float,unit> = Success: 15.0
+``
+
+[#precedence-associativity]The following points explain *how expressions are parsed depending on precedence and associativity* of the involved operators:
+
+- Operators with higher precedence bind tighter. For example, if the prefix operator "~" has a lower precedence than the infix operator "&" then "~x&y" will be parsed as "~(x&y)".
+
+- Ternary operators are treated as special infix operators. The middle expression (e.g. "expr2" in "expr1 ? expr2 : expr3") is parsed as a "fresh" expression that is not influenced by the precedence of the surrounding operators.
+
+- Operators with identical precedence are parsed as follows:
+  ``{none}
+Here o1,   o2   are two infix operators,
+     pre1, pre2 are two prefix operators,
+     po1,  po2  are two postfix operators
+and all operators have identical precedence.
+
+pre1 x o1 y  ==>  (pre1 x) o1 y
+x o1 y po1   ==>  x o1 (y po1)
+x o1 y o2 z  ==>  (x o1 y) o2 z  if o1 and o2 are left-associative
+x o1 y o2 z  ==>  x o1 (y o2 z)  if o1 and o2 are right-associative
+pre1 x po1   ==>  (pre1 x) po1   if pre1 or po1  is associative
+pre1 pre2 x  ==>  pre1 (pre2 x)  if pre1 or pre2 is associative
+x po1 po2    ==>  (x po1) po2    if po1  or po2  is associative
+  ``
+
+- If the parser encounters #conflicting operators#, e.g. if a right-associative infix operators follows a left-associative operator with the same precedence level, the OPP fails and returns with an error generated with the help of the `OperatorConflictErrorFormatter`.
+
+  In the following situations the OPP will fail with an operator conflict error:
+  ``{none}
+[Same notation as above, all operators have identical precedence.]
+
+x o1 y o2 z  if o1 and o2 have different associativity
+             or o1 and o2 are non-associative
+pre1 pre2 x  if pre1 and pre2 are non-associative
+pre1 x po1   if pre1 and po1  are non-associative
+x po1 po2    if po1  and po2  are non-associative
+``
+
+  By giving all operators different precedence levels and making all operators associative, you can exclude any possible operator conflict. A practical reason for defining operators that can lead to conflicts in the inputs (e.g. non-associative operators) is to force the user to explicitely parenthesize an expression involving such operators.
+
+[br]Members of `OperatorPrecedenceParser<'TTerm, 'TAfterString, 'TUserState>`:
+
+[interface-members]
+
+[`` =
+``]
+[``
+  member @ExpressionParser@: Parser<'TTerm,'TUserState>
+``]
+[
+The expression parser. This is a constant closure that forwards all work to internal instance methods, so that the behaviour of the expression parser always reflects the latest configuration of the OPP instance.
+
+You can safely call the `ExpressionParser` concurrently from multiple threads, as long as the configuration of the `OperatorPrecedenceParser` instance is not changed at the same time.
+]
+
+[``
+  member @TermParser@: Parser<'TTerm,'TUserState> with get, set
+``]
+[
+This parser is called to parse the terms in between the operators. There is no default,
+ so you must set this parser before you can call the `ExpressionParser`.
+ Note that the term parser is also expected to parse any whitespace after a term.
+ ]
+
+[``
+
+  member @AddOperator@: Operator<'TTerm, 'TAfterString, 'TUserState> -> unit
+``]
+[
+Adds an operator to the grammar. Raises an `ArgumentException` if the operator definition conflicts with a previous definition.
+]
+[``
+
+  member @RemoveOperator@: Operator<'TTerm, 'TAfterString, 'TUserState> -> bool
+``]
+[
+Removes the given `Operator` instance from the grammar.
+Returns `false` if the `Operator` instance was not previously registered, otherwise `true`.
+]
+
+[``
+  member @RemoveInfixOperator@: string -> bool
+``]
+[
+Removes the `InfixOperator` with the given string from the grammar.
+Returns `false` if no infix operator with that string was previously registered, otherwise `true`.
+]
+
+[``
+  member @RemovePrefixOperator@: string -> bool
+``]
+[
+Removes the `PrefixOperator` with the given string from the grammar.
+Returns `false` if no prefix operator with that string was previously registered, otherwise `true`.
+]
+[``
+  member @RemovePostfixOperator@: string -> bool
+``]
+[
+Removes the `PostfixOperator` with the given string from the grammar.
+Returns `false` if no postfix operator with that string was previously registered, otherwise `true`.
+]
+
+[``
+  member @RemoveTernaryOperator@: string * string -> bool
+``]
+[
+Removes the `TernaryOperator` with the given left and right strings from the grammar.
+Returns `false` if no ternary operator with these strings was previously registered, otherwise `true`.
+]
+
+[``
+  member @Operators@: seq<PrecedenceParserOp<'a,'u>>
+``]
+[
+Returns a sequence with a snapshot of the operators currently registered with the `OperatorPrecedenceParser`.
+]
+
+[``
+
+  member @OperatorConflictErrorFormatter@:
+    (   Position * Operator<'TTerm, 'TAfterString, 'TUserState> * 'TAfterString
+     -> Position * Operator<'TTerm, 'TAfterString, 'TUserState> * 'TAfterString
+     -> ErrorMessageList)
+    with get, set
+``]
+[
+The `OperatorConflictErrorFormatter` function is called by the OPP instance when it encounters @conflicting operators@ in the input. The two passed tuples contain the stream positions, operator definitions and the after-string-parser values for the two conflicting operators. The returned `ErrorMessageList` will become part of the error messages returned by the OPP's `ExpressionParser`.
+
+You can set this formatter to customize the error messages generated when the OPP instance encounters conflicting operators in the inputs. Of course, if your operator grammar doesn't allow for conflicting operators in the input, the `OperatorConflictErrorFormatter` will never be called and there's no need to customize it. The user's guide section on [@ parsing F# infix operators] contains an example with a custom `OperatorConflictErrorFormatter`.
+]
+
+[``
+
+  member @MissingTernary2ndStringErrorFormatter@:
+    (   Position * Position
+      * TernaryOperator<'TTerm, 'TAfterString, 'TUserState> * 'TAfterString
+     -> ErrorMessageList)
+    with get, set
+``]
+[
+The `MissingTernary2ndStringErrorFormatter` function is called by the OPP instance when it can't parse the second operator string of a C-style ternary operator (e.g. the `{c++}:` in `{c++}a ? b : c`). The passed tuple contains (in order) the position of the first operator string, the position where the the second string was expected, the operator definition and the after-string-parser value for the left operator part. The returned `ErrorMessageList` will become part of the error messages returned by the OPP's `ExpressionParser`.
+
+]
+
+[/interface-members]
+]
+
+[/interface-members]
+[/section]
+
+[/section]
+[/interface-reference]

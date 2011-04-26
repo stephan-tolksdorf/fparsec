@@ -35,14 +35,26 @@
     <Compile Include="..\..\Test\Test.fs">
       <Link>Test.fs</Link>
     </Compile>
+    <Compile Include="..\..\Test\BufferTests.fs">
+      <Link>BufferTests.fs</Link>
+    </Compile>
+    <Compile Include="..\..\Test\CharSetTests.fs">
+      <Link>CharSetTests.fs</Link>
+    </Compile>
+    <Compile Include="..\..\Test\HexFloatTests.fs">
+      <Link>HexFloatTests.fs</Link>
+    </Compile>
+    <Compile Include="..\..\Test\TextTests.fs">
+      <Link>TextTests.fs</Link>
+    </Compile>
     <Compile Include="..\..\Test\CloningTests.fs">
       <Link>CloningTests.fs</Link>
     </Compile>
+    <Compile Include="..\..\Test\StringBufferTests.fs">
+      <Link>StringBufferTests.fs</Link>
+    </Compile>
     <Compile Include="..\..\Test\CharStreamTests.fs">
       <Link>CharStreamTests.fs</Link>
-    </Compile>
-    <Compile Include="..\..\Test\StateTests.fs">
-      <Link>StateTests.fs</Link>
     </Compile>
     <Compile Include="..\..\Test\PrimitivesTests.fs">
       <Link>PrimitivesTests.fs</Link>
@@ -50,11 +62,17 @@
     <Compile Include="..\..\Test\CharParsersTests.fs">
       <Link>CharParsersTests.fs</Link>
     </Compile>
-    <Compile Include="..\..\Test\HexLiteralHelpersTests.fs">
-      <Link>HexLiteralHelpersTests.fs</Link>
+    <Compile Include="..\..\Test\IdentifierValidatorTests.fs">
+      <Link>IdentifierValidatorTests.fs</Link>
     </Compile>
     <Compile Include="..\..\Test\OperatorPrecedenceParserTests.fs">
       <Link>OperatorPrecedenceParserTests.fs</Link>
+    </Compile>
+    <Compile Include="..\..\Test\RangeTests.fs">
+      <Link>RangeTests.fs</Link>
+    </Compile>
+    <Compile Include="..\..\Test\StaticMappingTests.fs">
+      <Link>StaticMappingTests.fs</Link>
     </Compile>
     <Compile Include="..\..\Test\AllTests.fs">
       <Link>AllTests.fs</Link>

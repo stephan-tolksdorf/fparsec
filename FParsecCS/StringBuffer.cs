@@ -1,4 +1,7 @@
-﻿#if !LOW_TRUST
+﻿// Copyright (c) Stephan Tolksdorf 2009
+// License: Simplified BSD License. See accompanying documentation.
+
+#if !LOW_TRUST
 
 #if DEBUG
     #define DEBUG_STRINGBUFFER
@@ -373,4 +376,5 @@ internal unsafe sealed class StringBuffer : IDisposable {
 }
 
 }
+
 #endif

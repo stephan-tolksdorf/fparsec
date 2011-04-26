@@ -1,0 +1,504 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+ <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+ <title>Parsing with user state</title>
+ <link rel="stylesheet" type="text/css" media="all" href="../css/style.css" /> 
+ <link rel="stylesheet" type="text/css" media="screen" href="../css/screen-sidebar.css" />  
+ <!--[if lt IE 9]>
+ <link rel="stylesheet" type="text/css" media="all" href="../css/style-ie.css" /> 
+ <![endif]-->
+ <!--[if IE 6]>
+ <link rel="stylesheet" type="text/css" media="all" href="../css/style-ie6.css" /> 
+ <![endif]-->
+ <link rel="stylesheet" type="text/css" media="print" href="../css/print.css" />
+</head>
+<body>
+ <div id="fixed-layer">
+ <div id="fixed-wrapper">
+ <div id="sidebar">
+  <div id="top-links"><span><a href="http://bitbucket.org/fparsec/main">FParsec @ BitBucket</a> | <a href="https://bitbucket.org/fparsec/main/issues">Report a bug</a> | <a href="mailto:fparsec [at] quanttec.com?subject=FParsec&body=Hello Stephan,%0A%0A[your feedback]">Feedback</a></span></div>
+  <div id="nav-tree">
+   <table class="nav n1">
+    <tbody class="nav-open n1">
+     <tr class="nav-entry n1 _1">
+      <td class="nav-number n1"></td>
+      <td class="nav-title n1"><a href="../index.html">FParsec Documentation</a></td>
+     </tr>
+     <tr class="nav-subentries n1 _1">
+      <td class="nav-subentries-number n1"></td>
+      <td class="nav-subentries n1">
+       <table class="nav n2">
+        <tbody class="nav-before-open n2">
+         <tr class="nav-entry n2 _1">
+          <td class="nav-number n2"><a href="../about/index.html"><span class="section-number">1</span><span class="nav-space"></span></a></td>
+          <td class="nav-title n2"><a href="../about/index.html">About FParsec</a></td>
+         </tr>
+         <tr class="nav-entry n2 _2">
+          <td class="nav-number n2"><a href="../license.html"><span class="section-number">2</span><span class="nav-space"></span></a></td>
+          <td class="nav-title n2"><a href="../license.html">License</a></td>
+         </tr>
+         <tr class="nav-entry n2 _3">
+          <td class="nav-number n2">
+           <a href="../download-and-installation.html"><span class="section-number">3</span><span class="nav-space"></span></a>
+          </td>
+          <td class="nav-title n2"><a href="../download-and-installation.html">Download and installation</a></td>
+         </tr>
+         <tr class="nav-entry n2 _4">
+          <td class="nav-number n2"><a href="../tutorial.html"><span class="section-number">4</span><span class="nav-space"></span></a></td>
+          <td class="nav-title n2"><a href="../tutorial.html">Tutorial</a></td>
+         </tr>
+        </tbody>
+        <tbody class="nav-open n2">
+         <tr class="nav-entry n2 _5">
+          <td class="nav-number n2"><a href="index.html"><span class="section-number">5</span><span class="nav-space"></span></a></td>
+          <td class="nav-title n2"><a href="index.html">User’s Guide</a></td>
+         </tr>
+         <tr class="nav-subentries n2 _5">
+          <td class="nav-subentries-number n2"></td>
+          <td class="nav-subentries n2">
+           <table class="nav n3">
+            <tbody class="nav-before-open n3">
+             <tr class="nav-entry n3 _1">
+              <td class="nav-number n3"><a href="parser-functions.html"><span class="section-number">1</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="parser-functions.html">Parser functions</a></td>
+             </tr>
+             <tr class="nav-entry n3 _2">
+              <td class="nav-number n3">
+               <a href="running-parsers-on-input.html"><span class="section-number">2</span><span class="nav-space"></span></a>
+              </td>
+              <td class="nav-title n3"><a href="running-parsers-on-input.html">Running parsers on input</a></td>
+             </tr>
+             <tr class="nav-entry n3 _3">
+              <td class="nav-number n3">
+               <a href="internals-of-a-simple-parser-function.html"><span class="section-number">3</span><span class="nav-space"></span></a>
+              </td>
+              <td class="nav-title n3">
+               <a href="internals-of-a-simple-parser-function.html">Internals of a simple <code class="fsharp"><span class="ci">Parser</span></code>
+               function</a>
+              </td>
+             </tr>
+             <tr class="nav-entry n3 _4">
+              <td class="nav-number n3">
+               <a href="applying-parsers-in-sequence.html"><span class="section-number">4</span><span class="nav-space"></span></a>
+              </td>
+              <td class="nav-title n3"><a href="applying-parsers-in-sequence.html">Applying parsers in sequence</a></td>
+             </tr>
+             <tr class="nav-entry n3 _5">
+              <td class="nav-number n3"><a href="parsing-sequences.html"><span class="section-number">5</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="parsing-sequences.html">Parsing sequences</a></td>
+             </tr>
+             <tr class="nav-entry n3 _6">
+              <td class="nav-number n3">
+               <a href="parsing-alternatives.html"><span class="section-number">6</span><span class="nav-space"></span></a>
+              </td>
+              <td class="nav-title n3"><a href="parsing-alternatives.html">Parsing alternatives</a></td>
+             </tr>
+             <tr class="nav-entry n3 _7">
+              <td class="nav-number n3">
+               <a href="looking-ahead-and-backtracking.html"><span class="section-number">7</span><span class="nav-space"></span></a>
+              </td>
+              <td class="nav-title n3"><a href="looking-ahead-and-backtracking.html">Looking ahead and backtracking</a></td>
+             </tr>
+             <tr class="nav-entry n3 _8">
+              <td class="nav-number n3">
+               <a href="customizing-error-messages.html"><span class="section-number">8</span><span class="nav-space"></span></a>
+              </td>
+              <td class="nav-title n3"><a href="customizing-error-messages.html">Customizing error messages</a></td>
+             </tr>
+            </tbody>
+            <tbody class="nav-open selected n3">
+             <tr class="nav-entry selected n3 _9">
+              <td class="nav-number selected n3"><a href="#"><span class="section-number">9</span><span class="nav-space"></span></a></td>
+              <td class="nav-title selected n3"><a href="#">Parsing with user state</a></td>
+             </tr>
+             <tr class="nav-subentries selected n3 _9">
+              <td class="nav-subentries-number selected n3"></td>
+              <td class="nav-subentries selected n3">
+               <table class="nav n4">
+                <tbody class="nav-before-open n4">
+                 <tr class="nav-entry n4 _1">
+                  <td class="nav-number n4"><a href="#overview"><span class="section-number">1</span><span class="nav-space"></span></a></td>
+                  <td class="nav-title n4"><a href="#overview">Overview</a></td>
+                 </tr>
+                 <tr class="nav-entry n4 _2">
+                  <td class="nav-number n4">
+                   <a href="#recursive-grammars-with-nesting-restrictions"><span class="section-number">2</span><span class="nav-space"></span></a>
+                  </td>
+                  <td class="nav-title n4">
+                   <a href="#recursive-grammars-with-nesting-restrictions">Recursive grammars with nesting restrictions</a>
+                  </td>
+                 </tr>
+                 <tr class="nav-entry n4 _3">
+                  <td class="nav-number n4">
+                   <a href="#parameterizing-a-parser-through-the-user-state"><span class="section-number">3</span><span class="nav-space"></span></a>
+                  </td>
+                  <td class="nav-title n4">
+                   <a href="#parameterizing-a-parser-through-the-user-state">Parameterizing a parser through the user state</a>
+                  </td>
+                 </tr>
+                </tbody>
+               </table>
+              </td>
+             </tr>
+            </tbody>
+            <tbody class="nav-after-open n3">
+             <tr class="nav-entry n3 _0">
+              <td class="nav-number n3">
+               <a href="where-is-the-monad.html"><span class="section-number">10</span><span class="nav-space"></span></a>
+              </td>
+              <td class="nav-title n3"><a href="where-is-the-monad.html">Where is the monad?</a></td>
+             </tr>
+             <tr class="nav-entry n3 _1">
+              <td class="nav-number n3">
+               <a href="debugging-a-parser.html"><span class="section-number">11</span><span class="nav-space"></span></a>
+              </td>
+              <td class="nav-title n3"><a href="debugging-a-parser.html">Debugging a parser</a></td>
+             </tr>
+             <tr class="nav-entry n3 _2">
+              <td class="nav-number n3">
+               <a href="performance-optimizations.html"><span class="section-number">12</span><span class="nav-space"></span></a>
+              </td>
+              <td class="nav-title n3"><a href="performance-optimizations.html">Performance optimizations</a></td>
+             </tr>
+             <tr class="nav-entry n3 _3">
+              <td class="nav-number n3"><a href="tips-and-tricks.html"><span class="section-number">13</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="tips-and-tricks.html">Tips and tricks</a></td>
+             </tr>
+            </tbody>
+           </table>
+          </td>
+         </tr>
+        </tbody>
+        <tbody class="nav-after-open n2">
+         <tr class="nav-entry n2 _6">
+          <td class="nav-number n2"><a href="../reference/index.html"><span class="section-number">6</span><span class="nav-space"></span></a></td>
+          <td class="nav-title n2"><a href="../reference/index.html">Reference</a></td>
+         </tr>
+        </tbody>
+       </table>
+      </td>
+     </tr>
+    </tbody>
+   </table>
+  </div>
+  <div id="copyright">
+    <span>Copyright © 2011 <a href="../about/contact.html">Stephan Tolksdorf</a></span>
+  </div>
+ </div>
+ </div>
+ </div>
+ <div id="wrapper">   
+ <div id="main">
+ <div id="main-content"> 
+ <div id="breadcrumbs">
+  <span class="breadcrumbs">
+   <span id="breadcrumbs-parents"><a href="../index.html">FParsec Documentation</a><span class="breadcrumbs-sep"> > </span><a href="index.html">User’s Guide</a></span><span class="breadcrumbs-sep"> > </span>Parsing with user state
+  </span>
+ </div>  
+ <div class="section s2">
+  <h1 class="title h2"><span><span class="section-number">5.9</span> Parsing with user state</span></h1>
+  <div class="intro i2">
+   <div class="para _1">
+    <p>
+     Each <code class="fsharp"><a href="../reference/charstream.html#CharStream_1"><span class="ci">CharStream</span><span class="cp">&lt;</span><span
+     class="ctv">'u</span><span class="cp">&gt;</span></a></code> holds a value of the freely definable user state type <code class="fsharp"><span
+     class="ctv">'u</span></code>. In previous chapters we just ignored the user state and always assumed <code class="fsharp"><span
+     class="ctv">'u</span></code> to be <code class="fsharp"><span class="ci">unit</span></code>. In this section we finally get to discuss the
+     purpose of the user state and how you can use it in your parsers.
+    </p>
+   </div>
+  </div>
+  <div id="overview" class="section s3">
+   <h2 class="title h3"><span><span class="section-number">5.9.1</span> Overview</span></h2>
+   <div class="intro i3">
+    <div class="para _1 lcinp">
+     <p>
+      The user state allows you to introduce additional variables into the state tracked by FParsec parsers. It has the following two important
+      properties:
+     </p>
+     <ul class="l1">
+      <li class="_1">
+       The user state is stored in the <code class="fsharp"><a href="../reference/charstream.html#CharStream_1"><span
+       class="ci">CharStream</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span></a></code> instance and hence
+       associated with the input. It is not shared globally and not associated with particular parser instances. The same parser instances can be
+       concurrently applied to different <code class="fsharp"><a href="../reference/charstream.html#CharStream_1"><span
+       class="ci">CharStream</span><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">&gt;</span></a></code> instances with
+       different user state instances.
+      </li>
+      <li class="_2">
+       The user state is tracked by FParsec parsers together with the input stream position. This means in particular that a parser restores the
+       previous user state value when it backtracks.
+      </li>
+     </ul>
+    </div>
+    <div class="para _2 lcinp">
+     <div class="admonition">
+      <div class="admonition-title">Important</div>
+      <div class="admonition-body">
+       <div class="para _1">
+        <p>
+         If you want changes to the user state to be undone during backtracking, you must change the user state by assigning a new value to the user
+         state, not by mutating an existing user state value.
+        </p>
+       </div>
+      </div>
+     </div>
+    </div>
+    <div class="para _3 lcinp">
+     <p>
+      With the help of the user state you can implement context sensitive parsers, i.e. parsers whose behaviour not only depends on the immediate
+      input but also on the context of the input. In general this works as follows:
+     </p>
+     <ol class="l1">
+      <li class="_1">You establish a context by defining variables in the user state.</li>
+      <li class="_2">You update the context depending on the input by letting parsers update the user state.</li>
+      <li class="_3">You parse input depending on the context by making the parser behaviour dependent on the user state variables.</li>
+     </ol>
+    </div>
+    <div class="para _4 lcinp">
+     <p>
+      The user state is exposed through the <code class="fsharp"><span class="ci">UserState</span></code> property of the <code class="fsharp"><a
+      href="../reference/charstream.html#CharStream_1"><span class="ci">CharStream</span><span class="cp">&lt;</span><span class="ctv">'u</span><span
+      class="cp">&gt;</span></a></code>. You can implement parsers using the low‐level API that directly access this property, or you can use the
+      following parser primitives from the <code class="fsharp"><a href="../reference/charparsers.html"><span class="ci">CharParsers</span></a></code>
+      module:
+     </p>
+     <ul class="l1">
+      <li class="_1">
+       <code class="fsharp"><a href="../reference/charparsers.html#members.getUserState"><span class="ci">getUserState</span></a></code>,
+      </li>
+      <li class="_2">
+       <code class="fsharp"><a href="../reference/charparsers.html#members.setUserState"><span class="ci">setUserState</span></a></code>,
+      </li>
+      <li class="_3">
+       <code class="fsharp"><a href="../reference/charparsers.html#members.updateUserState"><span class="ci">updateUserState</span></a></code>,
+      </li>
+      <li class="_4">
+       <code class="fsharp"><a href="../reference/charparsers.html#members.userStateSatisfies"><span class="ci">userStateSatisfies</span></a></code>.
+      </li>
+     </ul>
+    </div>
+    <div class="para _5">
+     <p>
+      The next section contains an example employing <code class="fsharp"><a href="../reference/charparsers.html#members.updateUserState"><span
+      class="ci">updateUserState</span></a></code> to change the user state and <code class="fsharp"><a
+      href="../reference/charparsers.html#members.userStateSatisfies"><span class="ci">userStateSatisfies</span></a></code> to check for parser
+      preconditions.
+     </p>
+    </div>
+   </div>
+  </div>
+  <div id="recursive-grammars-with-nesting-restrictions" class="section s3">
+   <h2 class="title h3"><span><span class="section-number">5.9.2</span> Recursive grammars with nesting restrictions</span></h2>
+   <div class="intro i3">
+    <div class="para _1">
+     <p>
+      An important area of application for context sensitive parsers are recursive grammars where certain grammar elements cannot nest within others
+      or where grammar elements need to be parsed differently depending on the nesting context.
+     </p>
+    </div>
+    <div class="para _2">
+     <p>
+      Consider for example a textual markup languages like HTML. Many such markup languages support various &#x201C;inline tags&#x201D; to annotate
+      text in a paragraph. Usually these inline tags can nest arbitrarily, except for a few tags with special restrictions. One of these restrictions
+      often is that hyperlinks must not contain hyperlinks, even though they can contain any other inline content. Other restrictions may apply to
+      elements allowed in superscript text or footnotes. A convenient way to enforce such restrictions during parsing is to introduce variables into
+      the user state that keep track of the nesting context. The following example demonstrates this approach.<sup class="fn-mark"><a
+      id="recursive-grammars-with-nesting-restrictions.:FN:1:B:" href="#recursive-grammars-with-nesting-restrictions.:FN:1">[1]</a></sup>
+     </p>
+    </div>
+    <div class="para _3 lcinp">
+     <p>The following parser for a tiny markup‐language employs the user state</p>
+     <ol class="l1">
+      <li class="_1">to ensure that nested hyperlinks are not accepted and</li>
+      <li class="_2">
+       to parse potentially nested quotations between matching pairs of <code class="fsharp"><span class="cc"><span class="cld">'</span><span
+       class="ce">\'</span><span class="crd">'</span></span></code> or <code class="fsharp"><span class="cc"><span class="cld">'</span><span
+       class="ce">\"</span><span class="crd">'</span></span></code> chars.
+      </li>
+     </ol>
+    </div>
+    <div class="para _4 lcinp">
+<pre class="code fsharp"><span class="ck">open</span> <span class="ci">FParsec</span>
+
+<span class="ck">type</span> <span class="ci">Element</span> <span class="cp">=</span> <a href="../reference/text.html"><span class="ci">Text</span></a> <span class="ck">of</span> <span class="ci">string</span>
+             <span class="cp">|</span> <span class="ci">Bold</span> <span class="ck">of</span> <span class="ci">Element</span> <span class="ci">list</span>
+             <span class="cp">|</span> <span class="ci">Italic</span> <span class="ck">of</span> <span class="ci">Element</span> <span class="ci">list</span>
+             <span class="cp">|</span> <span class="ci">Url</span> <span class="ck">of</span> <span class="ci">string</span> <span class="cp">*</span> <span class="ci">Element</span> <span class="ci">list</span>
+             <span class="cp">|</span> <span class="ci">Quote</span> <span class="ck">of</span> <span class="ci">char</span> <span class="cp">*</span> <span class="ci">Element</span> <span class="ci">list</span>
+
+<span class="ck">type</span> <span class="ci">UserState</span> <span class="cp">=</span>
+    <span class="cp">{</span><span class="ci">InLink</span><span class="cp">:</span> <span class="ci">bool</span>
+     <span class="ci">QuoteStack</span><span class="cp">:</span> <span class="ci">char</span> <span class="ci">list</span><span class="cp">}</span>
+    <span class="ck">with</span>
+       <span class="ck">static</span> <span class="ck">member</span> <span class="ci">Default</span> <span class="cp">=</span> <span class="cp">{</span><span class="ci">InLink</span> <span class="co">=</span> <span class="cb">false</span><span class="cp">;</span> <span class="ci">QuoteStack</span> <span class="co">=</span> <span class="cp">[]</span><span class="cp">}</span>
+
+<span class="ck">let</span> <span class="ci">ws</span>    <span class="cp">=</span> <a href="../reference/charparsers.html#members.spaces"><span class="ci">spaces</span></a>
+<span class="ck">let</span> <span class="ci">ws1</span>   <span class="cp">=</span> <a href="../reference/charparsers.html#members.spaces1"><span class="ci">spaces1</span></a>
+<span class="ck">let</span> <span class="ci">str</span> <span class="ci">s</span> <span class="cp">=</span> <a href="../reference/charparsers.html#members.pstring"><span class="ci">pstring</span></a> <span class="ci">s</span>
+
+<span class="ck">let</span> <span class="ci">elements</span><span class="cp">,</span> <span class="ci">elementsR</span> <span class="cp">=</span> <a href="../reference/primitives.html#members.createParserForwardedToRef"><span class="ci">createParserForwardedToRef</span></a><span class="cp">()</span>
+
+<span class="ck">let</span> <span class="ci">text</span> <span class="cp">=</span> <a href="../reference/charparsers.html#members.many1Satisfy"><span class="ci">many1Satisfy</span></a> <span class="cp">(</span><a href="../reference/charparsers.html#members.isNoneOf"><span class="ci">isNoneOf</span></a> <span class="cs"><span class="cld">"</span>&lt;&gt;'<span class="ce">\"</span><span class="ce">\\</span><span class="crd">"</span></span><span class="cp">)</span> <a href="../reference/primitives.html#members.:124::62::62:"><span class="co">|&gt;&gt;</span></a> <a href="../reference/text.html"><span class="ci">Text</span></a>
+<span class="ck">let</span> <span class="ci">escape</span> <span class="cp">=</span> <span class="ci">str</span> <span class="cs"><span class="cld">"</span><span class="ce">\\</span><span class="crd">"</span></span> <a href="../reference/primitives.html#members.:62::62:.."><span class="co">&gt;&gt;.</span></a> <span class="cp">(</span><a href="../reference/charparsers.html#members.anyChar"><span class="ci">anyChar</span></a> <a href="../reference/primitives.html#members.:124::62::62:"><span class="co">|&gt;&gt;</span></a> <span class="cp">(</span><span class="ci">string</span> <span class="co">&gt;&gt;</span> <a href="../reference/text.html"><span class="ci">Text</span></a><span class="cp">)</span><span class="cp">)</span>
+
+<span class="ck">let</span> <span class="ci">quote</span> <span class="cp">(</span><span class="ci">q</span><span class="cp">:</span> <span class="ci">char</span><span class="cp">)</span> <span class="cp">=</span>
+  <span class="ck">let</span> <span class="ci">pq</span> <span class="cp">=</span> <span class="ci">str</span> <span class="cp">(</span><span class="ci">string</span> <span class="ci">q</span><span class="cp">)</span>
+
+  <span class="ck">let</span> <span class="ci">pushQuote</span> <span class="cp">=</span>
+      <a href="../reference/charparsers.html#members.updateUserState"><span class="ci">updateUserState</span></a> <span class="cp">(</span><span class="ck">fun</span> <span class="ci">us</span> <span class="cr">-&gt;</span> <span class="cp">{</span><span class="ci">us</span> <span class="ck">with</span> <span class="ci">QuoteStack</span> <span class="co">=</span> <span class="ci">q</span><span class="co">::</span><span class="ci">us</span><span class="cm">.</span><span class="ci">QuoteStack</span><span class="cp">}</span><span class="cp">)</span>
+
+  <span class="ck">let</span> <span class="ci">popQuote</span> <span class="cp">=</span>
+      <a href="../reference/charparsers.html#members.updateUserState"><span class="ci">updateUserState</span></a> <span class="cp">(</span><span class="ck">fun</span> <span class="ci">us</span> <span class="cr">-&gt;</span> <span class="cp">{</span><span class="ci">us</span> <span class="ck">with</span> <span class="ci">QuoteStack</span> <span class="co">=</span> <span class="ci">List</span><span class="cm">.</span><span class="ci">tail</span> <span class="ci">us</span><span class="cm">.</span><span class="ci">QuoteStack</span><span class="cp">}</span><span class="cp">)</span>
+
+  <span class="ck">let</span> <span class="ci">isNotInQuote</span> <span class="cp">=</span>
+      <a href="../reference/charparsers.html#members.userStateSatisfies"><span class="ci">userStateSatisfies</span></a> <span class="cp">(</span><span class="ck">fun</span> <span class="ci">us</span> <span class="cr">-&gt;</span> <span class="ck">match</span> <span class="ci">us</span><span class="cm">.</span><span class="ci">QuoteStack</span> <span class="ck">with</span>
+                                    <span class="cp">|</span> <span class="ci">c</span><span class="co">::</span><span class="ci">_</span> <span class="ck">when</span> <span class="ci">c</span> <span class="co">=</span> <span class="ci">q</span> <span class="cr">-&gt;</span> <span class="cb">false</span>
+                                    <span class="cp">|</span> <span class="ci">_</span> <span class="cr">-&gt;</span> <span class="cb">true</span><span class="cp">)</span>
+
+  <span class="ci">isNotInQuote</span> <a href="../reference/primitives.html#members.:62::62:.."><span class="co">&gt;&gt;.</span></a> <a href="../reference/primitives.html#members.between"><span class="ci">between</span></a> <span class="ci">pq</span> <span class="ci">pq</span>
+                           <span class="cp">(</span><a href="../reference/primitives.html#members.between"><span class="ci">between</span></a> <span class="ci">pushQuote</span> <span class="ci">popQuote</span>
+                                    <span class="cp">(</span><span class="ci">elements</span> <a href="../reference/primitives.html#members.:124::62::62:"><span class="co">|&gt;&gt;</span></a> <span class="ck">fun</span> <span class="ci">ps</span> <span class="cr">-&gt;</span> <span class="ci">Quote</span><span class="cp">(</span><span class="ci">q</span><span class="cp">,</span> <span class="ci">ps</span><span class="cp">)</span><span class="cp">)</span><span class="cp">)</span>
+
+<span class="clc"><span class="cld">//</span> helper functions for defining tags</span>
+
+<span class="ck">let</span> <span class="ci">tagOpenBegin</span> <span class="ci">tag</span> <span class="cp">=</span>
+    <span class="ci">str</span> <span class="cp">(</span><span class="cs"><span class="cld">"</span>&lt;<span class="crd">"</span></span> <span class="co">+</span> <span class="ci">tag</span><span class="cp">)</span>
+    <a href="../reference/primitives.html#members.:62::62::63:"><span class="co">&gt;&gt;?</span></a> <a href="../reference/charparsers.html#members.nextCharSatisfiesNot"><span class="ci">nextCharSatisfiesNot</span></a> <a href="../reference/charparsers.html#members.isLetter"><span class="ci">isLetter</span></a> <span class="clc"><span class="cld">//</span> make sure tag name is complete</span>
+    <a href="../reference/primitives.html#members.:60::63::62:"><span class="co">&lt;?&gt;</span></a> <span class="cs"><span class="cld">"</span>&lt;<span class="crd">"</span></span> <span class="co">+</span> <span class="ci">tag</span> <span class="co">+</span> <span class="cs"><span class="cld">"</span>&gt; tag<span class="crd">"</span></span>
+
+<span class="ck">let</span> <span class="ci">tagOpen</span> <span class="ci">tag</span> <span class="cp">=</span> <span class="ci">tagOpenBegin</span> <span class="ci">tag</span> <a href="../reference/primitives.html#members.:62::62:.."><span class="co">&gt;&gt;.</span></a> <span class="ci">str</span> <span class="cs"><span class="cld">"</span>&gt;<span class="crd">"</span></span>
+<span class="ck">let</span> <span class="ci">tagClose</span> <span class="ci">tag</span> <span class="cp">=</span> <span class="ci">str</span> <span class="cp">(</span><span class="cs"><span class="cld">"</span>&lt;/<span class="crd">"</span></span> <span class="co">+</span> <span class="ci">tag</span> <span class="co">+</span> <span class="cs"><span class="cld">"</span>&gt;<span class="crd">"</span></span><span class="cp">)</span>
+
+<span class="ck">let</span> <span class="ci">tag</span> <span class="ci">t</span> <span class="ci">p</span> <span class="ci">f</span> <span class="cp">=</span>
+    <a href="../reference/primitives.html#members.between"><span class="ci">between</span></a> <span class="cp">(</span><span class="ci">tagOpen</span> <span class="ci">t</span><span class="cp">)</span> <span class="cp">(</span><span class="ci">tagClose</span> <span class="ci">t</span><span class="cp">)</span>
+            <span class="cp">(</span><span class="ci">p</span> <a href="../reference/primitives.html#members.:124::62::62:"><span class="co">|&gt;&gt;</span></a> <span class="ci">f</span><span class="cp">)</span>
+
+<span class="ck">let</span> <span class="ci">attributeValue</span> <span class="cp">=</span>
+    <span class="ci">ws</span> <a href="../reference/primitives.html#members.:62::62:.."><span class="co">&gt;&gt;.</span></a> <span class="ci">str</span> <span class="cs"><span class="cld">"</span>=<span class="crd">"</span></span> <a href="../reference/primitives.html#members.:62::62:.."><span class="co">&gt;&gt;.</span></a> <span class="ci">ws</span>
+    <a href="../reference/primitives.html#members.:62::62:.."><span class="co">&gt;&gt;.</span></a> <a href="../reference/primitives.html#members.between"><span class="ci">between</span></a> <span class="cp">(</span><span class="ci">str</span> <span class="cs"><span class="cld">"</span><span class="ce">\"</span><span class="crd">"</span></span><span class="cp">)</span> <span class="cp">(</span><span class="ci">str</span> <span class="cs"><span class="cld">"</span><span class="ce">\"</span><span class="crd">"</span></span><span class="cp">)</span>
+                <span class="cp">(</span><a href="../reference/charparsers.html#members.manySatisfy"><span class="ci">manySatisfy</span></a> <span class="cp">(</span><a href="../reference/charparsers.html#members.isNoneOf"><span class="ci">isNoneOf</span></a> <span class="cs"><span class="cld">"</span><span class="ce">\n</span><span class="ce">\"</span><span class="crd">"</span></span><span class="cp">)</span><span class="cp">)</span>
+
+<span class="ck">let</span> <span class="ci">attribute</span> <span class="ci">s</span> <span class="cp">=</span> <span class="ci">str</span> <span class="ci">s</span> <a href="../reference/primitives.html#members.:62::62:.."><span class="co">&gt;&gt;.</span></a> <span class="ci">attributeValue</span>
+
+<span class="ck">let</span> <span class="ci">nonNestedTag</span> <span class="ci">tag</span> <span class="ci">pAttributesAndClose</span> <span class="ci">pBody</span> <span class="ci">f</span>
+                 <span class="ci">isInTag</span> <span class="ci">setInTag</span> <span class="ci">setNotInTag</span> <span class="cp">=</span>
+    <span class="ci">tagOpenBegin</span> <span class="ci">tag</span>
+    <a href="../reference/primitives.html#members.:62::62:.."><span class="co">&gt;&gt;.</span></a> <span class="cp">(</span><span class="cp">(</span><span class="ck">fun</span> <span class="ci">stream</span> <span class="cr">-&gt;</span>
+            <span class="ck">if</span> <span class="ci">not</span> <span class="cp">(</span><span class="ci">isInTag</span> <span class="ci">stream</span><span class="cm">.</span><a href="../reference/charstream.html#CharStream_1.members.UserState"><span class="ci">UserState</span></a><span class="cp">)</span> <span class="ck">then</span>
+                <span class="ci">stream</span><span class="cm">.</span><a href="../reference/charstream.html#CharStream_1.members.UserState"><span class="ci">UserState</span></a> <span class="co">&lt;-</span> <span class="ci">setInTag</span> <span class="ci">stream</span><span class="cm">.</span><a href="../reference/charstream.html#CharStream_1.members.UserState"><span class="ci">UserState</span></a>
+                <a href="../reference/reply.html"><span class="ci">Reply</span></a><span class="cp">(</span><span class="cp">()</span><span class="cp">)</span>
+            <span class="ck">else</span> <span class="clc"><span class="cld">//</span> generate error at start of tag</span>
+                <span class="ci">stream</span><span class="cm">.</span><a href="../reference/charstream.html#CharStream.members.Skip"><span class="ci">Skip</span></a><span class="cp">(</span><span class="co">-</span><span class="ci">tag</span><span class="cm">.</span><span class="ci">Length</span> <span class="co">-</span> <span class="cn">1</span><span class="cp">)</span>
+                <a href="../reference/reply.html"><span class="ci">Reply</span></a><span class="cp">(</span><a href="../reference/primitives.html#members.FatalError"><span class="ci">FatalError</span></a><span class="cp">,</span>
+                      <a href="../reference/error.html#members.messageError"><span class="ci">messageError</span></a> <span class="cp">(</span><span class="cs"><span class="cld">"</span>Nested &lt;<span class="crd">"</span></span> <span class="co">+</span> <span class="ci">tag</span> <span class="co">+</span> <span class="cs"><span class="cld">"</span>&gt; tags are not allowed.<span class="crd">"</span></span><span class="cp">)</span><span class="cp">)</span><span class="cp">)</span>
+         <a href="../reference/primitives.html#members.:62::62:.."><span class="co">&gt;&gt;.</span></a> <a href="../reference/primitives.html#members.pipe2"><span class="ci">pipe2</span></a> <span class="ci">pAttributesAndClose</span> <span class="ci">pBody</span> <span class="ci">f</span>
+             <a href="../reference/primitives.html#members...:62::62:"><span class="co">.&gt;&gt;</span></a> <span class="cp">(</span><span class="ci">tagClose</span> <span class="ci">tag</span> <a href="../reference/primitives.html#members.:62::62:.."><span class="co">&gt;&gt;.</span></a> <a href="../reference/charparsers.html#members.updateUserState"><span class="ci">updateUserState</span></a> <span class="ci">setNotInTag</span><span class="cp">)</span><span class="cp">)</span>
+
+<span class="clc"><span class="cld">//</span> the tags</span>
+
+<span class="ck">let</span> <span class="ci">bold</span>   <span class="cp">=</span> <span class="ci">tag</span> <span class="cs"><span class="cld">"</span>b<span class="crd">"</span></span> <span class="ci">elements</span> <span class="ci">Bold</span>
+<span class="ck">let</span> <span class="ci">italic</span> <span class="cp">=</span> <span class="ci">tag</span> <span class="cs"><span class="cld">"</span>i<span class="crd">"</span></span> <span class="ci">elements</span> <span class="ci">Italic</span>
+
+<span class="ck">let</span> <span class="ci">url</span> <span class="cp">=</span> <span class="ci">nonNestedTag</span> <span class="cs"><span class="cld">"</span>a<span class="crd">"</span></span> <span class="cp">(</span><span class="ci">ws</span> <a href="../reference/primitives.html#members.:62::62:.."><span class="co">&gt;&gt;.</span></a> <span class="ci">attribute</span> <span class="cs"><span class="cld">"</span>href<span class="crd">"</span></span> <a href="../reference/primitives.html#members...:62::62:"><span class="co">.&gt;&gt;</span></a> <span class="cp">(</span><span class="ci">ws</span> <a href="../reference/primitives.html#members.:62::62:.."><span class="co">&gt;&gt;.</span></a> <span class="ci">str</span> <span class="cs"><span class="cld">"</span>&gt;<span class="crd">"</span></span><span class="cp">)</span><span class="cp">)</span>
+                       <span class="ci">elements</span>
+                       <span class="cp">(</span><span class="ck">fun</span> <span class="ci">url</span> <span class="ci">phrases</span> <span class="cr">-&gt;</span> <span class="ci">Url</span><span class="cp">(</span><span class="ci">url</span><span class="cp">,</span> <span class="ci">phrases</span><span class="cp">)</span><span class="cp">)</span>
+                       <span class="cp">(</span><span class="ck">fun</span> <span class="ci">us</span> <span class="cr">-&gt;</span> <span class="ci">us</span><span class="cm">.</span><span class="ci">InLink</span><span class="cp">)</span>
+                       <span class="cp">(</span><span class="ck">fun</span> <span class="ci">us</span> <span class="cr">-&gt;</span> <span class="cp">{</span><span class="ci">us</span> <span class="ck">with</span> <span class="ci">InLink</span> <span class="co">=</span> <span class="cb">true</span><span class="cp">}</span><span class="cp">)</span>
+                       <span class="cp">(</span><span class="ck">fun</span> <span class="ci">us</span> <span class="cr">-&gt;</span> <span class="cp">{</span><span class="ci">us</span> <span class="ck">with</span> <span class="ci">InLink</span> <span class="co">=</span> <span class="cb">false</span><span class="cp">}</span><span class="cp">)</span>
+
+
+<span class="ck">let</span> <span class="ci">element</span> <span class="cp">=</span> <a href="../reference/primitives.html#members.choice"><span class="ci">choice</span></a> <span class="cp">[</span><span class="ci">text</span>
+                      <span class="ci">escape</span>
+                      <span class="ci">quote</span> <span class="cc"><span class="cld">'</span><span class="ce">\'</span><span class="crd">'</span></span>
+                      <span class="ci">quote</span> <span class="cc"><span class="cld">'</span><span class="ce">\"</span><span class="crd">'</span></span>
+                      <span class="ci">bold</span>
+                      <span class="ci">italic</span>
+                      <span class="ci">url</span><span class="cp">]</span>
+
+<span class="ck">do</span> <span class="ci">elementsR</span><span class="co">:=</span> <a href="../reference/primitives.html#members.many"><span class="ci">many</span></a> <span class="ci">element</span>
+
+<span class="ck">let</span> <span class="ci">document</span> <span class="cp">=</span> <span class="ci">elements</span> <a href="../reference/primitives.html#members...:62::62:"><span class="co">.&gt;&gt;</span></a> <a href="../reference/charparsers.html#members.eof"><span class="ci">eof</span></a>
+</pre>
+<pre class="code fsharp"><span class="cout">
+</span><span class="cmd"><span class="cmdp">&gt;</span> <a href="../reference/charparsers.html#members.runParserOnString"><span class="ci">runParserOnString</span></a> <span class="ci">document</span> <span class="ci">UserState</span><span class="cm">.</span><span class="ci">Default</span> <span class="cs"><span class="cld">"</span><span class="crd">"</span></span>
+    <span class="cs"><span class="cld">"</span>A <span class="ce">\"</span>'text' with 'nested <span class="ce">\"</span>&lt;b&gt;quotes&lt;/b&gt;<span class="ce">\"</span>'.<span class="ce">\"</span><span class="crd">"</span></span><span class="cp">;;</span></span>
+<span class="cout">val it : ParserResult&lt;Element list,UserState&gt; = Success:
+[Text "A ";
+ Quote
+   ('"',
+    [Quote ('\'',[Text "text"]); Text " with ";
+     Quote ('\'',[Text "nested "; Quote ('"',[Bold [Text "quotes"]])]); Text "."])]
+
+</span><span class="cmd"><span class="cmdp">&gt;</span> <a href="../reference/charparsers.html#members.runParserOnString"><span class="ci">runParserOnString</span></a> <span class="ci">document</span> <span class="ci">UserState</span><span class="cm">.</span><span class="ci">Default</span> <span class="cs"><span class="cld">"</span><span class="crd">"</span></span>
+    <span class="cs"><span class="cld">@"</span>&lt;b&gt;Text &lt;i&gt;&lt;/i&gt;with&lt;/b&gt; &lt;a href=""url""&gt;'link' but no \&lt;blink\&gt;&lt;/a&gt;<span class="crd">"</span></span><span class="cp">;;</span></span>
+<span class="cout">val it : ParserResult&lt;Element list,UserState&gt; = Success:
+[Bold [Text "Text "; Italic []; Text "with"]; Text " ";
+ Url("url",
+     [Quote ('\'',[Text "link"]); Text " but no "; Text "&lt;"; Text "blink";
+      Text "&gt;"])]
+
+</span><span class="cmd"><span class="cmdp">&gt;</span> <a href="../reference/charparsers.html#members.runParserOnString"><span class="ci">runParserOnString</span></a> <span class="ci">document</span> <span class="ci">UserState</span><span class="cm">.</span><span class="ci">Default</span> <span class="cs"><span class="cld">"</span><span class="crd">"</span></span>
+    <span class="cs"><span class="cld">"</span>&lt;a href=<span class="ce">\"</span>url<span class="ce">\"</span>&gt;&lt;a href=<span class="ce">\"</span>nested<span class="ce">\"</span>&gt;test&lt;/a&gt;&lt;/a&gt;<span class="crd">"</span></span><span class="cp">;;</span></span>
+<span class="cout">val it : ParserResult&lt;Element list,UserState&gt; = Failure:
+Error in Ln: 1 Col: 15
+&lt;a href="url"&gt;&lt;a href="nested"&gt;test&lt;/a&gt;&lt;/a&gt;
+              ^
+Nested &lt;a&gt; tags are not allowed.
+</span></pre>
+    </div>
+   </div>
+  </div>
+  <div id="parameterizing-a-parser-through-the-user-state" class="section s3">
+   <h2 class="title h3"><span><span class="section-number">5.9.3</span> Parameterizing a parser through the user state</span></h2>
+   <div class="intro i3">
+    <div class="para _1">
+     <p>
+      The user state is also a good place to store parser configuration data that is specific to a &#x201C;parser job&#x201D;. For example, a compiler
+      that processes multiple compilation units could put configuration data that is specific to the compilation unit, e.g. include paths, into the
+      user state and then parse different compilation units with the same <code class="fsharp"><a
+      href="../reference/primitives.html#members.Parser"><span class="ci">Parser</span></a></code> instance, like in the following code:
+     </p>
+    </div>
+    <div class="para _2 lcinp">
+<pre class="code fsharp"><span class="ck">type</span> <span class="ci">CompilationUnitAST</span> <span class="cp">=</span> <span class="cbc"><span class="cld">(*</span> ... <span class="crd">*)</span></span>
+
+<span class="ck">type</span> <span class="ci">UserState</span> <span class="cp">=</span> <span class="cp">{</span>
+    <span class="ci">IncludePaths</span> <span class="co">=</span> <span class="ci">string</span> <span class="ci">list</span>
+    <span class="cbc"><span class="cld">(*</span> ... <span class="crd">*)</span></span>
+<span class="cp">}</span>
+
+<span class="ck">let</span> <span class="ci">parser</span> <span class="cp">:</span> <a href="../reference/primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">CompilationUnitAST</span><span class="cp">,</span> <span class="ci">UserState</span><span class="cp">&gt;</span> <span class="cp">=</span> <span class="cbc"><span class="cld">(*</span> ... <span class="crd">*)</span></span>
+
+<span class="ck">let</span> <span class="ci">parseCompilationUnit</span> <span class="ci">file</span> <span class="ci">encoding</span> <span class="ci">includePaths</span> <span class="cbc"><span class="cld">(*</span> ... <span class="crd">*)</span></span> <span class="cp">=</span>
+    <span class="ck">let</span> <span class="ci">initialUserState</span> <span class="cp">=</span> <span class="cp">{</span><span class="ci">IncludePaths</span> <span class="co">=</span> <span class="ci">includePaths</span><span class="cp">;</span> <span class="cbc"><span class="cld">(*</span> ... <span class="crd">*)</span></span><span class="cp">}</span>
+    <a href="../reference/charparsers.html#members.runParserOnFile"><span class="ci">runParserOnFile</span></a> <span class="ci">parser</span> <span class="ci">initialUserState</span> <span class="ci">file</span> <span class="ci">encoding</span>
+</pre>
+    </div>
+   </div>
+  </div>
+  <div class="fn-list">
+   <div class="fn-title">Footnotes:</div>
+   <table class="fn">
+    <tr class="fn _1">
+     <th class="fn _1">
+      <a class="footnote-backlink" id="recursive-grammars-with-nesting-restrictions.:FN:1"
+      href="#recursive-grammars-with-nesting-restrictions.:FN:1:B:">[1]</a>
+     </th>
+     <td class="fn _2">
+      An alternative way to handle such restrictions at the parser level would be to define separate instances of the parser for each possible
+      combination of restrictions, e.g. separate parsers for inline elements at the top level, for inline elements within hyperlinks, for elements
+      within hyperlinks within superscript text and so on. However, with an increasing number of restrictions this approach quickly falls victim to
+      the combinatorial explosion caused by the recursive nature of the involved parsers.
+     </td>
+    </tr>
+   </table>
+  </div>
+ </div>
+ </div>
+ </div>   
+ </div>
+</body>
+</html>
+

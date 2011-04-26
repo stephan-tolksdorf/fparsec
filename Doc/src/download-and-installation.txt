@@ -1,0 +1,135 @@
+﻿[section Download and installation]
+
+FParsec is currently distributed only in source code form.
+
+[toc]
+
+[section Getting the source]
+FParsec's source code repository is hosted on BitBucket at: [url "https://bitbucket.org/fparsec/main" bitbucket.org/fparsec/main]
+
+You can "clone" the source code using [url "http://mercurial.selenic.com/" Mercurial (HG)] or you can [url "https://bitbucket.org/fparsec/main/downloads" download it as a zip-file].
+
+It's an FParsec project policy to check only stable and tested code into the BitBucket repository, so you can normally just work with the "tip" version of FParsec.
+
+[tip
+[url "http://tortoisehg.bitbucket.org/" TortoiseHG] is a great Mercurial GUI for Windows.
+]
+
+[/section]
+
+[section FParsec is built as two DLLs]
+
+FParsec's source code is written in both C# and F#. Since neither the C# nor the F# compiler directly support the other language, the respective components need to be built separately.
+
+Hence, FParsec is built as two DLLs. The C# bits are compiled into the =FParsecCS.dll= and the F# bits (which depend on the C# bits) are compiled into =FParsec.dll=.
+
+*Projects that use FParsec thus have to reference both DLLs.*
+
+[note If you don't want to distribute the FParsec DLLs together with the assembly of your project, you can use the [url "http://msdn.microsoft.com/en-us/library/dd233171.aspx" =staticlink= command-line option] of the F# compiler to merge the FParsec DLLs into your assembly.
+
+Unfortunately, the same option cannot be used to merge =FParsecCS.dll= into the =FParsec.dll=, as the public definitions in =FParsecCS.dll= wouldn't be reexported by =FParsec.dll=. For similar reasons it also doesn't seem to be possible to use tools like [url "http://research.microsoft.com/en-us/people/mbarnett/ILMerge.aspx" ILMerge] or [url "http://code.google.com/p/il-repack/" il-repack] to obtain a merged =FParsec.dll= that can be properly consumed by F# programs.
+]
+
+[/section]
+
+[section Building FParsec with Visual Studio]
+
+The folders [= Build/VS9] and [= Build/VS10] contain solution files for Visual Studio 2008 and 2010. The folder [= Build/Silverlight] contains a Visual Studio 2010 solution specifically configured to produce Silverlight 4-compatible assemblies.
+
+When you build FParsec with these solution files, the compiled assemblies will be put into the [= bin/Debug] or [= bin/Release] subfolders, depending on the project configuration. For example, the VS10 solution will put the assemblies into the folders [= Build/VS10/bin/Debug] and [= Build/VS10/bin/Release].
+
+The =Test= project in the solution files contains the unit tests for FParsec.
+
+[/section]
+
+[section Building FParsec with Mono]
+
+FParsec is only compatible with the latest version of Mono [url "https://github.com/mono/mono" available from github]. The last official relase of Mono, 2.10.1, still contains bugs in the JIT and C# compiler that make it incompatible with FParsec.
+
+You can build FParsec for Mono using the =Makefile= in the =Build= directory. The debug and release assemblies will be put in the [= Build/bin/Debug] and [= Build/bin/Release] directories respectively.
+
+Mono's `[no-auto-link System.Text.Decoder]` classes have some bugs that cause issues with FParsec. (I'm currently preparing bug reports.) Until these bugs are fixed only the @Low-Trust version@ of FParsec works under FParsec.
+
+Note that Mono [url "https://bugzilla.novell.com/show_bug.cgi?id=480178" currently doesn't properly support] Unicode code points outside the Basic Multilingual Plane (i.e. code points above 0xffff). This breaks FParsec's `identifier` parser, for example.
+
+There are also two issues with the official "source code drop" for the F# compiler:
+- The assemblies for the .NET 4 profile contain duplicate symbols. See [url "https://bugzilla.novell.com/show_bug.cgi?id=686312" here] for instructions how to fix this.
+- On Unix platforms the F# compiler generates debug symbols with invalid source code file paths. This prevents debugging with tools like MonoDevelop. You can fix this by commenting out `>> normalize` on line 724 of [url "https://github.com/fsharp/fsharp/blob/master/src/fsharp/env.fs#L724" [= fsharp/env.fs]] before building F# from source.
+
+[/section]
+
+[section#low-trust-version The Low-Trust version of FParsec]
+
+For optimization reasons the normal implementation of FParsec involves [url "http://msdn.microsoft.com/en-us/library/t2yzs44b.aspx" unverifiable code] using unmanaged pointers.
+
+If you compile FParsec with the `LOW_TRUST` conditional compiler symbol, the unverifiable code is replaced with a "safe" alternative. This allows FParsec to be run in environments with "reduced trust", such as medium trust ASP.NET applications or Silverlight applications.
+
+The next section explains how you can set a conditional compiler symbol. If you want to use the Low-Trust version of FParsec, you need to compile each of the `FParsecCS`, `FParsec` and `Test` projects with the `LOW_TRUST` symbol.
+
+The Low-Trust version of FParsec has the following two major limitations:
+- A `CharStream` that is constructed from a `System.IO.Stream` or a file path reads the complete file into a single string during construction. *This severely limits the maximum practical input stream size.*
+- The `StaticMappings` module is not supported.
+
+[/section]
+
+
+[section Configuration options]
+
+You can configure FParsec's source code with a number of conditional compilation symbols (a.k.a. preprocessor defines). Besides the [^low-trust-version Low-Trust option], these symbols mostly serve tuning purposes. The Visual Studio solutions and the Mono Makefile both come with sensible defaults, so that you don't have to worry about these options if you don't want to.
+
+You can set conditional compilation symbols either in the Visual Studio project configuration in the "Build" tab (multiple symbols can be separated by semicolons) or on the compiler command-line with the [= /define:SYMBOL] option (the F# compiler requires a separate [= /define:] option for each symbol).
+
+[dl Options for =FParsecCS.dll=
+
+[`LOW_TRUST`]
+[See [^low-trust-version above].]
+
+[`CLR4`]
+[Compile for a CLR version ≥ 4.]
+
+[`SILVERLIGHT`]
+[Compile for Silverlight.]
+
+[`SMALL_STATETAG`]
+[
+Use a 32-bit `StateTag` in the `CharStream` class instead of the default 64-bit one.
+
+This is an optimization for 32-bit runtimes. You can find more information about the state tag in [^the-statetag].
+]
+
+[`#UNALIGNED_READS#`]
+[
+Optimize for CPUs that support fast unaligned memory reads, i.e. any modern x86-based CPU.
+
+This option only makes a noticable difference is some specific situations.
+]
+
+]
+
+[dl Options for =FParsec.dll=
+
+[`LOW_TRUST`]
+[See [^low-trust-version above].]
+
+[`[no-auto-link UNALIGNED_READS]`]
+[
+See [^UNALIGNED_READS above].
+]
+
+[`NOINLINE`]
+[
+Do not force inlining of certain parser combinators.
+
+This option enables you to step through the respective combinators during debugging.
+]
+
+[`DEBUG_STATIC_MAPPING`]
+[
+See [^DEBUG_STATIC_MAPPING `StaticMapping` documentation].
+]
+
+]
+
+[/section]
+
+[/section]

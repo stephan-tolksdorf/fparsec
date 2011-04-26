@@ -1,0 +1,71 @@
+﻿[section FParsec vs alternatives]
+
+The following tables contain a bullet-point comparison between FParsec and the two main alternatives for parsing with F#: parser generator tools (e.g. fslex & fsyacc) and "hand-written" recursive descent parsers.
+
+[table Relative advantages
+
+[[Parser-generator tools] [FParsec] [Hand-written[br] recursive-descent parser]]
+[
+[
+- Declarative and easy-to-read syntax
+- Ensures adherence to grammar formalism
+- Can check for certain kinds of ambiguity in grammar
+- You don't have to think about performance. Either the generated parser is fast enough, or not. There's not much you can do about it.
+]
+[
+- Implemented as F# library, so no extra tools or build steps
+- Parsers are first-class values within the language
+- Succinct and expressive syntax
+- Modular and easily extensible
+- Extensive set of predefined parsers and combinators
+- Semi-automatically generated, highly readable error messages
+- Supports arbitrary lookahead and backtracking
+- Runtime-configurable operator-precedence parser component
+- Does not require a pre-parsing tokenization phase
+- Comprehensive documentation
+- Extensively unit-tested
+]
+[
+- No extra tools or build steps
+- Most amenable to individual requirements
+- Potentially as fast as technically possible
+- Parsers are relatively portable if you stick to simple language features and keep library dependencies to a minimum
+]
+]
+]
+
+[table Relative disadvantages
+
+[[Parser-generator tools] [FParsec] [Hand-written[br] recursive-descent parser]]
+[
+[
+- Restricted to features of grammar formalism
+- Extra tools and compilation steps
+- Reliance on opaque generator tool, that is often hard to debug, optimize or extend
+- Static grammar that can't be changed at runtime
+- Often hard to generate good error messages
+- Many tools generate comparatively slow parsers
+- Some tools have only limited Unicode support
+- Portability problems
+]
+[
+- Tradeoff between declarativeness and performance
+- Syntax less readable than PEG or Regular Expression syntax
+- [url "http://en.wikipedia.org/wiki/Left_recursion" Left-recursive] grammar rules have to be rewritten
+- Does not support a pre-parsing tokenization phase
+- You have to learn the API
+- Limited to F#
+- Code-dependence on FParsec
+- Aggressive performance optimizations add complexity to parts of the lower-level FParsec source code
+]
+[
+- You have to write everything yourself, which can take a lot of effort
+- Implementing (fast) parsers requires some experience
+- Expression (sub)grammars with infix operators can be ugly and inefficient to parse with
+  a pure recursive-descent parser, so you might also have to write some
+  kind of embedded operator precedence parser
+]
+]
+]
+
+[/section]

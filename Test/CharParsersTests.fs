@@ -1,4 +1,4 @@
-﻿// Copyright (c) Stephan Tolksdorf 2007-2009
+﻿// Copyright (c) Stephan Tolksdorf 2007-2011
 // License: Simplified BSD License. See accompanying documentation.
 
 module FParsec.Test.CharParsersTests
@@ -18,12 +18,12 @@ type NLF = NumberLiteralResultFlags
 let testCharParsers() =
     pchar ' '  |> ROk " " 1 ' '
     pchar '\t' |> ROk "\t\t" 1 '\t'
-    pchar ' '  |> RError "" 0 (expectedStringError " ")
-    pchar ' '  |> RError "x" 0 (expectedStringError " ")
+    pchar ' '  |> RError "" 0 (expectedString " ")
+    pchar ' '  |> RError "x" 0 (expectedString " ")
 
-    pchar '\r' |> RError "_\r" 0 (expectedError "newline")
-    newline    |> RError "_\n" 0 (expectedError "newline")
-    newline    |> RError "" 0 (expectedError "newline")
+    pchar '\r' |> RError "_\r" 0 Errors.ExpectedNewline
+    newline    |> RError "_\n" 0 Errors.ExpectedNewline
+    newline    |> RError "" 0 Errors.ExpectedNewline
 
     pchar '\n'   |> ROkNL "\r"   1 '\n'
     newline      |> ROkNL "\r"   1 '\n'
@@ -38,8 +38,11 @@ let testCharParsers() =
     skipNewline       |> ROkNL "\n"   1  ()
     newlineReturn 0   |> ROkNL "\r\n" 2  0
 
-    anyChar     |> RError "" 0 (expectedError "any char")
-    skipAnyChar |> RError "" 0 (expectedError "any char")
+    try pchar EOS |> ignore; Fail()
+    with :? System.ArgumentException -> ()
+
+    anyChar     |> RError "" 0 Errors.ExpectedAnyChar
+    skipAnyChar |> RError "" 0 Errors.ExpectedAnyChar
 
     anyChar     |> ROk " "      1 ' '
     anyChar     |> ROk "\ufffe" 1 '\ufffe'
@@ -54,15 +57,15 @@ let testCharParsers() =
 
     satisfy      (fun c -> true) |> RError "" 0 NoErrorMessages
     skipSatisfy  (fun c -> true) |> RError "" 0 NoErrorMessages
-    satisfyL     (fun c -> true) "test" |> RError "" 0 (expectedError "test")
-    skipSatisfyL (fun c -> true) "test" |> RError "" 0 (expectedError "test")
+    satisfyL     (fun c -> true) "test" |> RError "" 0 (expected "test")
+    skipSatisfyL (fun c -> true) "test" |> RError "" 0 (expected "test")
 
     satisfy ((=) '1')  |> ROk "1"  1 '1'
     satisfy ((=) '\t') |> ROk "\t" 1 '\t'
     satisfy ((=) '1')  |> ROk "11" 1 '1'
     satisfy ((=) '1')  |> RError "0" 0 NoErrorMessages
-    satisfyL ((=) '1') "test"  |> RError "2" 0 (expectedError "test")
-    satisfyL ((=) '\r') "test" |> RError "\r" 0 (expectedError "test")
+    satisfyL ((=) '1') "test"  |> RError "2" 0 (expected "test")
+    satisfyL ((=) '\r') "test" |> RError "\r" 0 (expected "test")
     satisfy ((=) '\n') |> ROkNL "\r"   1 '\n'
     satisfy ((=) '\n') |> ROkNL "\r\n" 2 '\n'
     satisfy ((=) '\n') |> ROkNL "\n"   1 '\n'
@@ -71,68 +74,23 @@ let testCharParsers() =
     skipSatisfy ((=) '\t') |> ROk "\t" 1 ()
     skipSatisfy ((=) '1')  |> ROk "11" 1 ()
     skipSatisfy ((=) '1')  |> RError "0" 0 NoErrorMessages
-    skipSatisfyL ((=) '1') "test"  |> RError "2"  0 (expectedError "test")
-    skipSatisfyL ((=) '\r') "test" |> RError "\r" 0 (expectedError "test")
+    skipSatisfyL ((=) '1') "test"  |> RError "2"  0 (expected "test")
+    skipSatisfyL ((=) '\r') "test" |> RError "\r" 0 (expected "test")
     skipSatisfy ((=) '\n') |> ROkNL "\r"   1 ()
     skipSatisfy ((=) '\n') |> ROkNL "\r\n" 2 ()
     skipSatisfy ((=) '\n') |> ROkNL "\n"   1 ()
 
 let testAnyNoneOf() =
-    // anyOf/noneOf share the implementation with satisfy/skipSatisfy
-    // so we only need to do some basic testing...
-
     anyOf "1"  |> ROk "1" 1 '1'
-    anyOf "1"  |> RError "2" 0 (expectedError "any char in '1'")
-    noneOf "1" |> RError "1" 0 (expectedError "any char not in '1'")
+    anyOf "1"  |> RError "2" 0 (Errors.ExpectedAnyCharIn("1"))
+    noneOf "1" |> RError "1" 0 (Errors.ExpectedAnyCharNotIn("1"))
     noneOf "1" |> ROk "2" 1 '2'
     skipAnyOf "1"  |> ROk "1" 1 ()
-    skipAnyOf "1"  |> RError "2" 0 (expectedError "any char in '1'")
-    skipNoneOf "1" |> RError "1" 0 (expectedError "any char not in '1'")
+    skipAnyOf "1"  |> RError "2" 0 (Errors.ExpectedAnyCharIn("1"))
+    skipNoneOf "1" |> RError "1" 0 (Errors.ExpectedAnyCharNotIn("1"))
     skipNoneOf "1" |> ROk "2" 1 ()
 
-    // ... and then test Helper.CharSet
-
-    let testCharSet s (sin: string) (sout: string) =
-        let cs = FParsec.Helper.CharSet(s)
-        for c in sin do
-            cs.Contains(c) |> True
-        for c in sout do
-            cs.Contains(c) |> False
-
-    testCharSet "" "" "a\u0000\uffff"
-    testCharSet "a" "a" "\u0000\uffff"
-    testCharSet "\u0000\uffffa" "a\u0000\uffffa" "b\u0001\ufffe"
-    testCharSet "\u0002\u0001\u0399\u0400\u0401\u0399\u0400\u0401\uffffabc123" "\u0002\u0001\u0399\u0400\u0401\uffffabc123" "\u0000\u0398\u0402\ufffed0"
-
-    let rand = new System.Random(12345)
-
-    for j = 0 to 20000 do
-        let n = rand.Next(1, 100)
-        let cs : char[] = Array.zeroCreate n
-        for i = 1 to n/2 do
-            let r = rand.Next()
-            cs.[i*2 - 2] <- char r
-            cs.[i*2 - 1] <- char (r >>> 16)
-        if n%2 = 1 then cs.[cs.Length - 1] <- char (rand.Next())
-
-        let set = FParsec.Helper.CharSet(new string(cs))
-
-        Array.sortInPlace cs
-
-        let mutable c_1 = EOS
-        let mutable c = cs.[0]
-
-        for i = 0 to n - 1 do
-            set.Contains(c) |> True
-            if c <> c_1 && int c - 1 <> int c_1 then
-                set.Contains(char (int c - 1)) |> False
-            if i + 1 < n then
-                let c1 = cs.[i + 1]
-                if c < EOS && c <> c1 && int c + 1 <> int c1 then
-                    set.Contains(char (int c + 1)) |> False
-                c_1 <- c
-                c <- c1
-
+//#nowarn "44" // "This construct is deprecated."
 
 let testSpecialCharParsers() =
     for i = 0 to 1023 do
@@ -148,129 +106,234 @@ let testSpecialCharParsers() =
         isOctal c |> Equal (c >= '0' && c <= '7')
 
     asciiUpper  |> ROk "A" 1 'A'
-    asciiUpper  |> RError "a" 0 (expectedError "Ascii uppercase letter")
+    asciiUpper  |> RError "a" 0 Errors.ExpectedAsciiUppercaseLetter
     asciiLower  |> ROk "a" 1 'a'
-    asciiLower  |> RError "A" 0  (expectedError "Ascii lowercase letter")
+    asciiLower  |> RError "A" 0 Errors.ExpectedAsciiLowercaseLetter
     asciiLetter |> ROk "A" 1 'A'
-    asciiLetter |> RError "1" 0 (expectedError "Ascii letter")
+    asciiLetter |> RError "1" 0 Errors.ExpectedAsciiLetter
 
     upper  |> ROk "Ä" 1 'Ä'
-    upper  |> RError "ä" 0 (expectedError "uppercase letter")
+    upper  |> RError "ä" 0 Errors.ExpectedUppercaseLetter
     lower  |> ROk "ä" 1 'ä'
-    lower  |> RError "Ä" 0 (expectedError "lowercase letter")
+    lower  |> RError "Ä" 0 Errors.ExpectedLowercaseLetter
     letter |> ROk "Ä" 1 'Ä'
-    letter |> RError "1" 0 (expectedError "letter")
+    letter |> RError "1" 0 Errors.ExpectedLetter
 
     digit |> ROk "1" 1 '1'
-    digit |> RError "a" 0 (expectedError "digit")
+    digit |> RError "a" 0 Errors.ExpectedDecimalDigit
     hex   |> ROk "a" 1 'a'
-    hex   |> RError "g" 0 (expectedError "hexadecimal digit")
+    hex   |> RError "g" 0 Errors.ExpectedHexadecimalDigit
     octal |> ROk "7" 1 '7'
-    octal |> RError "8" 0 (expectedError "octal digit")
+    octal |> RError "8" 0 Errors.ExpectedOctalDigit
 
     tab |> ROk "\t" 1 '\t'
-    tab |> RError "\r" 0 (expectedError "tab")
+    tab |> RError "\r" 0 Errors.ExpectedTab
 
     unicodeNewline |> ROkNL "\r"     1 '\n'
     unicodeNewline |> ROkNL "\r\n"   2 '\n'
     unicodeNewline |> ROkNL "\n"     1 '\n'
     unicodeNewline |> ROkNL "\u0085" 1 '\n'
-    unicodeNewline |> ROkNL "\u000C" 1 '\n'
     unicodeNewline |> ROkNL "\u2028" 1 '\n'
     unicodeNewline |> ROkNL "\u2029" 1 '\n'
-    unicodeNewline |> RError "\t"    0 (expectedError "newline")
-    unicodeNewline |> RError ""      0 (expectedError "newline")
+    unicodeNewline |> RError "\f"    0 Errors.ExpectedNewline
+    unicodeNewline |> RError "\t"    0 Errors.ExpectedNewline
+    unicodeNewline |> RError ""      0 Errors.ExpectedNewline
 
-    let count p = manyFold 0 (fun c x -> c + 1) p
+    skipUnicodeNewline |> ROkNL "\u2028" 1 ()
 
-    match run (count unicodeNewline) "\n\r\r\n\u0085\u000C\u2028\u2029\r\n" with
-    | Success(c,_,pos) -> c |> Equal 8; pos.Index |> Equal 10L; pos.Line |> Equal 9L; pos.Column |> Equal 1L
+    let count p = many p |>> List.fold (fun c x -> c + 1) 0
+
+    match run (count unicodeNewline) "\n\r\r\n\u0085\u2028\u2029\r\n" with
+    | Success(c,_,pos) -> c |> Equal 7; pos.Index |> Equal 9L; pos.Line |> Equal 8L; pos.Column |> Equal 1L
     | Failure _        -> Fail()
-
-    whitespace |> ROkNL "\r "     1 '\n'
-    whitespace |> ROkNL "\r\n"    2 '\n'
-    whitespace |> ROkNL "\n\n"    1 '\n'
-    whitespace |> ROk    "  "     1 ' '
-    whitespace |> ROk    "\t"     1 '\t'
-    whitespace |> RError "\u000C" 0 (expectedError "whitespace")
-    whitespace |> RError ""       0 (expectedError "whitespace")
-
-    unicodeWhitespace |> ROkNL  "\r"     1 '\n'
-    unicodeWhitespace |> ROkNL  "\r\n"   2 '\n'
-    unicodeWhitespace |> ROkNL  "\n"     1 '\n'
-    unicodeWhitespace |> ROkNL  "\u0085" 1 '\n'
-    unicodeWhitespace |> ROkNL  "\u000C" 1 '\n'
-    unicodeWhitespace |> ROkNL  "\u2028" 1 '\n'
-    unicodeWhitespace |> ROkNL  "\u2029" 1 '\n'
-    unicodeWhitespace |> ROk    "  "     1 ' '
-    unicodeWhitespace |> ROk    "\t"     1 '\t'
-    unicodeWhitespace |> RError "" 0 (expectedError "whitespace")
-
-    match run (count unicodeWhitespace) "\n \r\t\t\r\n\n \u0085\u000C\u2028\u2029 \r\n\t\u200A" with // '\u200A' is "hair space" (interestingly, the '\u200B' "zero width space" character is not recognized as white space)
-    | Success(c,_,pos) -> c |> Equal 16; pos.Index |> Equal 18L; pos.Line |> Equal 10L; pos.Column |> Equal 3L
-    | _ -> Fail()
 
     spaces  |> ROk ""   0 ()
     spaces  |> ROk " "  1 ()
     spaces  |> ROk "  " 2 ()
-    spaces1 |> RError "" 0  (expectedError "whitespace")
+    spaces1 |> RError "" 0 Errors.ExpectedWhitespace
     spaces1 |> ROk " "  1 ()
     spaces1 |> ROk "  " 2 ()
 
+    unicodeSpaces  |> ROk ""   0 ()
+    unicodeSpaces  |> ROk " "  1 ()
+    unicodeSpaces  |> ROk " \u200A" 2 () // '\u200A' is a "hair space" (interestingly, the '\u200B' "zero width space" character is not recognized as white space)
+    unicodeSpaces1 |> RError "" 0 Errors.ExpectedWhitespace
+    unicodeSpaces1 |> ROk " "  1 ()
+    unicodeSpaces1 |> ROk " \u200A" 2 ()
+
     match run spaces "\n \r\t\t\r\n\n " with
-    | Success(c,_,pos) -> pos.Index |> Equal 9L; pos.Line |> Equal 5L; pos.Column |> Equal 2L
+    | Success(_, _, pos) -> pos.Index |> Equal 9L; pos.Line |> Equal 5L; pos.Column |> Equal 2L
     | _ -> Fail()
     match run spaces1 "\n \r\t\t\r\n\n " with
-    | Success(c,_,pos) -> pos.Index |> Equal 9L; pos.Line |> Equal 5L; pos.Column |> Equal 2L
+    | Success(_, _, pos) -> pos.Index |> Equal 9L; pos.Line |> Equal 5L; pos.Column |> Equal 2L
+    | _ -> Fail()
+
+    match run unicodeSpaces "\n \r\t\t\r\n\n \u0085\u000C\u2028\u2029 \r\n\t\u200A" with
+    | Success(_, _, pos) -> pos.Index |> Equal 18L; pos.Line |> Equal 9L; pos.Column |> Equal 3L
+    | _ -> Fail()
+    match run unicodeSpaces1 "\n \r\t\t\r\n\n \u0085\u000C\u2028\u2029 \r\n\t\u200A" with
+    | Success(_, _, pos) -> pos.Index |> Equal 18L; pos.Line |> Equal 9L; pos.Column |> Equal 3L
     | _ -> Fail()
 
     eof |> ROk "" 0 ()
     (pchar '1' >>. eof) |> ROk "1" 1 ()
-    eof |> RError "1" 0 (expectedError "end of file")
+    eof |> RError "1" 0 Errors.ExpectedEndOfInput
 
 
 let testStringParsers() =
-    pstring "test"    |> RError "pest" 0 (expectedStringError "test")
-    pstring "test"    |> ROk "test" 4 "test"
-    skipString "test" |> ROk "test" 4 ()
+    pstring "" |> ROk "1" 0 ""
+
+    pstring "1" |> RError "" 0 (expectedString "1")
+    pstring "1" |> RError "2" 0 (expectedString "1")
+    pstring "1" |> ROk "1" 1 "1"
+
+    pstring "12" |> RError ""   0 (expectedString "12")
+    pstring "12" |> RError "1"  0 (expectedString "12")
+    pstring "12" |> RError "22" 0 (expectedString "12")
+    pstring "12" |> RError "13" 0 (expectedString "12")
+    pstring "12" |> ROk "12" 2 "12"
+
+    pstring      "test" |> RError "pest" 0 (expectedString "test")
+    pstring      "test" |> ROk "test" 4 "test"
+    skipString   "test" |> ROk "test" 4 ()
     stringReturn "test" -1 |> ROk "test" 4 -1
 
-    try pstring "\n" |> ROkNL "\n" 1 "\n"; Fail()
+    try pstring "\r" |> ignore; Fail()
+    with :? System.ArgumentException -> ()
+    try pstring "\n" |> ignore; Fail()
+    with :? System.ArgumentException -> ()
+    try pstring "\uffff" |> ignore; Fail()
+    with :? System.ArgumentException -> ()
+    try pstring "\r1" |> ignore; Fail()
+    with :? System.ArgumentException -> ()
+    try pstring "1\n" |> ignore; Fail()
+    with :? System.ArgumentException -> ()
+    try pstring "12\n" |> ignore; Fail()
     with :? System.ArgumentException -> ()
 
-    pstringCI      "tEsT"    |> RError "pest" 0 (expectedStringCIError "tEsT")
+    pstringCI    "t" |> RError "p" 0 (expectedStringCI "t")
+    pstringCI    "t" |> ROk "t" 1 "t"
+    pstringCI    "t" |> ROk "T" 1 "T"
+    pstringCI    "T" |> ROk "t" 1 "t"
+    pstringCI    "T" |> ROk "T" 1 "T"
+    skipStringCI "t" |> RError "p" 0 (expectedStringCI "t")
+    skipStringCI "t" |> ROk "t" 1 ()
+    skipStringCI "t" |> ROk "T" 1 ()
+    skipStringCI "T" |> ROk "t" 1 ()
+    skipStringCI "T" |> ROk "T" 1 ()
+
+    pstringCI      "tEsT"    |> RError "pest" 0 (expectedStringCI "tEsT")
     pstringCI      "tEsT"    |> ROk "TeSt" 4 "TeSt"
+    skipStringCI   "tEsT"    |> RError "pest" 0 (expectedStringCI "tEsT")
     skipStringCI   "tEsT"    |> ROk "TeSt" 4 ()
     stringCIReturn "tEsT" -1 |> ROk "TeSt" 4 -1
 
-    try pstringCI "\n" |> ROkNL "\n" 1 "\n"; Fail()
+    try skipStringCI "\n" |> ignore; Fail()
+    with :? System.ArgumentException -> ()
+    try skipStringCI "12\n" |> ignore; Fail()
     with :? System.ArgumentException -> ()
 
-    anyString 3      |> RError "12" 0 (expectedError "any sequence of 3 chars")
-    skipAnyString 3  |> RError "12" 0 (expectedError "any sequence of 3 chars")
+    anyString 3      |> RError "12" 0 (Errors.ExpectedAnySequenceOfNChars(3))
+    skipAnyString 3  |> RError "12" 0 (Errors.ExpectedAnySequenceOfNChars(3))
     anyString 3      |> ROkNL "12\r\n4" 4 "12\n"
     skipAnyString 3  |> ROkNL "12\r\n4" 4 ()
 
-    skipped (skipAnyString 3) |> RError "12" 0 (expectedError "any sequence of 3 chars")
-    skipAnyString 3 |> withSkippedString (fun str () -> str) |> RError "12" 0 (expectedError "any sequence of 3 chars")
+    skipped (skipAnyString 3) |> RError "12" 0 (Errors.ExpectedAnySequenceOfNChars(3))
+    skipAnyString 3 |> withSkippedString (fun str () -> str) |> RError "12" 0 (Errors.ExpectedAnySequenceOfNChars(3))
     skipped (skipAnyString 3) |> ROk "123" 3 "123"
     skipAnyString 3 |> withSkippedString (fun str () -> str) |> ROk "123" 3 "123"
     skipped (skipAnyString 3) |> ROkNL "12\r\n4" 4 "12\n"
     skipAnyString 3 |> withSkippedString (fun str () -> str) |> ROkNL "12\r\n4" 4 "12\n"
 
-    restOfLine      |> ROk "" 0 ""
-    skipRestOfLine  |> ROk "" 0 ()
-    restOfLine      |> ROkNL "\r\n1"   2  ""
-    skipRestOfLine  |> ROkNL "\r\n1"   2  ()
-    restOfLine      |> ROkNL "  \r\n1" 4  "  "
-    skipRestOfLine  |> ROkNL "  \r\n1" 4  ()
+    restOfLine     true  |> ROk "" 0 ""
+    skipRestOfLine true  |> ROk "" 0 ()
+    restOfLine     true  |> ROkNL "\r\n1"   2  ""
+    skipRestOfLine true  |> ROkNL "\r\n1"   2  ()
+    restOfLine     true  |> ROkNL "  \r\n1" 4  "  "
+    skipRestOfLine true  |> ROkNL "  \r\n1" 4  ()
 
-    skipToEndOfLine |> ROk ""     0 ()
-    skipToEndOfLine |> ROk "  "   2 ()
-    skipToEndOfLine |> ROk "  \r" 2 ()
+    restOfLine     false |> ROk "" 0 ""
+    skipRestOfLine false |> ROk "" 0 ()
+    restOfLine     false |> ROk "\r\n1"   0  ""
+    skipRestOfLine false |> ROk "\r\n1"   0  ()
+    restOfLine     false |> ROk "  \r\n1" 2  "  "
+    skipRestOfLine false |> ROk "  \r\n1" 2  ()
 
     regex "abc"         |> ROk    "abc" 3  "abc"
     regex ".*\r\r\n.*"  |> ROkNL  "abc\r\r\nabc" 9 "abc\n\nabc"
+    regex "abc"         |> RError "ab" 0 (Errors.ExpectedStringMatchingRegex("abc"))
+    regexL "abc" "test" |> RError "ab" 0 (expected "test")
+
+let testIdentifier() =
+    // We do most of the testing in IdentifierValidatorTests.fs.
+    // Here we only test the identifier parser wrapper.
+
+    let U =  System.Char.ConvertFromUtf32
+    let ud800 = string (char 0xd800)
+    let a_ud800 = "a" + ud800
+    let mc2 = "MC" + (string '²')
+    let s1 = U 0x00010280
+
+    let expectedIdentifierError = expected Strings.Identifier
+    let invalidCharacterError = messageError Strings.IdentifierContainsInvalidCharacterAtIndicatedPosition
+
+    let defaultOpts = IdentifierOptions()
+    identifier defaultOpts |> RError ""  0 expectedIdentifierError
+    identifier defaultOpts |> RError "1" 0 expectedIdentifierError
+    identifier defaultOpts |> RFatalError ud800 0 invalidCharacterError
+    identifier defaultOpts |> RFatalError a_ud800 1 invalidCharacterError
+
+    identifier defaultOpts |> ROk "a" 1 "a"
+    identifier defaultOpts |> ROk "abc1" 4 "abc1"
+
+    identifier defaultOpts |> ROk s1 2 s1
+
+    identifier defaultOpts |> RFatalError "क्‍" 2 invalidCharacterError
+    identifier (IdentifierOptions(allowJoinControlChars=true)) |> ROk "क्‍" 3 "क्‍"
+
+    identifier (IdentifierOptions(label="test")) |> RError "1" 0 (expected "test")
+    identifier (IdentifierOptions(invalidCharMessage="test")) |> RFatalError "क्‍" 2 (messageError "test")
+
+    let normOpts = IdentifierOptions(normalization=System.Text.NormalizationForm.FormKC)
+    let preNormOpts = IdentifierOptions(normalization=System.Text.NormalizationForm.FormKC,
+                                        normalizeBeforeValidation=true,
+                                        preCheckContinue= fun c -> FParsec.IdentifierValidator.IsXIdContinueOrSurrogate(c) || c > '\u007f')
+
+    identifier defaultOpts |> ROk "ϒ\u0308" 2 "ϒ\u0308"
+    identifier normOpts    |> ROk "ϒ\u0308" 2 "\u03AB"
+
+    identifier defaultOpts |> ROk mc2 2 "MC"
+    identifier normOpts    |> ROk mc2 2 "MC"
+    identifier preNormOpts |> ROk mc2 3 "MC2"
+
+    let abOpts = IdentifierOptions(isAsciiIdStart=((=) 'a'), isAsciiIdContinue=((=) 'b'))
+
+    identifier abOpts |> RError "b"  0 (expected Strings.Identifier)
+    identifier abOpts |> ROk "aa" 1 "a"
+    identifier abOpts |> ROk "abc" 2 "ab"
+
+    let abNonAsciiOpts = IdentifierOptions(isAsciiIdStart=((=) 'a'), isAsciiIdContinue=((=) 'b'),
+                                           allowAllNonAsciiCharsInPreCheck = true)
+
+    identifier abNonAsciiOpts |> RError "b"  0 (expected Strings.Identifier)
+    identifier abNonAsciiOpts |> ROk "aa" 1 "a"
+    identifier abNonAsciiOpts |> ROk "abc" 2 "ab"
+    identifier abNonAsciiOpts |> ROk "abä" 3 "abä"
+    identifier abNonAsciiOpts |> RFatalError "ab\uFB1C" 2 invalidCharacterError
+
+    let abPreOpts = IdentifierOptions(isAsciiIdStart=((=) 'a'), isAsciiIdContinue=((=) 'b'),
+                                      preCheckStart    = (fun c -> c >= 'a' && c <= 'b'),
+                                      preCheckContinue = (fun c -> c >= 'b' && c <= 'c'))
+    identifier abPreOpts |> RFatalError "b" 0   invalidCharacterError
+    identifier abPreOpts |> RFatalError "abc" 2 invalidCharacterError
+
+    let abPreNonAsciiOpts = IdentifierOptions(isAsciiIdStart=((=) 'a'), isAsciiIdContinue=((=) 'b'),
+                                              preCheckStart    = (fun c -> c >= 'a' && c <= 'b'),
+                                              preCheckContinue = (fun c -> c >= 'b' && c <= 'c'),
+                                              allowAllNonAsciiCharsInPreCheck = true)
+    identifier abPreNonAsciiOpts |> RFatalError "b" 0   invalidCharacterError
+    identifier abPreNonAsciiOpts |> RFatalError "abc" 2 invalidCharacterError
+    identifier abPreNonAsciiOpts |> ROk "abä" 3 "abä"
 
 
 let testManySatisfy() =
@@ -286,29 +349,29 @@ let testManySatisfy() =
 
     many1Satisfy   isDigit              |> RError "a" 0 NoErrorMessages
     many1Satisfy2  isHex isDigit        |> RError "g" 0 NoErrorMessages
-    many1SatisfyL  isDigit "test"       |> RError "a" 0 (expectedError "test")
-    many1Satisfy2L isHex isDigit "test" |> RError "g" 0 (expectedError "test")
+    many1SatisfyL  isDigit "test"       |> RError "a" 0 (expected "test")
+    many1Satisfy2L isHex isDigit "test" |> RError "g" 0 (expected "test")
     many1Satisfy   isDigit              |> ROk "123"  3 "123"
     many1Satisfy2  isHex isDigit        |> ROk "a23a" 3 "a23"
 
-    skipMany1SatisfyL  isDigit "test"       |> RError "a" 0 (expectedError "test")
-    skipMany1Satisfy2L isHex isDigit "test" |> RError "g" 0 (expectedError "test")
+    skipMany1SatisfyL  isDigit "test"       |> RError "a" 0 (expected "test")
+    skipMany1Satisfy2L isHex isDigit "test" |> RError "g" 0 (expected "test")
     skipMany1Satisfy   isDigit              |> ROk "123"  3 ()
     skipMany1Satisfy2  isHex isDigit        |> ROk "a23a" 3 ()
 
     manyMinMaxSatisfy   0 3 isDigit              |> ROk    "1234" 3 "123"
     manyMinMaxSatisfy   3 3 isDigit              |> ROk    "1234" 3 "123"
-    manyMinMaxSatisfyL  4 4 isDigit "test"       |> RError "123a" 0  (expectedError "test")
+    manyMinMaxSatisfyL  4 4 isDigit "test"       |> RError "123a" 0  (expected "test")
     manyMinMaxSatisfy2  0 3 isHex isDigit        |> ROk    "a234" 3 "a23"
     manyMinMaxSatisfy2  3 3 isHex isDigit        |> ROk    "a234" 3 "a23"
-    manyMinMaxSatisfy2L 4 4 isHex isDigit "test" |> RError "a23a" 0 (expectedError "test")
+    manyMinMaxSatisfy2L 4 4 isHex isDigit "test" |> RError "a23a" 0 (expected "test")
 
     skipManyMinMaxSatisfy   0 3 isDigit              |> ROk "1234" 3 ()
     skipManyMinMaxSatisfy   3 3 isDigit              |> ROk "1234" 3 ()
-    skipManyMinMaxSatisfyL  4 4 isDigit "test"       |> RError "123a" 0 (expectedError "test")
+    skipManyMinMaxSatisfyL  4 4 isDigit "test"       |> RError "123a" 0 (expected "test")
     skipManyMinMaxSatisfy2  0 3 isHex isDigit        |> ROk "a234" 3 ()
     skipManyMinMaxSatisfy2  3 3 isHex isDigit        |> ROk "a234" 3 ()
-    skipManyMinMaxSatisfy2L 4 4 isHex isDigit "test" |> RError "a23a" 0 (expectedError "test")
+    skipManyMinMaxSatisfy2L 4 4 isHex isDigit "test" |> RError "a23a" 0 (expected "test")
 
     try manyMinMaxSatisfy 0 -1 isDigit |> ROk "1234" 3 "123"; Fail()
     with :? System.ArgumentException -> ()
@@ -317,60 +380,67 @@ let testManySatisfy() =
     with :? System.ArgumentException -> ()
 
 let testMany() =
-
-    // no Ok parser that doesn't consume input or that returns an error message
-    let charTestParsers r e : Parser<'a, int>[] = [| // we rely on the order of these parsers
-        fun s -> Reply(Ok, r, NoErrorMessages, s.WithUserState(s.UserState + 1))
-        fun s -> Reply(Error, e, s);
-        fun s -> Reply(Error, e, s.WithUserState(s.UserState + 1));
-        fun s -> Reply(FatalError, e, s);
-        fun s -> Reply(FatalError, e, s.WithUserState(s.UserState + 1));
-    |]
-
-    let ps1  = charTestParsers '1' (expectedError "1")
-    let ps2  = charTestParsers '2' (expectedError "2")
-    let ps3  = charTestParsers '3' (expectedError "3")
+    let ps1  = (constantTestParsers '1' (expected "1")).[1..] // no parser that returns OK without changing the state
+    let ps2  = (constantTestParsers '2' (expected "2")).[1..]
+    let ps3  = (constantTestParsers '3' (expected "3")).[1..]
 
     let content = "the content doesn't matter"
-    use cs = new FParsec.CharStream(content, 0, content.Length)
-    let s0 = new FParsec.State<_>(cs, 0, "")
+    use stream = new FParsec.CharStream<int>(content, 0, content.Length)
 
-    let manyChars2Ref p1 p = manyFoldApply2 (fun (c: char) -> (new System.Text.StringBuilder()).Append(c)) (fun sb (c: char) -> sb.Append(c)) (fun sb -> sb.ToString()) (fun () -> "") (attempt p1) (attempt p)
-    let many1Chars2Ref p1 p = many1FoldApply2 (fun (c: char) -> (new System.Text.StringBuilder()).Append(c)) (fun sb (c: char) -> sb.Append(c)) (fun sb -> sb.ToString()) (attempt p1) (attempt p)
-    let skipManyChars2Ref p1 p = manyFoldApply2 (fun _ -> ()) (fun _ _ -> ()) (fun () -> ()) (fun () -> ()) (attempt p1) (attempt p)
-    let skipMany1Chars2Ref p1 p = many1FoldApply2 (fun _ -> ()) (fun _ _ -> ()) (fun () -> ()) (attempt p1) (attempt p)
+    let many1Chars2Ref p1 p = Inline.Many((fun c -> (new System.Text.StringBuilder()).Append(c: char)),
+                                          (fun sb c -> sb.Append(c)),
+                                          (fun sb -> sb.ToString()),
+                                          p, p1)
+    let manyChars2Ref p1 p = many1Chars2Ref p1 p <|>% ""
 
-    let manySeq2 = seq { for p2 in ps2 do
-                         for p3 in ps3 do
-                             yield [p2; p3]}
+    let manySeq2 = seq {for p2 in ps2 do
+                        for p3 in ps3 do
+                            yield [p2; p3]}
 
     for p1 in ps1 do
         for ps in manySeq2 do
             let p_1, p_2, pr = seqParserAndReset2 ps
 
-            checkParser (manyChars2 p1 p_1)      (manyChars2Ref p1 p_2) s0; pr()
-            checkParser (many1Chars2 p1 p_1)     (many1Chars2Ref p1 p_2) s0; pr()
-            checkParser (skipManyChars2 p1 p_1)  (skipManyChars2Ref p1 p_2) s0; pr()
-            checkParser (skipMany1Chars2 p1 p_1) (skipMany1Chars2Ref p1 p_2) s0
+            checkParser (manyChars2 p1 p_1)      (manyChars2Ref p1 p_2)  stream; pr()
+            checkParser (many1Chars2 p1 p_1)     (many1Chars2Ref p1 p_2) stream; pr()
 
-    try manyChars (preturn ' ') s0 |> ignore; Fail()
-    with Microsoft.FSharp.Core.Operators.Failure _ -> ()
+    manyChars digit |> ROkE "123" 3 "123" Errors.ExpectedDecimalDigit
+    many1Chars digit |> ROkE "123" 3 "123" Errors.ExpectedDecimalDigit
 
-    try skipManyChars (preturn ' ') s0 |> ignore; Fail()
-    with Microsoft.FSharp.Core.Operators.Failure _ -> ()
+    try manyChars (preturn ' ') stream |> ignore; Fail()
+    with :? System.InvalidOperationException -> ()
+
+    let anyCharWithIndexMessage : Parser<char,_> =
+        fun stream ->
+            let c = stream.ReadCharOrNewline()
+            if c <> EOS then
+                Reply(Ok, c, messageError (string stream.Index))
+            else
+                Reply(Error, Errors.ExpectedAnyChar)
 
     let sb = new System.Text.StringBuilder()
     for i = 1 to 200 do
-        let s = sb.Append(char (i % 10)).ToString()
-        manyChars anyChar |> ROkE s s.Length s (expectedError "any char")
+        let s = sb.Append(char (i%10)).ToString()
+        manyChars (anyCharWithIndexMessage)
+        |> ROkE s s.Length s (mergeErrors (messageError (string i)) Errors.ExpectedAnyChar)
 
+    sb.Length <- 0 // Clear() is only supported in >= .NET 4
+    for i = 1 to 200 do
+        let s = sb.Append(char (i%10)).ToString()
+        manyCharsTill (anyCharWithIndexMessage) eof
+        |> ROkE s s.Length s (messageError (string i))
 
-    let eps1 = constantTestParsers 1 (expectedError "11")
-    let eps2 = constantTestParsers 2 (expectedError "22")
-    let eps3 = constantTestParsers 3 (expectedError "33")
+    let eps1 = constantTestParsers 1 (expected "11")
+    let eps2 = constantTestParsers 2 (expected "22")
+    let eps3 = constantTestParsers 3 (expected "33")
 
-    let manyCharsTillRef p endp = manyTillFoldApply (fun (c: char) -> (new System.Text.StringBuilder()).Append(c)) (fun sb (c: char) -> sb.Append(c)) (fun sb _ -> sb.ToString()) (fun _ -> "") p endp
-    let skipManyCharsTillRef p endp = manyTillFoldApply  (fun _ -> ()) (fun _ _ -> ()) (fun _ _ -> ()) (fun _ -> ()) p endp
+    let manyCharsTillRef p endp = Inline.ManyTill((fun c -> (new System.Text.StringBuilder()).Append(c: char)),
+                                                  (fun sb c -> sb.Append(c)),
+                                                  (fun sb _ -> sb.ToString()),
+                                                  p, endp,
+                                                  resultForEmptySequence = (fun _ -> ""))
+
+    let many1CharsTillRef p endp = pipe2 p (manyCharsTillRef p endp) (fun c0 s -> string c0 + s)
 
     let manyTillSeq =
         seq {for endp1 in eps1 do
@@ -384,105 +454,183 @@ let testMany() =
     for ps, es in manyTillSeq do
         let p_1, p_2, pr = seqParserAndReset2 ps
         let e_1, e_2, er = seqParserAndReset2 es
-        checkParser (manyCharsTill     p_1 e_1) (manyCharsTillRef     p_2 e_2) s0; pr(); er()
-        checkParser (skipManyCharsTill p_1 e_1) (skipManyCharsTillRef p_2 e_2) s0
+        checkParser (manyCharsTill     p_1 e_1) (manyCharsTillRef     p_2 e_2) stream; pr(); er()
+        checkParser (many1CharsTill    p_1 e_1) (many1CharsTillRef    p_2 e_2) stream; pr(); er()
 
-    many1CharsTill2     hex digit (pchar '.') |> ROk "a23." 4 "a23"
-    skipMany1CharsTill2 hex digit (pchar '.') |> ROk "a23." 4 ()
+    manyCharsTill2 letter digit (pchar '.') |> ROk "a23." 4 "a23"
+    many1CharsTill2 letter digit (pchar '.') |> ROk "a23." 4 "a23"
 
-    try manyCharsTill (preturn ' ') (fail "t") s0 |> ignore; Fail()
-    with Microsoft.FSharp.Core.Operators.Failure _ -> ()
+    manyCharsTillApply digit (pchar '.') (fun str c -> str + string c) |> ROk "23." 3 "23."
+    many1CharsTillApply  digit (pchar '.') (fun str c -> str + string c) |> ROk "23." 3 "23."
 
-    try skipManyCharsTill (preturn ' ') (fail "t") s0 |> ignore; Fail()
-    with Microsoft.FSharp.Core.Operators.Failure _ -> ()
+    try manyCharsTill (preturn ' ') (fail "t") stream |> ignore; Fail()
+    with :? System.InvalidOperationException  -> ()
 
+    try many1CharsTill (preturn ' ') (fail "t") stream |> ignore; Fail()
+    with :? System.InvalidOperationException  -> ()
 
-    let sps1  = constantTestParsers "1" (expectedError "1")
-    let sps2  = constantTestParsers "2" (expectedError "2")
-    let sps3  = constantTestParsers "3" (expectedError "3")
-    let sps4  = constantTestParsers "4" (expectedError "4")
-    let sps5  = constantTestParsers "5" (expectedError "5")
-    let sps6  = constantTestParsers "6" (expectedError "6")
-    let sps7  = constantTestParsers "7" (expectedError "7")
+    let sps1  = constantTestParsers "1" (expected "1")
+    let sps2  = constantTestParsers "2" (expected "2")
+    let sps3  = constantTestParsers "3" (expected "3")
+    let sps4  = constantTestParsers "4" (expected "4")
+    let sps5  = constantTestParsers "5" (expected "5")
+    let sps6  = constantTestParsers "6" (expected "6")
+    let sps7  = constantTestParsers "7" (expected "7")
 
-    let manyStringsRef p  = manyFoldApply (fun (s: string) -> (new System.Text.StringBuilder()).Append(s)) (fun sb (s: string) -> sb.Append(s)) (fun sb -> sb.ToString()) (fun () -> "") p
-    let many1StringsRef p = many1FoldApply (fun (s: string) -> (new System.Text.StringBuilder()).Append(s)) (fun sb (s: string) -> sb.Append(s)) (fun sb -> sb.ToString()) p
+    let manyStringsRef p  = many p |>> List.fold (fun acc s -> acc + s) ""
+    let many1StringsRef p = many1 p |>> List.reduce (+)
 
-    let manySeq7 = seq { for p1 in sps1.[1..] do
-                         for p2 in sps2.[1..] do
-                         for p3 in sps3.[1..] do
-                         for p4 in sps4.[1..] do
-                         for p5 in sps5.[1..] do
-                         for p6 in sps6.[1..] do
-                         for p7 in sps7.[1..] do
-                             yield [p1;p2;p3;p4;p5;p6;p7]}
+    let manySeq7 = seq {for p1 in sps1.[1..] do
+                        for p2 in sps2.[1..] do
+                        for p3 in sps3.[1..] do
+                        for p4 in sps4.[1..] do
+                        for p5 in sps5.[1..] do
+                        for p6 in sps6.[1..] do
+                        for p7 in sps7.[1..] do
+                            yield [p1;p2;p3;p4;p5;p6;p7]}
 
+    let sw = new System.Diagnostics.Stopwatch()
     for ps in manySeq7 do
         let p_1, p_2, pr = seqParserAndReset2 ps
 
-        checkParser (manyStrings  p_1) (manyStringsRef  p_2) s0; pr()
-        checkParser (many1Strings p_1) (many1StringsRef p_2) s0
+        checkParser (manyStrings  p_1) (manyStringsRef  p_2) stream; pr()
+        checkParser (many1Strings p_1) (many1StringsRef p_2) stream
 
-    manyStrings2 (pstring "1") (pstring "2") |> ROkE "12223" 4 "1222" (expectedStringError "2")
+    manyStrings2 (pstring "1") (pstring "2") |> ROkE "12223" 4 "1222" (expectedString "2")
 
-    try manyStrings (preturn "1") s0 |> ignore; Fail()
-    with Microsoft.FSharp.Core.Operators.Failure _ -> ()
+    try manyStrings (preturn "1") stream |> ignore; Fail()
+    with :? System.InvalidOperationException  -> ()
+
+    let sepByTestParsers r1 e1 r2 e2 =
+        let p1s = constantTestParsers r1 e1
+        let p2s = constantTestParsers r2 e2
+        seq {for p1 in p1s.[1..] do
+                for p2 in p2s do
+                    yield p1, p2}
+
+    let sepBySeq3 =
+        seq {for p1       in (constantTestParsers "1" (expected "p1")).[1..] do
+              for sep1, p2 in sepByTestParsers "a" (expected "sep1") "2" (expected "p2") do
+               for sep2, p3 in sepByTestParsers "b" (expected "sep2") "3" (expected "p3") do
+                for sep3, p4 in sepByTestParsers "c" (expected "sep3") "4" (expected "p4") do
+                    yield [p1; p2; p3; p4], [sep1; sep2; sep3]
+
+            // We exclude the following parameter combinations from regular test runs
+            // because executing all of them just takes too much time.
+            (*
+                   for sep4, p5 in sepByTestParsers "d" (expected "sep4") "5" (expected "p5") do
+                      yield [p1; p2; p3; p4; p5], [sep1; sep2; sep3; sep4]
+
+             for p1, sep1 in sepByTestParsers "1" (expected "p1") "a" (expected "sep1") do
+              for p2, sep2 in sepByTestParsers "2" (expected "p2") "b" (expected "sep2") do
+               for p3, sep3 in sepByTestParsers "3" (expected "p3") "c" (expected "sep3") do
+                for p4, sep4 in sepByTestParsers "4" (expected "p4") "d" (expected "sep4") do
+                 for p5 in (constantTestParsers "5" (expected "p5")).[1..] do
+                    yield [p1; p2; p3; p4; p5], [sep1; sep2; sep3; sep4]  *)
+              }
+
+
+    let mutable i = 0
+    let userState0 = stream.UserState
+    let tag0 = stream.StateTag
+    for ps, ss in sepBySeq3 do
+        i <- i + 1
+        let p, pr = seqParserAndReset ps
+        let s, sr = seqParserAndReset ss
+        checkParser (stringsSepBy p s)
+                    (fun stream ->
+                        pr(); sr()
+                        let r = sepBy p s stream
+                        let result =
+                            if r.Status <> Ok then null
+                            else match r.Result with
+                                    | []          -> ""
+                                    | [_]         -> "1"
+                                    | [_;_]       -> "1a2"
+                                    | [_;_;_]     -> "1a2b3"
+                                    | [_;_;_;_]   -> "1a2b3c4"
+                                    | [_;_;_;_;_] -> "1a2b3c4d5"
+                                    | _ -> failwith "manyStringsSepByTest"
+                        Reply(r.Status, result, r.Error)) stream
+
+    try stringsSepBy (preturn "1") (preturn ";") stream |> ignore; Fail()
+    with :? System.InvalidOperationException  -> ()
+
 
 let testSkipToString() =
-    skipToString "abc" System.Int32.MaxValue |> RError "abbab" 5 (messageError "Could not find the string 'abc'.")
-    skipToString "abc" System.Int32.MaxValue |> ROk "abc"    0 ()
-    skipToString "abc" 0                     |> ROk "abc"    0 ()
-    skipToString "abc" System.Int32.MaxValue |> ROk "abdabc" 3 ()
-    skipToString "abc" 3                     |> ROk "abdabc" 3 ()
-    skipToString "abc" 2 |> RError "abdabc" 2 (messageError "Could not find the string 'abc'.")
+    charsTillString "abc" false System.Int32.MaxValue |> RError "abbab" 5 (Errors.CouldNotFindString("abc"))
+    charsTillString "abc" false System.Int32.MaxValue |> ROk "abc"    0 ""
+    charsTillString "abc" false 0                     |> ROk "abc"    0 ""
+    charsTillString "abc" false System.Int32.MaxValue |> ROk "abdabc" 3 "abd"
+    charsTillString "abc" false 3                     |> ROk "abdabc" 3 "abd"
+    charsTillString "abc" false 2 |> RError "abdabc" 2 (Errors.CouldNotFindString("abc"))
 
-    skipToStringCI "AbC" System.Int32.MaxValue |> RError "abbab" 5 (messageError "Could not find the case-insensitive string 'AbC'.")
-    skipToStringCI "AbC" System.Int32.MaxValue |> ROk "aBc"    0 ()
-    skipToStringCI "AbC" 0                     |> ROk "abc"    0 ()
-    skipToStringCI "AbC" System.Int32.MaxValue |> ROk "aBdaBc" 3 ()
-    skipToStringCI "AbC" 3                     |> ROk "aBdaBc" 3 ()
-    skipToStringCI "AbC" 2 |> RError "aBdaBc" 2 (messageError "Could not find the case-insensitive string 'AbC'.")
+    charsTillStringCI "AbC" false System.Int32.MaxValue |> RError "abbab" 5 (Errors.CouldNotFindCaseInsensitiveString("AbC"))
+    charsTillStringCI "AbC" false System.Int32.MaxValue |> ROk "aBc"    0 ""
+    charsTillStringCI "AbC" false 0                     |> ROk "abc"    0 ""
+    charsTillStringCI "AbC" false System.Int32.MaxValue |> ROk "aBdaBc" 3 "aBd"
+    charsTillStringCI "AbC" false 3                     |> ROk "aBdaBc" 3 "aBd"
+    charsTillStringCI "AbC" false 2 |> RError "aBdaBc" 2 (Errors.CouldNotFindCaseInsensitiveString("AbC"))
 
-    charsTillString "abc" System.Int32.MaxValue |> RError "abbab" 5 (messageError "Could not find the string 'abc'.")
-    charsTillString "abc" System.Int32.MaxValue |> ROk "abc"    3 ""
-    charsTillString "abc" 0                     |> ROk "abc"    3 ""
-    charsTillString "abc" System.Int32.MaxValue |> ROk "abdabc" 6 "abd"
-    charsTillString "abc" 3                     |> ROk "abdabc" 6 "abd"
-    charsTillString "abc" 2 |> RError "abdabc" 2 (messageError "Could not find the string 'abc'.")
+    skipCharsTillString "abc" false System.Int32.MaxValue |> RError "abbab" 5 (Errors.CouldNotFindString("abc"))
+    skipCharsTillString "abc" false System.Int32.MaxValue |> ROk "abc"    0 ()
+    skipCharsTillString "abc" false 0                     |> ROk "abc"    0 ()
+    skipCharsTillString "abc" false System.Int32.MaxValue |> ROk "abdabc" 3 ()
+    skipCharsTillString "abc" false 3                     |> ROk "abdabc" 3 ()
+    skipCharsTillString "abc" false 2 |> RError "abdabc" 2 (Errors.CouldNotFindString("abc"))
 
-    charsTillStringCI "AbC" System.Int32.MaxValue |> RError "abbab" 5 (messageError "Could not find the case-insensitive string 'AbC'.")
-    charsTillStringCI "AbC" System.Int32.MaxValue |> ROk "aBc"    3 ""
-    charsTillStringCI "AbC" 0                     |> ROk "abc"    3 ""
-    charsTillStringCI "AbC" System.Int32.MaxValue |> ROk "aBdaBc" 6 "aBd"
-    charsTillStringCI "AbC" 3                     |> ROk "aBdaBc" 6  "aBd"
-    charsTillStringCI "AbC" 2 |> RError "aBdaBc" 2 (messageError "Could not find the case-insensitive string 'AbC'.")
+    skipCharsTillStringCI "AbC" false System.Int32.MaxValue |> RError "abbab" 5 (Errors.CouldNotFindCaseInsensitiveString("AbC"))
+    skipCharsTillStringCI "AbC" false System.Int32.MaxValue |> ROk "aBc"    0 ()
+    skipCharsTillStringCI "AbC" false 0                     |> ROk "abc"    0 ()
+    skipCharsTillStringCI "AbC" false System.Int32.MaxValue |> ROk "aBdaBc" 3 ()
+    skipCharsTillStringCI "AbC" false 3                     |> ROk "aBdaBc" 3 ()
+    skipCharsTillStringCI "AbC" false 2 |> RError "aBdaBc" 2 (Errors.CouldNotFindCaseInsensitiveString("AbC"))
 
-    skipCharsTillString "abc" System.Int32.MaxValue |> RError "abbab" 5 (messageError "Could not find the string 'abc'.")
-    skipCharsTillString "abc" System.Int32.MaxValue |> ROk "abc"    3 ()
-    skipCharsTillString "abc" 0                     |> ROk "abc"    3 ()
-    skipCharsTillString "abc" System.Int32.MaxValue |> ROk "abdabc" 6 ()
-    skipCharsTillString "abc" 3                     |> ROk "abdabc" 6 ()
-    skipCharsTillString "abc" 2                     |> RError "abdabc" 2 (messageError "Could not find the string 'abc'.")
+    charsTillString "abc" true System.Int32.MaxValue |> RError "abbab" 5 (Errors.CouldNotFindString("abc"))
+    charsTillString "abc" true System.Int32.MaxValue |> ROk "abc"    3 ""
+    charsTillString "abc" true 0                     |> ROk "abc"    3 ""
+    charsTillString "abc" true System.Int32.MaxValue |> ROk "abdabc" 6 "abd"
+    charsTillString "abc" true 3                     |> ROk "abdabc" 6 "abd"
+    charsTillString "abc" true 2                     |> RError "abdabc" 2 (Errors.CouldNotFindString("abc"))
 
-    skipCharsTillStringCI "AbC" System.Int32.MaxValue |> RError "abbab" 5 (messageError "Could not find the case-insensitive string 'AbC'.")
-    skipCharsTillStringCI "AbC" System.Int32.MaxValue |> ROk "aBc"    3 ()
-    skipCharsTillStringCI "AbC" 0                     |> ROk "abc"    3 ()
-    skipCharsTillStringCI "AbC" System.Int32.MaxValue |> ROk "aBdaBc" 6 ()
-    skipCharsTillStringCI "AbC" 3                     |> ROk "aBdaBc" 6 ()
-    skipCharsTillStringCI "AbC" 2                     |> RError "aBdaBc" 2 (messageError "Could not find the case-insensitive string 'AbC'.")
+    charsTillStringCI "AbC" true System.Int32.MaxValue |> RError "abbab" 5 (Errors.CouldNotFindCaseInsensitiveString("AbC"))
+    charsTillStringCI "AbC" true System.Int32.MaxValue |> ROk "aBc"    3 ""
+    charsTillStringCI "AbC" true 0                     |> ROk "abc"    3 ""
+    charsTillStringCI "AbC" true System.Int32.MaxValue |> ROk "aBdaBc" 6 "aBd"
+    charsTillStringCI "AbC" true 3                     |> ROk "aBdaBc" 6  "aBd"
+    charsTillStringCI "AbC" true 2                     |> RError "aBdaBc" 2 (Errors.CouldNotFindCaseInsensitiveString("AbC"))
 
-    try skipToString "1\r" 3 |> ignore; Fail()
+    skipCharsTillString "abc" true System.Int32.MaxValue |> RError "abbab" 5 (Errors.CouldNotFindString("abc"))
+    skipCharsTillString "abc" true System.Int32.MaxValue |> ROk "abc"    3 ()
+    skipCharsTillString "abc" true 0                     |> ROk "abc"    3 ()
+    skipCharsTillString "abc" true System.Int32.MaxValue |> ROk "abdabc" 6 ()
+    skipCharsTillString "abc" true 3                     |> ROk "abdabc" 6 ()
+    skipCharsTillString "abc" true 2                     |> RError "abdabc" 2 (Errors.CouldNotFindString("abc"))
+
+    skipCharsTillStringCI "AbC" true System.Int32.MaxValue |> RError "abbab" 5 (Errors.CouldNotFindCaseInsensitiveString("AbC"))
+    skipCharsTillStringCI "AbC" true System.Int32.MaxValue |> ROk "aBc"    3 ()
+    skipCharsTillStringCI "AbC" true 0                     |> ROk "abc"    3 ()
+    skipCharsTillStringCI "AbC" true System.Int32.MaxValue |> ROk "aBdaBc" 6 ()
+    skipCharsTillStringCI "AbC" true 3                     |> ROk "aBdaBc" 6 ()
+    skipCharsTillStringCI "AbC" true 2                     |> RError "aBdaBc" 2 (Errors.CouldNotFindCaseInsensitiveString("AbC"))
+
+    try charsTillString "1\r" false 1 |> ignore; Fail()
     with :? System.ArgumentException -> ()
-    try skipToStringCI "1\r" 3 |> ignore; Fail()
+    try charsTillStringCI "1\r" false 1 |> ignore; Fail()
     with :? System.ArgumentException -> ()
-    try charsTillString "1\r" 3 |> ignore; Fail()
+    try skipCharsTillString "1\r" false 1 |> ignore; Fail()
     with :? System.ArgumentException -> ()
-    try charsTillStringCI "1\r" 3 |> ignore; Fail()
+    try skipCharsTillStringCI "1\r" false 1 |> ignore; Fail()
     with :? System.ArgumentException -> ()
-    try skipCharsTillString "1\r" 3 |> ignore; Fail()
-    with :? System.ArgumentException -> ()
-    try skipCharsTillStringCI "1\r" 3 |> ignore; Fail()
-    with :? System.ArgumentException -> ()
+
+    try charsTillString "1" false -1 |> ignore; Fail()
+    with :? System.ArgumentOutOfRangeException -> ()
+    try charsTillStringCI "1" false -1 |> ignore; Fail()
+    with :? System.ArgumentOutOfRangeException -> ()
+    try skipCharsTillString "1" false -1 |> ignore; Fail()
+    with :? System.ArgumentOutOfRangeException -> ()
+    try skipCharsTillStringCI "1" false -1 |> ignore; Fail()
+    with :? System.ArgumentOutOfRangeException -> ()
 
 
 let testNumberParsers() =
@@ -503,7 +651,11 @@ let testNumberParsers() =
                  ||| NLO.AllowNaN
 
 
-        numberLiteral all "nl" |> RError "|" 0 (expectedError "nl")
+        numberLiteral all "nl" |> RError "|"  0 (expected "nl")
+        numberLiteral all "nl" |> RError "+|" 0 (expected "nl")
+        numberLiteral all "nl" |> RError "-|" 0 (expected "nl")
+        numberLiteral all "nl" |> RError "+n" 0 (expected "nl")
+        numberLiteral all "nl" |> RError "-n" 0 (expected "nl")
         numberLiteral all "nl" |> ROk "0|"     (NumberLiteral("0", NLF.IsDecimal ||| NLF.HasIntegerPart, EOS, EOS, EOS, EOS))
         numberLiteral all "nl" |> ROk "+0|"    (NumberLiteral("+0", NLF.HasPlusSign ||| NLF.IsDecimal ||| NLF.HasIntegerPart, EOS, EOS, EOS, EOS))
         numberLiteral all "nl" |> ROk "-0|"    (NumberLiteral("-0", NLF.HasMinusSign ||| NLF.IsDecimal ||| NLF.HasIntegerPart, EOS, EOS, EOS, EOS))
@@ -565,38 +717,40 @@ let testNumberParsers() =
         numberLiteral all "nl" |> ROk "NaNn"  (NumberLiteral("NaN", NLF.IsNaN, EOS, EOS, EOS, EOS))
         numberLiteral all "nl" |> ROk "-nAna" (NumberLiteral("-nAn", NLF.HasMinusSign ||| NLF.IsNaN, EOS, EOS, EOS, EOS))
 
-        numberLiteral all "nl" |> RError ".a"    1 (expectedError "digit")
-        numberLiteral all "nl" |> RError ".ea"   1 (expectedError "digit")
-        numberLiteral all "nl" |> RError ".1ea"  3 (expectedError "digit")
-        numberLiteral all "nl" |> RError "-1ea"  3 (expectedError "digit")
-        numberLiteral all "nl" |> RError "1.e-a" 4 (expectedError "digit")
-        numberLiteral all "nl" |> RError "1e+a"  3 (expectedError "digit")
+        numberLiteral all "nl" |> RError ".a"    1 Errors.ExpectedDecimalDigit
+        numberLiteral all "nl" |> RError ".ea"   1 Errors.ExpectedDecimalDigit
+        numberLiteral all "nl" |> RError ".E-1"  1 Errors.ExpectedDecimalDigit
+        numberLiteral all "nl" |> RError ".1ea"  3 Errors.ExpectedDecimalDigit
+        numberLiteral all "nl" |> RError "-1ea"  3 Errors.ExpectedDecimalDigit
+        numberLiteral all "nl" |> RError "1.e-a" 4 Errors.ExpectedDecimalDigit
+        numberLiteral all "nl" |> RError "1e+a"  3 Errors.ExpectedDecimalDigit
 
-        numberLiteral all "nl" |> RError "0x.g"    3 (expectedError "hexadecimal digit")
-        numberLiteral all "nl" |> RError "0x.pa"   3 (expectedError "hexadecimal digit")
-        numberLiteral all "nl" |> RError "+0x.1pa" 6 (expectedError "digit")
-        numberLiteral all "nl" |> RError "0x1pa"   4 (expectedError "digit")
-        numberLiteral all "nl" |> RError "0x1.p-a" 6 (expectedError "digit")
-        numberLiteral all "nl" |> RError "0x1p+a"  5 (expectedError "digit")
+        numberLiteral all "nl" |> RError "0x.g"    3 Errors.ExpectedHexadecimalDigit
+        numberLiteral all "nl" |> RError "0x.pa"   3 Errors.ExpectedHexadecimalDigit
+        numberLiteral all "nl" |> RError "0x.p-1"   3 Errors.ExpectedHexadecimalDigit
+        numberLiteral all "nl" |> RError "+0x.1pa" 6 Errors.ExpectedDecimalDigit
+        numberLiteral all "nl" |> RError "0x1pa"   4 Errors.ExpectedDecimalDigit
+        numberLiteral all "nl" |> RError "0x1.p-a" 6 Errors.ExpectedDecimalDigit
+        numberLiteral all "nl" |> RError "0x1p+a"  5 Errors.ExpectedDecimalDigit
 
-        numberLiteral all "nl" |> RError "0b3"   2 (expectedError "binary digit")
-        numberLiteral all "nl" |> RError "-0b.0" 3 (expectedError "binary digit")
-        numberLiteral all "nl" |> RError "+0ou"  3 (expectedError "octal digit")
-        numberLiteral all "nl" |> RError "0o.0"  2 (expectedError "octal digit")
+        numberLiteral all "nl" |> RError "0b3"   2 Errors.ExpectedBinaryDigit
+        numberLiteral all "nl" |> RError "-0b.0" 3 Errors.ExpectedBinaryDigit
+        numberLiteral all "nl" |> RError "+0ou"  3 Errors.ExpectedOctalDigit
+        numberLiteral all "nl" |> RError "0o.0"  2 Errors.ExpectedOctalDigit
 
-        numberLiteral (all ^^^ NLO.AllowPlusSign)  "nl" |> RError "+1|" 0 (expectedError "nl")
+        numberLiteral (all ^^^ NLO.AllowPlusSign)  "nl" |> RError "+1|" 0 (expected "nl")
         numberLiteral (all ^^^ NLO.AllowPlusSign)  "nl" |> ROk    "-1|" (NumberLiteral("-1", NLF.HasMinusSign ||| NLF.IsDecimal ||| NLF.HasIntegerPart, EOS, EOS, EOS, EOS))
-        numberLiteral (all ^^^ NLO.AllowMinusSign) "nl" |> RError "-1|" 0 (expectedError "nl")
+        numberLiteral (all ^^^ NLO.AllowMinusSign) "nl" |> RError "-1|" 0 (expected "nl")
         numberLiteral (all ^^^ NLO.AllowMinusSign) "nl" |> ROk    "+1|" (NumberLiteral("+1", NLF.HasPlusSign ||| NLF.IsDecimal ||| NLF.HasIntegerPart, EOS, EOS, EOS, EOS))
         numberLiteral (all ^^^ (NLO.AllowPlusSign ||| NLO.AllowMinusSign)) "nl" |> ROk "1|" (NumberLiteral("1", NLF.IsDecimal ||| NLF.HasIntegerPart, EOS, EOS, EOS, EOS))
 
-        numberLiteral (all ^^^ NLO.AllowFractionWOIntegerPart) "nl" |> RError ".0|"   0 (expectedError "nl")
-        numberLiteral (all ^^^ NLO.AllowFractionWOIntegerPart) "nl" |> RError "0x.0|" 2 (expectedError "hexadecimal digit")
+        numberLiteral (all ^^^ NLO.AllowFractionWOIntegerPart) "nl" |> RError ".0|"   0 (expected "nl")
+        numberLiteral (all ^^^ NLO.AllowFractionWOIntegerPart) "nl" |> RError "0x.0|" 2 Errors.ExpectedHexadecimalDigit
 
         numberLiteral (all ^^^ NLO.AllowFraction) "nl" |> ROk    "1."         (NumberLiteral("1", NLF.IsDecimal ||| NLF.HasIntegerPart, EOS, EOS, EOS, EOS))
         numberLiteral (all ^^^ NLO.AllowFraction) "nl" |> ROkI    "10.10E2" 2 (NumberLiteral("10", NLF.IsDecimal ||| NLF.HasIntegerPart, EOS, EOS, EOS, EOS))
-        numberLiteral (all ^^^ NLO.AllowFraction) "nl" |> RError ".1"       0 (expectedError "nl")
-        numberLiteral (all ^^^ NLO.AllowFraction) "nl" |> RError ".1"       0 (expectedError "nl")
+        numberLiteral (all ^^^ NLO.AllowFraction) "nl" |> RError ".1"       0 (expected "nl")
+        numberLiteral (all ^^^ NLO.AllowFraction) "nl" |> RError ".1"       0 (expected "nl")
         numberLiteral (all ^^^ NLO.AllowFraction) "nl" |> ROkI    "0x0.1p2" 3 (NumberLiteral("0x0", NLF.IsHexadecimal ||| NLF.HasIntegerPart, EOS, EOS, EOS, EOS))
         numberLiteral (all ^^^ NLO.AllowFraction) "nl" |> ROkI    "10.10E2" 2 (NumberLiteral("10", NLF.IsDecimal ||| NLF.HasIntegerPart, EOS, EOS, EOS, EOS))
 
@@ -612,16 +766,16 @@ let testNumberParsers() =
         numberLiteral (all ^^^ NLO.AllowOctal) "nl"       |> ROkI "0o1|" 2 (NumberLiteral("0", NLF.IsDecimal ||| NLF.HasIntegerPart ||| (enum) 1, 'o', EOS, EOS, EOS))
         numberLiteral (all ^^^ NLO.AllowHexadecimal) "nl" |> ROkI "0x1|" 2 (NumberLiteral("0", NLF.IsDecimal ||| NLF.HasIntegerPart ||| (enum) 1, 'x', EOS, EOS, EOS))
 
-        numberLiteral (all ^^^ NLO.AllowInfinity) "nl" |> RError  "Infinity|" 0 (expectedError "nl")
+        numberLiteral (all ^^^ NLO.AllowInfinity) "nl" |> RError  "Infinity|" 0 (expected "nl")
         numberLiteral (all ^^^ NLO.AllowInfinity) "nl" |> ROk     "NaN|" (NumberLiteral("NaN", NLF.IsNaN, EOS, EOS, EOS, EOS))
-        numberLiteral (all ^^^ NLO.AllowNaN) "nl"      |> RError  "NaN|" 0 (expectedError "nl")
+        numberLiteral (all ^^^ NLO.AllowNaN) "nl"      |> RError  "NaN|" 0 (expected "nl")
         numberLiteral (all ^^^ NLO.AllowNaN) "nl"      |> ROk     "Infinity|" (NumberLiteral("Infinity", NLF.IsInfinity, EOS, EOS, EOS, EOS))
 
     testNumberLiteral()
 
     let testPfloat() =
-        pfloat |> RError "" 0 (expectedError "floating-point number")
-        pfloat |> RError "-0x" 3 (expectedError "hexadecimal digit")
+        pfloat |> RError "" 0 Errors.ExpectedFloatingPointNumber
+        pfloat |> RError "-0x" 3 Errors.ExpectedHexadecimalDigit
         pfloat |> ROk "0|" 0.
         pfloat |> ROk "+0|" 0.
         pfloat |> ROk "-0|" -0.
@@ -633,11 +787,11 @@ let testNumberParsers() =
         pfloat |> ROk "+123e2|" 123e2
         pfloat |> ROk "+0x123p2|" (floatOfHexString "0x123p2")
         pfloat |> ROk "-123.456e123|" -123.456e123
-        pfloat |> RFatalError "1e99999|" 0 (messageError "This number is outside the allowable range for double precision floating-pointer numbers.")
-        pfloat |> RFatalError "0x1p99999|" 0 (messageError "This number is outside the allowable range for double precision floating-pointer numbers.")
+        pfloat |> RFatalError "1e99999|" 0 Errors.NumberOutsideOfDoubleRange
+        pfloat |> RFatalError "0x1p99999|" 0 Errors.NumberOutsideOfDoubleRange
         pfloat |> ROk "-0x123cde.123afAcEp123|" (floatOfHexString "-0x123cde.123afAcEp123")
         pfloat |> ROk "-0x1.fffffffffffffp1023|"  -System.Double.MaxValue
-        pfloat |> RFatalError "0x1.fffffffffffffp1024|" 0 (messageError "This number is outside the allowable range for double precision floating-pointer numbers.")
+        pfloat |> RFatalError "0x1.fffffffffffffp1024|" 0 Errors.NumberOutsideOfDoubleRange
         pfloat |> ROk "Inf|" System.Double.PositiveInfinity
         pfloat |> ROk "-Infinity|" System.Double.NegativeInfinity
         pfloat >>% 1 |> ROk  "NaN|" 1
@@ -645,8 +799,8 @@ let testNumberParsers() =
     testPfloat()
 
     let testPuint64() =
-        let expectedE = expectedError "integer number (64-bit, unsigned)"
-        let overflowE = messageError "This number is outside the allowable range for 64-bit unsigned integers."
+        let expectedE = Errors.ExpectedUInt64
+        let overflowE = Errors.NumberOutsideOfUInt64Range
 
         puint64 |> RError "" 0 expectedE
         puint64 |> RError "+1" 0 expectedE
@@ -671,7 +825,7 @@ let testNumberParsers() =
         puint64 |> ROk "018446744073709551609|" (System.UInt64.MaxValue - 6UL)
         puint64 |> ROk "0000018446744073709551615|" System.UInt64.MaxValue
 
-        puint64 |> RError "0x"  2 (expectedError "hexadecimal digit")
+        puint64 |> RError "0x"  2 Errors.ExpectedHexadecimalDigit
         puint64 |> RError "+0x1" 0 expectedE
         puint64 |> RFatalError "0x10000000000000000" 0 overflowE
         puint64 |> RFatalError "0x11111111111111111" 0 overflowE
@@ -688,6 +842,8 @@ let testNumberParsers() =
         puint64 |> ROk "0xffffffffffffffef|" (System.UInt64.MaxValue - 16UL)
         puint64 |> ROk "0x00000ffffffffffffffff|" System.UInt64.MaxValue
 
+        puint64 |> RError "0o"  2 Errors.ExpectedOctalDigit
+        puint64 |> RError "+0o1" 0 expectedE
         puint64 |> RFatalError "0o2000000000000000000001" 0 overflowE
         puint64 |> RFatalError "0o2000000000000000000000" 0 overflowE
         puint64 |> RFatalError "0o7777777777777777777777" 0 overflowE
@@ -703,6 +859,8 @@ let testNumberParsers() =
         puint64 |> ROk "0o1777777777777777777767|" (System.UInt64.MaxValue - 8UL)
         puint64 |> ROk "0O000001777777777777777777777|" System.UInt64.MaxValue
 
+        puint64 |> RError "0b"  2 Errors.ExpectedBinaryDigit
+        puint64 |> RError "+0b1" 0 expectedE
         puint64 |> RFatalError "0b10000000000000000000000000000000000000000000000000000000000000001" 0 overflowE
         puint64 |> RFatalError "0b10000000000000000000000000000000000000000000000000000000000000000" 0 overflowE
         puint64 |> RFatalError "0b11111111111111111111111111111111111111111111111111111111111111111" 0 overflowE
@@ -718,8 +876,8 @@ let testNumberParsers() =
     testPuint64()
 
     let testPint64() =
-        let expectedE = expectedError "integer number (64-bit, signed)"
-        let overflowE = messageError "This number is outside the allowable range for 64-bit signed integers."
+        let expectedE = Errors.ExpectedInt64
+        let overflowE = Errors.NumberOutsideOfInt64Range
 
         pint64 |> RFatalError "18446744073709551615" 0 overflowE
         pint64 |> RFatalError "+00018446744073709551615" 0 overflowE
@@ -782,8 +940,8 @@ let testNumberParsers() =
     testPint64()
 
     let testPuint32() =
-        let expectedE = expectedError "integer number (32-bit, unsigned)"
-        let overflowE = messageError "This number is outside the allowable range for 32-bit unsigned integers."
+        let expectedE = Errors.ExpectedUInt32
+        let overflowE = Errors.NumberOutsideOfUInt32Range
 
         puint32 |> RError "" 0 expectedE
         puint32 |> RError "+1" 0 expectedE
@@ -809,7 +967,7 @@ let testNumberParsers() =
         puint32 |> ROk "4294967289|" (System.UInt32.MaxValue - 6u)
         puint32 |> ROk "000004294967295|" System.UInt32.MaxValue
 
-        puint32 |> RError "0x"  2 (expectedError "hexadecimal digit")
+        puint32 |> RError "0x"  2 Errors.ExpectedHexadecimalDigit
         puint32 |> RError "+0x1" 0 expectedE
         puint32 |> RFatalError "0x100000001" 0 overflowE
         puint32 |> RFatalError "0x100000000" 0 overflowE
@@ -827,6 +985,8 @@ let testNumberParsers() =
         puint32 |> ROk "0xffffffef|" (System.UInt32.MaxValue - 16u)
         puint32 |> ROk "0x00000ffffffff|" System.UInt32.MaxValue
 
+        puint32 |> RError "0o"  2 Errors.ExpectedOctalDigit
+        puint32 |> RError "+0o1" 0 expectedE
         puint32 |> RFatalError "0o40000000001" 0 overflowE
         puint32 |> RFatalError "0o40000000000" 0 overflowE
         puint32 |> RFatalError "0o777777777777" 0 overflowE
@@ -842,6 +1002,8 @@ let testNumberParsers() =
         puint32 |> ROk "0o37777777767|" (System.UInt32.MaxValue - 8u)
         puint32 |> ROk "0O0000037777777777|" System.UInt32.MaxValue
 
+        puint32 |> RError "0b"  2 Errors.ExpectedBinaryDigit
+        puint32 |> RError "+0b1" 0 expectedE
         puint32 |> RFatalError "0b100000000000000000000000000000001" 0 overflowE
         puint32 |> RFatalError "0b100000000000000000000000000000000" 0 overflowE
         puint32 |> RFatalError "0B111111111111111111111111111111111" 0 overflowE
@@ -857,8 +1019,8 @@ let testNumberParsers() =
     testPuint32()
 
     let testPint32() =
-        let expectedE = expectedError "integer number (32-bit, signed)"
-        let overflowE = messageError "This number is outside the allowable range for 32-bit signed integers."
+        let expectedE = Errors.ExpectedInt32
+        let overflowE = Errors.NumberOutsideOfInt32Range
 
         pint32 |> RFatalError "4294967295" 0 overflowE
         pint32 |> RFatalError "+4294967295" 0 overflowE
@@ -920,14 +1082,14 @@ let testNumberParsers() =
     testPint32()
 
     let testPintOther() =
-       let overflowInt32  = messageError "This number is outside the allowable range for 32-bit signed integers."
-       let overflowUInt32 = messageError "This number is outside the allowable range for 32-bit unsigned integers."
-       let overflowInt16  = messageError "This number is outside the allowable range for 16-bit signed integers."
-       let overflowUInt16 = messageError "This number is outside the allowable range for 16-bit unsigned integers."
-       let overflowInt8   = messageError "This number is outside the allowable range for 8-bit signed integers."
-       let overflowUInt8  = messageError "This number is outside the allowable range for 8-bit unsigned integers."
+       let overflowInt32  = Errors.NumberOutsideOfInt32Range
+       let overflowInt16  = Errors.NumberOutsideOfInt16Range
+       let overflowInt8   = Errors.NumberOutsideOfInt8Range
+       let overflowUInt32 = Errors.NumberOutsideOfUInt32Range
+       let overflowUInt16 = Errors.NumberOutsideOfUInt16Range
+       let overflowUInt8  = Errors.NumberOutsideOfUInt8Range
 
-       puint32 |> RError "+0|" 0 (expectedError "integer number (32-bit, unsigned)")
+       puint32 |> RError "+0|" 0 Errors.ExpectedUInt32
        puint32 |> RFatalError "4294967296|" 0 overflowUInt32
        puint32 |> RFatalError "00004294967296|" 0 overflowUInt32
        puint32 |> RFatalError "11111111111|" 0 overflowUInt32
@@ -939,7 +1101,7 @@ let testNumberParsers() =
        puint32 |> ROk "4294967295|" System.UInt32.MaxValue
        puint32 |> ROk "0004294967295|" System.UInt32.MaxValue
 
-       pint32 |> RError "+|" 0 (expectedError "integer number (32-bit, signed)")
+       pint32 |> RError "+|" 0 Errors.ExpectedInt32
        pint32 |> RFatalError "2147483648|" 0 overflowInt32
        pint32 |> RFatalError "-00002147483649|" 0 overflowInt32
        pint32 |> RFatalError "11111111111|" 0 overflowInt32
@@ -980,139 +1142,173 @@ let testNumberParsers() =
     testPintOther()
 
 let testFollowedBy() =
-    followedByChar '1' |> ROk "1" 0 ()
-    followedByChar '1' |> RError "2" 0 (expectedStringError "1")
-    followedByChar '\r' |> ROk "\r" 0 ()
-    followedByChar '\r' |> ROk "\n" 0 ()
-    followedByChar '\n' |> ROk "\r" 0 ()
-    followedByChar '\n' |> ROk "\n" 0 ()
+    notFollowedByEof |> ROk " " 0 ()
+    notFollowedByEof |> RError "" 0 Errors.UnexpectedEndOfInput
 
-    notFollowedByChar '1'  |> ROk "2" 0 ()
-    notFollowedByChar '1'  |> RError "1" 0 (unexpectedStringError "1")
-    notFollowedByChar '\r' |> RError "\r" 0 (unexpectedError "newline")
-    notFollowedByChar '\r' |> RError "\n" 0 (unexpectedError "newline")
-    notFollowedByChar '\n' |> RError "\r" 0 (unexpectedError "newline")
-    notFollowedByChar '\n' |> RError "\n" 0 (unexpectedError "newline")
+    followedByNewline |> RError "1" 0 Errors.ExpectedNewline
+    followedByNewline |> RError " " 0 Errors.ExpectedNewline
+    followedByNewline |> ROk "\r" 0 ()
+    followedByNewline |> ROk "\n" 0 ()
 
+    notFollowedByNewline |> ROk "1" 0 ()
+    notFollowedByNewline |> ROk " " 0 ()
+    notFollowedByNewline |> RError "\r" 0 Errors.UnexpectedNewline
+    notFollowedByNewline |> RError "\n" 0 Errors.UnexpectedNewline
+
+    followedByString "a" |> ROk "a" 0 ()
+    followedByString "a" |> RError "A" 0 (expectedString "a")
     followedByString "123" |> ROk "123" 0 ()
-    followedByString "123" |> RError "124" 0 (expectedStringError "123")
+    followedByString "123" |> RError "124" 0 (expectedString "123")
+    notFollowedByString "a" |> ROk "A" 0 ()
+    notFollowedByString "a" |> RError "a" 0 (unexpectedString "a")
     notFollowedByString "123" |> ROk "124" 0 ()
-    notFollowedByString "123" |> RError "123" 0 (unexpectedStringError "123")
+    notFollowedByString "123" |> RError "123" 0 (unexpectedString "123")
 
     try followedByString "13\r" |> ignore; Fail()
     with :? System.ArgumentException -> ()
     try notFollowedByString "13\r" |> ignore; Fail()
     with :? System.ArgumentException -> ()
 
+    followedByStringCI "A" |> ROk "a" 0 ()
+    followedByStringCI "A" |> ROk "A" 0 ()
+    followedByStringCI "A" |> RError "B" 0 (expectedStringCI "A")
     followedByStringCI "aBc" |> ROk "AbC" 0 ()
-    followedByStringCI "aBc" |> RError "Abd" 0 (expectedStringCIError "aBc")
+    followedByStringCI "aBc" |> RError "Abd" 0 (expectedStringCI "aBc")
+    notFollowedByStringCI "A" |> ROk "B" 0 ()
+    notFollowedByStringCI "A" |> RError "a" 0 (unexpectedStringCI "A")
+    notFollowedByStringCI "A" |> RError "A" 0 (unexpectedStringCI "A")
     notFollowedByStringCI "aBc" |> ROk "Abd" 0 ()
-    notFollowedByStringCI "aBc" |> RError "AbC" 0 (unexpectedStringCIError "aBc")
+    notFollowedByStringCI "aBc" |> RError "AbC" 0 (unexpectedStringCI "aBc")
 
     try followedByStringCI "13\r" |> ignore; Fail()
     with :? System.ArgumentException -> ()
     try notFollowedByStringCI "13\r" |> ignore; Fail()
     with :? System.ArgumentException -> ()
 
-    nextCharSatisfies ((=) '2')  |> ROk    "12"     0 ()
-    nextCharSatisfies ((=) '2')  |> ROk    "\r2"    0 ()
-    nextCharSatisfies ((=) '2')  |> ROk    "\r\n2"  0 ()
-    nextCharSatisfies ((=) '2')  |> ROk    "\n2"    0 ()
-    nextCharSatisfies ((=) '\n') |> ROk    "\n\r"   0 ()
-    nextCharSatisfies ((=) '\n') |> ROk    "\r\r"   0 ()
-    nextCharSatisfies ((=) '\n') |> ROk    "\r\n\r" 0 ()
-    nextCharSatisfies ((=) '2')  |> RError ""       0 NoErrorMessages
-    nextCharSatisfies ((=) '2')  |> RError "1"      0 NoErrorMessages
-    nextCharSatisfies ((=) '2')  |> RError "13"     0 NoErrorMessages
-    nextCharSatisfies ((=) '\n') |> RError "\r"     0 NoErrorMessages
-    nextCharSatisfies ((=) '\n') |> RError "\r\n"   0 NoErrorMessages
-    nextCharSatisfies ((=) '\n') |> RError "\n"     0 NoErrorMessages
-    nextCharSatisfies ((=) '\n') |> RError "\n\t"   0 NoErrorMessages
-    nextCharSatisfies ((=) '\n') |> RError "\r\n\t" 0 NoErrorMessages
-    nextCharSatisfies ((=) '\n') |> RError "\r\t"   0 NoErrorMessages
+    let one chr = fun c -> if c = chr then true
+                           else Fail()
 
-    nextCharSatisfiesNot ((<>) '2')  |> ROk    "12"     0 ()
-    nextCharSatisfiesNot ((<>) '2')  |> ROk    "\r2"    0 ()
-    nextCharSatisfiesNot ((<>) '2')  |> ROk    "\r\n2"  0 ()
-    nextCharSatisfiesNot ((<>) '2')  |> ROk    "\n2"    0 ()
-    nextCharSatisfiesNot ((<>) '\n') |> ROk    "\n\r"   0 ()
-    nextCharSatisfiesNot ((<>) '\n') |> ROk    "\r\r"   0 ()
-    nextCharSatisfiesNot ((<>) '\n') |> ROk    "\r\n\r" 0 ()
-    nextCharSatisfiesNot ((<>) '2')  |> ROk    ""       0 ()
-    nextCharSatisfiesNot ((<>) '2')  |> ROk    "1"      0 ()
-    nextCharSatisfiesNot ((<>) '2')  |> RError "13"     0 NoErrorMessages
-    nextCharSatisfiesNot ((<>) '\n') |> ROk    "\n"     0 ()
-    nextCharSatisfiesNot ((<>) '\n') |> ROk    "\r\n"   0 ()
-    nextCharSatisfiesNot ((<>) '\n') |> ROk    "\r"     0 ()
-    nextCharSatisfiesNot ((<>) '\n') |> RError "\n\t"   0 NoErrorMessages
-    nextCharSatisfiesNot ((<>) '\n') |> RError "\r\n\t" 0 NoErrorMessages
-    nextCharSatisfiesNot ((<>) '\n') |> RError "\r\t"   0 NoErrorMessages
+    let oneN chr = fun c -> if c = chr then false
+                            else Fail()
 
-    currentCharSatisfies ((=) '2')  |> ROk    "2"    0 ()
-    currentCharSatisfies ((=) '\n') |> ROk    "\n"   0 ()
-    currentCharSatisfies ((=) '\n') |> ROk    "\r\n" 0 ()
-    currentCharSatisfies ((=) '\n') |> ROk    "\r"   0 ()
-    currentCharSatisfies ((=) '2')  |> RError ""     0 NoErrorMessages
-    currentCharSatisfies ((=) '2')  |> RError "1"    0 NoErrorMessages
-    currentCharSatisfies ((=) '\r') |> RError "\r"   0 NoErrorMessages
+    let eos1 = fun c -> Fail()
 
-    currentCharSatisfiesNot ((<>) '2')  |> ROk    "2"    0 ()
-    currentCharSatisfiesNot ((<>) '\n') |> ROk    "\n"   0 ()
-    currentCharSatisfiesNot ((<>) '\n') |> ROk    "\r\n" 0 ()
-    currentCharSatisfiesNot ((<>) '\n') |> ROk    "\r"   0 ()
-    currentCharSatisfiesNot ((<>) '2')  |> ROk    ""     0 ()
-    currentCharSatisfiesNot ((<>) '2')  |> RError "1"    0 NoErrorMessages
-    currentCharSatisfiesNot ((<>) '\r') |> RError "\r"   0 NoErrorMessages
+    nextCharSatisfies (one '2')   |> ROk    "2"    0 ()
+    nextCharSatisfies (one '\n')  |> ROk    "\n"   0 ()
+    nextCharSatisfies (one '\n')  |> ROk    "\r\n" 0 ()
+    nextCharSatisfies (one '\n')  |> ROk    "\r"   0 ()
+    nextCharSatisfies eos1        |> RError ""     0 NoErrorMessages
+    nextCharSatisfies (oneN '1')  |> RError "1"    0 NoErrorMessages
+    nextCharSatisfies (oneN '\n') |> RError "\r"   0 NoErrorMessages
 
-    (anyChar >>. previousCharSatisfies ((=) '1'))  |> ROk    "12"    1 ()
-    (anyChar >>. previousCharSatisfies ((=) '\n')) |> ROkNL  "\n1"   1 ()
-    (anyChar >>. previousCharSatisfies ((=) '\n')) |> ROkNL  "\r\n1" 2 ()
-    (anyChar >>. previousCharSatisfies ((=) '\n')) |> ROkNL  "\r1"   1 ()
-    (anyChar >>. previousCharSatisfies ((=) '1'))  |> RError "01"    1 NoErrorMessages
-    (previousCharSatisfies ((=) '1'))  |> RError "1" 0 NoErrorMessages
-    (previousCharSatisfies ((=) '1'))  |> RError ""  0 NoErrorMessages
+    nextCharSatisfiesNot (oneN '2')  |> ROk    "2"    0 ()
+    nextCharSatisfiesNot (oneN '\n') |> ROk    "\n"   0 ()
+    nextCharSatisfiesNot (oneN '\n') |> ROk    "\r\n" 0 ()
+    nextCharSatisfiesNot (oneN '\n') |> ROk    "\r"   0 ()
+    nextCharSatisfiesNot eos1        |> ROk    ""     0 ()
+    nextCharSatisfiesNot (one '1')  |> RError "1"    0 NoErrorMessages
+    nextCharSatisfiesNot (one '\n') |> RError "\r"   0 NoErrorMessages
 
-    (anyChar >>. previousCharSatisfiesNot ((<>) '1'))  |> ROk    "12"    1 ()
-    (anyChar >>. previousCharSatisfiesNot ((<>) '\n')) |> ROkNL  "\n1"   1 ()
-    (anyChar >>. previousCharSatisfiesNot ((<>) '\n')) |> ROkNL  "\r\n1" 2 ()
-    (anyChar >>. previousCharSatisfiesNot ((<>) '\n')) |> ROkNL  "\r1"   1 ()
-    (anyChar >>. previousCharSatisfiesNot ((<>) '1'))  |> RError "01"    1 NoErrorMessages
-    (previousCharSatisfiesNot ((<>) '1'))  |> ROk "1" 0 ()
-    (previousCharSatisfiesNot ((<>) '1'))  |> ROk "" 0 ()
+    let two (str: string) =
+        fun c0 c1 -> if c0 = str.[0] && c1 = str.[1] then true
+                     else Fail()
+    let twoN (str: string) =
+        fun c0 c1 -> if c0 = str.[0] && c1 = str.[1] then false
+                     else Fail()
 
+    let eos2 = fun c0 c1 -> Fail()
+
+    next2CharsSatisfy (two "12")    |> ROk    "12"     0 ()
+    next2CharsSatisfy (two "\n2")   |> ROk    "\r2"    0 ()
+    next2CharsSatisfy (two "\n2")   |> ROk    "\r\n2"  0 ()
+    next2CharsSatisfy (two "\n2")   |> ROk    "\n2"    0 ()
+    next2CharsSatisfy (two "\n\n")  |> ROk    "\n\r"   0 ()
+    next2CharsSatisfy (two "\n\n")  |> ROk    "\r\r"   0 ()
+    next2CharsSatisfy (two "\n\n")  |> ROk    "\r\n\r" 0 ()
+    next2CharsSatisfy eos2          |> RError ""       0 NoErrorMessages
+    next2CharsSatisfy eos2          |> RError "1"      0 NoErrorMessages
+    next2CharsSatisfy eos2          |> RError "\r"     0 NoErrorMessages
+    next2CharsSatisfy eos2          |> RError "\r\n"   0 NoErrorMessages
+    next2CharsSatisfy eos2          |> RError "\n"     0 NoErrorMessages
+    next2CharsSatisfy (twoN "13")   |> RError "13"     0 NoErrorMessages
+    next2CharsSatisfy (twoN "\n\t") |> RError "\n\t"   0 NoErrorMessages
+    next2CharsSatisfy (twoN "\n\t") |> RError "\r\n\t" 0 NoErrorMessages
+    next2CharsSatisfy (twoN "\n\t") |> RError "\r\t"   0 NoErrorMessages
+
+    next2CharsSatisfyNot (twoN "12")   |> ROk    "12"     0 ()
+    next2CharsSatisfyNot (twoN "\n2")  |> ROk    "\r2"    0 ()
+    next2CharsSatisfyNot (twoN "\n2")  |> ROk    "\r\n2"  0 ()
+    next2CharsSatisfyNot (twoN "\n2")  |> ROk    "\n2"    0 ()
+    next2CharsSatisfyNot (twoN "\n\n") |> ROk    "\n\r"   0 ()
+    next2CharsSatisfyNot (twoN "\n\n") |> ROk    "\r\r"   0 ()
+    next2CharsSatisfyNot (twoN "\n\n") |> ROk    "\r\n\r" 0 ()
+    next2CharsSatisfyNot eos2          |> ROk ""          0 ()
+    next2CharsSatisfyNot eos2          |> ROk "1"         0 ()
+    next2CharsSatisfyNot eos2          |> ROk "\r"        0 ()
+    next2CharsSatisfyNot eos2          |> ROk "\r\n"      0 ()
+    next2CharsSatisfyNot eos2          |> ROk "\n"        0 ()
+    next2CharsSatisfyNot (two "13")    |> RError "13"     0 NoErrorMessages
+    next2CharsSatisfyNot (two "\n\t")  |> RError "\n\t"   0 NoErrorMessages
+    next2CharsSatisfyNot (two "\n\t")  |> RError "\r\n\t" 0 NoErrorMessages
+    next2CharsSatisfyNot (two "\n\t")  |> RError "\r\t"   0 NoErrorMessages
+
+    anyChar >>. previousCharSatisfies (one '1')  |> ROk    "12"    1 ()
+    anyChar >>. previousCharSatisfies (one '\n') |> ROkNL  "\n1"   1 ()
+    anyChar >>. previousCharSatisfies (one '\n') |> ROkNL  "\r\n1" 2 ()
+    anyChar >>. previousCharSatisfies (one '\n') |> ROkNL  "\r1"   1 ()
+    anyChar >>. previousCharSatisfies (oneN '0') |> RError "01"    1 NoErrorMessages
+    previousCharSatisfies eos1  |> RError "1" 0 NoErrorMessages
+    previousCharSatisfies eos1  |> RError ""  0 NoErrorMessages
+
+    anyChar >>. previousCharSatisfiesNot (oneN '1')  |> ROk    "12"    1 ()
+    anyChar >>. previousCharSatisfiesNot (oneN '\n') |> ROkNL  "\n1"   1 ()
+    anyChar >>. previousCharSatisfiesNot (oneN '\n') |> ROkNL  "\r\n1" 2 ()
+    anyChar >>. previousCharSatisfiesNot (oneN '\n') |> ROkNL  "\r1"   1 ()
+    anyChar >>. previousCharSatisfiesNot (one  '0')  |> RError "01"    1 NoErrorMessages
+    previousCharSatisfiesNot eos1 |> ROk "1" 0 ()
+    previousCharSatisfiesNot eos1 |> ROk "" 0 ()
 
 let testUserStateParsers() =
-    use stream = new CharStream("test")
-    let s0 = new State<_>(stream, 0, "stream")
-    let s1 = s0.WithUserState(1)
-    let reply = getUserState s0
-    reply.Status |> Equal Ok
-    reply.Error  |> Equal NoErrorMessages
-    reply.State  |> Equal s0
-    let reply = setUserState 1 s0
-    reply.Status |> Equal Ok
-    reply.Error  |> Equal NoErrorMessages
-    reply.State  |> Equal s1
-    let reply = updateUserState (fun i -> i + 1) s0
-    reply.Status |> Equal Ok
-    reply.Error  |> Equal NoErrorMessages
-    reply.State  |> Equal s1
+    use stream = new CharStream<_>("test")
+    stream.UserState <- 1
 
-    let s2 = s1.Advance(3, 1, 0)
-    let reply = getPosition s2
-    reply.Result |> Equal (Position("stream", 3L, 2L, 1L))
+    let reply = getUserState stream
+    reply.Status  |> Equal Ok
+    reply.Error   |> Equal NoErrorMessages
+    reply.Result  |> Equal 1
+
+    let reply = setUserState 2 stream
     reply.Status |> Equal Ok
     reply.Error  |> Equal NoErrorMessages
-    reply.State  |> Equal s2
+    stream.UserState |> Equal 2
+
+    let reply = updateUserState (fun i -> i + 1) stream
+    reply.Status |> Equal Ok
+    reply.Error  |> Equal NoErrorMessages
+    stream.UserState |> Equal 3
+
+    let reply = userStateSatisfies ((=) 3) stream
+    reply.Status |> Equal Ok
+    reply.Error  |> Equal NoErrorMessages
+
+    let reply = userStateSatisfies ((<>) 3) stream
+    reply.Status |> Equal Error
+    reply.Error  |> Equal NoErrorMessages
 
 let run() =
+
+    let p = new FParsec.ManyChars<unit>(anyChar, anyChar)
+    use stream = new CharStream<unit>("asfasdfasf")
+
     testCharParsers()
     testAnyNoneOf()
     testSpecialCharParsers()
     testStringParsers()
+    testIdentifier()
     testManySatisfy()
     testMany()
     testSkipToString()
     testNumberParsers()
     testFollowedBy()
     testUserStateParsers()
+

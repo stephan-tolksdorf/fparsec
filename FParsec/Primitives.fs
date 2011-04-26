@@ -1,14 +1,11 @@
-﻿// Copyright (c) Stephan Tolksdorf 2007-2009
+﻿// Copyright (c) Stephan Tolksdorf 2007-2011
 // License: Simplified BSD License. See accompanying documentation.
 
+[<AutoOpen>]
 module FParsec.Primitives
 
 open FParsec.Internals
 open FParsec.Error
-
-type ReplyStatus = Ok         =  1
-                 | Error      =  0
-                 | FatalError = -1
 
 [<Literal>]
 let Ok         = ReplyStatus.Ok
@@ -17,68 +14,17 @@ let Error      = ReplyStatus.Error
 [<Literal>]
 let FatalError = ReplyStatus.FatalError
 
-[<System.Diagnostics.DebuggerDisplay("{GetDebuggerDisplay(),nq}")>]
-[<CustomEquality; NoComparison>]
-type Reply<'TResult,'TUserState> = struct
-    new (result, state)        = {State = state; Error = NoErrorMessages; Result = result; Status = Ok}
-    new (status, error, state) = {State = state; Error = error; Result = Unchecked.defaultof<_>; Status = status}
-    new (status, result, error, state) = {State = state; Error = error; Result = result; Status = status}
+type Parser<'a, 'u> = CharStream<'u> -> Reply<'a>
 
-    // The order of the following fields was chosen to optimize the object layout.
-    // We don't use LayoutKind.Auto because it inhibits JIT optimizations:
-    // http://blogs.msdn.com/clrcodegeneration/archive/2007/11/02/how-are-value-types-implemented-in-the-32-bit-clr-what-has-been-done-to-improve-their-performance.aspx
-
-    val mutable State:  State<'TUserState>
-    [<System.Diagnostics.DebuggerDisplay("{FParsec.Error.ErrorMessageList.GetDebuggerDisplay(Error),nq}")>]
-    val mutable Error:  ErrorMessageList
-    /// If Status <> Ok then the value of the Result field is undefined and may be equal to Unchecked.defaultof<'TResult>.
-    val mutable Result: 'TResult
-    val mutable Status: ReplyStatus
-
-    override t.Equals(value: obj) =
-        match value with
-        | :? Reply<'TResult,'TUserState> as r ->
-               t.Status = r.Status
-            && (t.Status <> Ok || LanguagePrimitives.GenericEqualityERComparer.Equals(t.Result, r.Result))
-            && t.State = r.State
-            && t.Error = r.Error
-        | _ -> false
-
-    override t.GetHashCode() =
-        // GetHashCode() is not required to return different hash codes for unequal instances
-        int t.Status ^^^ t.State.GetHashCode()
-
-    member private t.GetDebuggerDisplay() =
-        let pos = if isNull t.State then "null" else t.State.Position.ToString()
-        if t.Status = Ok && isNull t.Error then
-            if typeof<'TResult> = typeof<unit> then "Reply((), " + pos + ")"
-            else sprintf "Reply(%0.5A, %s)" t.Result pos
-        else
-            let e = FParsec.Error.ErrorMessageList.GetDebuggerDisplay(t.Error)
-            if t.Status = Ok then
-                if typeof<'TResult> = typeof<unit> then "Reply(Ok, (), " + e + ", " + pos + ")"
-                else sprintf "Reply(Ok, %0.5A, %s, %s)" t.Result e pos
-            else
-               let status = match t.Status with
-                            | Error -> "Error"
-                            | FatalError -> "FatalError"
-                            | _ -> "(ReplyStatus)" + (int t.Status).ToString()                           
-               sprintf "Reply(%s, %s, %s)" status e pos
-
-end
-
-type Parser<'a, 'u> = State<'u> -> Reply<'a,'u>
+// The `PrimitiveTests.Reference` module contains simple (but inefficient)
+// reference implementations of most of the functions below.
 
 // =================================
 // Parser primitives and combinators
 // =================================
 
-// The `PrimitiveTests.Reference` module contains simple (but sometimes naive)
-// reference implementations of most of the functions below.
-
-let preturn x = fun state -> Reply(x, state)
-let pzero : Parser<'a,'u> = fun state -> Reply(Error, NoErrorMessages, state)
-
+let preturn x : Parser<_,_> = fun stream -> Reply(x)
+let pzero : Parser<_,_> = fun stream -> Reply()
 
 // ---------------------------
 // Chaining and piping parsers
@@ -87,154 +33,230 @@ let pzero : Parser<'a,'u> = fun state -> Reply(Error, NoErrorMessages, state)
 let (>>=) (p: Parser<'a,'u>) (f: 'a -> Parser<'b,'u>) =
     match box f with
     // optimization for uncurried functions
-    | :? OptimizedClosures.FSharpFunc<'a, State<'u>, Reply<'b,'u>> as optF ->
-        fun state ->
-            let reply1 = p state
+    | :? OptimizedClosures.FSharpFunc<'a, CharStream<'u>, Reply<'b>> as optF ->
+        fun stream ->
+            let reply1 = p stream
             if reply1.Status = Ok then
-                let mutable reply2 = optF.Invoke(reply1.Result, reply1.State)
-                if isNotNull reply1.Error && reply2.State == reply1.State then
-                    reply2.Error <- concatErrorMessages reply1.Error reply2.Error
-                reply2
+                if isNull reply1.Error then
+                    // in separate branch because the JIT can produce better code for a tail call
+                    optF.Invoke(reply1.Result, stream)
+                else
+                    let stateTag1 = stream.StateTag
+                    let mutable reply2 = optF.Invoke(reply1.Result, stream)
+                    if stateTag1 = stream.StateTag then
+                        reply2.Error <- mergeErrors reply2.Error reply1.Error
+                    reply2
             else
-                Reply(reply1.Status, reply1.Error, reply1.State)
+                Reply(reply1.Status, reply1.Error)
     | _ ->
-        fun state ->
-            let reply1 = p state
+        fun stream ->
+            let reply1 = p stream
             if reply1.Status = Ok then
                 let p2 = f reply1.Result
-                let mutable reply2 = p2 reply1.State
-                if isNotNull reply1.Error && reply2.State == reply1.State then
-                    reply2.Error <- concatErrorMessages reply1.Error reply2.Error
-                reply2
+                if isNull reply1.Error then
+                    // in separate branch because the JIT can produce better code for a tail call
+                    p2 stream
+                else
+                    let stateTag1 = stream.StateTag
+                    let mutable reply2 = p2 stream
+                    if stateTag1 = stream.StateTag then
+                        reply2.Error <- mergeErrors reply2.Error reply1.Error
+                    reply2
             else
-                Reply(reply1.Status, reply1.Error, reply1.State)
+                Reply(reply1.Status, reply1.Error)
 
 let (>>%) (p: Parser<'a,'u>) x =
-    fun state ->
-        let reply = p state
-        Reply(reply.Status, x, reply.Error, reply.State)
+    fun stream ->
+        let reply = p stream
+        Reply(reply.Status, x, reply.Error)
 
 let (>>.) (p: Parser<'a,'u>) (q: Parser<'b,'u>) =
-    fun state ->
-        let reply1 = p state
+    fun stream ->
+        let mutable reply1 = p stream
         if reply1.Status = Ok then
-            let mutable reply2 = q reply1.State
-            if isNotNull reply1.Error && reply2.State == reply1.State then
-                reply2.Error <- concatErrorMessages reply1.Error reply2.Error
-            reply2
+            if isNull reply1.Error then
+                // in separate branch because the JIT can produce better code for a tail call
+                q stream
+            else
+                let stateTag1 = stream.StateTag
+                let mutable reply2 = q stream
+                if stateTag1 = stream.StateTag then
+                    reply2.Error <- mergeErrors reply2.Error reply1.Error
+                reply2
         else
-            Reply(reply1.Status, reply1.Error, reply1.State)
+            Reply(reply1.Status, reply1.Error)
 
 let (.>>) (p: Parser<'a,'u>) (q: Parser<'b,'u>) =
-    fun state ->
-        let mutable reply1 = p state
+    fun stream ->
+        let mutable reply1 = p stream
         if reply1.Status = Ok then
-            let reply2 = q reply1.State
-            reply1.Error  <- mergeErrorsIfNeeded reply1.State reply1.Error reply2.State reply2.Error
-            reply1.State  <- reply2.State
+            let stateTag1 = stream.StateTag
+            let reply2 = q stream
+            let error = if isNull reply1.Error then reply2.Error
+                        elif stateTag1 <> stream.StateTag then reply2.Error
+                        else mergeErrors reply2.Error reply1.Error
+            reply1.Error  <- error
             reply1.Status <- reply2.Status
         reply1
 
-let between (popen: Parser<_,'u>) (pclose: Parser<_,'u>) (p: Parser<_,'u>) =
-    fun state ->
-        let reply1 = popen state
+
+let (.>>.) (p: Parser<'a,'u>) (q: Parser<'b,'u>) =
+    fun stream ->
+        let reply1 = p stream
         if reply1.Status = Ok then
-            let mutable reply2 = p reply1.State
-            let error = mergeErrorsIfNeeded reply1.State reply1.Error reply2.State reply2.Error
-            if reply2.Status = Ok then
-                let reply3 = pclose reply2.State
-                reply2.Error  <- mergeErrorsIfNeeded reply2.State error reply3.State reply3.Error
-                reply2.State  <- reply3.State
-                reply2.Status <- reply3.Status
-            else
-                reply2.Error <- error
-            reply2
+            let stateTag1 = stream.StateTag
+            let reply2 = q stream
+            let error = if stateTag1 <> stream.StateTag then reply2.Error
+                        else mergeErrors reply1.Error reply2.Error
+            let result = if reply2.Status = Ok then (reply1.Result, reply2.Result)
+                         else Unchecked.defaultof<_>
+            Reply(reply2.Status, result, error)
         else
-            Reply(reply1.Status, reply1.Error, reply1.State)
+            Reply(reply1.Status, reply1.Error)
+
+let between (popen: Parser<_,'u>) (pclose: Parser<_,'u>) (p: Parser<_,'u>) =
+    fun stream ->
+        let reply1 = popen stream
+        if reply1.Status = Ok then
+            let stateTag1 = stream.StateTag
+            let mutable reply2 = p stream
+            if reply2.Status = Ok then
+                let stateTag2 = stream.StateTag
+                let reply3 = pclose stream
+                let error = if stateTag2 <> stream.StateTag then reply3.Error
+                            else
+                                let error2 = mergeErrors reply2.Error reply3.Error
+                                if stateTag1 <> stateTag2 then error2
+                                else mergeErrors reply1.Error error2
+                reply2.Error  <- error
+                reply2.Status <- reply3.Status
+                reply2
+            else
+                let error = if stateTag1 <> stream.StateTag then reply2.Error
+                            else mergeErrors reply1.Error reply2.Error
+                reply2.Error <- error
+                reply2
+        else
+            Reply(reply1.Status, reply1.Error)
 
 let (|>>) (p: Parser<'a,'u>) f =
-    fun state ->
-        let reply = p state
+    fun stream ->
+        let reply = p stream
         Reply(reply.Status,
               (if reply.Status = Ok then f reply.Result else Unchecked.defaultof<_>),
-              reply.Error,
-              reply.State)
+              reply.Error)
 
 let pipe2 (p1: Parser<'a,'u>) (p2: Parser<'b,'u>) f =
     let optF = OptimizedClosures.FSharpFunc<_,_,_>.Adapt(f)
-    fun state ->
-        let reply1 = p1 state
+    fun stream ->
+        let mutable reply = Reply()
+        let reply1 = p1 stream
         let mutable error = reply1.Error
         if reply1.Status = Ok then
-            let reply2 = p2 reply1.State
-            error <- mergeErrorsIfNeeded reply1.State error reply2.State reply2.Error
+            let stateTag1 = stream.StateTag
+            let reply2 = p2 stream
+            error <- if stateTag1 <> stream.StateTag then reply2.Error
+                     else mergeErrors error reply2.Error
             if reply2.Status = Ok then
-                 Reply(Ok, optF.Invoke(reply1.Result, reply2.Result), error, reply2.State)
-            else Reply(reply2.Status, error, reply2.State)
-        else Reply(reply1.Status, reply1.Error, reply1.State)
+                 reply.Result <- optF.Invoke(reply1.Result, reply2.Result)
+                 reply.Status <- Ok
+            else reply.Status <- reply2.Status
+        else reply.Status <- reply1.Status
+        reply.Error <- error
+        reply
 
 let pipe3 (p1: Parser<'a,'u>) (p2: Parser<'b,'u>) (p3: Parser<'c,'u>) f =
     let optF = OptimizedClosures.FSharpFunc<_,_,_,_>.Adapt(f)
-    fun state ->
-        let reply1 = p1 state
+    fun stream ->
+        let mutable reply = Reply()
+        let reply1 = p1 stream
         let mutable error = reply1.Error
         if reply1.Status = Ok then
-            let reply2 = p2 reply1.State
-            error <- mergeErrorsIfNeeded reply1.State error reply2.State reply2.Error
+            let stateTag1 = stream.StateTag
+            let reply2 = p2 stream
+            error <- if stateTag1 <> stream.StateTag then reply2.Error
+                     else mergeErrors error reply2.Error
             if reply2.Status = Ok then
-                let reply3 = p3 reply2.State
-                error <- mergeErrorsIfNeeded reply2.State error reply3.State reply3.Error
+                let stateTag2 = stream.StateTag
+                let reply3 = p3 stream
+                error <- if stateTag2 <> stream.StateTag then reply3.Error
+                         else mergeErrors error reply3.Error
                 if reply3.Status = Ok then
-                     Reply(Ok, optF.Invoke(reply1.Result, reply2.Result, reply3.Result), error, reply3.State)
-                else Reply(reply3.Status, error, reply3.State)
-            else Reply(reply2.Status, error, reply2.State)
-        else Reply(reply1.Status, error, reply1.State)
+                     reply.Result <- optF.Invoke(reply1.Result, reply2.Result, reply3.Result)
+                     reply.Status <- Ok
+                else reply.Status <- reply3.Status
+            else reply.Status <- reply2.Status
+        else reply.Status <- reply1.Status
+        reply.Error <- error
+        reply
 
 let pipe4 (p1: Parser<'a,'u>) (p2: Parser<'b,'u>) (p3: Parser<'c,'u>) (p4: Parser<'d,'u>) f =
     let optF = OptimizedClosures.FSharpFunc<_,_,_,_,_>.Adapt(f)
-    fun state ->
-        let reply1 = p1 state
+    fun stream ->
+        let mutable reply = Reply()
+        let reply1 = p1 stream
         let mutable error = reply1.Error
         if reply1.Status = Ok then
-            let reply2 = p2 reply1.State
-            error <- mergeErrorsIfNeeded reply1.State error reply2.State reply2.Error
+            let stateTag1 = stream.StateTag
+            let reply2 = p2 stream
+            error <- if stateTag1 <> stream.StateTag then reply2.Error
+                     else mergeErrors error reply2.Error
             if reply2.Status = Ok then
-                let reply3 = p3 reply2.State
-                error <- mergeErrorsIfNeeded reply2.State error reply3.State reply3.Error
+                let stateTag2 = stream.StateTag
+                let reply3 = p3 stream
+                error <- if stateTag2 <> stream.StateTag then reply3.Error
+                         else mergeErrors error reply3.Error
                 if reply3.Status = Ok then
-                    let reply4 = p4 reply3.State
-                    error <- mergeErrorsIfNeeded reply3.State error reply4.State reply4.Error
+                    let stateTag3 = stream.StateTag
+                    let reply4 = p4 stream
+                    error <- if stateTag3 <> stream.StateTag then reply4.Error
+                             else mergeErrors error reply4.Error
                     if reply4.Status = Ok then
-                         Reply(Ok, optF.Invoke(reply1.Result, reply2.Result, reply3.Result, reply4.Result), error, reply4.State)
-                    else Reply(reply4.Status, error, reply4.State)
-                else Reply(reply3.Status, error, reply3.State)
-            else Reply(reply2.Status, error, reply2.State)
-        else Reply(reply1.Status, error, reply1.State)
+                         reply.Result <- optF.Invoke(reply1.Result, reply2.Result, reply3.Result, reply4.Result)
+                         reply.Status <- Ok
+                    else reply.Status <- reply4.Status
+                else reply.Status <- reply3.Status
+            else reply.Status <- reply2.Status
+        else reply.Status <- reply1.Status
+        reply.Error <- error
+        reply
 
 let pipe5 (p1: Parser<'a,'u>) (p2: Parser<'b,'u>) (p3: Parser<'c,'u>) (p4: Parser<'d,'u>) (p5: Parser<'e,'u>) f =
     let optF = OptimizedClosures.FSharpFunc<_,_,_,_,_,_>.Adapt(f)
-    fun state ->
-        let reply1 = p1 state
+    fun stream ->
+        let mutable reply = Reply()
+        let reply1 = p1 stream
         let mutable error = reply1.Error
         if reply1.Status = Ok then
-            let reply2 = p2 reply1.State
-            error <- mergeErrorsIfNeeded reply1.State error reply2.State reply2.Error
+            let stateTag1 = stream.StateTag
+            let reply2 = p2 stream
+            error <- if stateTag1 <> stream.StateTag then reply2.Error
+                     else mergeErrors error reply2.Error
             if reply2.Status = Ok then
-                let reply3 = p3 reply2.State
-                error <- mergeErrorsIfNeeded reply2.State error reply3.State reply3.Error
+                let stateTag2 = stream.StateTag
+                let reply3 = p3 stream
+                error <- if stateTag2 <> stream.StateTag then reply3.Error
+                         else mergeErrors error reply3.Error
                 if reply3.Status = Ok then
-                    let reply4 = p4 reply3.State
-                    error <- mergeErrorsIfNeeded reply3.State error reply4.State reply4.Error
+                    let stateTag3 = stream.StateTag
+                    let reply4 = p4 stream
+                    error <- if stateTag3 <> stream.StateTag then reply4.Error
+                             else mergeErrors error reply4.Error
                     if reply4.Status = Ok then
-                        let reply5 = p5 reply4.State
-                        error <- mergeErrorsIfNeeded reply4.State error reply5.State reply5.Error
+                        let stateTag4 = stream.StateTag
+                        let reply5 = p5 stream
+                        error <- if stateTag4 <> stream.StateTag then reply5.Error
+                                 else mergeErrors error reply5.Error
                         if reply5.Status = Ok then
-                             Reply(Ok, optF.Invoke(reply1.Result, reply2.Result, reply3.Result, reply4.Result, reply5.Result), error, reply5.State)
-                        else Reply(reply5.Status, error, reply5.State)
-                    else Reply(reply4.Status, error, reply4.State)
-                else Reply(reply3.Status, error, reply3.State)
-            else Reply(reply2.Status, error, reply2.State)
-        else Reply(reply1.Status, error, reply1.State)
+                             reply.Result <- optF.Invoke(reply1.Result, reply2.Result, reply3.Result, reply4.Result, reply5.Result)
+                             reply.Status <- Ok
+                        else reply.Status <- reply5.Status
+                    else reply.Status <- reply4.Status
+                else reply.Status <- reply3.Status
+            else reply.Status <- reply2.Status
+        else reply.Status <- reply1.Status
+        reply.Error <- error
+        reply
 
 
 // -----------------------------------------------
@@ -242,195 +264,239 @@ let pipe5 (p1: Parser<'a,'u>) (p2: Parser<'b,'u>) (p3: Parser<'c,'u>) (p4: Parse
 // -----------------------------------------------
 
 let (<|>) (p1: Parser<'a,'u>) (p2: Parser<'a,'u>) : Parser<'a,'u> =
-    fun state ->
-        let reply1 = p1 state
-        if reply1.Status = Error && reply1.State == state then
-            let mutable reply2 = p2 state
-            if reply2.State == reply1.State then
-                reply2.Error <- mergeErrors reply1.Error reply2.Error
-            reply2
-        else reply1
+    fun stream ->
+        let mutable stateTag = stream.StateTag
+        let mutable reply = p1 stream
+        if reply.Status = Error && stateTag = stream.StateTag then
+            let error = reply.Error
+            reply <- p2 stream
+            if stateTag = stream.StateTag then
+                reply.Error <- mergeErrors reply.Error error
+        reply
 
 let choice (ps: seq<Parser<'a,'u>>)  =
     match ps with
     | :? (Parser<'a,'u>[]) as ps ->
         if ps.Length = 0 then pzero
         else
-            fun state ->
+            fun stream ->
+                let stateTag = stream.StateTag
                 let mutable error = NoErrorMessages
-                let mutable reply = ps.[0] state
+                let mutable reply = ps.[0] stream
                 let mutable i = 1
-                while reply.Status = Error && reply.State == state && i < ps.Length do
+                while reply.Status = Error && stateTag = stream.StateTag && i < ps.Length do
                     error <- mergeErrors error reply.Error
-                    reply <- ps.[i] state
+                    reply <- ps.[i] stream
                     i <- i + 1
-                if reply.State == state then
-                    reply.Error <- mergeErrors error reply.Error
+                if stateTag = stream.StateTag then
+                    error <- mergeErrors error reply.Error
+                    reply.Error <- error
                 reply
     | :? (Parser<'a,'u> list) as ps ->
         match ps with
         | [] -> pzero
         | hd::tl ->
-            fun state ->
+            fun stream ->
+                let stateTag = stream.StateTag
                 let mutable error = NoErrorMessages
                 let mutable hd, tl = hd, tl
-                let mutable reply = hd state
-                while reply.Status = Error && reply.State == state
+                let mutable reply = hd stream
+                while reply.Status = Error && stateTag = stream.StateTag
                       && (match tl with
                           | h::t -> hd <- h; tl <- t; true
                           | _ -> false)
                    do
                     error <- mergeErrors error reply.Error
-                    reply <- hd state
-                if reply.State == state then
-                    reply.Error <- mergeErrors error reply.Error
+                    reply <- hd stream
+                if stateTag = stream.StateTag then
+                    error <- mergeErrors error reply.Error
+                    reply.Error <- error
                 reply
-    | _ -> fun state ->
+    | _ -> fun stream ->
                use iter = ps.GetEnumerator()
                if iter.MoveNext() then
+                   let stateTag = stream.StateTag
                    let mutable error = NoErrorMessages
-                   let mutable reply = iter.Current state
-                   while reply.Status = Error && reply.State == state && iter.MoveNext() do
+                   let mutable reply = iter.Current stream
+                   while reply.Status = Error && stateTag = stream.StateTag && iter.MoveNext() do
                        error <- mergeErrors error reply.Error
-                       reply <- iter.Current state
-                   if reply.State == state then
-                       reply.Error <- mergeErrors error reply.Error
-                   reply
-               else
-                   Reply(Error, NoErrorMessages, state)
-
-
-let choiceL (ps: seq<Parser<'a,'u>>) label =
-    let error = expectedError label
-    match ps with
-    | :? (Parser<'a,'u>[]) as ps ->
-        if ps.Length = 0 then pzero
-        else
-            fun state ->
-                let mutable reply = ps.[0] state
-                let mutable i = 1
-                while reply.Status = Error && reply.State == state && i < ps.Length do
-                    reply <- ps.[i] state
-                    i <- i + 1
-                if reply.State == state then
-                    reply.Error <- error
-                reply
-    | :? (Parser<'a,'u> list) as ps ->
-        match ps with
-        | [] -> pzero
-        | hd::tl ->
-            fun state ->
-                let mutable hd, tl = hd, tl
-                let mutable reply = hd state
-                while reply.Status = Error && reply.State == state
-                      && (match tl with
-                          | h::t -> hd <- h; tl <- t; true
-                          | _ -> false)
-                   do
-                    reply <- hd state
-                if reply.State == state then
-                    reply.Error <- error
-                reply
-    | _ -> fun state ->
-               use iter = ps.GetEnumerator()
-               if iter.MoveNext() then
-                   let mutable reply = iter.Current state
-                   while reply.Status = Error && reply.State == state && iter.MoveNext() do
-                       reply <- iter.Current state
-                   if reply.State == state then
+                       reply <- iter.Current stream
+                   if stateTag = stream.StateTag then
+                       error <- mergeErrors error reply.Error
                        reply.Error <- error
                    reply
                else
-                   Reply(Error, NoErrorMessages, state)
+                   Reply()
 
-let (<|>%) (p: Parser<'a,'u>) x =
-    fun state ->
-        let mutable reply = p state
-        if reply.Status = Error && reply.State == state then
+
+let choiceL (ps: seq<Parser<'a,'u>>) label : Parser<_,_> =
+    let error = expected label
+    match ps with
+    | :? (Parser<'a,'u>[]) as ps ->
+        if ps.Length = 0 then
+            fun stream -> Reply(Error, error)
+        else
+            fun stream ->
+                let stateTag = stream.StateTag
+                let mutable reply = ps.[0] stream
+                let mutable i = 1
+                while reply.Status = Error && stateTag = stream.StateTag && i < ps.Length do
+                    reply <- ps.[i] stream
+                    i <- i + 1
+                if stateTag = stream.StateTag then
+                    reply.Error <- error
+                reply
+    | :? (Parser<'a,'u> list) as ps ->
+        match ps with
+        | [] -> fun stream -> Reply(Error, error)
+        | hd::tl ->
+            fun stream ->
+                let stateTag = stream.StateTag
+                let mutable hd, tl = hd, tl
+                let mutable reply = hd stream
+                while reply.Status = Error && stateTag = stream.StateTag
+                      && (match tl with
+                          | h::t -> hd <- h; tl <- t; true
+                          | _ -> false)
+                   do
+                    reply <- hd stream
+                if stateTag = stream.StateTag then
+                    reply.Error <- error
+                reply
+    | _ -> fun stream ->
+               use iter = ps.GetEnumerator()
+               if iter.MoveNext() then
+                   let stateTag = stream.StateTag
+                   let mutable reply = iter.Current stream
+                   while reply.Status = Error && stateTag = stream.StateTag && iter.MoveNext() do
+                       reply <- iter.Current stream
+                   if stateTag = stream.StateTag then
+                       reply.Error <- error
+                   reply
+               else
+                   Reply(Error, error)
+
+let (<|>%) (p: Parser<'a,'u>) x : Parser<'a,'u> =
+    fun stream ->
+        let stateTag = stream.StateTag
+        let mutable reply = p stream
+        if reply.Status = Error && stateTag = stream.StateTag then
             reply.Result <- x
             reply.Status <- Ok
         reply
 
 let opt (p: Parser<'a,'u>) : Parser<'a option,'u> =
-    fun state ->
-        let reply = p state
+    fun stream ->
+        let stateTag = stream.StateTag
+        let reply = p stream
         if reply.Status = Ok then
-            Reply(Ok, Some reply.Result, reply.Error, reply.State)
+            Reply(Ok, Some reply.Result, reply.Error)
         else
             // None is represented as null
-            let status = if reply.Status = Error && reply.State == state then Ok else reply.Status
-            Reply(status, reply.Error, reply.State)
+            let status = if reply.Status = Error && stateTag = stream.StateTag then Ok else reply.Status
+            Reply(status, reply.Error)
 
 let optional (p: Parser<'a,'u>) : Parser<unit,'u> =
-    fun state ->
-        let reply = p state
-        let status = if reply.Status = Error && reply.State == state then Ok else reply.Status
-        // () is represented as null
-        Reply<unit,_>(status, reply.Error, reply.State)
+    fun stream ->
+        let stateTag = stream.StateTag
+        let reply = p stream
+        let status = if reply.Status = Error && stateTag = stream.StateTag then Ok else reply.Status
+        Reply(status, (), reply.Error)
 
-let attempt (p: Parser<'a,'u>) =
-    fun state ->
-        let mutable reply = p state
+let attempt (p: Parser<'a,'u>) : Parser<'a,'u> =
+    fun stream ->
+        // state is only declared mutable so it can be passed by ref, it won't be mutated
+        let mutable state = CharStreamState(stream) // = stream.State (manually inlined)
+        let mutable reply = p stream
         if reply.Status <> Ok then
-            if reply.State != state then
-                reply.Error  <- backtrackError reply.State reply.Error
-                reply.State  <- state
+            if state.Tag <> stream.StateTag then
+                reply.Error  <- nestedError stream reply.Error
                 reply.Status <- Error // turns FatalErrors into Errors
+                stream.BacktrackTo(&state) // passed by ref as a (slight) optimization
             elif reply.Status = FatalError then
                 reply.Status <- Error
         reply
 
-let (>>=?) (p: Parser<'a,'u>) (f: 'a -> Parser<'b,'u>) =
+let (>>=?) (p: Parser<'a,'u>) (f: 'a -> Parser<'b,'u>) : Parser<'b,'u> =
     let optF = OptimizedClosures.FSharpFunc<_,_,_>.Adapt(f)
-    fun state ->
-        let reply1 = p state
+    fun stream ->
+        // state is only declared mutable so it can be passed by ref, it won't be mutated
+        let mutable state = CharStreamState(stream) // = stream.State (manually inlined)
+        let reply1 = p stream
         if reply1.Status = Ok then
-            let mutable reply2 = optF.Invoke(reply1.Result, reply1.State)
-            if reply2.State == reply1.State then
+            let stateTag1 = stream.StateTag
+            let mutable reply2 = optF.Invoke(reply1.Result, stream)
+            if stateTag1 = stream.StateTag then
                 let error = mergeErrors reply1.Error reply2.Error
-                if reply2.Status <> Error || reply1.State == state then
+                if reply2.Status <> Error || stateTag1 = state.Tag then
                     reply2.Error <- error
                 else
-                    reply2.Error <- backtrackError reply2.State error
-                    reply2.State <- state
+                    reply2.Error <- nestedError stream error
+                    stream.BacktrackTo(&state) // passed by ref as a (slight) optimization
             reply2
         else
-            Reply(reply1.Status, reply1.Error, reply1.State)
+            Reply(reply1.Status, reply1.Error)
 
-let (>>?) (p: Parser<'a,'u>) (q: Parser<'b,'u>) =
-    fun state ->
-        let reply1 = p state
+let (>>?) (p: Parser<'a,'u>) (q: Parser<'b,'u>) : Parser<'b,'u> =
+    fun stream ->
+        // state is only declared mutable so it can be passed by ref, it won't be mutated
+        let mutable state = CharStreamState(stream) // = stream.State (manually inlined)
+        let reply1 = p stream
         if reply1.Status = Ok then
-            let mutable reply2 = q reply1.State
-            if reply2.State == reply1.State then
+            let stateTag1 = stream.StateTag
+            let mutable reply2 = q stream
+            if stateTag1 = stream.StateTag then
                 let error = mergeErrors reply1.Error reply2.Error
-                if reply2.Status <> Error || reply1.State == state then
+                if reply2.Status <> Error || stateTag1 = state.Tag then
                     reply2.Error <- error
                 else
-                    reply2.Error <- backtrackError reply2.State error
-                    reply2.State <- state
+                    reply2.Error <- nestedError stream error
+                    stream.BacktrackTo(&state) // passed by ref as a (slight) optimization
             reply2
         else
-            Reply(reply1.Status, reply1.Error, reply1.State)
+            Reply(reply1.Status, reply1.Error)
 
-let (.>>?) (p: Parser<'a,'u>) (q: Parser<'b,'u>) =
-    fun state ->
-        let mutable reply1 = p state
+let (.>>.?) (p: Parser<'a,'u>) (q: Parser<'b,'u>) : Parser<'a*'b,'u> =
+    fun stream ->
+        // state is only declared mutable so it can be passed by ref, it won't be mutated
+        let mutable state = CharStreamState(stream) // = stream.State (manually inlined)
+        let reply1 = p stream
         if reply1.Status = Ok then
-            let reply2 = q reply1.State
-            if reply2.State != reply1.State then
-                reply1.State  <- reply2.State
-                reply1.Error  <- reply2.Error
-                reply1.Status <- reply2.Status
-            else
+            let stateTag1 = stream.StateTag
+            let mutable reply2 = q stream
+            if stateTag1 = stream.StateTag then
                 let error = mergeErrors reply1.Error reply2.Error
-                if reply2.Status <> Error || reply1.State == state then
-                    reply1.Error  <- error
+                if reply2.Status <> Error || stateTag1 = state.Tag then
+                    reply2.Error <- error
+                else
+                    reply2.Error <- nestedError stream error
+                    stream.BacktrackTo(&state) // passed by ref as a (slight) optimization
+            let result = if reply2.Status = Ok then (reply1.Result, reply2.Result)
+                         else Unchecked.defaultof<_>
+            Reply(reply2.Status, result, reply2.Error)
+        else
+            Reply(reply1.Status, reply1.Error)
+
+let (.>>?) (p: Parser<'a,'u>) (q: Parser<'b,'u>) : Parser<'a,'u> =
+    fun stream ->
+        // state is only declared mutable so it can be passed by ref, it won't be mutated
+        let mutable state = CharStreamState(stream) // = stream.State (manually inlined)
+        let mutable reply1 = p stream
+        if reply1.Status = Ok then
+            let stateTag1 = stream.StateTag
+            let reply2 = q stream
+            if stateTag1 = stream.StateTag then
+                let error = mergeErrors reply1.Error reply2.Error
+                if reply2.Status <> Error || stateTag1 = state.Tag then
+                    reply1.Error <- error
                     reply1.Status <- reply2.Status
                 else
-                    reply1.Error  <- backtrackError reply1.State error
-                    reply1.State  <- state
+                    reply1.Error <- nestedError stream error
+                    stream.BacktrackTo(&state) // passed by ref as a (slight) optimization
                     reply1.Status <- Error
+            else
+                reply1.Error  <- reply2.Error
+                reply1.Status <- reply2.Status
         reply1
 
 
@@ -438,36 +504,55 @@ let (.>>?) (p: Parser<'a,'u>) (q: Parser<'b,'u>) =
 // Conditional parsing and looking ahead
 // -------------------------------------
 
-/// REVIEW: should `followedBy` use the error messages generated by `p`?
+let notEmpty (p: Parser<'a,'u>) : Parser<'a,'u> =
+    fun stream ->
+        let stateTag = stream.StateTag
+        let mutable reply = p stream
+        if stateTag = stream.StateTag && reply.Status = Ok then
+            reply.Status <- Error
+        reply
 
-let internal followedByE (p: Parser<'a,'u>) error =
-    fun state ->
-        let reply = p state
-        if reply.Status = Ok then Reply((), state)
-        else Reply(Error, error, state)
+// REVIEW: should `followedBy` use the error messages generated by `p`?
+
+let internal followedByE (p: Parser<'a,'u>) error : Parser<unit,'u> =
+    fun stream ->
+        // state is only declared mutable so it can be passed by ref, it won't be mutated
+        let mutable state = CharStreamState(stream) // = stream.State (manually inlined)
+        let reply = p stream
+        if state.Tag <> stream.StateTag then
+            stream.BacktrackTo(&state) // passed by ref as a (slight) optimization
+        if reply.Status = Ok then Reply(())
+        else Reply(Error, error)
 
 let followedBy  p       = followedByE p NoErrorMessages
-let followedByL p label = followedByE p (expectedError label)
+let followedByL p label = followedByE p (expected label)
 
-let internal notFollowedByE (p: Parser<'a,'u>) error =
-    fun state ->
-        let reply = p state
-        if reply.Status <> Ok then Reply((), state)
-        else Reply(Error, error, state)
+let internal notFollowedByE (p: Parser<'a,'u>) error : Parser<unit,'u> =
+    fun stream ->
+        // state is only declared mutable so it can be passed by ref, it won't be mutated
+        let mutable state = CharStreamState(stream) // = stream.State (manually inlined)
+        let reply = p stream
+        if state.Tag <> stream.StateTag then
+            stream.BacktrackTo(&state) // passed by ref as a (slight) optimization
+        if reply.Status <> Ok then Reply(())
+        else Reply(Error, error)
 
 let notFollowedBy  p       = notFollowedByE p NoErrorMessages
-let notFollowedByL p label = notFollowedByE p (unexpectedError label)
+let notFollowedByL p label = notFollowedByE p (unexpected label)
 
-let lookAhead (p: Parser<'a,'u>) =
-    fun state ->
-        let mutable reply = p state
+let lookAhead (p: Parser<'a,'u>) : Parser<'a,'u> =
+    fun stream ->
+        // state is only declared mutable so it can be passed by ref, it won't be mutated
+        let mutable state = CharStreamState(stream) // = stream.State (manually inlined)
+        let mutable reply = p stream
         if reply.Status = Ok then
-            reply.State <- state
             reply.Error <- NoErrorMessages
+            if state.Tag <> stream.StateTag then
+                stream.BacktrackTo(&state) // passed by ref as a (slight) optimization
         else
-            if reply.State != state then
-                reply.Error  <- backtrackError reply.State reply.Error
-                reply.State  <- state
+            if state.Tag <> stream.StateTag then
+                reply.Error  <- nestedError stream reply.Error
+                stream.BacktrackTo(&state)
             reply.Status <- Error // turn FatalErrors into normal Errors
         reply
 
@@ -476,47 +561,57 @@ let lookAhead (p: Parser<'a,'u>) =
 // Customizing error messages
 // --------------------------
 
-let (<?>) (p: Parser<'a,'u>) label  =
-    let error = expectedError label
-    fun state ->
-        let mutable reply = p state
-        if reply.State == state then
+let (<?>) (p: Parser<'a,'u>) label  : Parser<'a,'u> =
+    let error = expected label
+    fun stream ->
+        let stateTag = stream.StateTag
+        let mutable reply = p stream
+        if stateTag = stream.StateTag then
             reply.Error <- error
         reply
 
-let (<??>) (p: Parser<'a,'u>) label =
-    let expErr = expectedError label
-    fun state ->
-        let mutable reply = p state
+let (<??>) (p: Parser<'a,'u>) label : Parser<'a,'u> =
+    let expErr = expected label
+    fun stream ->
+        // state is only declared mutable so it can be passed by ref, it won't be mutated
+        let mutable state = CharStreamState(stream) // = stream.State (manually inlined)
+        let mutable reply = p stream
         if reply.Status = Ok then
-            if reply.State == state then
+            if state.Tag = stream.StateTag then
                 reply.Error <- expErr
         else
-            if reply.State == state then
-                reply.Error <- match reply.Error with
-                               | AddErrorMessage(BacktrackPoint(pos, msgs), NoErrorMessages)
-                                   -> AddErrorMessage(CompoundError(label, pos, msgs), NoErrorMessages)
-                               | _ -> expErr
+            if state.Tag = stream.StateTag then
+                (*
+                // manually inlined:
+                let error = match reply.Error with
+                            | ErrorMessageList(NestedError(pos, userState, msgs), NoErrorMessages)
+                                -> ErrorMessageList(CompoundError(label, pos, userState, msgs), NoErrorMessages)
+                            | _ -> expErr
+                *)
+                let error = if reply.Error |> isSingleErrorMessageOfType ErrorMessageType.NestedError then
+                                let ne = reply.Error.Head :?> NestedError
+                                ErrorMessageList(CompoundError(label, ne.Position, ne.UserState, ne.Messages))
+                            else expErr
+                reply.Error <- error
             else
-                reply.Error  <- compoundError label reply.State reply.Error
-                reply.State  <- state      // we backtrack ...
+                reply.Error  <- compoundError label stream reply.Error
+                stream.BacktrackTo(&state) // we backtrack ...
                 reply.Status <- FatalError // ... so we need to make sure normal parsing doesn't continue
         reply
 
 let fail msg : Parser<'a,'u> =
     let error = messageError msg
-    fun state ->
-        Reply(Error, error, state)
+    fun stream -> Reply(Error, error)
 
 let failFatally msg : Parser<'a,'u> =
     let error = messageError msg
-    fun state -> Reply(FatalError, error, state)
+    fun stream -> Reply(FatalError, error)
 
 // -----------------
 // Parsing sequences
 // -----------------
 
-let tuple2 p1 p2          = pipe2 p1 p2          (fun a b       -> (a, b))
+let tuple2 p1 p2          = p1 .>>. p2
 let tuple3 p1 p2 p3       = pipe3 p1 p2 p3       (fun a b c     -> (a, b, c))
 let tuple4 p1 p2 p3 p4    = pipe4 p1 p2 p3 p4    (fun a b c d   -> (a, b, c, d))
 let tuple5 p1 p2 p3 p4 p5 = pipe5 p1 p2 p3 p4 p5 (fun a b c d e -> (a, b, c, d, e))
@@ -524,25 +619,25 @@ let tuple5 p1 p2 p3 p4 p5 = pipe5 p1 p2 p3 p4 p5 (fun a b c d e -> (a, b, c, d, 
 let parray n (p: Parser<'a,'u>) =
     if n = 0 then preturn [||]
     else
-        fun state ->
-            let mutable reply = p state
+        fun stream ->
+            let mutable reply = p stream
             let mutable error = reply.Error
-            let mutable newReply = Unchecked.defaultof<Reply<_,_>>
+            let mutable newReply = Reply()
             if reply.Status = Ok then
                 let mutable xs = Array.zeroCreate n
                 xs.[0] <- reply.Result
                 let mutable i = 1
                 while i < n do
-                    let prevState = reply.State
-                    reply <- p prevState
-                    error <- mergeErrorsIfNeeded prevState error reply.State reply.Error
+                    let mutable stateTag = stream.StateTag
+                    reply <- p stream
+                    error <- if stateTag <> stream.StateTag then reply.Error
+                             else mergeErrors error reply.Error
                     if reply.Status = Ok then
                         xs.[i] <- reply.Result
                         i <- i + 1
                     else
                         i <- n // break
                 newReply.Result <- xs // we set the result even if there was an error
-            newReply.State  <- reply.State
             newReply.Error  <- error
             newReply.Status <- reply.Status
             newReply
@@ -550,308 +645,274 @@ let parray n (p: Parser<'a,'u>) =
 let skipArray n (p: Parser<'a,'u>) =
     if n = 0 then preturn ()
     else
-        fun state ->
-            let mutable reply = p state
+        fun stream ->
+            let mutable reply = p stream
             let mutable error = reply.Error
-            let mutable newReply = Unchecked.defaultof<Reply<_,_>>
+            let mutable newReply = Reply()
             if reply.Status = Ok then
                  let mutable i = 1
                  while i < n do
-                     let prevState = reply.State
-                     reply <- p prevState
-                     error <- mergeErrorsIfNeeded prevState error reply.State reply.Error
+                     let mutable stateTag = stream.StateTag
+                     reply <- p stream
+                     error <- if stateTag <> stream.StateTag then reply.Error
+                              else mergeErrors error reply.Error
                      if reply.Status = Ok then
                          i <- i + 1
                      else
                          i <- n // break
                 // () is represented as null
-            newReply.State  <- reply.State
             newReply.Error  <- error
             newReply.Status <- reply.Status
             newReply
-let
+
+[<Sealed>]
+type Inline =
+
 #if NOINLINE
+  static member
 #else
-    inline
+  [<NoDynamicInvocation>]
+  static member inline
 #endif
-           private manyFoldApplyImpl require1 fold1 fold applyF getEmpty (p: Parser<'a,'u>) =
-    fun state ->
-        let mutable reply = p state
+                       Many(stateFromFirstElement,
+                            foldState,
+                            resultFromState,
+                            elementParser: Parser<_,_>,
+                            ?firstElementParser: Parser<_,_>,
+                            ?resultForEmptySequence) : Parser<_,_> =
+      fun stream ->
+        let mutable stateTag = stream.StateTag
+        let firstElementParser = match firstElementParser with Some p -> p | _ -> elementParser
+        let mutable reply = firstElementParser stream
         if reply.Status = Ok then
-            let mutable xs    = fold1 reply.Result
+            let mutable xs = stateFromFirstElement reply.Result
             let mutable error = reply.Error
-            let mutable state = reply.State
-            reply <- p state
+            stateTag <- stream.StateTag
+            reply <- elementParser stream
             while reply.Status = Ok do
-                if referenceEquals reply.State state then
-                    _raiseInfiniteLoopException "many" state
-                xs    <- fold xs reply.Result
+                if stateTag = stream.StateTag then
+                    raiseInfiniteLoopException "many" stream
+                xs    <- foldState xs reply.Result
                 error <- reply.Error
-                state <- reply.State
-                reply <- p state
-            if reply.Status = Error && reply.State == state then
-                Reply(Ok, applyF xs, mergeErrors error reply.Error, state)
+                stateTag <- stream.StateTag
+                reply <- elementParser stream
+            if reply.Status = Error && stateTag = stream.StateTag then
+                error <- mergeErrors error reply.Error
+                Reply(Ok, resultFromState xs, error)
             else
-                let error = mergeErrorsIfNeeded state error reply.State reply.Error
-                Reply(reply.Status, error, reply.State)
-        elif not require1 && reply.Status = Error && reply.State == state then
-            Reply(Ok, getEmpty(), reply.Error, state)
+                error <- if stateTag <> stream.StateTag then reply.Error
+                         else mergeErrors error reply.Error
+                Reply(reply.Status, error)
         else
-            Reply(reply.Status, reply.Error, reply.State)
+            match resultForEmptySequence with
+            | Some _ (* if we bind f here, fsc won't be able to inline it *)
+              when reply.Status = Error && stateTag = stream.StateTag ->
+                Reply(Ok, (match resultForEmptySequence with Some f -> f() | _ -> Unchecked.defaultof<_>), reply.Error)
+            | _ ->
+                Reply(reply.Status, reply.Error)
 
-let
 #if NOINLINE
+  static member
 #else
-    inline
+  [<NoDynamicInvocation>]
+  static member inline
 #endif
-           private manyFoldApply2Impl require1 fold1 fold applyF getEmpty (p1: Parser<'a,'u>) (p: Parser<'b,'u>) =
-    fun state ->
-        let reply1 = p1 state
-        if reply1.Status = Ok then
-            let mutable xs    = fold1 reply1.Result
-            let mutable error = reply1.Error
-            let mutable state = reply1.State
-            let mutable reply = p state
-            while reply.Status = Ok do
-                if referenceEquals reply.State state then
-                    _raiseInfiniteLoopException "many" state
-                xs    <- fold xs reply.Result
-                error <- reply.Error
-                state <- reply.State
-                reply <- p state
-            if reply.Status = Error && reply.State == state then
-                Reply(Ok, applyF xs, mergeErrors error reply.Error, state)
-            else
-                let error = mergeErrorsIfNeeded state error reply.State reply.Error
-                Reply(reply.Status, error, reply.State)
-        elif not require1 && reply1.Status = Error && reply1.State == state then
-            Reply(Ok, getEmpty(), reply1.Error, state)
-        else
-            Reply(reply1.Status, reply1.Error, reply1.State)
-
-let
-#if NOINLINE
-#else
-    inline
-#endif
-           manyFoldApply fold1 fold applyF getEmpty p =
-    manyFoldApplyImpl false fold1 fold applyF getEmpty p
-
-let
-#if NOINLINE
-#else
-    inline
-#endif
-           many1FoldApply fold1 fold applyF p =
-    manyFoldApplyImpl true fold1 fold applyF (fun () -> Unchecked.defaultof<_>) p
-
-let
-#if NOINLINE
-#else
-    inline
-#endif
-           manyFoldApply2 fold1 fold applyF getEmpty p1 p =
-    manyFoldApply2Impl false fold1 fold applyF getEmpty p1 p
-
-let
-#if NOINLINE
-#else
-    inline
-#endif
-           many1FoldApply2 fold1 fold applyF p1 p =
-    manyFoldApply2Impl true fold1 fold applyF (fun () -> Unchecked.defaultof<_>) p1 p
-
-
-// it's the sepMayEnd case that's difficult to implement (efficiently) without a specialized parser
-let
-#if NOINLINE
-#else
-    inline
-#endif
-           sepEndByFoldApplyImpl require1 sepMayEnd fold1 fold applyF getEmpty (p: Parser<'a,'u>) (sep: Parser<'b,'u>) =
-    fun state ->
-        let mutable reply1 = p state
-        if reply1.Status = Ok then
-            let mutable xs     = fold1 reply1.Result
-            let mutable error  = reply1.Error
-            let mutable state  = reply1.State
-            let mutable reply2 = sep state
-            while reply2.Status = Ok && (reply1 <- p reply2.State; reply1.Status = Ok) do
-                xs <- fold xs reply1.Result
-                if not (referenceEquals reply1.State reply2.State) then
-                    error <- reply1.Error
-                elif not (referenceEquals reply1.State state) then
-                    error <- mergeErrors reply2.Error reply1.Error
+                       SepBy(stateFromFirstElement,
+                             foldState,
+                             resultFromState,
+                             elementParser: Parser<_,_>,
+                             separatorParser: Parser<_,_>,
+                             ?firstElementParser: Parser<_,'u>,
+                             ?resultForEmptySequence,
+                             ?separatorMayEndSequence) : Parser<_,'u> =
+      fun stream ->
+        let mutable stateTag = stream.StateTag
+        let firstElementParser = match firstElementParser with Some p -> p | _ -> elementParser
+        let mutable reply = firstElementParser stream
+        if reply.Status = Ok then
+            let mutable xs    = stateFromFirstElement reply.Result
+            let mutable error = reply.Error
+            stateTag <- stream.StateTag
+            let mutable sepReply = separatorParser stream
+            let mutable sepStateTag = stream.StateTag
+            while sepReply.Status = Ok && (reply <- elementParser stream; reply.Status = Ok) do
+                xs <- foldState xs sepReply.Result reply.Result
+                if sepStateTag <> stream.StateTag then
+                    error <- reply.Error
+                elif stateTag <> sepStateTag then
+                    error <- mergeErrors sepReply.Error reply.Error
                 else
-                    _raiseInfiniteLoopException "sep(EndBy)" state
-                state  <- reply1.State
-                reply2 <- sep state
-            if  reply2.Status = Error && reply2.State == state then
-                Reply(Ok, applyF xs, mergeErrors error reply2.Error, state)
-            elif sepMayEnd && reply1.Status = Error && reply1.State == reply2.State then
-                let error = mergeErrors (mergeErrorsIfNeeded state error reply2.State reply2.Error) reply1.Error
-                Reply(Ok, applyF xs, error, reply1.State)
-            elif reply1.Status <> Ok then
-                let error = mergeErrorsIfNeeded3 state error reply2.State reply2.Error reply1.State reply1.Error
-                Reply(reply1.Status, error, reply1.State)
+                    raiseInfiniteLoopException "sep(End)By" stream
+                stateTag <- stream.StateTag
+                sepReply <- separatorParser stream
+                sepStateTag <- stream.StateTag
+            if sepReply.Status = Error && stateTag = sepStateTag then
+                Reply(Ok, resultFromState xs, mergeErrors error sepReply.Error)
             else
-                let error = mergeErrorsIfNeeded state error reply2.State reply2.Error
-                Reply(reply2.Status, error, reply2.State)
-        elif not require1 && reply1.Status = Error && reply1.State == state then
-            Reply(Ok, getEmpty(), reply1.Error, state)
+                match separatorMayEndSequence with
+                | Some true when reply.Status = Error && sepStateTag = stream.StateTag ->
+                    error <- mergeErrors (if stateTag <> sepStateTag then sepReply.Error
+                                          else mergeErrors error sepReply.Error) reply.Error
+                    Reply(Ok, resultFromState xs, error)
+                | _ when reply.Status <> Ok ->
+                    error <- if sepStateTag <> stream.StateTag then reply.Error
+                             else
+                                let error2 = mergeErrors sepReply.Error reply.Error
+                                if stateTag <> sepStateTag then error2
+                                else mergeErrors error error2
+                    Reply(reply.Status, error)
+                | _ ->
+                    let error = if stateTag <> sepStateTag then sepReply.Error
+                                else mergeErrors error sepReply.Error
+                    Reply(sepReply.Status, error)
         else
-            Reply(reply1.Status, reply1.Error, reply1.State)
+            match resultForEmptySequence with
+            | Some _ (* if we bind f here, fsc won't be able to inline it *)
+              when reply.Status = Error && stateTag = stream.StateTag ->
+                Reply(Ok, (match resultForEmptySequence with Some f -> f() | _ -> Unchecked.defaultof<_>), reply.Error)
+            | _ ->
+                Reply(reply.Status, reply.Error)
 
-let
 #if NOINLINE
+  static member
 #else
-    inline
+  [<NoDynamicInvocation>]
+  static member inline
 #endif
-           sepByFoldApply fold1 fold applyF getEmpty p sep =
-    sepEndByFoldApplyImpl false false fold1 fold applyF getEmpty p sep
-
-
-let
-#if NOINLINE
-#else
-    inline
-#endif
-           sepBy1FoldApply fold1 fold applyF p sep =
-    sepEndByFoldApplyImpl true false fold1 fold applyF (fun () -> Unchecked.defaultof<_>) p sep
-
-let
-#if NOINLINE
-#else
-    inline
-#endif
-           sepEndByFoldApply fold1 fold applyF getEmpty p sep =
-    sepEndByFoldApplyImpl false true fold1 fold applyF getEmpty p sep
-
-let
-#if NOINLINE
-#else
-    inline
-#endif
-           sepEndBy1FoldApply fold1 fold applyF p sep =
-    sepEndByFoldApplyImpl true true fold1 fold applyF (fun () -> Unchecked.defaultof<_>) p sep
-
-let
-#if NOINLINE
-#else
-    inline
-#endif
-           manyTillFoldApply fold1 fold applyF getEmpty (p: Parser<'a,'u>) (endp: Parser<'c,'u>) =
-    fun state ->
-        let mutable reply2 = endp state
-        if reply2.Status <> Ok then
-            let mutable reply1 = p state
-            if reply1.Status = Ok then
-                let mutable xs     = fold1 reply1.Result
-                let mutable error  = reply1.Error
-                let mutable state  = reply1.State
-                reply2 <- endp state
-                while reply2.Status <> Ok && (reply1 <- p state; reply1.Status = Ok) do
-                    if referenceEquals reply1.State state then
-                        _raiseInfiniteLoopException "manyTill" state
-                    xs     <- fold xs reply1.Result
-                    error  <- reply1.Error
-                    state  <- reply1.State
-                    reply2 <- endp state
-                if reply2.Status = Ok then
-                    let error = mergeErrorsIfNeeded state error reply2.State reply2.Error
-                    Reply(Ok, applyF xs reply2.Result, error, reply2.State)
-                elif reply1.Status = Error && reply1.State == state then
-                    let error = if reply2.State != state then reply2.Error
-                                else mergeErrors (mergeErrors error reply1.Error) reply2.Error
-                    Reply(reply2.Status, error, reply2.State)
+                       ManyTill(stateFromFirstElement,
+                                foldState,
+                                resultFromStateAndEndParserResult,
+                                elementParser: Parser<_,_>,
+                                endParser: Parser<_,_>,
+                                ?firstElementParser: Parser<_,_>,
+                                ?resultForEmptySequence) : Parser<_,_> =
+      fun stream ->
+        // This is really, really ugly, but it does the job,
+        // and it does it about as efficient as it can be done here.
+        let firstElementParser = match firstElementParser with Some p -> p | _ -> elementParser
+        match resultForEmptySequence with
+        | None -> // require at least one element
+                let mutable reply = firstElementParser stream
+                if reply.Status = Ok then
+                    // ------------------------------------------------------------------
+                    // the following code is duplicated in the match branch below
+                    let mutable xs = stateFromFirstElement reply.Result
+                    let mutable error = reply.Error
+                    let mutable stateTag = stream.StateTag
+                    let mutable endReply = endParser stream
+                    while endReply.Status = Error && stateTag = stream.StateTag do
+                        endReply.Status <- enum System.Int32.MinValue
+                        reply <- elementParser stream
+                        if reply.Status = Ok then
+                            if stateTag = stream.StateTag then
+                                raiseInfiniteLoopException "manyTill" stream
+                            xs <- foldState xs reply.Result
+                            error <- reply.Error
+                            stateTag <- stream.StateTag
+                            endReply <- endParser stream
+                    if endReply.Status = Ok then
+                        error <- if stateTag <> stream.StateTag then endReply.Error
+                                 else mergeErrors error endReply.Error
+                        Reply(Ok, resultFromStateAndEndParserResult xs endReply.Result, error)
+                    elif endReply.Status = enum System.Int32.MinValue then
+                        error <- if stateTag <> stream.StateTag then reply.Error
+                                 else mergeErrors (mergeErrors error endReply.Error) reply.Error
+                        Reply(reply.Status, error)
+                    else
+                        error <- if stateTag <> stream.StateTag then endReply.Error
+                                 else mergeErrors error endReply.Error
+                        Reply(endReply.Status, error)
+                    // ------------------------------------------------------------------
                 else
-                    let error = mergeErrorsIfNeeded state error reply1.State reply1.Error
-                    Reply(reply1.Status, error, reply1.State)
-            elif reply1.Status = Error && reply1.State == state then
-                let error = if reply2.State != state then reply2.Error
-                            else mergeErrors reply1.Error reply2.Error
-                Reply(reply2.Status, error, reply2.State)
+                    Reply(reply.Status, reply.Error)
+        | Some _ ->
+            let mutable stateTag = stream.StateTag
+            let mutable endReply = endParser stream
+            if endReply.Status = Error && stateTag = stream.StateTag then
+                let mutable reply = firstElementParser stream
+                if reply.Status = Ok then
+                    // ------------------------------------------------------------------
+                    // the following code is duplicated in the match branch above
+                    let mutable xs = stateFromFirstElement reply.Result
+                    let mutable error = reply.Error
+                    stateTag <- stream.StateTag
+                    endReply <- endParser stream
+                    while endReply.Status = Error && stateTag = stream.StateTag do
+                        endReply.Status <- enum System.Int32.MinValue
+                        reply <- elementParser stream
+                        if reply.Status = Ok then
+                            if stateTag = stream.StateTag then
+                                raiseInfiniteLoopException "manyTill" stream
+                            xs <- foldState xs reply.Result
+                            error <- reply.Error
+                            stateTag <- stream.StateTag
+                            endReply <- endParser stream
+                    if endReply.Status = Ok then
+                        error <- if stateTag <> stream.StateTag then endReply.Error
+                                 else mergeErrors error endReply.Error
+                        Reply(Ok, resultFromStateAndEndParserResult xs endReply.Result, error)
+                    elif endReply.Status = enum System.Int32.MinValue then
+                        error <- if stateTag <> stream.StateTag then reply.Error
+                                 else mergeErrors (mergeErrors error endReply.Error) reply.Error
+                        Reply(reply.Status, error)
+                    else
+                        error <- if stateTag <> stream.StateTag then endReply.Error
+                                 else mergeErrors error endReply.Error
+                        Reply(endReply.Status, error)
+                    // ------------------------------------------------------------------
+                else
+                    let error = if stateTag <> stream.StateTag then reply.Error
+                                 else mergeErrors endReply.Error reply.Error
+                    Reply(reply.Status, error)
+            elif endReply.Status = Ok then
+                Reply(Ok, (match resultForEmptySequence with Some f -> f endReply.Result | _ -> Unchecked.defaultof<_>), endReply.Error)
             else
-                Reply(reply1.Status, reply1.Error, reply1.State)
-        else
-            Reply(Ok, getEmpty reply2.Result, reply2.Error, reply2.State)
+                Reply(endReply.Status, endReply.Error)
 
+let many      p = Inline.Many((fun x -> [x]), (fun xs x -> x::xs), List.rev, p, resultForEmptySequence = fun () -> [])
+let many1     p = Inline.Many((fun x -> [x]), (fun xs x -> x::xs), List.rev, p)
 
+let skipMany  p = Inline.Many((fun _ -> ()), (fun _ _ -> ()), (fun xs -> xs), p, resultForEmptySequence = fun () -> ())
+let skipMany1 p = Inline.Many((fun _ -> ()), (fun _ _ -> ()), (fun xs -> xs), p)
 
-let many               p = manyFoldApply (fun x -> [x]) (fun xs x -> x::xs) List.rev       (fun () -> []) p
-let manyRev            p = manyFoldApply (fun x -> [x]) (fun xs x -> x::xs) (fun xs -> xs) (fun () -> []) p
-let skipMany           p = manyFoldApply (fun _ -> ())  (fun _ _ -> ())     (fun xs -> xs) (fun () -> ()) p
-let manyFold    acc0 f p = let optF = OptimizedClosures.FSharpFunc<_,_,_>.Adapt(f)
-                           manyFoldApply (fun x -> optF.Invoke(acc0, x)) (fun acc x -> optF.Invoke(acc, x)) (fun acc -> acc) (fun () -> acc0) p
-let manyReduce  f altX p = let optF = OptimizedClosures.FSharpFunc<_,_,_>.Adapt(f)
-                           manyFoldApply (fun x0 -> x0) (fun x0 x -> optF.Invoke(x0, x)) (fun x0 -> x0) (fun () -> altX) p
+let sepBy         p sep = Inline.SepBy((fun x -> [x]), (fun xs _ x -> x::xs), List.rev,       p, sep, resultForEmptySequence = fun () -> [])
+let sepBy1        p sep = Inline.SepBy((fun x -> [x]), (fun xs _ x -> x::xs), List.rev,       p, sep)
 
-let many1              p = many1FoldApply (fun x -> [x]) (fun xs x -> x::xs) List.rev       p
-let many1Rev           p = many1FoldApply (fun x -> [x]) (fun xs x -> x::xs) (fun xs -> xs) p
-let skipMany1          p = many1FoldApply (fun _ -> ())  (fun _ _ -> ())     (fun xs -> xs) p
-let many1Fold   acc0 f p = let optF = OptimizedClosures.FSharpFunc<_,_,_>.Adapt(f)
-                           many1FoldApply (fun x -> optF.Invoke(acc0, x)) (fun acc x -> optF.Invoke(acc, x)) (fun x -> x) p
-let many1Reduce f      p = let optF = OptimizedClosures.FSharpFunc<_,_,_>.Adapt(f)
-                           many1FoldApply (fun x0 -> x0) (fun x0 x -> optF.Invoke(x0, x)) (fun x0 -> x0) p
+let skipSepBy     p sep = Inline.SepBy((fun _ -> ()),  (fun _ _ _ -> ()),     (fun xs -> xs), p, sep, resultForEmptySequence = fun () -> ())
+let skipSepBy1    p sep = Inline.SepBy((fun _ -> ()),  (fun _ _ _ -> ()),     (fun xs -> xs), p, sep)
 
+let sepEndBy      p sep = Inline.SepBy((fun x -> [x]), (fun xs _ x -> x::xs), List.rev,       p, sep, separatorMayEndSequence = true, resultForEmptySequence = fun () -> [])
+let sepEndBy1     p sep = Inline.SepBy((fun x -> [x]), (fun xs _ x -> x::xs), List.rev,       p, sep, separatorMayEndSequence = true)
 
-let sepBy              p sep = sepByFoldApply (fun x -> [x]) (fun xs x -> x::xs) List.rev       (fun () -> [])  p sep
-let sepByRev           p sep = sepByFoldApply (fun x -> [x]) (fun xs x -> x::xs) (fun xs -> xs) (fun () -> [])  p sep
-let skipSepBy          p sep = sepByFoldApply (fun _ -> ())  (fun _ _ -> ())     (fun xs -> xs) (fun _ -> ())   p sep
-let sepByFold   acc0 f p sep = let optF = OptimizedClosures.FSharpFunc<_,_,_>.Adapt(f)
-                               sepByFoldApply (fun x -> optF.Invoke(acc0, x)) (fun acc x -> optF.Invoke(acc, x)) (fun acc -> acc) (fun () -> acc0) p sep
-let sepByReduce f altX p sep = let optF = OptimizedClosures.FSharpFunc<_,_,_>.Adapt(f)
-                               sepByFoldApply (fun x0 -> x0) (fun x0 x -> optF.Invoke(x0, x)) (fun x0 -> x0) (fun () -> altX) p sep
+let skipSepEndBy  p sep = Inline.SepBy((fun _ -> ()),  (fun _ _ _ -> ()),     (fun xs -> xs), p, sep, separatorMayEndSequence = true, resultForEmptySequence = fun () -> ())
+let skipSepEndBy1 p sep = Inline.SepBy((fun _ -> ()),  (fun _ _ _ -> ()),     (fun xs -> xs), p, sep, separatorMayEndSequence = true)
 
-let sepBy1              p sep = sepBy1FoldApply (fun x -> [x]) (fun xs x -> x::xs) List.rev       p sep
-let sepBy1Rev           p sep = sepBy1FoldApply (fun x -> [x]) (fun xs x -> x::xs) (fun xs -> xs) p sep
-let skipSepBy1          p sep = sepBy1FoldApply (fun _ -> ())  (fun _ _ -> ())     (fun xs -> xs) p sep
-let sepBy1Fold   acc0 f p sep = let optF = OptimizedClosures.FSharpFunc<_,_,_>.Adapt(f)
-                                sepBy1FoldApply (fun x -> optF.Invoke(acc0, x)) (fun acc x -> optF.Invoke(acc, x)) (fun acc -> acc) p sep
-let sepBy1Reduce f      p sep = let optF = OptimizedClosures.FSharpFunc<_,_,_>.Adapt(f)
-                                sepBy1FoldApply (fun x0 -> x0) (fun x0 x -> optF.Invoke(x0, x)) (fun x0 -> x0) p sep
+let manyTill       p endp = Inline.ManyTill((fun x -> [x]), (fun xs x -> x::xs), (fun xs _ -> List.rev xs), p, endp, resultForEmptySequence = fun _ -> [])
+let many1Till      p endp = Inline.ManyTill((fun x -> [x]), (fun xs x -> x::xs), (fun xs _ -> List.rev xs), p, endp)
 
-
-let sepEndBy              p sep = sepEndByFoldApply(fun x -> [x]) (fun xs x -> x::xs) List.rev       (fun () -> [])  p sep
-let sepEndByRev           p sep = sepEndByFoldApply(fun x -> [x]) (fun xs x -> x::xs) (fun xs -> xs) (fun () -> [])  p sep
-let skipSepEndBy          p sep = sepEndByFoldApply(fun _ -> ())  (fun _ _ -> ())     (fun xs -> xs) (fun _ -> ())   p sep
-let sepEndByFold   acc0 f p sep = let optF = OptimizedClosures.FSharpFunc<_,_,_>.Adapt(f)
-                                  sepEndByFoldApply (fun x -> optF.Invoke(acc0, x)) (fun acc x -> optF.Invoke(acc, x)) (fun acc -> acc) (fun () -> acc0) p sep
-let sepEndByReduce f altX p sep = let optF = OptimizedClosures.FSharpFunc<_,_,_>.Adapt(f)
-                                  sepEndByFoldApply (fun x0 -> x0) (fun x0 x -> optF.Invoke(x0, x)) (fun x0 -> x0) (fun () -> altX) p sep
-
-let sepEndBy1              p sep = sepEndBy1FoldApply (fun x -> [x]) (fun xs x -> x::xs) List.rev       p sep
-let sepEndBy1Rev           p sep = sepEndBy1FoldApply (fun x -> [x]) (fun xs x -> x::xs) (fun xs -> xs) p sep
-let skipSepEndBy1          p sep = sepEndBy1FoldApply (fun _ -> ())  (fun _ _ -> ())     (fun xs -> xs) p sep
-let sepEndBy1Fold   acc0 f p sep = let optF = OptimizedClosures.FSharpFunc<_,_,_>.Adapt(f)
-                                   sepEndBy1FoldApply (fun x -> optF.Invoke(acc0, x)) (fun acc x -> optF.Invoke(acc, x)) (fun acc -> acc) p sep
-let sepEndBy1Reduce f      p sep = let optF = OptimizedClosures.FSharpFunc<_,_,_>.Adapt(f)
-                                   sepEndBy1FoldApply (fun x0 -> x0) (fun x0 x -> optF.Invoke(x0, x)) (fun x0 -> x0) p sep
-
-let manyTill              p endp = manyTillFoldApply (fun x -> [x]) (fun xs x -> x::xs) (fun xs _ -> List.rev xs) (fun _ -> [])       p endp
-let manyTillRev           p endp = manyTillFoldApply (fun x -> [x]) (fun xs x -> x::xs) (fun xs _ -> xs) (fun _ -> []) p endp
-let skipManyTill          p endp = manyTillFoldApply (fun _ -> ())  (fun _ _ -> ())     (fun _ _ -> ()) (fun _ -> ())  p endp
-let manyTillFold   acc0 f p endp = let optF = OptimizedClosures.FSharpFunc<_,_,_>.Adapt(f)
-                                   manyTillFoldApply (fun x -> optF.Invoke(acc0, x)) (fun acc x -> optF.Invoke(acc, x)) (fun acc _ -> acc) (fun _ -> acc0) p endp
-let manyTillReduce f altX p endp = let optF = OptimizedClosures.FSharpFunc<_,_,_>.Adapt(f)
-                                   manyTillFoldApply (fun x0 -> x0) (fun x0 x -> optF.Invoke(x0, x)) (fun x0 _ -> x0) (fun _ -> altX) p endp
-
+let skipManyTill   p endp = Inline.ManyTill((fun _ -> ()),  (fun _ _ -> ()),     (fun _ _ -> ()), p, endp, resultForEmptySequence = fun _ -> ())
+let skipMany1Till  p endp = Inline.ManyTill((fun _ -> ()),  (fun _ _ -> ()),     (fun _ _ -> ()), p, endp)
 
 let chainl1 p op =
-    many1FoldApply2 (fun x0 -> x0) (fun x (f, y) -> f x y) (fun x -> x) p (tuple2 op p)
+    Inline.SepBy((fun x0 -> x0), (fun x f y -> f x y), (fun x -> x), p, op)
 
-let chainl p op altX =
-    manyFoldApply2 (fun x0 -> x0) (fun x (f, y) -> f x y) (fun x -> x) (fun () -> altX) p (tuple2 op p)
+let chainl p op x = chainl1 p op <|>% x
 
 let chainr1 p op =
-    pipe2 p (manyRev (tuple2 op p)) (fun x0 opYs -> match opYs with
-                                                    | []          -> x0
-                                                    | (op, y)::tl ->
-                                                        let rec calc op1 y lst =
-                                                            match lst with
-                                                            | (op2, x)::tl -> calc op2 (op1 x y) tl
-                                                            | [] -> op1 x0 y
-                                                        calc op y tl)
+    Inline.SepBy(elementParser = p, separatorParser = op,
+                 stateFromFirstElement = (fun x0 -> [(Unchecked.defaultof<_>, x0)]),
+                 foldState = (fun acc op x -> (op, x)::acc),
+                 resultFromState = function // is called with (op, y) list in reverse order
+                                   | ((op, y)::tl) ->
+                                       let rec calc op y lst =
+                                           match lst with
+                                           | (op2, x)::tl -> calc op2 (op x y) tl
+                                           | [] -> y // op is null
+                                       calc op y tl
+                                   | [] -> // shouldn't happen
+                                           failwith "chainr1")
+
+
 let chainr p op x = chainr1 p op <|>% x
 
 
@@ -860,17 +921,17 @@ let chainr p op x = chainr1 p op <|>% x
 // ------------------------------
 [<Sealed>]
 type ParserCombinator() =
-    member t.Delay(f:(unit -> Parser<'a,'u>)) = fun state -> (f ()) state
+    member t.Delay(f:(unit -> Parser<'a,'u>)) = fun stream -> (f()) stream
     member t.Return(x) = preturn x
     member t.Bind(p, f) = p >>= f
     member t.Zero() : Parser<'a,'u> = pzero
     // no Combine member by purpose
     member t.TryWith(p:Parser<'a,'u>, cf:(exn -> Parser<'a,'u>)) =
-        fun state ->
-            (try p state with e -> (cf e) state)
+        fun stream ->
+            (try p stream with e -> (cf e) stream)
     member t.TryFinally(p:Parser<'a,'u>, ff:(unit -> unit)) =
-        fun state ->
-            try p state finally ff ()
+        fun stream ->
+            try p stream finally ff ()
 
 let parse = ParserCombinator()
 
@@ -880,6 +941,49 @@ let parse = ParserCombinator()
 // ----------------------
 
 let createParserForwardedToRef() =
-    let dummyParser = fun state -> failwith "a parser was not initialized"
+    let dummyParser = fun stream -> failwith "a parser created with createParserForwardedToRef was not initialized"
     let r = ref dummyParser
-    (fun state -> !r state), r : Parser<_,'u> * Parser<_,'u> ref
+    (fun stream -> !r stream), r : Parser<_,'u> * Parser<_,'u> ref
+
+
+let manyRev            p = Inline.Many((fun x -> [x]), (fun xs x -> x::xs), (fun xs -> xs), p, resultForEmptySequence = fun () -> [])
+let manyFold    acc0 f p = let optF = OptimizedClosures.FSharpFunc<_,_,_>.Adapt(f)
+                           Inline.Many((fun x -> optF.Invoke(acc0, x)), (fun acc x -> optF.Invoke(acc, x)), (fun acc -> acc), p, resultForEmptySequence = fun () -> acc0)
+let manyReduce  f altX p = let optF = OptimizedClosures.FSharpFunc<_,_,_>.Adapt(f)
+                           Inline.Many((fun x0 -> x0), (fun x0 x -> optF.Invoke(x0, x)), (fun x0 -> x0), p, resultForEmptySequence = fun () -> altX)
+
+let many1Rev           p = Inline.Many((fun x -> [x]), (fun xs x -> x::xs), (fun xs -> xs), p)
+let many1Fold   acc0 f p = let optF = OptimizedClosures.FSharpFunc<_,_,_>.Adapt(f)
+                           Inline.Many((fun x -> optF.Invoke(acc0, x)), (fun acc x -> optF.Invoke(acc, x)), (fun x -> x), p)
+let many1Reduce f      p = let optF = OptimizedClosures.FSharpFunc<_,_,_>.Adapt(f)
+                           Inline.Many((fun x0 -> x0), (fun x0 x -> optF.Invoke(x0, x)), (fun x0 -> x0), p)
+
+let sepByRev           p sep = Inline.SepBy((fun x -> [x]), (fun xs _ x -> x::xs), (fun xs -> xs), p, sep, resultForEmptySequence = fun () -> [])
+let sepByFold   acc0 f p sep = let optF = OptimizedClosures.FSharpFunc<_,_,_>.Adapt(f)
+                               Inline.SepBy((fun x -> optF.Invoke(acc0, x)), (fun acc _ x -> optF.Invoke(acc, x)), (fun acc -> acc), p, sep, resultForEmptySequence = fun () -> acc0)
+let sepByReduce f altX p sep = let optF = OptimizedClosures.FSharpFunc<_,_,_>.Adapt(f)
+                               Inline.SepBy((fun x0 -> x0), (fun x0 _ x -> optF.Invoke(x0, x)), (fun x0 -> x0), p, sep, resultForEmptySequence = fun () -> altX)
+
+let sepBy1Rev           p sep = Inline.SepBy((fun x -> [x]), (fun xs _ x -> x::xs), (fun xs -> xs), p, sep)
+let sepBy1Fold   acc0 f p sep = let optF = OptimizedClosures.FSharpFunc<_,_,_>.Adapt(f)
+                                Inline.SepBy((fun x -> optF.Invoke(acc0, x)), (fun acc _ x -> optF.Invoke(acc, x)), (fun acc -> acc), p, sep)
+let sepBy1Reduce f      p sep = let optF = OptimizedClosures.FSharpFunc<_,_,_>.Adapt(f)
+                                Inline.SepBy((fun x0 -> x0), (fun x0 _ x -> optF.Invoke(x0, x)), (fun x0 -> x0), p, sep)
+
+let sepEndByRev           p sep = Inline.SepBy((fun x -> [x]), (fun xs _ x -> x::xs), (fun xs -> xs), p, sep, separatorMayEndSequence = true, resultForEmptySequence = fun () -> [])
+let sepEndByFold   acc0 f p sep = let optF = OptimizedClosures.FSharpFunc<_,_,_>.Adapt(f)
+                                  Inline.SepBy((fun x -> optF.Invoke(acc0, x)), (fun acc _ x -> optF.Invoke(acc, x)), (fun acc -> acc), p, sep, separatorMayEndSequence = true, resultForEmptySequence = fun () -> acc0)
+let sepEndByReduce f altX p sep = let optF = OptimizedClosures.FSharpFunc<_,_,_>.Adapt(f)
+                                  Inline.SepBy((fun x0 -> x0), (fun x0 _ x -> optF.Invoke(x0, x)), (fun x0 -> x0), p, sep, separatorMayEndSequence = true, resultForEmptySequence = fun () -> altX)
+
+let sepEndBy1Rev           p sep = Inline.SepBy((fun x -> [x]), (fun xs _ x -> x::xs), (fun xs -> xs), p, sep, separatorMayEndSequence = true)
+let sepEndBy1Fold   acc0 f p sep = let optF = OptimizedClosures.FSharpFunc<_,_,_>.Adapt(f)
+                                   Inline.SepBy((fun x -> optF.Invoke(acc0, x)), (fun acc _ x -> optF.Invoke(acc, x)), (fun acc -> acc), p, sep, separatorMayEndSequence = true)
+let sepEndBy1Reduce f      p sep = let optF = OptimizedClosures.FSharpFunc<_,_,_>.Adapt(f)
+                                   Inline.SepBy((fun x0 -> x0), (fun x0 _ x -> optF.Invoke(x0, x)), (fun x0 -> x0), p, sep, separatorMayEndSequence = true)
+
+let manyTillRev           p endp = Inline.ManyTill((fun x -> [x]), (fun xs x -> x::xs), (fun xs _ -> xs), p, endp, resultForEmptySequence = fun _ -> [])
+let manyTillFold   acc0 f p endp = let optF = OptimizedClosures.FSharpFunc<_,_,_>.Adapt(f)
+                                   Inline.ManyTill((fun x -> optF.Invoke(acc0, x)), (fun acc x -> optF.Invoke(acc, x)), (fun acc _ -> acc), p, endp, resultForEmptySequence = fun _ -> acc0)
+let manyTillReduce f altX p endp = let optF = OptimizedClosures.FSharpFunc<_,_,_>.Adapt(f)
+                                   Inline.ManyTill((fun x0 -> x0), (fun x0 x -> optF.Invoke(x0, x)), (fun x0 _ -> x0), p, endp, resultForEmptySequence = fun _ -> altX)

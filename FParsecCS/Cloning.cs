@@ -1,7 +1,7 @@
-﻿#if !LOW_TRUST
-
-// Copyright (c) Stephan Tolksdorf 2010-2011
+﻿// Copyright (c) Stephan Tolksdorf 2010-2011
 // License: Simplified BSD License. See accompanying documentation.
+
+#if !LOW_TRUST
 
 using System;
 using System.Collections.Generic;

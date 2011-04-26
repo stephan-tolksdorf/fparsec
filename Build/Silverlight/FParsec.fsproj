@@ -8,7 +8,7 @@
     <ProjectGuid>{3e3d6787-b336-420b-8832-92f8033deac2}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AssemblyName>FParsec</AssemblyName>
-    <TargetFrameworkVersion>v3.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <SilverlightVersion>$(TargetFrameworkVersion)</SilverlightVersion>
     <FileAlignment>512</FileAlignment>
     <AllowCrossTargeting>true</AllowCrossTargeting>
@@ -19,6 +19,7 @@
     <ValidateXaml>true</ValidateXaml>
     <ThrowErrorsInValidation>false</ThrowErrorsInValidation>
     <RootNamespace>FParsec</RootNamespace>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -52,6 +53,18 @@
     <Compile Include="..\..\FParsec\Internals.fs">
       <Link>Internals.fs</Link>
     </Compile>
+    <Compile Include="..\..\FParsec\Range.fs">
+      <Link>Range.fs</Link>
+    </Compile>
+    <Compile Include="..\..\FParsec\Emit.fs">
+      <Link>Emit.fs</Link>
+    </Compile>
+    <Compile Include="..\..\FParsec\StaticMapping.fsi">
+      <Link>StaticMapping.fsi</Link>
+    </Compile>
+    <Compile Include="..\..\FParsec\StaticMapping.fs">
+      <Link>StaticMapping.fs</Link>
+    </Compile>
     <Compile Include="..\..\FParsec\Error.fsi">
       <Link>Error.fsi</Link>
     </Compile>
@@ -70,15 +83,9 @@
     <Compile Include="..\..\FParsec\CharParsers.fs">
       <Link>CharParsers.fs</Link>
     </Compile>
-    <Compile Include="..\..\FParsec\OperatorPrecedenceParser.fsi">
-      <Link>OperatorPrecedenceParser.fsi</Link>
-    </Compile>
-    <Compile Include="..\..\FParsec\OperatorPrecedenceParser.fs">
-      <Link>OperatorPrecedenceParser.fs</Link>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Silverlight\FParsecCS.csproj">
+    <ProjectReference Include="FParsecCS.csproj">
       <Name>FParsecCS</Name>
       <Project>{dba4e782-4c37-4b04-a46a-1530c5fe3a3f}</Project>
       <Private>True</Private>

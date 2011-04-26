@@ -1,13 +1,16 @@
-﻿// Copyright (c) Stephan Tolksdorf 2008-2009
+﻿// Copyright (c) Stephan Tolksdorf 2008-2010
 // License: Simplified BSD License. See accompanying documentation.
 
-module FParsec.Test.HexLiteralHelpersTests
-
-open FParsec.CharParsers
+module FParsec.Test.HexFloatTests
 
 open FParsec.Test.Test
 
-let testHexDoubleHelpers () =
+let floatToHexString   = FParsec.CharParsers.floatToHexString
+let floatOfHexString   = FParsec.CharParsers.floatOfHexString
+let float32ToHexString = FParsec.CharParsers.float32ToHexString
+let float32OfHexString = FParsec.CharParsers.float32OfHexString
+
+let testDoubleHexFloat() =
     /// bitwise equal
     let BEqual a b =
         Equal (System.BitConverter.DoubleToInt64Bits(a)) (System.BitConverter.DoubleToInt64Bits(b))
@@ -378,7 +381,7 @@ let testHexDoubleHelpers () =
         True (f = f2 || f <> f)
 
 
-let testHexSingleHelpers () =
+let testSingleHexFloat() =
 
     /// bitwise equal
     let BEqual (a: float32) (b: float32) =
@@ -751,5 +754,5 @@ let testHexSingleHelpers () =
         True (f = f2 || f <> f)
 
 let run() =
-    testHexDoubleHelpers()
-    testHexSingleHelpers()
+    testDoubleHexFloat()
+    testSingleHexFloat()

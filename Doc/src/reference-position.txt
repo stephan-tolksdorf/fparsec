@@ -1,0 +1,31 @@
+﻿
+
+[auto-link{hide-outer-auto-links = ["Position", "Index", "Line", "Column"]}]
+[interface-reference]
+[section#Position FParsec.Position]
+[$$interface]
+
+[interface-members]
+[``
+// FParsecCS.dll
+
+namespace FParsec
+
+type Position =
+  new: streamName: string * index: int64 * line: int64 * column: int64 -> Position
+
+  member [#Position..StreamName StreamName]: string
+  member [#Position..Index Index]: int64
+  member [#Position..Line Line]: int64
+  member [#Position..Column Column]: int64
+
+  override ToString: unit -> string
+
+  interface System.IEquatable<Position>
+  interface [url "http://msdn.microsoft.com/en-us/library/4d7sx9hd.aspx" System.IComparable]<Position>
+  interface System.IComparable
+``]
+[/interface-members]
+[/section]
+[/interface-reference]
+[/auto-link]

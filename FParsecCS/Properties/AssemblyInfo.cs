@@ -24,10 +24,10 @@ using System.Runtime.InteropServices;
     #endif
 #endif
 [assembly: AssemblyProduct("FParsec")]
-[assembly: AssemblyCopyright("Copyright © Stephan Tolksdorf 2007-2009")]
+[assembly: AssemblyCopyright("Copyright © Stephan Tolksdorf 2007-2011")]
 
-[assembly: AssemblyVersion("0.8.0.0")]
-[assembly: AssemblyFileVersion("0.8.0.0")]
+[assembly: AssemblyVersion("0.9.0.0")]
+[assembly: AssemblyFileVersion("0.9.0.0")]
 
 [assembly: InternalsVisibleTo("FParsec")]
 [assembly: InternalsVisibleTo("test_fparsec")]
