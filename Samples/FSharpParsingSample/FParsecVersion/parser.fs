@@ -68,9 +68,10 @@ let expr, exprRef = createParserForwardedToRef() // initially exprRef holds a re
 let pdecr = str "decr" >>. ch '(' >>. expr .>> ch ')' |>> Decr
 
 // replace dummy parser reference in exprRef
-do exprRef:= choice [pdecr; pval; number] // we need to try decr before pval,
-                                         //  so that "decr" is not parsed as an id
-
+do exprRef:= choice [pval; pdecr; number] // we need to try pval first, so we don't 
+                                          // accidentally try to parse an identifier
+                                          // starting with "decr..." as a Decr statement
+                                          // (this is a disadvantage of not having a tokenizer)
 
 let stmt, stmtRef = createParserForwardedToRef()
 
@@ -94,8 +95,9 @@ let ifthen =
                | None    -> IfThen(e, s1)
                | Some s2 -> IfThenElse(e, s1, s2))
 
-do stmtRef:= choice [ifthen; pwhile; seq; print; assign]
-
+do stmtRef:= choice [assign; ifthen; pwhile; seq; print] // try assign first, so that an 
+                                                         // identifier starting with a 
+                                                         // keyword doesn't trigger an error
 
 let prog =
     ws >>. stmtList .>> eof |>> Prog
