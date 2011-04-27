@@ -129,11 +129,10 @@ Note: The error occurred at the end of the input stream.
 Expecting: ']'
 ``
 
-
 [(*
 [
 Note that all infix F# operators that begin with `<` or '>' (leading '.' characters are ignored) are left-associative. Hence,
-`p1 >>. p2 .>> p3` is equivalent with `(p1 >>. p2) .>> p3`. However, in this case the associativity has no effect on the aggregate parser behaviour. The predefined combinator `between p1 p2 q` is defined as `p1 >>. (p2 .>> p3)` because that is slightly more efficient in case `p1` fails. We don't use the `between` combinator (or explicit parentheses) in the sample to keep its code as intuitive as possible.
+`p1 >>. p2 .>> p3` is equivalent with `(p1 >>. p2) .>> p3`. However, in this case the associativity has no effect on the aggregate parser behaviour.
 ]
 *)]
 

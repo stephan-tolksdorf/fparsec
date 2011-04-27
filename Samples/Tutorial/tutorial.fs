@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Stephan Tolksdorf 2011
 // License: Simplified BSD License. See accompanying documentation.
 
-// Source code for the Tutorial
+// Source code for the tutorial in the documentation
 
 // 2 Parsing a single float
 
@@ -163,3 +163,5 @@ test boolean "true"
 test boolean "tru"
 
 test ((ws >>. str "a") <|> (ws >>. str "b")) " b"
+
+test (ws >>. (str "a" <|> str "b")) " b"

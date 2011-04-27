@@ -10,6 +10,8 @@ open Ast
 // This is a general JSON parser that will parse any JSON file into an AST.
 // See e.g. http://www.json.org/, for a specification of JSON.
 
+// The FParsec tutorial discusses this parser in detail.
+
 // Note that in typical applications you often don't need to parse any general
 // JSON file, but only files describing objects of a certain type. In those cases
 // it might be more convenient to parse the input with specialized parsers

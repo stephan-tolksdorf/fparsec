@@ -880,11 +880,6 @@ val @chainr1@: Parser<'a,'u> -> Parser<('a -> 'a -> 'a),'u>       -> Parser<'a,'
  It returns the value obtained by *right* associative application of all functions returned by `op` to the results returned by `p`, i.e. `f1 x_1 (f_2 x_2 (... (f_n x_n x_n+1) ...))`, where `f_1` to `f_n` are the functions returned by the parser `op` and `x_1` to `x_n+1` are the values returned by `p`. If only a single occurance of `p` and no occurance of `op` is parsed, the result of `p` is returned directly.
 
 The `chainr1` implementation uses constant stack space.
-
-[(*
-[small
-/Specification for a practically irrelevant fringe case:/ If `op` succeeds without changing the parser state and `p` then fails without changing the parser state, `chainr1 p op` behaves as if `op` too failed without changing the parser state.]
-*)]
 ]
 
 

@@ -1400,7 +1400,7 @@ fun (stream: CharStream<'u>) ->
     // ...
 ``
 
-This method throws an `ArgumentException`, if the `CharStreamState` instance is zero-initialized (i.e. constructed with the default value type constructor). It may also throw any of the [^exceptions I/O related exceptions] detailed above.
+This method throws an `ArgumentException` if the `CharStreamState` instance is zero-initialized (i.e. constructed with the default value type constructor). It may also throw any of the [^exceptions I/O related exceptions] detailed above.
 
 [note You may only pass `CharStreamState` values that were retrieved from the `CharStream` instance on which you're calling `BacktrackTo`. Passing a `CharStreamState` value that was created for another `CharStream` instance triggers an assert exception in debug builds and will otherwise lead to undefined behaviour.]
 ]

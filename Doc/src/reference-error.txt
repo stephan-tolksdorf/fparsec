@@ -313,19 +313,6 @@ and take into account the maximum column count (including indentation) passed as
 [/interface-members]
 ]
 
-[(*
-[``
-
-val @printErrorLine@:    CharStream -> index: int64 -> System.IO.TextWriter
-                    -> indentationString: string -> columnWidth: int
-                    -> unit
-``]
-[
-Prints the line of text surrounding the given index in the stream and marks the position of the index with a caret (^) on a second line.
-The output is indented with the given string and is restricted to the given column width (including the indentation).
-]
-*)]
-
 [/interface-members]
 [/section]
 [/interface-reference]

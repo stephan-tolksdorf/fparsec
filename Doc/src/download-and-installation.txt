@@ -25,6 +25,8 @@ Hence, FParsec is built as two DLLs. The C# bits are compiled into the =FParsecC
 
 *Projects that use FParsec thus have to reference both DLLs.*
 
+If you reference the DLLs in the [@ F# Interactive] console, you need to reference `FParsecCS.dll` before you reference `FParsec.dll`.
+
 [note If you don't want to distribute the FParsec DLLs together with the assembly of your project, you can use the [url "http://msdn.microsoft.com/en-us/library/dd233171.aspx" =staticlink= command-line option] of the F# compiler to merge the FParsec DLLs into your assembly.
 
 Unfortunately, the same option cannot be used to merge =FParsecCS.dll= into the =FParsec.dll=, as the public definitions in =FParsecCS.dll= wouldn't be reexported by =FParsec.dll=. For similar reasons it also doesn't seem to be possible to use tools like [url "http://research.microsoft.com/en-us/people/mbarnett/ILMerge.aspx" ILMerge] or [url "http://code.google.com/p/il-repack/" il-repack] to obtain a merged =FParsec.dll= that can be properly consumed by F# programs.

@@ -1,4 +1,4 @@
-﻿[section Status & Roadmap]
+﻿[section Status and roadmap]
 
 [section Status]
 FParsec has been in development for several years and can now be considered "stable".
