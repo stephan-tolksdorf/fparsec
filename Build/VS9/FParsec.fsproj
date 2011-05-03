@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE;NOINLINE;DEBUG_STATIC_MAPPING</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>3</WarningLevel>
+    <OtherFlags>/nooptimizationdata</OtherFlags>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -30,6 +31,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>3</WarningLevel>
     <Tailcalls>false</Tailcalls>
+    <OtherFlags>/nooptimizationdata</OtherFlags>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />

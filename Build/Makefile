@@ -86,7 +86,7 @@ $(DEBUG_DIR)/FParsec.dll: $(DEBUG_DIR)/FParsecCS.dll $(FPARSEC_SRCS)
 	$(FSC) /target:library /out:$(DEBUG_DIR)/FParsec.dll $(FSC_FLAGS_DEBUG) /r:$(DEBUG_DIR)/FParsecCS.dll $(FPARSEC_REFS) $(FPARSEC_SRCS)
 
 $(RELEASE_DIR)/FParsec.dll: $(RELEASE_DIR)/FParsecCS.dll $(FPARSEC_SRCS)
-	$(FSC) /target:library /out:$(RELEASE_DIR)/FParsec.dll $(FSC_FLAGS_RELEASE) /r:$(RELEASE_DIR)/FParsecCS.dll $(FPARSEC_REFS) $(FPARSEC_SRCS)
+	$(FSC) /target:library /out:$(RELEASE_DIR)/FParsec.dll $(FSC_FLAGS_RELEASE) /nooptimizationdata /r:$(RELEASE_DIR)/FParsecCS.dll $(FPARSEC_REFS) $(FPARSEC_SRCS)
 
 $(DEBUG_DIR)/test_fparsec.exe: $(DEBUG_DIR)/FParsec.dll $(TEST_SRCS)
 	$(FSC) /target:exe /out:$(DEBUG_DIR)/test_fparsec.exe $(FSC_FLAGS_DEBUG) /r:$(DEBUG_DIR)/FParsecCS.dll /r:$(DEBUG_DIR)/FParsec.dll $(FPARSEC_REFS) $(TEST_SRCS)
