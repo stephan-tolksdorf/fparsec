@@ -275,7 +275,10 @@ Expecting: 'b'
       parser will not only backtrack if an error occurs within the prefix or directly after the prefix, but also if it occurs anywhere in the
       expression. However, in most cases you only want the parser to backtrack if the error occurs directly after the prefix, not if the error occurs
       deeply inside the expression parser. For situations like this FParsec defines the <code class="fsharp"><a
-      href="../reference/primitives.html#members.:62::62::63:"><span class="co">&gt;&gt;?</span></a></code> operator.
+      href="../reference/primitives.html#members.:62::62::63:"><span class="co">&gt;&gt;?</span></a></code>, <code class="fsharp"><a
+      href="../reference/primitives.html#members...:62::62::63:"><span class="co">.&gt;&gt;?</span></a></code>, <code class="fsharp"><a
+      href="../reference/primitives.html#members...:62::62:..:63:"><span class="co">.&gt;&gt;.?</span></a></code> and <code class="fsharp"><a
+      href="../reference/primitives.html#members.:62::62::61::63:"><span class="co">&gt;&gt;=?</span></a></code> operators.
      </p>
     </div>
     <div class="para _9">
@@ -289,14 +292,21 @@ Expecting: 'b'
       operator, except that <code class="fsharp"><span class="ci">p1</span> <a href="../reference/primitives.html#members.:62::62::63:"><span
       class="co">&gt;&gt;?</span></a> <span class="ci">p2</span></code> will backtrack to the beginning if <code class="fsharp"><span
       class="ci">p2</span></code> fails with a non‐fatal error and without changing the parser state, even if <code class="fsharp"><span
-      class="ci">p1</span></code> has changed the parser state.
+      class="ci">p1</span></code> has changed the parser state. Similarly, <code class="fsharp"><a
+      href="../reference/primitives.html#members...:62::62::63:"><span class="co">.&gt;&gt;?</span></a></code>, <code class="fsharp"><a
+      href="../reference/primitives.html#members...:62::62:..:63:"><span class="co">.&gt;&gt;.?</span></a></code> and <code class="fsharp"><a
+      href="../reference/primitives.html#members.:62::62::61::63:"><span class="co">&gt;&gt;=?</span></a></code> behave like <code class="fsharp"><a
+      href="../reference/primitives.html#members...:62::62:"><span class="co">.&gt;&gt;</span></a></code>, <code class="fsharp"><a
+      href="../reference/primitives.html#members...:62::62:.."><span class="co">.&gt;&gt;.</span></a></code> and <code class="fsharp"><a
+      href="../reference/primitives.html#members.:62::62::61:"><span class="co">&gt;&gt;=</span></a></code>, except that they will backtrack to the
+      beginning if the second parser fails with a non‐fatal error and without changing the parser state
      </p>
     </div>
     <div class="para _0">
      <p>
       The following tests illustrate the differences between backtracking implemented via <code class="fsharp"><a
       href="../reference/primitives.html#members.attempt"><span class="ci">attempt</span></a></code> and <code class="fsharp"><a
-      href="../reference/primitives.html#members.:62::62::63:"><span class="co">&gt;&gt;?</span></a></code>.
+      href="../reference/primitives.html#members...:62::62:..:63:"><span class="co">.&gt;&gt;.?</span></a></code>.
      </p>
     </div>
     <div class="para _1 lcinp">
@@ -308,8 +318,8 @@ Expecting: 'b'
       A test with <code class="fsharp"><a href="../reference/primitives.html#members.attempt"><span class="ci">attempt</span></a></code> on the left
       side of <code class="fsharp"><a href="../reference/primitives.html#members.:60::124::62:"><span class="co">&lt;|&gt;</span></a></code>:
      </p>
-<pre class="code fsharp"><span class="cmd"><span class="cmdp">&gt;</span> <a href="../reference/charparsers.html#members.run"><span class="ci">run</span></a> <span class="cp">(</span><span class="cp">(</span><a href="../reference/primitives.html#members.attempt"><span class="ci">attempt</span></a> <span class="cp">(</span><span class="ci">str</span> <span class="cs"><span class="cld">"</span>a<span class="crd">"</span></span> <a href="../reference/primitives.html#members.:62::62:.."><span class="co">&gt;&gt;.</span></a> <span class="ci">bInBrackets</span><span class="cp">)</span><span class="cp">)</span> <a href="../reference/primitives.html#members.:60::124::62:"><span class="co">&lt;|&gt;</span></a> <span class="ci">ac</span><span class="cp">)</span> <span class="cs"><span class="cld">"</span>a[B]<span class="crd">"</span></span><span class="cp">;;</span></span>
-<span class="cout">val it : ParserResult&lt;string,unit&gt; = Failure:
+<pre class="code fsharp"><span class="cmd"><span class="cmdp">&gt;</span> <a href="../reference/charparsers.html#members.run"><span class="ci">run</span></a> <span class="cp">(</span><span class="cp">(</span><a href="../reference/primitives.html#members.attempt"><span class="ci">attempt</span></a> <span class="cp">(</span><span class="ci">str</span> <span class="cs"><span class="cld">"</span>a<span class="crd">"</span></span> <a href="../reference/primitives.html#members...:62::62:.."><span class="co">.&gt;&gt;.</span></a> <span class="ci">bInBrackets</span><span class="cp">)</span><span class="cp">)</span> <a href="../reference/primitives.html#members.:60::124::62:"><span class="co">&lt;|&gt;</span></a> <span class="ci">ac</span><span class="cp">)</span> <span class="cs"><span class="cld">"</span>a[B]<span class="crd">"</span></span><span class="cp">;;</span></span>
+<span class="cout">val it : ParserResult&lt;(string * string),unit&gt; = Failure:
 Error in Ln: 1 Col: 2
 a[B]
  ^
@@ -321,8 +331,8 @@ Expecting: 'c'
       A test with <code class="fsharp"><a href="../reference/primitives.html#members.attempt"><span class="ci">attempt</span></a></code> on both sides
       of <code class="fsharp"><a href="../reference/primitives.html#members.:60::124::62:"><span class="co">&lt;|&gt;</span></a></code>:
      </p>
-<pre class="code fsharp"><span class="cmd"><span class="cmdp">&gt;</span> <a href="../reference/charparsers.html#members.run"><span class="ci">run</span></a> <span class="cp">(</span><span class="cp">(</span><a href="../reference/primitives.html#members.attempt"><span class="ci">attempt</span></a> <span class="cp">(</span><span class="ci">str</span> <span class="cs"><span class="cld">"</span>a<span class="crd">"</span></span> <a href="../reference/primitives.html#members.:62::62:.."><span class="co">&gt;&gt;.</span></a> <span class="ci">bInBrackets</span><span class="cp">)</span><span class="cp">)</span> <a href="../reference/primitives.html#members.:60::124::62:"><span class="co">&lt;|&gt;</span></a> <a href="../reference/primitives.html#members.attempt"><span class="ci">attempt</span></a> <span class="ci">ac</span><span class="cp">)</span> <span class="cs"><span class="cld">"</span>a[B]<span class="crd">"</span></span><span class="cp">;;</span></span>
-<span class="cout">val it : ParserResult&lt;string,unit&gt; = Failure:
+<pre class="code fsharp"><span class="cmd"><span class="cmdp">&gt;</span> <a href="../reference/charparsers.html#members.run"><span class="ci">run</span></a> <span class="cp">(</span><span class="cp">(</span><a href="../reference/primitives.html#members.attempt"><span class="ci">attempt</span></a> <span class="cp">(</span><span class="ci">str</span> <span class="cs"><span class="cld">"</span>a<span class="crd">"</span></span> <a href="../reference/primitives.html#members...:62::62:.."><span class="co">.&gt;&gt;.</span></a> <span class="ci">bInBrackets</span><span class="cp">)</span><span class="cp">)</span> <a href="../reference/primitives.html#members.:60::124::62:"><span class="co">&lt;|&gt;</span></a> <a href="../reference/primitives.html#members.attempt"><span class="ci">attempt</span></a> <span class="ci">ac</span><span class="cp">)</span> <span class="cs"><span class="cld">"</span>a[B]<span class="crd">"</span></span><span class="cp">;;</span></span>
+<span class="cout">val it : ParserResult&lt;(string * string),unit&gt; = Failure:
 Error in Ln: 1 Col: 1
 a[B]
 ^
@@ -342,12 +352,13 @@ The parser backtracked after:
     </div>
     <div class="para _4 lcinp">
      <p>
-      A test with <code class="fsharp"><a href="../reference/primitives.html#members.:62::62::63:"><span class="co">&gt;&gt;?</span></a></code>
+      A test with <code class="fsharp"><a href="../reference/primitives.html#members...:62::62:..:63:"><span class="co">.&gt;&gt;.?</span></a></code>
       instead of <code class="fsharp"><a href="../reference/primitives.html#members.attempt"><span class="ci">attempt</span></a></code> on the left
       side of <code class="fsharp"><a href="../reference/primitives.html#members.:60::124::62:"><span class="co">&lt;|&gt;</span></a></code>:
      </p>
-<pre class="code fsharp"><span class="cmd"><span class="cmdp">&gt;</span> <a href="../reference/charparsers.html#members.run"><span class="ci">run</span></a> <span class="cp">(</span><span class="ci">str</span> <span class="cs"><span class="cld">"</span>a<span class="crd">"</span></span> <a href="../reference/primitives.html#members.:62::62::63:"><span class="co">&gt;&gt;?</span></a> <span class="ci">bInBrackets</span> <a href="../reference/primitives.html#members.:60::124::62:"><span class="co">&lt;|&gt;</span></a> <span class="ci">ac</span><span class="cp">)</span> <span class="cs"><span class="cld">"</span>a[B]<span class="crd">"</span></span><span class="cp">;;</span></span>
-<span class="cout">Error in Ln: 1 Col: 3
+<pre class="code fsharp"><span class="cmd"><span class="cmdp">&gt;</span> <a href="../reference/charparsers.html#members.run"><span class="ci">run</span></a> <span class="cp">(</span><span class="ci">str</span> <span class="cs"><span class="cld">"</span>a<span class="crd">"</span></span> <a href="../reference/primitives.html#members...:62::62:..:63:"><span class="co">.&gt;&gt;.?</span></a> <span class="ci">bInBrackets</span> <a href="../reference/primitives.html#members.:60::124::62:"><span class="co">&lt;|&gt;</span></a> <span class="ci">ac</span><span class="cp">)</span> <span class="cs"><span class="cld">"</span>a[B]<span class="crd">"</span></span><span class="cp">;;</span></span>
+<span class="cout">val it : ParserResult&lt;(string * string),unit&gt; = Failure:
+Error in Ln: 1 Col: 3
 a[B]
   ^
 Expecting: 'b'
@@ -355,12 +366,9 @@ Expecting: 'b'
     </div>
     <div class="para _5">
      <p>
-      The backtracking versions of the <code class="fsharp"><a href="../reference/primitives.html#members...:62::62:"><span
-      class="co">.&gt;&gt;</span></a></code> and <code class="fsharp"><a href="../reference/primitives.html#members.:62::62::61:"><span
-      class="co">&gt;&gt;=</span></a></code> operators are named <code class="fsharp"><a
-      href="../reference/primitives.html#members...:62::62::63:"><span class="co">.&gt;&gt;?</span></a></code> and <code class="fsharp"><a
-      href="../reference/primitives.html#members.:62::62::61::63:"><span class="co">&gt;&gt;=?</span></a></code>. You can of course chain multiple of
-      these operators to backtrack longer distances, like in <code class="fsharp"><span class="ci">prefix1</span> <a
+      You can of course chain multiple of the <code class="fsharp"><a href="../reference/primitives.html#members.:62::62::63:"><span
+      class="co">&gt;&gt;?</span></a></code> and <code class="fsharp"><a href="../reference/primitives.html#members...:62::62::63:"><span
+      class="co">.&gt;&gt;?</span></a></code> operators to backtrack longer distances, like in <code class="fsharp"><span class="ci">prefix1</span> <a
       href="../reference/primitives.html#members.:62::62::63:"><span class="co">&gt;&gt;?</span></a> <span class="ci">prefix2</span> <a
       href="../reference/primitives.html#members.:62::62::63:"><span class="co">&gt;&gt;?</span></a> <span class="ci">p</span> <a
       href="../reference/primitives.html#members...:62::62::63:"><span class="co">.&gt;&gt;?</span></a> <span class="ci">postfix</span></code>.
@@ -375,7 +383,7 @@ Expecting: 'b'
          When implementing backtracking parsers you should generally prefer the <code class="fsharp"><a
          href="../reference/primitives.html#members.:62::62::63:"><span class="co">&gt;&gt;?</span></a></code>, <code class="fsharp"><a
          href="../reference/primitives.html#members...:62::62::63:"><span class="co">.&gt;&gt;?</span></a></code> and <code class="fsharp"><a
-         href="../reference/primitives.html#members.:62::62::63:"><span class="co">&gt;&gt;?</span></a></code> combinators to the <code
+         href="../reference/primitives.html#members...:62::62:..:63:"><span class="co">.&gt;&gt;.?</span></a></code> combinators to the <code
          class="fsharp"><a href="../reference/primitives.html#members.attempt"><span class="ci">attempt</span></a></code> combinator, because the
          former combinators offer finer control over the exact backtracking behaviour and hence will often lead to better error reporting. Note
          however that neither can completely replace the other.

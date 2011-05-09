@@ -595,15 +595,15 @@ By introducing `attempt` we allow the `<|>` combinator to recover from the error
 val it : ParserResult<(string * string),unit> = Success: ("a", "c")
 ``
 
-Sometimes it can be a disadvantage that `attempt` will trigger backtracking after any error returned by the argument parser, no matter how much content the parser has consumed. Consider for example a parser like `prefix >>. expr`, where `expr` is a parser for a potentially large and deeply nested expression. If you wrap this parser with `attempt` then the wrapped parser will not only backtrack if an error occurs within the prefix or directly after the prefix, but also if it occurs anywhere in the expression. However, in most cases you only want the parser to backtrack if the error occurs directly after the prefix, not if the error occurs deeply inside the expression parser. For situations like this FParsec defines the `>>?` operator.
+Sometimes it can be a disadvantage that `attempt` will trigger backtracking after any error returned by the argument parser, no matter how much content the parser has consumed. Consider for example a parser like `prefix >>. expr`, where `expr` is a parser for a potentially large and deeply nested expression. If you wrap this parser with `attempt` then the wrapped parser will not only backtrack if an error occurs within the prefix or directly after the prefix, but also if it occurs anywhere in the expression. However, in most cases you only want the parser to backtrack if the error occurs directly after the prefix, not if the error occurs deeply inside the expression parser. For situations like this FParsec defines the `>>?`, `.>>?`, `.>>.?` and `>>=?` operators.
 
 The `>>?` combinator
 ``
 val (>>?):  Parser<'a,'u> -> Parser<'b,'u> -> Parser<'b,'u>
 ``
-behaves like the `>>.` operator, except that `p1 >>? p2` will backtrack to the beginning if `p2` fails with a non-fatal error and without changing the parser state, even if `p1` has changed the parser state.
+behaves like the `>>.` operator, except that `p1 >>? p2` will backtrack to the beginning if `p2` fails with a non-fatal error and without changing the parser state, even if `p1` has changed the parser state. Similarly, `.>>?`, `.>>.?` and `>>=?` behave like `.>>`, `.>>.` and `>>=`, except that they will backtrack to the beginning if the second parser fails with a non-fatal error and without changing the parser state
 
-The following tests illustrate the differences between backtracking implemented via `attempt` and `>>?`.
+The following tests illustrate the differences between backtracking implemented via `attempt` and `.>>.?`.
 
 ``
 let bInBrackets = str "[" >>. str "b" .>> str "]"
@@ -611,8 +611,8 @@ let bInBrackets = str "[" >>. str "b" .>> str "]"
 
 A test with `attempt` on the left side of `<|>`:
 ``{fsi}
-> run ((attempt (str "a" >>. bInBrackets)) <|> ac) "a[B]";;
-val it : ParserResult<string,unit> = Failure:
+> run ((attempt (str "a" .>>. bInBrackets)) <|> ac) "a[B]";;
+val it : ParserResult<(string * string),unit> = Failure:
 Error in Ln: 1 Col: 2
 a[B]
  ^
@@ -621,8 +621,8 @@ Expecting: 'c'
 
 A test with `attempt` on both sides of `<|>`:
 ``{fsi}
-> run ((attempt (str "a" >>. bInBrackets)) <|> attempt ac) "a[B]";;
-val it : ParserResult<string,unit> = Failure:
+> run ((attempt (str "a" .>>. bInBrackets)) <|> attempt ac) "a[B]";;
+val it : ParserResult<(string * string),unit> = Failure:
 Error in Ln: 1 Col: 1
 a[B]
 ^
@@ -640,19 +640,20 @@ The parser backtracked after:
   Expecting: 'b'
 ``
 
-A test with `>>?` instead of `attempt` on the left side of `<|>`:
+A test with `.>>.?` instead of `attempt` on the left side of `<|>`:
 ``{fsi}
-> run (str "a" >>? bInBrackets <|> ac) "a[B]";;
+> run (str "a" .>>.? bInBrackets <|> ac) "a[B]";;
+val it : ParserResult<(string * string),unit> = Failure:
 Error in Ln: 1 Col: 3
 a[B]
   ^
 Expecting: 'b'
 ``
 
-The backtracking versions of the `.>>` and `>>=` operators are named `.>>?` and `>>=?`. You can of course chain multiple of these operators to backtrack longer distances, like in `prefix1 >>? prefix2 >>? p .>>? postfix`.
+You can of course chain multiple of the `>>?` and `.>>?` operators to backtrack longer distances, like in `prefix1 >>? prefix2 >>? p .>>? postfix`.
 
 [note
-When implementing backtracking parsers you should generally prefer the `>>?`, `.>>?` and `>>?` combinators to the `attempt` combinator, because the former combinators offer finer control over the exact backtracking behaviour and hence will often lead to better error reporting. Note however that neither can completely replace the other.
+When implementing backtracking parsers you should generally prefer the `>>?`, `.>>?` and `.>>.?` combinators to the `attempt` combinator, because the former combinators offer finer control over the exact backtracking behaviour and hence will often lead to better error reporting. Note however that neither can completely replace the other.
 ]
 
 Backtracking combinators can also be useful when parsing sequences. In the chapter "Parsing sequences" we briefly discussed the following example:
