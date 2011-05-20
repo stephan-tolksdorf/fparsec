@@ -69,32 +69,13 @@ let keyValue = tuple2 stringLiteral (ws >>. str ":" >>. ws >>. jvalue)
 let jlist   = listBetweenStrings "[" "]" jvalue JList
 let jobject = listBetweenStrings "{" "}" keyValue (Map.ofList >> JObject)
 
-(*
 do jvalueRef := choice [jobject
                         jlist
                         jstring
                         jnumber
                         jtrue
                         jfalse
-                        jnull
-                       ]
-*)
-do jvalueRef:=
-    let error = expected "JSON value"
-    fun (stream: CharStream<_>) ->
-        match stream.Peek() with
-        | '{' -> jobject stream
-        | '[' -> jlist stream
-        | '"' -> jstring stream
-        | 't' when stream.Skip("true")  -> Reply(JBool true)
-        | 'f' when stream.Skip("false") -> Reply(JBool false)
-        | 'n' when stream.Skip("null")  -> Reply(JNull)
-        | _ ->
-            let stateTag = reply.StateTag
-            let mutable reply = jnumber stream
-            if reply.Status = Error && stateTag = stream.StateTag then
-               reply.Error <- error
-            reply
+                        jnull]
 
 let json = ws >>. jvalue .>> ws .>> eof
 

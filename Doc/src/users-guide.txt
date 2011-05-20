@@ -1656,7 +1656,7 @@ fun (stream: CharStream<_>) ->
     | 'f' when stream.Skip("false") -> Reply(JBool false)
     | 'n' when stream.Skip("null")  -> Reply(JNull)
     | _ ->
-        let stateTag = reply.StateTag
+        let stateTag = stream.StateTag
         let mutable reply = jnumber stream
         if reply.Status = Error && stateTag = stream.StateTag then
            reply.[^RError Error] <- error
