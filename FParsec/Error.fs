@@ -142,7 +142,7 @@ let internal printErrorPosition (tabSize: int) (lw: LineWrapper) (stream: CharSt
     let sn = getLineSnippet stream p (lw.ColumnWidth - lw.Indentation.Length) tabSize lw.WriterIsMultiCharGraphemeSafe
     let str = sn.String
 
-    lw.PrintLine(Strings.ErrorPosition(p, sn.UnaccountedNewlines, sn.Utf16Column))
+    lw.PrintLine(Strings.ErrorPosition(p, sn.UnaccountedNewlines, sn.Column, sn.Utf16Column))
 
     let msgs = ResizeArray<_>()
     if sn.LineContainsTabsBeforeIndex then

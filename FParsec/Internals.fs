@@ -375,7 +375,7 @@ let getLineSnippet (stream: CharStream<'u>) (p: Position) (space: int) (tabSize:
         let indices = System.Globalization.StringInfo.ParseCombiningCharacters(str)
         let mutable idxIdx = 0 // the indices index of the text element containing the str char at idx
         while idxIdx < indices.Length && indices.[idxIdx] < idx do idxIdx <- idxIdx + 1
-        if (if idxIdx < indices.Length then indices.[idxIdx] > idx else idxIdx <> 0) then idxIdx <- idxIdx - 1
+        if (if idxIdx < indices.Length then indices.[idxIdx] > idx else idx < str.Length) then idxIdx <- idxIdx - 1
         let col = columnOffset + int64 (idxIdx + 1)
         let teIdx    =  if idxIdx     < indices.Length then indices.[idxIdx]     else str.Length
         let teLength = (if idxIdx + 1 < indices.Length then indices.[idxIdx + 1] else str.Length) - teIdx

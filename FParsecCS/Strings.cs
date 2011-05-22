@@ -113,11 +113,11 @@ internal static class Strings {
         return string.Format(ErrorPositionFormat, name, position.Line, "", position.Column, "");
     }
 
-    public static string ErrorPosition(Position position, int unaccountedNewlines, long utf16Column) {
+    public static string ErrorPosition(Position position, int unaccountedNewlines, long column, long utf16Column) {
         var name = string.IsNullOrEmpty(position.StreamName) ? "" : string.Format(ErrorPositionStreamNameFormat, position.StreamName);
-        var nlCorrection = unaccountedNewlines == 0 ? "" : string.Format(ErrorPositionUnaccountedNewlinesFormat);
-        var utf16Col = utf16Column == position.Column ? "" : string.Format(ErrorPositionUtf16ColumnFormat, utf16Column);
-        return string.Format(ErrorPositionFormat, name, position.Line, nlCorrection, position.Column, utf16Col);
+        var nlCorrection = unaccountedNewlines == 0 ? "" : string.Format(ErrorPositionUnaccountedNewlinesFormat, unaccountedNewlines);
+        var utf16Col = column == utf16Column ? "" : string.Format(ErrorPositionUtf16ColumnFormat, utf16Column);
+        return string.Format(ErrorPositionFormat, name, position.Line, nlCorrection, column, utf16Col);
     }
 
     public static readonly string Note = "Note: ";
