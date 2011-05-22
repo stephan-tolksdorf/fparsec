@@ -46,13 +46,15 @@ The =Test= project in the solution files contains the unit tests for FParsec.
 
 [section Building FParsec with Mono]
 
-FParsec is only compatible with the latest version of Mono [url "https://github.com/mono/mono" available from github]. The last official relase of Mono, 2.10.1, still contains bugs in the JIT and C# compiler that make it incompatible with FParsec.
+FParsec is compatible with Mono version 2.10.2 or later.
 
 You can build FParsec for Mono using the =Makefile= in the =Build= directory. The debug and release assemblies will be put in the [= Build/bin/Debug] and [= Build/bin/Release] directories respectively.
 
 Mono's `[no-auto-link System.Text.Decoder]` classes have some bugs that cause issues with FParsec. (I'm currently preparing bug reports.) Until these bugs are fixed only the @Low-Trust version@ of FParsec works under FParsec.
 
-Note that Mono [url "https://bugzilla.novell.com/show_bug.cgi?id=480178" currently doesn't properly support] Unicode code points outside the Basic Multilingual Plane (i.e. code points above 0xffff). This breaks FParsec's `identifier` parser, for example.
+Note:
+- Mono [url "https://bugzilla.novell.com/show_bug.cgi?id=480178" currently doesn't properly support] Unicode code points outside the Basic Multilingual Plane (i.e. code points above 0xffff). This breaks FParsec's `identifier` parser, for example. 
+- The `regex` parser and the `[^Match_Regex CharStream.Match](Regex)` method curently don't work on Mono, because Mono's regular expression implementation [url "https://bugzilla.novell.com/show_bug.cgi?id=474154" does not correctly match regexes on substrings] (Laurent Le Brun reported this issue - thanks Laurent!).
 
 There are also two issues with the official "source code drop" for the F# compiler:
 - The assemblies for the .NET 4 profile contain duplicate symbols. See [url "https://bugzilla.novell.com/show_bug.cgi?id=686312" here] for instructions how to fix this.

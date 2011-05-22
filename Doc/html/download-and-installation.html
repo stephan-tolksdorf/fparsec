@@ -267,10 +267,7 @@
    <h2 class="title h2"><span><span class="section-number">3.4</span> Building FParsec with Mono</span></h2>
    <div class="intro i2">
     <div class="para _1">
-     <p>
-      FParsec is only compatible with the latest version of Mono <a href="https://github.com/mono/mono">available from github</a>. The last official
-      relase of Mono, 2.10.1, still contains bugs in the JIT and C# compiler that make it incompatible with FParsec.
-     </p>
+     <p>FParsec is compatible with Mono version 2.10.2 or later.</p>
     </div>
     <div class="para _2">
      <p>
@@ -285,12 +282,24 @@
       are fixed only the <a href="#low-trust-version">Low‐Trust version</a> of FParsec works under FParsec.
      </p>
     </div>
-    <div class="para _4">
-     <p>
-      Note that Mono <a href="https://bugzilla.novell.com/show_bug.cgi?id=480178">currently doesn’t properly support</a> Unicode code points outside
-      the Basic Multilingual Plane (i.e. code points above 0xffff). This breaks FParsec’s <code class="fsharp"><a
-      href="reference/charparsers.html#members.identifier"><span class="ci">identifier</span></a></code> parser, for example.
-     </p>
+    <div class="para _4 lcinp">
+     <p>Note:</p>
+     <ul class="l1">
+      <li class="_1">
+       Mono <a href="https://bugzilla.novell.com/show_bug.cgi?id=480178">currently doesn’t properly support</a> Unicode code points outside the Basic
+       Multilingual Plane (i.e. code points above 0xffff). This breaks FParsec’s <code class="fsharp"><a
+       href="reference/charparsers.html#members.identifier"><span class="ci">identifier</span></a></code> parser, for example.
+      </li>
+      <li class="_2">
+       The <code class="fsharp"><a href="reference/charparsers.html#members.regex"><span class="ci">regex</span></a></code> parser and the <code
+       class="fsharp"><a href="reference/charstream.html#CharStream.members.Match_Regex"><span class="ci">CharStream</span><span
+       class="cm">.</span><span class="ci">Match</span></a><span class="cp">(</span><a
+       href="http://msdn.microsoft.com/en-us/library/system.text.regularexpressions.regex.aspx"><span class="ci">Regex</span></a><span
+       class="cp">)</span></code> method curently don’t work on Mono, because Mono’s regular expression implementation <a
+       href="https://bugzilla.novell.com/show_bug.cgi?id=474154">does not correctly match regexes on substrings</a> (Laurent Le Brun reported this
+       issue ‐ thanks Laurent!).
+      </li>
+     </ul>
     </div>
     <div class="para _5 lcinp">
      <p>There are also two issues with the official &#x201C;source code drop&#x201D; for the F# compiler:</p>

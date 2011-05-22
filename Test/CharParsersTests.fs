@@ -259,10 +259,11 @@ let testStringParsers() =
     restOfLine     false |> ROk "  \r\n1" 2  "  "
     skipRestOfLine false |> ROk "  \r\n1" 2  ()
 
-    regex "abc"         |> ROk    "abc" 3  "abc"
-    regex ".*\r\r\n.*"  |> ROkNL  "abc\r\r\nabc" 9 "abc\n\nabc"
-    regex "abc"         |> RError "ab" 0 (Errors.ExpectedStringMatchingRegex("abc"))
-    regexL "abc" "test" |> RError "ab" 0 (expected "test")
+    regex "abc"               |> ROk    "abc" 3 "abc"
+    (anyChar >>. regex "abc") |> ROk    "_abc" 4 "abc"
+    regex ".*\r\r\n.*"        |> ROkNL  "abc\r\r\nabc" 9 "abc\n\nabc"
+    regex "abc"               |> RError "ab" 0 (Errors.ExpectedStringMatchingRegex("abc"))
+    regexL "abc" "test"       |> RError "ab" 0 (expected "test")
 
 let testIdentifier() =
     // We do most of the testing in IdentifierValidatorTests.fs.
@@ -1296,10 +1297,6 @@ let testUserStateParsers() =
     reply.Error  |> Equal NoErrorMessages
 
 let run() =
-
-    let p = new FParsec.ManyChars<unit>(anyChar, anyChar)
-    use stream = new CharStream<unit>("asfasdfasf")
-
     testCharParsers()
     testAnyNoneOf()
     testSpecialCharParsers()
