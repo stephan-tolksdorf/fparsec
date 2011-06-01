@@ -925,6 +925,7 @@ type ParserCombinator() =
     member t.Return(x) = preturn x
     member t.Bind(p, f) = p >>= f
     member t.Zero() : Parser<'a,'u> = pzero
+    member t.ReturnFrom(p: Parser<'a,'u>) = p
     // no Combine member by purpose
     member t.TryWith(p:Parser<'a,'u>, cf:(exn -> Parser<'a,'u>)) =
         fun stream ->

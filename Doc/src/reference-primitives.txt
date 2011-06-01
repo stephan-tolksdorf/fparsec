@@ -907,7 +907,7 @@ type ParserCombinator() =
   member t.Return(x)  = preturn x
   member t.Bind(p, f) = p >>= f
   member t.Zero()     = pzero
-
+  member t.ReturnFrom(p) = p
   member t.TryWith(p, cf) = fun state -> try p state
                                          with e -> (cf e) state
   member t.TryFinally(p, ff) = fun state -> try p state

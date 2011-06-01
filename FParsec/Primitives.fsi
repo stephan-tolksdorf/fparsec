@@ -402,6 +402,7 @@ type ParserCombinator =
     member Return: 'a -> Parser<'a,'u>
     member Bind: Parser<'a,'u>*('a -> Parser<'b,'u>) -> Parser<'b,'u>
     member Zero: unit -> Parser<'a,'u>
+    member ReturnFrom: Parser<'a,'u> -> Parser<'a,'u>
     // no Combine member by purpose
     member TryWith: p:Parser<'a,'u> * cf:(exn -> Parser<'a,'u>) -> Parser<'a,'u>
     member TryFinally: p:Parser<'a,'u>* ff:(unit -> unit) -> Parser<'a,'u>
