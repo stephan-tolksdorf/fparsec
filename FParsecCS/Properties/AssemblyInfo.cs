@@ -4,6 +4,11 @@ using System.Runtime.InteropServices;
 
 [assembly: ComVisible(false)]
 
+#if LOW_TRUST && CLR4 && !SILVERLIGHT
+    [assembly: System.Security.AllowPartiallyTrustedCallers]
+    [assembly: System.Security.SecurityTransparent]
+#endif
+
 [assembly: AssemblyTitle("FParsecCS.dll")]
 [assembly: AssemblyDescription("FParsecCS.dll")]
 #if DEBUG

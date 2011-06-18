@@ -6,6 +6,16 @@ open System.Runtime.InteropServices
 
 [<assembly: ComVisible(false)>]
 
+#if LOW_TRUST
+ #if CLR4
+  #if SILVERLIGHT
+  #else
+    [<assembly: System.Security.AllowPartiallyTrustedCallers>]
+    [<assembly: System.Security.SecurityTransparent>]
+  #endif
+ #endif
+#endif
+
 [<assembly: AssemblyTitle("FParsec.dll")>]
 [<assembly: AssemblyDescription("FParsec.dll")>]
 #if DEBUG
