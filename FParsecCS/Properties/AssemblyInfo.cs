@@ -31,8 +31,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyProduct("FParsec")]
 [assembly: AssemblyCopyright("Copyright © Stephan Tolksdorf 2007-2011")]
 
-[assembly: AssemblyVersion("0.9.0.0")]
-[assembly: AssemblyFileVersion("0.9.0.0")]
+[assembly: AssemblyVersion("0.9.1.1")]
+[assembly: AssemblyFileVersion("0.9.1.1")]
 
 [assembly: InternalsVisibleTo("FParsec")]
 [assembly: InternalsVisibleTo("test_fparsec")]

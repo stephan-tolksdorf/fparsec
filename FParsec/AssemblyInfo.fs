@@ -33,7 +33,7 @@ open System.Runtime.InteropServices
 #endif
 [<assembly: AssemblyProduct("FParsec")>]
 [<assembly: AssemblyCopyright("Copyright \169 Stephan Tolksdorf 2007-2011")>]
-[<assembly: AssemblyVersion("0.9.0.0")>]
-[<assembly: AssemblyFileVersion("0.9.0.0")>]
+[<assembly: AssemblyVersion("0.9.1.1")>]
+[<assembly: AssemblyFileVersion("0.9.1.1")>]
 [<assembly: InternalsVisibleTo("test_fparsec")>]
 do ()
