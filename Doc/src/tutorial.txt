@@ -696,7 +696,7 @@ let stringLiteral =
 [#createParserForwardedToRef-example]
 The grammar rules for JSON lists and objects are recursive, because any list or object can contain itself any kind of JSON value. Hence, in order to write parsers for the list and object grammar rules, we need a way to refer to the parser for any kind of JSON value, even though we haven't yet constructed this parser. Like it is so often in computing, we can solve this problem by introducing an extra indirection:
 ``
-let jvalue, jvalueRef = createParserForwardedToRef<Json>()
+let jvalue, jvalueRef = createParserForwardedToRef<Json, unit>()
 ``
 
 As you might have guessed from the name, `createParserForwardedToRef` creates a parser (`jvalue`) that forwards all invocations to the parser in a reference cell (`jvalueRef`). Initially, the reference cell holds a dummy parser, but since the reference cell is mutable, we can later replace the dummy parser with the actual value parser, once we have finished constructing it.
