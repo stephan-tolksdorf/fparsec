@@ -570,7 +570,7 @@ If you want to try more than two alternative parsers, you can chain multiple `<|
 
 [/section]
 
-[section F#'s Value restriction]
+[section F#'s value restriction]
 
 When you start writing your own parsers with FParsec or try to compile some individual code snippets from above, you'll come across a compiler issue that
 often causes some head-scratching among new users of F# and FParsec: the /value restriction/. In this section we'll explain the value restriction and how you can handle it in your FParsec programs.

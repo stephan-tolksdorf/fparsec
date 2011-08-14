@@ -46,7 +46,7 @@ The =Test= project in the solution files contains the unit tests for FParsec.
 
 [section Building FParsec with Mono]
 
-FParsec is compatible with Mono version 2.10.2 or later.
+FParsec is compatible with the latest version of Mono from the [url "https://github.com/mono/mono" GitHub] =master= branch (the =2.10= branch is missing at least commit [url "https://github.com/mono/mono/commit/410b3e423f1135a9783d" 410b3e423f1135a9783d] for FParsec to compile).
 
 You can build FParsec for Mono using the =Makefile= in the =Build= directory. The debug and release assemblies will be put in the [= Build/bin/Debug] and [= Build/bin/Release] directories respectively.
 
