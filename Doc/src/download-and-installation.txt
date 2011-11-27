@@ -98,7 +98,7 @@ You can set conditional compilation symbols either in the Visual Studio project 
 [
 Use a 32-bit `StateTag` in the `CharStream` class instead of the default 64-bit one.
 
-This is an optimization for 32-bit runtimes. You can find more information about the state tag in [^the-statetag].
+This is an optimization for 32-bit runtimes. You can find more information about the state tag in [^ users-guide.applying-parsers-in-sequence.the-statetag] of the user's guide.
 ]
 
 [`#UNALIGNED_READS#`]

@@ -315,22 +315,34 @@
            class="cm">.</span><span class="ci">Exception</span></code> to prevent an infinite loop
           </li>
           <li class="_9">
+           <code class="fsharp"><a href="../reference/charparsers.html#members.anyOf"><span class="ci">anyOf</span></a></code>, <code
+           class="fsharp"><a href="../reference/charparsers.html#members.noneOf"><span class="ci">noneOf</span></a></code>, <code class="fsharp"><a
+           href="../reference/charparsers.html#members.isAnyOf"><span class="ci">isAnyOf</span></a></code> and <code class="fsharp"><a
+           href="../reference/charparsers.html#members.isNoneOf"><span class="ci">isNoneOf</span></a></code> now use runtime code generation (except
+           in the <a href="../download-and-installation.html#low-trust-version">Low‐Trust version</a>). <em>If you run into performance issues after
+           upgrading to version 0.9</em>, make sure that you don’t unnecessarily recreate <code class="fsharp"><a
+           href="../reference/charparsers.html#members.anyOf"><span class="ci">anyOf</span></a></code> or <code class="fsharp"><a
+           href="../reference/charparsers.html#members.noneOf"><span class="ci">noneOf</span></a></code> parsers, see <a
+           href="../users-guide/performance-optimizations.html#performance-guidelines.construct-parsers-once">here</a> and <a
+           href="../users-guide/where-is-the-monad.html#why-the-monadic-syntax-is-slow">here</a>.
+          </li>
+          <li class="_0">
            <code class="fsharp"><a href="../reference/charparsers.html#members.pstring"><span class="ci">pstring</span></a></code>, <code
            class="fsharp"><a href="../reference/charparsers.html#members.notFollowedByString"><span class="ci">notFollowedByString</span></a></code>
            and similar parsers now have optimized code paths for argument strings with only 1 char
           </li>
-          <li class="_0">
+          <li class="_1">
            the behaviour of <code class="fsharp"><a href="../reference/charparsers.html#members.manyChars"><span
            class="ci">manyChars</span></a></code> and <code class="fsharp"><a href="../reference/charparsers.html#members.manyCharsTill"><span
            class="ci">manyCharsTill</span></a></code> and their variants <a
            href="#v0_9.details-on-changes-to-manychars-manycharstill-and-their-variants">has slightly changed</a>
           </li>
-          <li class="_1">
+          <li class="_2">
            the skip variants of <code class="fsharp"><a href="../reference/charparsers.html#members.manyChars"><span
            class="ci">manyChars</span></a></code> and <code class="fsharp"><a href="../reference/charparsers.html#members.manyCharsTill"><span
            class="ci">manyCharsTill</span></a></code> <a href="#v0_9.removed-skip-variants-of-manyChars">have been removed</a>
           </li>
-          <li class="_2">
+          <li class="_3">
            <p>Some renamings and function signature changes:</p>
            <div id="v0_9.renamings" class="table">
             <table cellspacing="0">

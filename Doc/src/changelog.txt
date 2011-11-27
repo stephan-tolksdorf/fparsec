@@ -41,6 +41,7 @@
 - the `...FoldApply` inline variants of `many`, `sepBy`, `sepEndBy` and `manyTill`
   have been consolidated in the `[^reference.Primitives.members.Inline FParsec.Primitives.Inline]` helper class
 - sequence parsers now throw a `System.InvalidOperationException` instead of a `System.Exception` to prevent an infinite loop
+- `anyOf`, `noneOf`, `isAnyOf` and `isNoneOf` now use runtime code generation (except in the [^low-trust-version Low-Trust version]). *If you run into performance issues after upgrading to version 0.9*, make sure that you don't unnecessarily recreate `anyOf` or `noneOf` parsers, see [^construct-parsers-once here] and [^why-the-monadic-syntax-is-slow here].
 - `pstring`, `notFollowedByString` and similar parsers now have optimized code paths
   for argument strings with only 1 char
 - the behaviour of `manyChars` and `manyCharsTill` and their variants [^details-on-changes-to-manychars-manycharstill-and-their-variants has slightly changed]

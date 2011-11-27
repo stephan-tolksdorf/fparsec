@@ -268,7 +268,7 @@
          </ul>
         </div>
        </dd>
-       <dt class="_3">Construct parsers once</dt>
+       <dt class="_3"><span class="a" id="performance-guidelines.construct-parsers-once">Construct parsers once</span></dt>
        <dd class="_3">
         <div class="para _1">
          <p>
@@ -414,7 +414,7 @@
 <pre class="code fsharp"><span class="ck">let</span> <a href="../reference/charparsers.html#members.identifier"><span class="ci">identifier</span></a> <span class="cp">=</span>
     <a href="../reference/primitives.html#members.attempt"><span class="ci">attempt</span></a> <span class="cp">(</span><span class="ci">identifierString</span>
              <a href="../reference/primitives.html#members.:62::62::61:"><span class="co">&gt;&gt;=</span></a> <span class="ck">fun</span> <span class="ci">str</span> <span class="cr">-&gt;</span>
-                     <span class="ck">if</span> <span class="ci">isIdentifier</span> <span class="ci">str</span> <span class="ck">then</span> <a href="../reference/primitives.html#members.preturn"><span class="ci">preturn</span></a> <span class="ci">str</span>
+                     <span class="ck">if</span> <span class="ci">not</span> <span class="cp">(</span><span class="ci">isKeyword</span> <span class="ci">str</span><span class="cp">)</span> <span class="ck">then</span> <a href="../reference/primitives.html#members.preturn"><span class="ci">preturn</span></a> <span class="ci">str</span>
                      <span class="ck">else</span> <a href="../reference/primitives.html#members.pzero"><span class="ci">pzero</span></a><span class="cp">)</span> <a href="../reference/primitives.html#members.:60::63::62:"><span class="co">&lt;?&gt;</span></a> <span class="cs"><span class="cld">"</span>identifier<span class="crd">"</span></span>
 
 </pre>

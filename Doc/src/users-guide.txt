@@ -1543,7 +1543,7 @@ In particular:
 - Consider parsing unicode identifiers with the `identifier` parser.
 ]
 
-[Construct parsers once]
+[[# Construct parsers once]]
 [
 Constructing a parser can be relatively expensive in comparison to a single invocation of the parser. Hence, if you repeatedly apply the same parser, you should make sure that you construct the parser only once, either by preconstructing it at the beginning or by lazily constructing the parser and then caching it.
 
@@ -1619,7 +1619,7 @@ The same parser could also be implemented with the high-level API:
 let identifier =
     attempt (identifierString
              >>= fun str ->
-                     if isIdentifier str then preturn str
+                     if not (isKeyword str) then preturn str
                      else pzero) <?> "identifier"
 
 ``
