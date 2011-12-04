@@ -263,8 +263,10 @@ public unsafe class CharStream : IDisposable {
         public int LastBlock;
 
         public Stream Stream;
-        // we keep a seperate record of the Stream.Position, so that we don't need to require Stream.CanSeek
+        // we keep a separate record of the Stream.Position, so that we don't need to require Stream.CanSeek
         public long StreamPosition;
+        // we use StreamLength to avoid calling Read() again on a non-seekable stream after it returned 0 once (see ticket #23)
+        public long StreamLength;
         public bool LeaveOpen;
 
         public int MaxCharCountForOneByte;
@@ -507,17 +509,20 @@ public unsafe class CharStream : IDisposable {
     {
         if (byteBufferLength < MinimumByteBufferLength) byteBufferLength = MinimumByteBufferLength;
 
-        int bytesInStream = -1;
+        int remainingBytesCount = -1;
         long streamPosition;
+        long streamLength;
         if (stream.CanSeek) {
             streamPosition = stream.Position;
-            long streamLength = stream.Length - streamPosition;
-            if (streamLength <= Int32.MaxValue) {
-                bytesInStream = (int)streamLength;
-                if (bytesInStream < byteBufferLength) byteBufferLength = bytesInStream;
+            streamLength = stream.Length;
+            long remainingBytesCount64 = streamLength - streamPosition;
+            if (remainingBytesCount64 <= Int32.MaxValue) {
+                remainingBytesCount = (int)remainingBytesCount64;
+                if (remainingBytesCount < byteBufferLength) byteBufferLength = remainingBytesCount;
             }
         } else {
             streamPosition = 0;
+            streamLength = Int64.MaxValue;
         }
 
         byte[] byteBuffer = new byte[byteBufferLength];
@@ -525,7 +530,9 @@ public unsafe class CharStream : IDisposable {
         do {
             int n = stream.Read(byteBuffer, byteBufferCount, byteBufferLength - byteBufferCount);
             if (n == 0) {
-                bytesInStream = byteBufferCount;
+                remainingBytesCount = byteBufferCount;
+                Debug.Assert(!stream.CanSeek || streamPosition + byteBufferCount == streamLength);
+                streamLength = streamPosition + byteBufferCount;
                 break;
             }
             byteBufferCount += n;
@@ -533,7 +540,7 @@ public unsafe class CharStream : IDisposable {
         streamPosition += byteBufferCount;
 
         int preambleLength = Text.DetectPreamble(byteBuffer, byteBufferCount, ref encoding, detectEncodingFromByteOrderMarks);
-        bytesInStream -= preambleLength;
+        remainingBytesCount -= preambleLength;
 
         _Line = 1;
         Encoding = encoding;
@@ -542,10 +549,10 @@ public unsafe class CharStream : IDisposable {
         if (blockSize < 8) blockSize = DefaultBlockSize;
 
         bool allCharsFitIntoOneBlock = false;
-        if (bytesInStream >= 0 && bytesInStream/4 <= blockSize) {
-            if (bytesInStream != 0) {
+        if (remainingBytesCount >= 0 && remainingBytesCount/4 <= blockSize) {
+            if (remainingBytesCount != 0) {
                 try {
-                    int maxCharCount = Encoding.GetMaxCharCount(bytesInStream); // may throw ArgumentOutOfRangeException
+                    int maxCharCount = Encoding.GetMaxCharCount(remainingBytesCount); // may throw ArgumentOutOfRangeException
                     if (blockSize >= maxCharCount) {
                         allCharsFitIntoOneBlock = true;
                         blockSize = maxCharCount;
@@ -567,7 +574,7 @@ public unsafe class CharStream : IDisposable {
             if (allCharsFitIntoOneBlock) {
                 int bufferCount = preambleLength == byteBufferCount
                                   ? 0
-                                  : Text.ReadAllRemainingCharsFromStream(bufferBegin, buffer.Length, byteBuffer, preambleLength, byteBufferCount, stream, streamPosition, decoder);
+                                  : Text.ReadAllRemainingCharsFromStream(bufferBegin, buffer.Length, byteBuffer, preambleLength, byteBufferCount, stream, streamPosition, decoder, streamPosition == streamLength);
                 if (!leaveOpen) stream.Close();
                 if (bufferCount != 0) {
                     BufferBegin = bufferBegin;
@@ -586,6 +593,7 @@ public unsafe class CharStream : IDisposable {
                 d.CharStream = this;
                 d.Stream = stream;
                 d.StreamPosition = streamPosition;
+                d.StreamLength = streamLength;
                 d.LeaveOpen = leaveOpen;
                 d.Decoder = decoder;
                 d.DecoderIsSerializable = decoder.GetType().IsSerializable;
@@ -691,16 +699,21 @@ public unsafe class CharStream : IDisposable {
             // iteration anyway (or two at the end of the stream).
             int i = byteBufferIndex;
             int m = ByteBuffer.Length - byteBufferIndex;
-            while (m != 0) {
+            while (m != 0 && StreamPosition != StreamLength) { // we check the StreamPosition to avoid calling Read after it returned 0 at the end of the stream (see ticket #23)
                 int c = Stream.Read(ByteBuffer, i, m);
-                if (c == 0) break;
-                i += c;
-                m -= c;
+                if (c != 0) {
+                    i += c;
+                    m -= c;
+                    StreamPosition += c;
+                } else {
+                    Debug.Assert(!Stream.CanSeek || StreamPosition == StreamLength);
+                    StreamLength = StreamPosition;
+                    break;
+                }
             }
             int n = i - byteBufferIndex;
             ByteBufferIndex = byteBufferIndex;
             ByteBufferCount = byteBufferIndex + n;
-            StreamPosition += n;
             return n;
         }
 

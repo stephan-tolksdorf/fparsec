@@ -98,10 +98,9 @@ internal static int DetectPreamble(byte[] buffer, int count, ref Encoding encodi
 #if !LOW_TRUST
 /// <summary>Reads all remaining chars into the given buffer. If the remaining stream
 /// content holds more than the given maximum number of chars, an exception will be thrown.</summary>
-internal unsafe static int ReadAllRemainingCharsFromStream(char* buffer, int maxCount, byte[] byteBuffer, int byteBufferIndex, int byteBufferCount, System.IO.Stream stream, long streamPosition, Decoder decoder) {
+internal unsafe static int ReadAllRemainingCharsFromStream(char* buffer, int maxCount, byte[] byteBuffer, int byteBufferIndex, int byteBufferCount, System.IO.Stream stream, long streamPosition, Decoder decoder, bool flush) {
     Debug.Assert(maxCount > 0 && byteBufferIndex >= 0 && byteBufferIndex < byteBufferCount);
     fixed (byte* pByteBuffer = byteBuffer) {
-        bool flush = false;
         int bufferCount = 0;
         for (;;) {
             try {

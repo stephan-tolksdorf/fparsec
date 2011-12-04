@@ -243,26 +243,28 @@ public class CharStream : IDisposable {
         // the ByteBuffer must be larger than the longest detectable preamble
         if (byteBufferLength < MinimumByteBufferLength) byteBufferLength = MinimumByteBufferLength;
 
-        int bytesInStream = -1;
+        int remainingBytesCount = -1;
         long streamPosition;
         if (stream.CanSeek) {
             streamPosition = stream.Position;
-            long streamLength = stream.Length - streamPosition;
-            if (streamLength <= Int32.MaxValue) {
-                bytesInStream = (int) streamLength;
-                if (bytesInStream < byteBufferLength) byteBufferLength = bytesInStream;
+            long remainingBytesCount64 = stream.Length - streamPosition;
+            if (remainingBytesCount64 <= Int32.MaxValue) {
+                remainingBytesCount = (int)remainingBytesCount64;
+                if (remainingBytesCount < byteBufferLength) byteBufferLength = remainingBytesCount;
             }
         } else {
             streamPosition = 0;
         }
 
+        // byteBufferLength should be larger than the longest detectable preamble
         byte[] byteBuffer = new byte[byteBufferLength];
         int byteBufferCount = 0;
-        // byteBufferLength should be larger than the longest detectable preamble
+        bool flush = false;
         do {
             int n = stream.Read(byteBuffer, byteBufferCount, byteBuffer.Length - byteBufferCount);
             if (n == 0) {
-                bytesInStream = byteBufferCount;
+                remainingBytesCount = byteBufferCount;
+                flush = true;
                 break;
             }
             byteBufferCount += n;
@@ -270,23 +272,22 @@ public class CharStream : IDisposable {
         streamPosition += byteBufferCount;
 
         int preambleLength = Text.DetectPreamble(byteBuffer, byteBufferCount, ref encoding, detectEncodingFromByteOrderMarks);
-        bytesInStream -= preambleLength;
+        remainingBytesCount -= preambleLength;
         Encoding = encoding;
         _Line = 1;
-        if (bytesInStream != 0) {
+        if (remainingBytesCount != 0) {
             int charBufferLength = encoding.GetMaxCharCount(byteBufferLength); // might throw
             char[] charBuffer = new char[charBufferLength];
             int stringBufferCapacity = 2*charBufferLength;
-            if (bytesInStream > 0) {
+            if (remainingBytesCount > 0) {
                 try {
-                    stringBufferCapacity = encoding.GetMaxCharCount(bytesInStream); // might throw
+                    stringBufferCapacity = encoding.GetMaxCharCount(remainingBytesCount); // might throw
                 } catch (ArgumentOutOfRangeException) { }
             }
             var sb = new StringBuilder(stringBufferCapacity);
             var decoder = encoding.GetDecoder();
             Debug.Assert(preambleLength < byteBufferCount);
             int byteBufferIndex = preambleLength;
-            bool flush = false;
             for (;;) {
                 try {
                     int charBufferCount = decoder.GetChars(byteBuffer, byteBufferIndex, byteBufferCount - byteBufferIndex, charBuffer, 0, flush);
