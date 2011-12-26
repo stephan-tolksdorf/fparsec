@@ -1,4 +1,4 @@
-namespace FParsec
+﻿namespace FParsec
 
 open System.Reflection
 open System.Runtime.CompilerServices

@@ -1,4 +1,4 @@
-// Copyright (c) Stephan Tolksdorf 2009-2010
+﻿// Copyright (c) Stephan Tolksdorf 2009-2010
 // License: Simplified BSD License. See accompanying documentation.
 
 using System;

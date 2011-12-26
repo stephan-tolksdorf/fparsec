@@ -1,4 +1,4 @@
-// Copyright (c) Stephan Tolksdorf 2010-2011
+ï»¿// Copyright (c) Stephan Tolksdorf 2010-2011
 // License: Simplified BSD License. See accompanying documentation.
 
 using System;
@@ -201,12 +201,12 @@ internal static class Strings {
 
     public static string AnyCharIn(string chars) {
         //return Quote(Strings.AnyCharIn1, chars, Strings.AnyCharIn2);
-        return Strings.AnyCharIn1 + "‘" + chars + "’" + Strings.AnyCharIn2;
+        return Strings.AnyCharIn1 + "â€˜" + chars + "â€™" + Strings.AnyCharIn2; // Review: Should we use different quotes if the string contains â€˜ or â€™ chars?
     }
 
     public static string AnyCharNotIn(string chars) {
         //return Quote(Strings.AnyCharNotIn1, chars, Strings.AnyCharNotIn2);
-        return Strings.AnyCharNotIn1 + "‘" + chars + "’" + Strings.AnyCharNotIn2;
+        return Strings.AnyCharNotIn1 + "â€˜" + chars + "â€™" + Strings.AnyCharNotIn2;
     }
 
     public static string StringMatchingRegex(string regexPattern) {
