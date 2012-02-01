@@ -1213,7 +1213,7 @@ Expecting: any char in ‘\nrt"’
       class="fsharp"><a href="reference/primitives.html#members.tuple2"><span class="ci">tuple2</span></a> <span class="ci">p1</span> <span
       class="ci">p2</span></code>. In the following example we parse a pair of comma separated numbers with this operator:
      </p>
-<pre class="code fsharp"><span class="cmd"><span class="cmdp">&gt;</span> <span class="ci">test</span> <span class="cp">(</span><span class="ci">float_ws</span> <a href="reference/primitives.html#members...:62::62:.."><span class="co">.&gt;&gt;.</span></a> <span class="cp">(</span><span class="ci">ch</span> <span class="cc"><span class="cld">'</span>,<span class="crd">'</span></span> <a href="reference/primitives.html#members.:62::62:.."><span class="co">&gt;&gt;.</span></a> <span class="ci">float_ws</span><span class="cp">)</span><span class="cp">)</span> <span class="cs"><span class="cld">"</span>123, 456<span class="crd">"</span></span><span class="cp">;;</span></span>
+<pre class="code fsharp"><span class="cmd"><span class="cmdp">&gt;</span> <span class="ci">test</span> <span class="cp">(</span><span class="ci">float_ws</span> <a href="reference/primitives.html#members...:62::62:.."><span class="co">.&gt;&gt;.</span></a> <span class="cp">(</span><span class="ci">str_ws</span> <span class="cs"><span class="cld">"</span>,<span class="crd">"</span></span> <a href="reference/primitives.html#members.:62::62:.."><span class="co">&gt;&gt;.</span></a> <span class="ci">float_ws</span><span class="cp">)</span><span class="cp">)</span> <span class="cs"><span class="cld">"</span>123, 456<span class="crd">"</span></span><span class="cp">;;</span></span>
 <span class="cout">Success: (123.0, 456.0)
 </span></pre>
     </div>
@@ -1363,14 +1363,14 @@ Expecting: 'a'
     </div>
     <div class="para _3 lcinp">
      <p>F#’s value restriction is the reason that the following code snippet does not compile</p>
-<pre class="code fsharp"><span class="ck">open</span> <a href="reference/charparsers.html"><span class="ci">FParsec</span><span class="cm">.</span><span class="ci">CharParsers</span></a>
+<pre class="code fsharp"><span class="ck">open</span> <span class="ci">FParsec</span>
 <span class="ck">let</span> <span class="ci">p</span> <span class="cp">=</span> <a href="reference/charparsers.html#members.pstring"><span class="ci">pstring</span></a> <span class="cs"><span class="cld">"</span>test<span class="crd">"</span></span>
 </pre>
      <p>
       even though the following snippet compiles without a problem<sup class="fn-mark"><a id="fs-value-restriction.:FN:2:B:"
       href="#fs-value-restriction.:FN:2">[2]</a></sup>:
      </p>
-<pre class="code fsharp"><span class="ck">open</span> <a href="reference/charparsers.html"><span class="ci">FParsec</span><span class="cm">.</span><span class="ci">CharParsers</span></a>
+<pre class="code fsharp"><span class="ck">open</span> <span class="ci">FParsec</span>
 <span class="ck">let</span> <span class="ci">p</span> <span class="cp">=</span> <a href="reference/charparsers.html#members.pstring"><span class="ci">pstring</span></a> <span class="cs"><span class="cld">"</span>test<span class="crd">"</span></span>
 <a href="reference/charparsers.html#members.run"><span class="ci">run</span></a> <span class="ci">p</span> <span class="cs"><span class="cld">"</span>input<span class="crd">"</span></span>
 </pre>

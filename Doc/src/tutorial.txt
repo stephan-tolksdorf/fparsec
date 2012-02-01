@@ -499,7 +499,7 @@ If you just want to return the parsed values as a tuple, you can use the predefi
 
 The `tuple2` parser is also available under the operator name `.>>.`, so that you can write `p1 .>>. p2` instead of `tuple2 p1 p2`. In the following example we parse a pair of comma separated numbers with this operator:
 ``{fsi}
-> test (float_ws .>>. (ch ',' >>. float_ws)) "123, 456";;
+> test (float_ws .>>. (str_ws "," >>. float_ws)) "123, 456";;
 Success: (123.0, 456.0)
 ``
 
@@ -579,12 +579,12 @@ often causes some head-scratching among new users of F# and FParsec: the /value 
 
 F#'s value restriction is the reason that the following code snippet does not compile
 ``
-open FParsec.CharParsers
+open FParsec
 let p = pstring "test"
 ``
 even though the following snippet compiles without a problem[fn  Assuming you referenced the two FParsec DLLs.]:
 ``
-open FParsec.CharParsers
+open FParsec
 let p = pstring "test"
 run p "input"
 ``
