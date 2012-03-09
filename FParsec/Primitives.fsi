@@ -8,13 +8,13 @@ open FParsec
 open FParsec.Error
 
 /// The parser succeeded.
-[<Literal>] val Ok:         ReplyStatus = ReplyStatus.Ok
+[<Literal>] val Ok:         ReplyStatus = ReplyStatus.Ok;;
 
 /// The parser failed.
-[<Literal>] val Error:      ReplyStatus = ReplyStatus.Error
+[<Literal>] val Error:      ReplyStatus = ReplyStatus.Error;;
 
 /// The parser failed and no error recovery (except after backtracking) should be tried.
-[<Literal>] val FatalError: ReplyStatus = ReplyStatus.FatalError
+[<Literal>] val FatalError: ReplyStatus = ReplyStatus.FatalError;;
 
 /// The type of the parser functions supported by FParsec combinators.
 type Parser<'Result, 'UserState> = CharStream<'UserState> -> Reply<'Result>

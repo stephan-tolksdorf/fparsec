@@ -27,7 +27,7 @@ val (|CompoundError|_|): ErrorMessage -> (string * Position * obj * ErrorMessage
 val (|OtherErrorMessage|_|): ErrorMessage -> obj option
 
 [<Literal>]
-val NoErrorMessages: ErrorMessageList = null
+val NoErrorMessages: ErrorMessageList = null;;
 val (|ErrorMessageList|NoErrorMessages|): ErrorMessageList -> Choice<ErrorMessage*ErrorMessageList,unit>
 
 val inline isSingleErrorMessageOfType: ErrorMessageType -> ErrorMessageList -> bool

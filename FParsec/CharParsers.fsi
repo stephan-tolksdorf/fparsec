@@ -740,7 +740,7 @@ val previousCharSatisfiesNot: (char -> bool) -> Parser<unit,'u>
 
 /// `EOS` is equal to `CharStream<'u>.EndOfStreamChar`.
 [<Literal>]
-val EOS: char = '\uffff'
+val EOS: char = '\uffff';;
 
 /// `foldCase str` returns a case-folded version of `str`
 /// with all chars mappend using the (non-Turkic) Unicode 1-to-1 case folding mappings
