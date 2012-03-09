@@ -8,7 +8,7 @@
 - set `AllowPartiallyTrustedCallers` and `SecurityTransparent` assembly attributes in LOW_TRUST NET4 build (as suggested by hammett -- thanks hammett!)
 - changed encoding of [= FParsecCS/Strings.cs] to UTF-8 (with signature) to fix Visual Studio build on machines with Japanese locale (the encoding issue was reported on [url "http://d.hatena.ne.jp/ZOETROPE"] -- thank you!)
 - fixed some documentation issues (incorporating feedback from Alexander Gelkin, Antoine Latter and Stephen Swensen -- thanks Alexander, Antoine and Stephen!)
-- add link to the [url "http://blog.livedoor.jp/gab_km/archives/1437534.html" Japanese translation of the tutorial] by Kazuhiro Matsushima (thanks Kazuhiro!)
+- add link to the [url "http://blog.livedoor.jp/gab_km/archives/1437534.html" Japanese translation of the tutorial] by Gab_km (thanks Gab_km!)
 [/section]
 
 [section#v0_9_1 Version 0.9.1, 2011-05-22]
