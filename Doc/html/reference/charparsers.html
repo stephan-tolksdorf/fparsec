@@ -2958,7 +2958,7 @@
          </p>
 <pre class="code fsharp"><span class="ck">let</span> <span class="ci">pythonIdentifier</span> <span class="cp">=</span>
     <span class="ck">let</span> <span class="ci">isAsciiIdStart</span>    <span class="cp">=</span> <span class="ck">fun</span> <span class="ci">c</span> <span class="cr">-&gt;</span> <a href="#members.isAsciiLetter"><span class="ci">isAsciiLetter</span></a> <span class="ci">c</span> <span class="co">||</span> <span class="ci">c</span> <span class="co">=</span> <span class="cc"><span class="cld">'</span>_<span class="crd">'</span></span>
-    <span class="ck">let</span> <span class="ci">isASciiIdContinue</span> <span class="cp">=</span> <span class="ck">fun</span> <span class="ci">c</span> <span class="cr">-&gt;</span> <a href="#members.isAsciiLetter"><span class="ci">isAsciiLetter</span></a> <span class="ci">c</span> <span class="co">||</span> <a href="#members.isDigit"><span class="ci">isDigit</span></a> <span class="ci">c</span> <span class="co">||</span> <span class="ci">c</span> <span class="co">=</span> <span class="cc"><span class="cld">'</span>_<span class="crd">'</span></span>
+    <span class="ck">let</span> <span class="ci">isAsciiIdContinue</span> <span class="cp">=</span> <span class="ck">fun</span> <span class="ci">c</span> <span class="cr">-&gt;</span> <a href="#members.isAsciiLetter"><span class="ci">isAsciiLetter</span></a> <span class="ci">c</span> <span class="co">||</span> <a href="#members.isDigit"><span class="ci">isDigit</span></a> <span class="ci">c</span> <span class="co">||</span> <span class="ci">c</span> <span class="co">=</span> <span class="cc"><span class="cld">'</span>_<span class="crd">'</span></span>
 
     <a href="#members.identifier"><span class="ci">identifier</span></a> <span class="cp">(</span><span class="ci">IdentifierOptions</span><span class="cp">(</span>
                     <span class="ci">isAsciiIdStart</span> <span class="co">=</span> <span class="ci">isAsciiIdStart</span><span class="cp">,</span>
@@ -2997,7 +2997,7 @@
           Within the ASCII character range <code class="fsharp"><span class="cc"><span class="cld">'</span><span class="ce">\u0001</span><span
           class="crd">'</span></span></code>–<code class="fsharp"><span class="cc"><span class="cld">'</span><span class="ce">\u007f</span><span
           class="crd">'</span></span></code> you can customize the set of accepted characters through the <code class="fsharp"><span
-          class="ci">isASciiIdStart</span></code> and <code class="fsharp"><span class="ci">isASciiIdContinue</span></code> parameters (the XID
+          class="ci">isAsciiIdStart</span></code> and <code class="fsharp"><span class="ci">isAsciiIdContinue</span></code> parameters (the XID
           default allows <code class="fsharp"><span class="cc"><span class="cld">'</span>a<span class="crd">'</span></span></code>–<code
           class="fsharp"><span class="cc"><span class="cld">'</span>z<span class="crd">'</span></span></code> and <code class="fsharp"><span
           class="cc"><span class="cld">'</span>A<span class="crd">'</span></span></code>–<code class="fsharp"><span class="cc"><span

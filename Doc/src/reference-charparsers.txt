@@ -907,7 +907,7 @@ The following example implements a parser for [url "http://docs.python.org/dev/p
 ``
 let pythonIdentifier =
     let isAsciiIdStart    = fun c -> isAsciiLetter c || c = '_'
-    let isASciiIdContinue = fun c -> isAsciiLetter c || isDigit c || c = '_'
+    let isAsciiIdContinue = fun c -> isAsciiLetter c || isDigit c || c = '_'
 
     identifier (IdentifierOptions(
                     isAsciiIdStart = isAsciiIdStart,
@@ -928,7 +928,7 @@ val @identifier@: IdentifierOptions -> Parser<string, 'u>
 
 By default, a valid identifier string must begin with a Unicode character with the =XID_Start= property and continue with zero or more characters with the =XID_Continue= property. The specification of which characters have these properties can be found in the [url "http://www.Unicode.org/Public/6.0.0/ucd/DerivedCoreProperties.txt" DerivedCoreProperties] file in the [url "http://www.Unicode.org/usc" Unicode Character Database]. Currently FParsec implements the XID specification of Unicode 6.0.0.
 
-Within the ASCII character range `'\u0001'`--`'\u007f'` you can customize the set of accepted characters through the `isASciiIdStart` and `isASciiIdContinue` parameters (the XID default allows `'a'`--`'z'` and `'A'`--`'Z'` at any position and `'_'` and `'0'`--`'9'` only in non-start positions). For example, to accept the same ASCII characters that are valid in F# identifiers, you could use the following `IdentifierOptions`:
+Within the ASCII character range `'\u0001'`--`'\u007f'` you can customize the set of accepted characters through the `isAsciiIdStart` and `isAsciiIdContinue` parameters (the XID default allows `'a'`--`'z'` and `'A'`--`'Z'` at any position and `'_'` and `'0'`--`'9'` only in non-start positions). For example, to accept the same ASCII characters that are valid in F# identifiers, you could use the following `IdentifierOptions`:
 ``
 let isAsciiIdStart c =
     isAsciiLetter c || c = '_'
