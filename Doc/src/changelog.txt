@@ -1,13 +1,22 @@
 ﻿[section Changelog]
 [no-subsection-numbers]
 
+[section#v0_9_2 Version 0.9.2, 2012-03-09]
+- fix compilation in Visual Studio 11 Beta
+- added missing `ReturnFrom` member to `parse` builder object (reported by Kurt Schelfthout and Tomas Petricek -- thanks Kurt and Tomas!)
+- added workaround for .NET `ConsoleStream` [url "https://bitbucket.org/fparsec/main/issue/23/reading-from-systemio__consolestream-hangs" issue] (reported by Alexander Kahl -- thanks Alexander!)
+- set `AllowPartiallyTrustedCallers` and `SecurityTransparent` assembly attributes in LOW_TRUST NET4 build (as suggested by hammett -- thanks hammett!)
+- changed encoding of [= FParsecCS/Strings.cs] to UTF-8 (with signature) to fix Visual Studio build on machines with Japanese locale (the encoding issue was reported on [url "http://d.hatena.ne.jp/ZOETROPE"] -- thank you!)
+- fixed some documentation issues (incorporating feedback from Alexander Gelkin, Antoine Latter and Stephen Swensen -- thanks Alexander, Antoine and Stephen!)
+- add link to the [url "http://blog.livedoor.jp/gab_km/archives/1437534.html" Japanese translation of the tutorial] by Kazuhiro Matsushima (thanks Kazuhiro!)
+[/section]
 
 [section#v0_9_1 Version 0.9.1, 2011-05-22]
-- added [= /nooptimizationdata] compiler flag as a workaround for an F# comiler [url "https://bitbucket.org/fparsec/main/issue/16/fparsec-needs-nooptimizationdata-to-avoid" issue] (reported by Michael Giagnocavo - thanks Michael!)
-- fixed an [url "https://bitbucket.org/fparsec/main/issue/17/json-parser-fails-to-build" issue] in the JSON sample (reported by Ryan Riley - thanks Ryan!)
+- added [= /nooptimizationdata] compiler flag as a workaround for an F# comiler [url "https://bitbucket.org/fparsec/main/issue/16/fparsec-needs-nooptimizationdata-to-avoid" issue] (reported by Michael Giagnocavo -- thanks Michael!)
+- fixed an [url "https://bitbucket.org/fparsec/main/issue/17/json-parser-fails-to-build" issue] in the JSON sample (reported by Ryan Riley -- thanks Ryan!)
 - fixed the error message formatting when an error line contains unaccounted newlines or ends with a combining character sequence
-- added warning to [^building-fparsec-with-mono installation notes] that the `regex` parser doesn't work on Mono (reported by Laurent Le Brun - thanks Laurent!)
-- fixed some documentation issues (one of which was reported by Michael Giagnocavo - thanks Michael!)
+- added warning to [^building-fparsec-with-mono installation notes] that the `regex` parser doesn't work on Mono (reported by Laurent Le Brun -- thanks Laurent!)
+- fixed some documentation issues (one of which was reported by Michael Giagnocavo -- thanks Michael!)
 [/section]
 
 [section#v0_9 Version 0.9.0, 2011-04-26]
