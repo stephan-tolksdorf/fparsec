@@ -285,7 +285,7 @@ val it : ParserResult<Expression,unit> = Success: Number 123
 [section The `>>=` combinator]
 
 All the sequencing and piping combinators we have discussed so far could be implemented with the help of the "bind" combinator:
-``val (>>=): Parser<'a,'u> -> ('a -> Parser<'b,'u>) -> Parser<'b>``
+``val (>>=): Parser<'a,'u> -> ('a -> Parser<'b,'u>) -> Parser<'b,'u>``
 
 Instead of two parsers this combinator takes a parser and a *function producing a parser* as arguments. The combined parser `p >>= f` first applies the parser `p` to the input, then it applies the function `f` to the result returned by `p` and finally it applies the parser returned by `f` to the input. If we knew in advance that `p` returns `x` then `p >>= f` would be equivalent to `p >>. (f x)`.
 
