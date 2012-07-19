@@ -50,7 +50,7 @@ FParsec is compatible with the latest version of Mono from the [url "https://git
 
 You can build FParsec for Mono using the =Makefile= in the =Build= directory. The debug and release assemblies will be put in the [= Build/bin/Debug] and [= Build/bin/Release] directories respectively.
 
-Mono's `[no-auto-link System.Text.Decoder]` classes have some bugs that cause issues with FParsec. (I'm currently preparing bug reports.) Until these bugs are fixed only the @Low-Trust version@ of FParsec works under FParsec.
+Mono's `[no-auto-link System.Text.Decoder]` classes have some bugs that cause issues with FParsec. (I'm currently preparing bug reports.) Until these bugs are fixed only the @Low-Trust version@ of FParsec works under Mono.
 
 Note:
 - Mono [url "https://bugzilla.novell.com/show_bug.cgi?id=480178" currently doesn't properly support] Unicode code points outside the Basic Multilingual Plane (i.e. code points above 0xffff). This breaks FParsec's `identifier` parser, for example. 
