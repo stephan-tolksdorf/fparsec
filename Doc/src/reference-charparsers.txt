@@ -917,7 +917,7 @@ val @identifier@: IdentifierOptions -> Parser<string, 'u>
 ``]
 [The `identifier` parser is a configurable parser for the XID identifier syntax specified in the [url "http://www.Unicode.org/reports/tr31/" Unicode Standard Annex #31].
 
-By default, a valid identifier string must begin with a Unicode character with the =XID_Start= property and continue with zero or more characters with the =XID_Continue= property. The specification of which characters have these properties can be found in the [url "http://www.Unicode.org/Public/6.0.0/ucd/DerivedCoreProperties.txt" DerivedCoreProperties] file in the [url "http://www.Unicode.org/usc" Unicode Character Database]. Currently FParsec implements the XID specification of Unicode 6.0.0.
+By default, a valid identifier string must begin with a Unicode character with the =XID_Start= property and continue with zero or more characters with the =XID_Continue= property. The specification of which characters have these properties can be found in the [url "http://www.Unicode.org/Public/6.1.0/ucd/DerivedCoreProperties.txt" DerivedCoreProperties] file in the [url "http://www.Unicode.org/usc" Unicode Character Database]. Currently FParsec implements the XID specification of Unicode 6.1.0.
 
 Within the ASCII character range `'\u0001'`--`'\u007f'` you can customize the set of accepted characters through the `isAsciiIdStart` and `isAsciiIdContinue` parameters (the XID default allows `'a'`--`'z'` and `'A'`--`'Z'` at any position and `'_'` and `'0'`--`'9'` only in non-start positions). For example, to accept the same ASCII characters that are valid in F# identifiers, you could use the following `IdentifierOptions`:
 ``

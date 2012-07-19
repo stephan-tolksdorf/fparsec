@@ -2,7 +2,7 @@
 
 Except where noted otherwise, the FParsec library in source and binary form is distributed under the @Simplified BSD License@. The Simplified BSD License (a.k.a. "2-clause BSD License") is a simple, permissive license that is [url "http://www.opensource.org/licenses/bsd-license.php" OSI-compliant] and [url "http://www.gnu.org/licenses/license-list.html" GPL 2-compatible].
 
-FParsec incorporates data derived from the [url "http://unicode.org/ucd/" Unicode Character Database] v. 6.0, Copyright (c) 1991-2010 Unicode, Inc., which is distributed under the following terms:[br][url "http://www.unicode.org/terms_of_use.html#Exhibit1"]
+FParsec incorporates data derived from the [url "http://unicode.org/ucd/" Unicode Character Database] v. 6.1.0, Copyright (c) 1991-2012 Unicode, Inc., which is distributed under the following terms:[br][url "http://www.unicode.org/terms_of_use.html#Exhibit1"]
 
 The documentation in the =Doc= folder is licensed under the [@ Creative Commons Attribution-NonCommercial 3.0 Unported License]. This Creative Commons license does not allow you to use the documentation for commercial purposes without permission. This means, for example, that you cannot sell the documentation in book form for profit or put it on a web content farm in order to earn money with ads. However, *you can of course use the documentation in a commercial context* (e.g. put it on the intranet of a commercial corporation), as long as you're not trying to directly earn money from the text of the documentation.
 
