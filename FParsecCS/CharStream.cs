@@ -1,4 +1,4 @@
-﻿// Copyright (c) Stephan Tolksdorf 2007-2011
+﻿// Copyright (c) Stephan Tolksdorf 2007-2012
 // License: Simplified BSD License. See accompanying documentation.
 
 #if !LOW_TRUST
@@ -315,17 +315,23 @@ public unsafe class CharStream : IDisposable {
     public bool IsBeginOfStream { get { return Ptr == BufferBegin && Block == 0; } }
     public bool IsEndOfStream { get { return Ptr == null; } }
 
-    public long Index { get {
-        if (Ptr != null) {
-            Debug.Assert(BufferBegin <= Ptr && Ptr < BufferEnd);
-            if (sizeof(System.IntPtr) != 8) // the JIT removes the inactive branch
-                return Buffer.PositiveDistance(PtrBegin, Ptr) + IndexOfFirstCharInBlock;
-            else
-                return Buffer.PositiveDistance64(PtrBegin, Ptr) + IndexOfFirstCharInBlock;
+
+    public long Index {
+    #if CLR45
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    #endif
+        get {
+            if (Ptr != null) {
+                Debug.Assert(BufferBegin <= Ptr && Ptr < BufferEnd);
+                if (sizeof(System.IntPtr) != 8) // the JIT removes the inactive branch
+                    return Buffer.PositiveDistance(PtrBegin, Ptr) + IndexOfFirstCharInBlock;
+                else
+                    return Buffer.PositiveDistance64(PtrBegin, Ptr) + IndexOfFirstCharInBlock;
+            }
+            Debug.Assert(BlockData == null || BlockData.IndexOfLastCharPlus1 != Int64.MaxValue);
+            return IndexOfLastCharPlus1;
         }
-        Debug.Assert(BlockData == null || BlockData.IndexOfLastCharPlus1 != Int64.MaxValue);
-        return IndexOfLastCharPlus1;
-    } }
+    }
 
     internal long GetIndex(char* ptr, int block) {
         if (ptr != null) {
@@ -1169,6 +1175,9 @@ public unsafe class CharStream : IDisposable {
         return EOS;
     }
 
+#if CLR45
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
     public void Skip() {
         char* ptr1 = Ptr + 1;
         if (ptr1 < PtrEnd) {
@@ -1181,6 +1190,9 @@ public unsafe class CharStream : IDisposable {
     [MethodImplAttribute(MethodImplOptions.NoInlining)]
     private void SkipContinue() { SkipContinue(1u); }
 
+#if CLR45
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
     public char Read() {
         char* ptr = Ptr;
         char* ptr1 = ptr + 1;
@@ -1199,6 +1211,9 @@ public unsafe class CharStream : IDisposable {
         return c;
     }
 
+#if CLR45
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
     public char SkipAndPeek() {
         char* ptr = Ptr + 1;
         if (ptr < PtrEnd) {
@@ -1211,11 +1226,16 @@ public unsafe class CharStream : IDisposable {
     [MethodImplAttribute(MethodImplOptions.NoInlining)]
     private char SkipAndPeekContinue() { return SkipAndPeekContinue(1u); }
 
+    private static readonly bool IsLittleEndian = BitConverter.IsLittleEndian; // improves inlining and dead code elimination, at least with the .NET JIT
+
+#if CLR45
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
     public TwoChars Peek2() {
         char* ptr = Ptr;
         if (ptr + 1 < PtrEnd) {
             #if UNALIGNED_READS
-                if (BitConverter.IsLittleEndian) {
+                if (IsLittleEndian) {
                     return new TwoChars(*((uint*)ptr));
                 } else {
                     return new TwoChars(ptr[0], ptr[1]);
@@ -1231,6 +1251,9 @@ public unsafe class CharStream : IDisposable {
         return new TwoChars(Peek(), Peek(1u));
     }
 
+#if CLR45
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
     public char Peek(uint utf16Offset) {
         if (utf16Offset < Buffer.PositiveDistance(Ptr, PtrEnd))
             return Ptr[utf16Offset];
@@ -1249,6 +1272,9 @@ public unsafe class CharStream : IDisposable {
         return c;
     }
 
+#if CLR45
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
     public void Skip(uint utf16Offset) {
         if (utf16Offset < Buffer.PositiveDistance(Ptr, PtrEnd)) {
             Ptr += utf16Offset;
@@ -1270,6 +1296,9 @@ public unsafe class CharStream : IDisposable {
         Seek(Index + utf16Offset);
     }
 
+#if CLR45
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
     public char SkipAndPeek(uint utf16Offset) {
         if (utf16Offset < Buffer.PositiveDistance(Ptr, PtrEnd)) {
             char* ptr = Ptr + utf16Offset;
@@ -1285,7 +1314,7 @@ public unsafe class CharStream : IDisposable {
         return Peek();
     }
 
-    public char Peek(int utf16Offset) {
+    public char Peek(int utf16Offset) { // don't force inlining, because the .NET JIT doesn't optimize after inlining
         if (utf16Offset >= 0
             ? utf16Offset < Buffer.PositiveDistance(Ptr, PtrEnd)
             : unchecked((uint)-utf16Offset) <= Buffer.PositiveDistance(PtrBegin, Ptr))
@@ -1602,11 +1631,14 @@ public unsafe class CharStream : IDisposable {
         return false;
     }
 
+#if CLR45
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
     public bool Skip(TwoChars twoChars) {
         char* ptr2 = Ptr + 2;
         if (ptr2 < PtrEnd) {
         #if UNALIGNED_READS
-            if (BitConverter.IsLittleEndian) {
+            if (IsLittleEndian) {
                 if (new TwoChars(*((uint*)Ptr)) == twoChars) {
                     Ptr = ptr2;
                     ++StateTag;

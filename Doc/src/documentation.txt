@@ -76,7 +76,8 @@ FParsec is an F# adaptation of [url "http://www.haskell.org/haskellwiki/Parsec" 
             "computation-expressions": "http://msdn.microsoft.com/en-us/library/dd233182.aspx",
             "computation-expression": "http://msdn.microsoft.com/en-us/library/dd233182.aspx",
             "monad": "http://en.wikipedia.org/wiki/Monad_%28functional_programming%29",
-            "f-interactive": "http://msdn.microsoft.com/en-us/library/dd233175.aspx"
+            "f-interactive": "http://msdn.microsoft.com/en-us/library/dd233175.aspx",
+            "MethodImplOptions": "http://msdn.microsoft.com/en-us/library/system.runtime.compilerservices.methodimploptions(v=vs.110).aspx"
     ] }]
 
 [section#about About FParsec]

@@ -91,6 +91,13 @@ You can set conditional compilation symbols either in the Visual Studio project 
 [`CLR4`]
 [Compile for a CLR version ≥ 4.]
 
+[`CLR45`]
+[ 
+Compile for a CLR version ≥ 4.5.
+
+This option allows annotating methods with the new `MethodImplOptions.AggressiveInlining` attribute.
+]
+
 [`SILVERLIGHT`]
 [Compile for Silverlight.]
 
