@@ -355,7 +355,9 @@
        class="cm">.</span><span class="ci">IO</span><span class="cm">.</span><span class="ci">Stream</span></a></code> or a file path reads the
        complete file into a single string during construction. <em>This severely limits the maximum practical input stream size.</em>
       </li>
-      <li class="_2">The <code class="fsharp"><span class="ci">StaticMappings</span></code> module is not supported.</li>
+      <li class="_2">
+       The <code class="fsharp"><a href="reference/staticmapping.html"><span class="ci">StaticMapping</span></a></code> module is not supported.
+      </li>
      </ul>
     </div>
    </div>
@@ -420,9 +422,15 @@
        </dt>
        <dd class="_5">
         <div class="para _1">
-         <p>Optimize for CPUs that support fast unaligned memory reads, i.e. any modern x86‐based CPU.</p>
+         <p>
+          <span class="small"><span class="i">This option does not affect the <a href="#low-trust-version">Low‐Trust version</a> of
+          FParsec.</span></span><br />
+         </p>
         </div>
         <div class="para _2">
+         <p>Optimize for CPUs that support fast unaligned memory reads, i.e. any modern x86‐based CPU.</p>
+        </div>
+        <div class="para _3">
          <p>This option only makes a noticable difference is some specific situations.</p>
         </div>
        </dd>
@@ -455,11 +463,59 @@
         </div>
        </dd>
        <dt class="_4">
-        <code class="fsharp"><a href="reference/staticmapping.html#remarks.DEBUG_STATIC_MAPPING"><span
-        class="ci">DEBUG_STATIC_MAPPING</span></a></code>
+        <code class="fsharp"><span class="a" id="configuration-options.USE_STATIC_MAPPING_FOR_IS_ANY_OF"><span
+        class="ci">USE_STATIC_MAPPING_FOR_IS_ANY_OF</span></span></code>
        </dt>
        <dd class="_4">
         <div class="para _1">
+         <p>
+          <span class="small"><span class="i">This option does not affect the <a href="#low-trust-version">Low‐Trust version</a> of
+          FParsec.</span></span><br />
+         </p>
+        </div>
+        <div class="para _2">
+         <p>
+          Use <code class="fsharp"><a href="reference/staticmapping.html"><span class="ci">StaticMapping</span></a><span class="cm">.</span><a
+          href="reference/staticmapping.html#members.createStaticCharIndicatorFunction"><span
+          class="ci">createStaticCharIndicatorFunction</span></a></code> for the implementation of <code class="fsharp"><a
+          href="reference/charparsers.html#members.isAnyOf"><span class="ci">isAnyOf</span></a></code>, <code class="fsharp"><a
+          href="reference/charparsers.html#members.isNoneOf"><span class="ci">isNoneOf</span></a></code>, <code class="fsharp"><a
+          href="reference/charparsers.html#members.anyOf"><span class="ci">anyOf</span></a></code>, <code class="fsharp"><a
+          href="reference/charparsers.html#members.skipAnyOf"><span class="ci">skipAnyOf</span></a></code>, <code class="fsharp"><a
+          href="reference/charparsers.html#members.noneOf"><span class="ci">noneOf</span></a></code> and <code class="fsharp"><a
+          href="reference/charparsers.html#members.skipNoneOf"><span class="ci">skipNoneOf</span></a></code> for generating optimized char predicate
+          functions using runtime code generation.
+         </p>
+        </div>
+        <div class="para _3">
+         <p>
+          Runtime code generation is a relatively expensive operation, so this optimization is primarily meant for parsers that are applied to large
+          (or lots of) input streams. Please see the remarks for the <code class="fsharp"><a href="reference/staticmapping.html"><span
+          class="ci">StaticMapping</span></a></code> module for more information.
+         </p>
+        </div>
+        <div class="para _4">
+         <p>
+          If you run into noticable performance problems or memory leaks when enabling this option, you’re probably inadvertently recreating the same
+          <code class="fsharp"><a href="reference/charparsers.html#members.isAnyOf"><span class="ci">isAnyOf</span></a></code>‐ or <code
+          class="fsharp"><a href="reference/charparsers.html#members.isNoneOf"><span class="ci">isNoneOf</span></a></code>‐based parser again and
+          again, as explained <a href="users-guide/performance-optimizations.html#performance-guidelines.construct-parsers-once">here</a> and <a
+          href="users-guide/where-is-the-monad.html#why-the-monadic-syntax-is-slow">here</a>.
+         </p>
+        </div>
+       </dd>
+       <dt class="_5">
+        <code class="fsharp"><a href="reference/staticmapping.html#remarks.DEBUG_STATIC_MAPPING"><span
+        class="ci">DEBUG_STATIC_MAPPING</span></a></code>
+       </dt>
+       <dd class="_5">
+        <div class="para _1">
+         <p>
+          <span class="small"><span class="i">This option does not affect the <a href="#low-trust-version">Low‐Trust version</a> of
+          FParsec.</span></span><br />
+         </p>
+        </div>
+        <div class="para _2">
          <p>
           See <a href="reference/staticmapping.html#remarks.DEBUG_STATIC_MAPPING"><code class="fsharp"><span class="ci">StaticMapping</span></code>
           documentation</a>.

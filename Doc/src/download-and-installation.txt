@@ -72,7 +72,7 @@ The next section explains how you can set a conditional compiler symbol. If you 
 
 The Low-Trust version of FParsec has the following two major limitations:
 - A `CharStream` that is constructed from a `System.IO.Stream` or a file path reads the complete file into a single string during construction. *This severely limits the maximum practical input stream size.*
-- The `StaticMappings` module is not supported.
+- The `StaticMapping` module is not supported.
 
 [/section]
 
@@ -103,6 +103,8 @@ This is an optimization for 32-bit runtimes. You can find more information about
 
 [`#UNALIGNED_READS#`]
 [
+[small [/ This option does not affect the @Low-Trust version@ of FParsec.]][br]
+
 Optimize for CPUs that support fast unaligned memory reads, i.e. any modern x86-based CPU.
 
 This option only makes a noticable difference is some specific situations.
@@ -127,8 +129,21 @@ Do not force inlining of certain parser combinators.
 This option enables you to step through the respective combinators during debugging.
 ]
 
-[`DEBUG_STATIC_MAPPING`]
+[`#USE_STATIC_MAPPING_FOR_IS_ANY_OF#`]
 [
+[small [/ This option does not affect the @Low-Trust version@ of FParsec.]][br]
+
+Use `StaticMapping.createStaticCharIndicatorFunction` for the implementation of `isAnyOf`, `isNoneOf`, `anyOf`, `skipAnyOf`, `noneOf` and `skipNoneOf` for generating optimized char predicate functions using runtime code generation.
+
+Runtime code generation is a relatively expensive operation, so this optimization is primarily meant for parsers that are applied to large (or lots of) input streams. Please see the remarks for the `StaticMapping` module for more information.
+
+If you run into noticable performance problems or memory leaks when enabling this option, you're probably inadvertently recreating the same `isAnyOf`- or `isNoneOf`-based parser again and again, as explained [^construct-parsers-once here] and [^why-the-monadic-syntax-is-slow here].
+]
+
+[`DEBUG_STATIC_MAPPING` ]
+[
+[small [/ This option does not affect the @Low-Trust version@ of FParsec.]][br]
+
 See [^DEBUG_STATIC_MAPPING `StaticMapping` documentation].
 ]
 

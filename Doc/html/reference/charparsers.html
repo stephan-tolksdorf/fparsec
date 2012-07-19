@@ -1046,27 +1046,12 @@
           class="ci">_</span> <span class="cr">-&gt;</span> <span class="cb">false</span><span class="cp">)</span></code>.
          </p>
         </div>
-        <div class="para _5 lcinp">
-         <div class="admonition">
-          <div class="admonition-title">Note</div>
-          <div class="admonition-body">
-           <div class="para _1">
-            <p>
-             <span class="small"><span class="i">This note does not apply to the <a
-             href="../download-and-installation.html#low-trust-version">Low‐Trust version</a> of FParsec.</span></span><br />
-            </p>
-           </div>
-           <div class="para _2">
-            <p>
-             <code class="fsharp"><span class="ci">anyOf</span></code> is implemented using <code class="fsharp"><a href="#members.isAnyOf"><span
-             class="ci">isAnyOf</span></a></code>, which uses runtime code generation to generate an optimized indicator function. Runtime code
-             generation is a relatively expensive operation, so you should try to reuse <code class="fsharp"><span class="ci">anyOf</span></code>
-             parser instances where possible. Please see the <a href="staticmapping.html#remarks">remarks</a> for the <code class="fsharp"><a
-             href="staticmapping.html"><span class="ci">StaticMapping</span></a></code> module for more information.
-            </p>
-           </div>
-          </div>
-         </div>
+        <div class="para _5">
+         <p>
+          This function is affected by the <code class="fsharp"><a
+          href="../download-and-installation.html#configuration-options.USE_STATIC_MAPPING_FOR_IS_ANY_OF"><span
+          class="ci">USE_STATIC_MAPPING_FOR_IS_ANY_OF</span></a></code> compilation option.
+         </p>
         </div>
        </div>
       </div>
@@ -1082,6 +1067,13 @@
           <code class="fsharp"><span class="ci">skipAnyOf</span> <span class="ci">chars</span></code> is an optimized implementation of <code
           class="fsharp"><a href="#members.anyOf"><span class="ci">anyOf</span></a> <span class="ci">chars</span> <a
           href="primitives.html#members.:124::62::62:"><span class="co">|&gt;&gt;</span></a> <span class="ci">ignore</span></code>.
+         </p>
+        </div>
+        <div class="para _2">
+         <p>
+          This function is affected by the <code class="fsharp"><a
+          href="../download-and-installation.html#configuration-options.USE_STATIC_MAPPING_FOR_IS_ANY_OF"><span
+          class="ci">USE_STATIC_MAPPING_FOR_IS_ANY_OF</span></a></code> compilation option.
          </p>
         </div>
        </div>
@@ -1143,27 +1135,12 @@
           class="ci">_</span> <span class="cr">-&gt;</span> <span class="cb">true</span><span class="cp">)</span></code>.
          </p>
         </div>
-        <div class="para _5 lcinp">
-         <div class="admonition">
-          <div class="admonition-title">Note</div>
-          <div class="admonition-body">
-           <div class="para _1">
-            <p>
-             <span class="small"><span class="i">This note does not apply to the <a
-             href="../download-and-installation.html#low-trust-version">Low‐Trust version</a> of FParsec.</span></span><br />
-            </p>
-           </div>
-           <div class="para _2">
-            <p>
-             <code class="fsharp"><span class="ci">noneOf</span></code> is implemented using <code class="fsharp"><a href="#members.isNoneOf"><span
-             class="ci">isNoneOf</span></a></code>, which uses runtime code generation to generate an optimized indicator function. Runtime code
-             generation is a relatively expensive operation, so you should try to reuse <code class="fsharp"><span class="ci">noneOf</span></code>
-             parser instances where possible. Please see the <a href="staticmapping.html#remarks">remarks</a> for the <code class="fsharp"><a
-             href="staticmapping.html"><span class="ci">StaticMapping</span></a></code> module for more information.
-            </p>
-           </div>
-          </div>
-         </div>
+        <div class="para _5">
+         <p>
+          This function is affected by the <code class="fsharp"><a
+          href="../download-and-installation.html#configuration-options.USE_STATIC_MAPPING_FOR_IS_ANY_OF"><span
+          class="ci">USE_STATIC_MAPPING_FOR_IS_ANY_OF</span></a></code> compilation option.
+         </p>
         </div>
        </div>
       </div>
@@ -1179,6 +1156,13 @@
           <code class="fsharp"><span class="ci">skipNoneOf</span> <span class="ci">chars</span></code> is an optimized implementation of <code
           class="fsharp"><a href="#members.noneOf"><span class="ci">noneOf</span></a> <span class="ci">chars</span> <a
           href="primitives.html#members.:124::62::62:"><span class="co">|&gt;&gt;</span></a> <span class="ci">ignore</span></code>.
+         </p>
+        </div>
+        <div class="para _2">
+         <p>
+          This function is affected by the <code class="fsharp"><a
+          href="../download-and-installation.html#configuration-options.USE_STATIC_MAPPING_FOR_IS_ANY_OF"><span
+          class="ci">USE_STATIC_MAPPING_FOR_IS_ANY_OF</span></a></code> compilation option.
          </p>
         </div>
        </div>
@@ -1345,27 +1329,12 @@
           chars.
          </p>
         </div>
-        <div class="para _3 lcinp">
-         <div class="admonition">
-          <div class="admonition-title">Note</div>
-          <div class="admonition-body">
-           <div class="para _1">
-            <p>
-             <span class="small"><span class="i">This note does not apply to the <a
-             href="../download-and-installation.html#low-trust-version">Low‐Trust version</a> of FParsec.</span></span><br />
-            </p>
-           </div>
-           <div class="para _2">
-            <p>
-             <code class="fsharp"><span class="ci">isAnyOf</span></code> is implemented using <code class="fsharp"><a
-             href="staticmapping.html#members.createStaticCharIndicatorFunction"><span class="ci">createStaticCharIndicatorFunction</span></a></code>,
-             which uses runtime code generation to generate an optimized mapping function. Runtime code generation is a relatively expensive
-             operation, please see the <a href="staticmapping.html#remarks">remarks</a> for the <code class="fsharp"><a
-             href="staticmapping.html"><span class="ci">StaticMapping</span></a></code> module for more information.
-            </p>
-           </div>
-          </div>
-         </div>
+        <div class="para _3">
+         <p>
+          This function is affected by the <code class="fsharp"><a
+          href="../download-and-installation.html#configuration-options.USE_STATIC_MAPPING_FOR_IS_ANY_OF"><span
+          class="ci">USE_STATIC_MAPPING_FOR_IS_ANY_OF</span></a></code> compilation option.
+         </p>
         </div>
        </div>
       </div>
@@ -1393,27 +1362,12 @@
           chars.
          </p>
         </div>
-        <div class="para _3 lcinp">
-         <div class="admonition">
-          <div class="admonition-title">Note</div>
-          <div class="admonition-body">
-           <div class="para _1">
-            <p>
-             <span class="small"><span class="i">This note does not apply to the <a
-             href="../download-and-installation.html#low-trust-version">Low‐Trust version</a> of FParsec.</span></span><br />
-            </p>
-           </div>
-           <div class="para _2">
-            <p>
-             <code class="fsharp"><span class="ci">isNoneOf</span></code> is implemented using <code class="fsharp"><a
-             href="staticmapping.html#members.createStaticCharIndicatorFunction"><span class="ci">createStaticCharIndicatorFunction</span></a></code>,
-             which uses runtime code generation to generate an optimized mapping function. Runtime code generation is a relatively expensive
-             operation, please see the <a href="staticmapping.html#remarks">remarks</a> for the <code class="fsharp"><a
-             href="staticmapping.html"><span class="ci">StaticMapping</span></a></code> module for more information.
-            </p>
-           </div>
-          </div>
-         </div>
+        <div class="para _3">
+         <p>
+          This function is affected by the <code class="fsharp"><a
+          href="../download-and-installation.html#configuration-options.USE_STATIC_MAPPING_FOR_IS_ANY_OF"><span
+          class="ci">USE_STATIC_MAPPING_FOR_IS_ANY_OF</span></a></code> compilation option.
+         </p>
         </div>
        </div>
       </div>

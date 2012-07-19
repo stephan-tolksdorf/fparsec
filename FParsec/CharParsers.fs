@@ -1,4 +1,4 @@
-﻿// Copyright (c) Stephan Tolksdorf 2007-2011
+﻿// Copyright (c) Stephan Tolksdorf 2007-2012
 // License: Simplified BSD License. See accompanying documentation.
 
 [<AutoOpen>]
@@ -257,7 +257,12 @@ let isAnyOf (chars: seq<char>) =
     let cs = new CharSet(charsToString chars)
     fun c -> cs.Contains(c)
 #else
-    StaticMapping.createStaticCharIndicatorFunction false chars
+    #if USE_STATIC_MAPPING_FOR_IS_ANY_OF
+         StaticMapping.createStaticCharIndicatorFunction false chars
+    #else
+        let cs = new CharSet(charsToString chars)
+        fun c -> cs.Contains(c)
+    #endif
 #endif
 
 let isNoneOf (chars: seq<char>) =
@@ -265,7 +270,12 @@ let isNoneOf (chars: seq<char>) =
     let cs = new CharSet(charsToString chars)
     fun c -> not (cs.Contains(c))
 #else
-    StaticMapping.createStaticCharIndicatorFunction true chars
+    #if USE_STATIC_MAPPING_FOR_IS_ANY_OF
+        StaticMapping.createStaticCharIndicatorFunction true chars
+    #else
+        let cs = new CharSet(charsToString chars)
+        fun c -> not (cs.Contains(c))
+    #endif
 #endif
 
 let anyOf (chars: seq<char>) =

@@ -271,17 +271,18 @@ For example, `anyOf ". \t\n"` will parse any of the chars `'.'`, `' '`, `'\t'` o
 
 For performance critical parsers it might be worth replacing instances of `anyOf` in loops with a `manySatisfy`-based parser. For example, `manyChars (anyOf ". \t\n")` could be replaced with `manySatisfy (function '.'|' '|'\t'|'\n' -> true | _ -> false)`.
 
-[note
-[small [/ This note does not apply to the @Low-Trust version@ of FParsec.]][br]
-
-`anyOf` is implemented using `isAnyOf`, which uses runtime code generation to generate an optimized indicator function. Runtime code generation is a relatively expensive operation, so you should try to reuse `anyOf` parser instances where possible. Please see the [^StaticMapping.remarks remarks] for the `StaticMapping` module for more information.
-]
+This function is affected by the `USE_STATIC_MAPPING_FOR_IS_ANY_OF` compilation option.
 ]
 
 [``
 val @skipAnyOf@:  seq<char> -> Parser<unit,'u>
 ``]
-[`skipAnyOf chars` is an optimized implementation of `anyOf chars |>> ignore`.]
+[
+`skipAnyOf chars` is an optimized implementation of `anyOf chars |>> ignore`.
+
+This function is affected by the `USE_STATIC_MAPPING_FOR_IS_ANY_OF` compilation option.
+]
+
 [``
 val @noneOf@:     seq<char> -> Parser<char,'u>
 ``]
@@ -293,17 +294,17 @@ For example, `noneOf ". \t\n"` will parse any char other than `'.'`, `' '`, `'\t
 
 For performance critical parsers it might be worth replacing instances of `noneOf` in loops with a `manySatisfy`-based parser. For example, `manyChars (noneOf ". \t\n")` could be replaced with `manySatisfy (function '.'|' '|'\t'|'\n' -> false | _ -> true)`.
 
-[note
-[small [/ This note does not apply to the @Low-Trust version@ of FParsec.]][br]
-
-`noneOf` is implemented using `isNoneOf`, which uses runtime code generation to generate an optimized indicator function. Runtime code generation is a relatively expensive operation, so you should try to reuse `noneOf` parser instances where possible. Please see the [^StaticMapping.remarks remarks] for the `StaticMapping` module for more information.
-]
+This function is affected by the `USE_STATIC_MAPPING_FOR_IS_ANY_OF` compilation option.
 ]
 
 [``
 val @skipNoneOf@: seq<char> -> Parser<unit,'u>
 ``]
-[`skipNoneOf chars` is an optimized implementation of `noneOf chars |>> ignore`.]
+[
+`skipNoneOf chars` is an optimized implementation of `noneOf chars |>> ignore`.
+
+This function is affected by the `USE_STATIC_MAPPING_FOR_IS_ANY_OF` compilation option.
+]
 
 [``
 
@@ -363,12 +364,7 @@ val @isAnyOf@:  seq<char> ->  (char -> bool)
 
 For example, the function `isAnyOf ".,;"` returns `true` when applied to the chars `'.'`, `','` or `';'`, and `false` for all other chars.
 
-[note
-[small [/ This note does not apply to the @Low-Trust version@ of FParsec.]][br]
-
-`isAnyOf` is implemented using `createStaticCharIndicatorFunction`, which uses runtime code generation to generate an optimized mapping function. Runtime code generation is a relatively expensive operation, please see the [^StaticMapping.remarks remarks] for the `StaticMapping` module for more information.
-]
-
+This function is affected by the `USE_STATIC_MAPPING_FOR_IS_ANY_OF` compilation option.
 ]
 
 [``
@@ -378,12 +374,7 @@ val @isNoneOf@: seq<char> ->  (char -> bool)
 
 For example, the function `isNoneOf ".,;"` returns `false` when applied to the chars `'.'`, `','` or `';'`, and `true` for all other chars.
 
-[note
-[small [/ This note does not apply to the @Low-Trust version@ of FParsec.]][br]
-
-`isNoneOf` is implemented using `createStaticCharIndicatorFunction`, which uses runtime code generation to generate an optimized mapping function. Runtime code generation is a relatively expensive operation, please see the [^StaticMapping.remarks remarks] for the `StaticMapping` module for more information.
-]
-
+This function is affected by the `USE_STATIC_MAPPING_FOR_IS_ANY_OF` compilation option.
 ]
 
 [``

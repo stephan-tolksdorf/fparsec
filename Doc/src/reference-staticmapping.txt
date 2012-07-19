@@ -25,7 +25,7 @@ The performance of the generated functions depends a lot on the individual key-v
 The code size of the generated functions increases about linearly with the number of key ranges (i.e. continuous sequences of keys with the same value). Hence, you should only use the `StaticMapping` module for small mappings. If you try to turn arbitrarily large key-value mappings into static mapping functions, you'll likely hit upon certain implementation limitations (of this module's code, of `Reflection.Emit` or of the CLR's JIT).
 
 [#DEBUG_STATIC_MAPPING]
-If the conditional compilation symbol `DEBUG_STATIC_MAPPING` is defined when compiling FParsec, the generated mapping functions will compute each result with two different methods and check the results against each other. Of course, this means that they will take more than twice the time than without the `DEBUG_STATIC_MAPPING` symbol and will also consume more memory. In Debug builds of FParsec `DEBUG_STATIC_MAPPING` is switched on by default, since the `StaticMapping` module is still very new.
+If the conditional compilation symbol `DEBUG_STATIC_MAPPING` is defined when compiling FParsec, the generated mapping functions will compute each result with two different methods and check the results against each other. Of course, this means that they will take more than twice the time than without the `DEBUG_STATIC_MAPPING` symbol and will also consume more memory. In Debug builds of FParsec `DEBUG_STATIC_MAPPING` is switched on by default, since the `StaticMapping` module is still relatively new.
 
 [note Measuring and comparing the performance of the generated mapping functions only makes sense in Release builds.]
 
