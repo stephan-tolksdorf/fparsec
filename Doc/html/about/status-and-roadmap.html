@@ -138,12 +138,9 @@
      <p>FParsec has been in development for several years and can now be considered &#x201C;stable&#x201D;.</p>
     </div>
     <div class="para _2">
-     <p>Version 0.9 is the last major release of FParsec before version 1.0.</p>
+     <p>Version 1.0 of FParsec was released on 19 July 2012.</p>
     </div>
-    <div class="para _3">
-     <p>Version 1.0 will be released once no bugs have been reported for a few weeks.</p>
-    </div>
-    <div class="para _4 lcinp">
+    <div class="para _3 lcinp">
      <div class="admonition">
       <div class="admonition-title">Note</div>
       <div class="admonition-body">
@@ -165,21 +162,23 @@
      <p>There are no firm plans for any major new features yet.</p>
     </div>
     <div class="para _2">
-     <p>One goal for the future development of FParsec is to support a more declarative syntax wherever possible.</p>
+     <p>
+      One goal for the future development of FParsec is to support a more declarative parser definition syntax without compromising on FParsec’s
+      performance or language‐integrated nature.
+     </p>
     </div>
     <div class="para _3">
      <p>
-      If the <a href="http://player.microsoftpdc.com/Session/04092962-4ed1-42c6-be07-203d42115274">type provider</a> language feature in the next
-      version of F# will be powerful enough to implement some kind of typed regular expression (similar to the <code class="fsharp"><span
-      class="ci">printf</span></code>‐syntax), that would certainly be an attractive feature to implement for FParsec.
+      For example, it would be nice if FParsec provided a way to automatically create optimized lexer functions from a series of typed regular
+      expressions and associated mapping functions, ideally at compile time. Using such a feature could maybe look similar to
      </p>
     </div>
-    <div class="para _4">
-     <p>
-      In the longer term it would also be nice if FParsec could automatically optimize certain combined <code class="fsharp"><a
-      href="../reference/primitives.html#members.Parser"><span class="ci">Parser</span></a></code> functions, but that should ideally be done at
-      compile time and F# currently doesn’t have the meta‐programming facilities for that.
-     </p>
+    <div class="para _4 lcinp">
+<pre class="code fsharp"><span class="ck">let</span> <span class="ci">lexer</span> <span class="cp">:</span> <a href="../reference/primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">AstNode</span><span class="cp">,</span> <span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cp">=</span> 
+    <span class="ci">lex</span> <span class="cp">[</span><span class="cs"><span class="cld">"</span>regex-with-1-capture-group<span class="crd">"</span></span><span class="cp">,</span> <span class="cp">(</span><span class="ck">fun</span> <span class="ci">x</span> <span class="cr">-&gt;</span> <span class="ci">AstNode1</span><span class="cp">(</span><span class="ci">x</span><span class="cp">)</span><span class="cp">)</span>
+         <span class="cs"><span class="cld">"</span>regex-with-2-capture-groups<span class="crd">"</span></span><span class="cp">,</span> <span class="cp">(</span><span class="ck">fun</span> <span class="ci">x</span> <span class="ci">y</span> <span class="cr">-&gt;</span> <span class="ci">AstNode2</span><span class="cp">(</span><span class="ci">x</span><span class="cp">,</span> <span class="ci">y</span><span class="cp">)</span><span class="cp">)</span>
+         <span class="cbc"><span class="cld">(*</span> ... <span class="crd">*)</span></span><span class="cp">]</span>
+</pre>
     </div>
    </div>
   </div>

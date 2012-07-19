@@ -1,8 +1,15 @@
 ﻿[section Changelog]
 [no-subsection-numbers]
 
+[section#v1_0 Version 1.0.0, 2012-07-19]
+- disabled code generation in `isAnyOf`, `isNoneOf`, `anyOf`, `skipAnyOf`, `noneOf` and `skipNoneOf` by default (you can reenable it using the new `USE_STATIC_MAPPING_FOR_IS_ANY_OF` compilation option)
+- annotated some `CharStream` methods with the .NET 4.5 `AggressiveInlining` option (see the new `CLR45` compilation option)
+- updated case folding and XID property tables to Unicode 6.1.0
+- fixed two documentation typos (spotted by Rasmus Meldgaard and Kurt Schelfthout -- thanks Rasmus and Kurt!)
+[/section]
+
 [section#v0_9_2 Version 0.9.2, 2012-03-09]
-- fix compilation in Visual Studio 11 Beta
+- fixed compilation in Visual Studio 11 Beta
 - added missing `ReturnFrom` member to `parse` builder object (reported by Kurt Schelfthout and Tomas Petricek -- thanks Kurt and Tomas!)
 - added workaround for .NET `ConsoleStream` [url "https://bitbucket.org/fparsec/main/issue/23/reading-from-systemio__consolestream-hangs" issue] (reported by Alexander Kahl -- thanks Alexander!)
 - set `AllowPartiallyTrustedCallers` and `SecurityTransparent` assembly attributes in LOW_TRUST NET4 build (as suggested by hammett -- thanks hammett!)

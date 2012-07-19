@@ -3,9 +3,7 @@
 [section Status]
 FParsec has been in development for several years and can now be considered "stable".
 
-Version 0.9 is the last major release of FParsec before version 1.0.
-
-Version 1.0 will be released once no bugs have been reported for a few weeks.
+Version 1.0 of FParsec was released on 19 July 2012.
 
 [note
 
@@ -17,11 +15,16 @@ Although FParsec has rather comprehensive unit tests (with code coverage close t
 
 There are no firm plans for any major new features yet.
 
-One goal for the future development of FParsec is to support a more declarative syntax wherever possible.
+One goal for the future development of FParsec is to support a more declarative parser definition syntax without compromising on FParsec's performance or language-integrated nature.
 
-If the [url "http://player.microsoftpdc.com/Session/04092962-4ed1-42c6-be07-203d42115274" type provider] language feature in the next version of F# will be powerful enough to implement some kind of typed regular expression (similar to the `printf`-syntax), that would certainly be an attractive feature to implement for FParsec.
+For example, it would be nice if FParsec provided a way to automatically create optimized lexer functions from a series of typed regular expressions and associated mapping functions, ideally at compile time. Using such a feature could maybe look similar to
 
-In the longer term it would also be nice if FParsec could automatically optimize certain combined `Parser` functions, but that should ideally be done at compile time and F# currently doesn't have the meta-programming facilities for that.
+``
+let lexer : Parser<AstNode, 'u> = 
+    lex ["regex-with-1-capture-group", (fun x -> AstNode1(x))
+         "regex-with-2-capture-groups", (fun x y -> AstNode2(x, y))
+         (* ... *)]
+``
 
 [/section]
 

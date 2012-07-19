@@ -268,31 +268,38 @@
    <div class="intro i2">
     <div class="para _1">
      <p>
+      <em>This information is this section might be partially out‐of‐date. Please <a href="https://bitbucket.org/fparsec/main/issues/new">file a
+      documentation bug</a> if you can provide more up‐to‐date information.</em>
+     </p>
+    </div>
+    <div class="para _2">
+     <p>
       FParsec is compatible with the latest version of Mono from the <a href="https://github.com/mono/mono">GitHub</a> <span class="tt">master</span>
       branch (the <span class="tt">2.10</span> branch is missing at least commit <a
       href="https://github.com/mono/mono/commit/410b3e423f1135a9783d">410b3e423f1135a9783d</a> for FParsec to compile).
      </p>
     </div>
-    <div class="para _2">
+    <div class="para _3">
      <p>
       You can build FParsec for Mono using the <span class="tt">Makefile</span> in the <span class="tt">Build</span> directory. The debug and release
       assemblies will be put in the <span class="tt">Build/bin/Debug</span> and <span class="tt">Build/bin/Release</span> directories respectively.
      </p>
     </div>
-    <div class="para _3">
+    <div class="para _4">
      <p>
       Mono’s <code class="fsharp"><span class="ci">System</span><span class="cm">.</span><span class="ci">Text</span><span class="cm">.</span><span
-      class="ci">Decoder</span></code> classes have some bugs that cause issues with FParsec. (I’m currently preparing bug reports.) Until these bugs
-      are fixed only the <a href="#low-trust-version">Low‐Trust version</a> of FParsec works under Mono.
+      class="ci">Decoder</span></code> classes have some bugs that cause issues with FParsec. Until these bugs are fixed only the <a
+      href="#low-trust-version">Low‐Trust version</a> of FParsec works under Mono.
      </p>
     </div>
-    <div class="para _4 lcinp">
+    <div class="para _5 lcinp">
      <p>Note:</p>
      <ul class="l1">
       <li class="_1">
        Mono <a href="https://bugzilla.novell.com/show_bug.cgi?id=480178">currently doesn’t properly support</a> Unicode code points outside the Basic
        Multilingual Plane (i.e. code points above 0xffff). This breaks FParsec’s <code class="fsharp"><a
-       href="reference/charparsers.html#members.identifier"><span class="ci">identifier</span></a></code> parser, for example.
+       href="reference/charparsers.html#members.identifier"><span class="ci">identifier</span></a></code> parser, for example. <em>(Note: The linked
+       ticket has been closed in the meantime, so the issue might have been fixed since the last time I checked.)</em>
       </li>
       <li class="_2">
        The <code class="fsharp"><a href="reference/charparsers.html#members.regex"><span class="ci">regex</span></a></code> parser and the <code
@@ -305,7 +312,7 @@
       </li>
      </ul>
     </div>
-    <div class="para _5 lcinp">
+    <div class="para _6 lcinp">
      <p>There are also two issues with the official &#x201C;source code drop&#x201D; for the F# compiler:</p>
      <ul class="l1">
       <li class="_1">
@@ -395,7 +402,7 @@
          <p>Compile for a CLR version ≥ 4.</p>
         </div>
        </dd>
-       <dt class="_3"><code class="fsharp"><span class="ci">CLR45</span></code></dt>
+       <dt class="_3"><code class="fsharp"><span class="a" id="configuration-options.CLR45"><span class="ci">CLR45</span></span></code></dt>
        <dd class="_3">
         <div class="para _1">
          <p>Compile for a CLR version ≥ 4.5.</p>

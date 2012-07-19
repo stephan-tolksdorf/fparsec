@@ -46,14 +46,16 @@ The =Test= project in the solution files contains the unit tests for FParsec.
 
 [section Building FParsec with Mono]
 
+[*This information is this section might be partially out-of-date. Please [url "https://bitbucket.org/fparsec/main/issues/new" file a documentation bug] if you can provide more up-to-date information.]
+
 FParsec is compatible with the latest version of Mono from the [url "https://github.com/mono/mono" GitHub] =master= branch (the =2.10= branch is missing at least commit [url "https://github.com/mono/mono/commit/410b3e423f1135a9783d" 410b3e423f1135a9783d] for FParsec to compile).
 
 You can build FParsec for Mono using the =Makefile= in the =Build= directory. The debug and release assemblies will be put in the [= Build/bin/Debug] and [= Build/bin/Release] directories respectively.
 
-Mono's `[no-auto-link System.Text.Decoder]` classes have some bugs that cause issues with FParsec. (I'm currently preparing bug reports.) Until these bugs are fixed only the @Low-Trust version@ of FParsec works under Mono.
+Mono's `[no-auto-link System.Text.Decoder]` classes have some bugs that cause issues with FParsec.  Until these bugs are fixed only the @Low-Trust version@ of FParsec works under Mono.
 
 Note:
-- Mono [url "https://bugzilla.novell.com/show_bug.cgi?id=480178" currently doesn't properly support] Unicode code points outside the Basic Multilingual Plane (i.e. code points above 0xffff). This breaks FParsec's `identifier` parser, for example. 
+- Mono [url "https://bugzilla.novell.com/show_bug.cgi?id=480178" currently doesn't properly support] Unicode code points outside the Basic Multilingual Plane (i.e. code points above 0xffff). This breaks FParsec's `identifier` parser, for example. *(Note: The linked ticket has been closed in the meantime, so the issue might have been fixed since the last time I checked.)*
 - The `regex` parser and the `[^Match_Regex CharStream.Match](Regex)` method curently don't work on Mono, because Mono's regular expression implementation [url "https://bugzilla.novell.com/show_bug.cgi?id=474154" does not correctly match regexes on substrings] (Laurent Le Brun reported this issue - thanks Laurent!).
 
 There are also two issues with the official "source code drop" for the F# compiler:
@@ -91,7 +93,7 @@ You can set conditional compilation symbols either in the Visual Studio project 
 [`CLR4`]
 [Compile for a CLR version ≥ 4.]
 
-[`CLR45`]
+[`#CLR45#`]
 [ 
 Compile for a CLR version ≥ 4.5.
 
