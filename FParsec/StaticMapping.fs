@@ -1,4 +1,4 @@
-﻿// Copyright (c) Stephan Tolksdorf 2010-2011
+﻿// Copyright (c) Stephan Tolksdorf 2010-2012
 // License: Simplified BSD License. See accompanying documentation.
 
 module FParsec.StaticMapping
@@ -51,7 +51,7 @@ let private createStaticMappingTypeBuilder<'TIn,'TOut>() =
     tb, mb.GetILGenerator()
 
 let createStaticMappingAssertException() =
-    System.Exception("An internal assert check in FParsec.StaticMappings failed. Please report this error to fparsec@quanttec.com. (The Data member of the exception object contains the information needed to reproduce the error.)")
+    System.Exception("An internal assert check in FParsec.StaticMapping failed. Please report this error to fparsec@quanttec.com. (The Data member of the exception object contains the information needed to reproduce the error.)")
 
 let internal defaultMappingLengthCap = 32
 let internal defaultMappingDensityThreshold = 0.4
@@ -820,7 +820,7 @@ let createStaticStringMapping (defaultValue: 'T) (keyValues: #seq<string*'T>) : 
             for k, v in kvs do
                 dict.Add(k, v)
             let errorHandler (key: string) : unit =
-                let e = new System.Exception("An internal assert check in FParsec.StaticMappings.createStringMapping failed. Please report this error to fparsec@quanttec.com. (The Data member of the exception object contains the information needed to reproduce the error.)")
+                let e = new System.Exception("An internal assert check in FParsec.StaticMapping.createStringMapping failed. Please report this error to fparsec@quanttec.com. (The Data member of the exception object contains the information needed to reproduce the error.)")
                 e.Data.["Argument"] <- key
                 e.Data.["KeysValues"] <- dict
                 e.Data.["DefaultValue"]  <- defaultValue
