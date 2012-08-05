@@ -502,7 +502,7 @@ public unsafe class CharStream : IDisposable {
         if (stream == null) throw new ArgumentNullException("stream");
         if (!stream.CanRead) throw new ArgumentException("stream is not readable");
         if (encoding == null) throw new ArgumentNullException("encoding");
-        StreamConstructorContinue(stream, false, encoding, detectEncodingFromByteOrderMarks,
+        StreamConstructorContinue(stream, leaveOpen, encoding, detectEncodingFromByteOrderMarks,
                                   blockSize, blockOverlap, byteBufferLength);
     }
 
