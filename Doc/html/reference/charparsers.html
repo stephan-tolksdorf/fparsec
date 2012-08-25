@@ -180,10 +180,6 @@
      <span class="cp">|</span> <a id="interface.Success:B:" href="#members.Success"><span class="interface-member-marker"><span class="ci">Success</span></span></a> <span class="ck">of</span> <span class="ctv">'Result</span> <span class="cp">*</span> <span class="ctv">'UserState</span> <span class="cp">*</span> <a href="charstream.html#CharStream.members.Position"><span class="ci">Position</span></a>
      <span class="cp">|</span> <a id="interface.Failure:B:" href="#members.Failure"><span class="interface-member-marker"><span class="ci">Failure</span></span></a> <span class="ck">of</span> <span class="ci">string</span> <span class="cp">*</span> <a href="error.html#members.ParserError"><span class="ci">ParserError</span></a> <span class="cp">*</span> <span class="ctv">'UserState</span>
 <span class="a" id="interface.runparser-functions"></span>
-<span class="ck">val</span> <a id="interface.runParser:B:" href="#members.runParser"><span class="interface-member-marker"><span class="ci">runParser</span></span></a><span class="cp">:</span>
-        <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ctv">'a</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ctv">'u</span> <span class="cr">-&gt;</span> <span class="ci">streamName</span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="charstream.html#CharStream"><span class="ci">CharStream</span></a>
-     <span class="cr">-&gt;</span> <a href="#members.ParserResult"><span class="ci">ParserResult</span></a><span class="cp">&lt;</span><span class="ctv">'a</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
-
 <span class="ck">val</span> <a id="interface.runParserOnString:B:" href="#members.runParserOnString"><span class="interface-member-marker"><span class="ci">runParserOnString</span></span></a><span class="cp">:</span>
          <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ctv">'a</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ctv">'u</span> <span class="cr">-&gt;</span> <span class="ci">streamName</span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <span class="ci">string</span>
       <span class="cr">-&gt;</span> <a href="#members.ParserResult"><span class="ci">ParserResult</span></a><span class="cp">&lt;</span><span class="ctv">'a</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -519,35 +515,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _2" id="members.runParser">
-       <div class="interface-member-code">
-        <a class="interface-member-backlink" href="#interface.runParser:B:">⇧</a>
-<pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">runParser</span></span><span class="cp">:</span>
-        <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ctv">'a</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ctv">'u</span> <span class="cr">-&gt;</span> <span class="ci">streamName</span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="charstream.html#CharStream"><span class="ci">CharStream</span></a>
-     <span class="cr">-&gt;</span> <a href="#members.ParserResult"><span class="ci">ParserResult</span></a><span class="cp">&lt;</span><span class="ctv">'a</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
-</pre>
-       </div>
-       <div class="interface-member-description">
-        <div class="para _1">
-         <p>
-          <code class="fsharp"><span class="ci">runParser</span> <span class="ci">p</span> <span class="ci">ustate</span> <span
-          class="ci">streamName</span> <span class="ci">charStream</span></code> runs the parser <code class="fsharp"><span class="ci">p</span></code>
-          on the content of <code class="fsharp"><span class="ci">charStream</span></code>, starting with the initial user state <code
-          class="fsharp"><span class="ci">ustate</span></code>. The <code class="fsharp"><span class="ci">streamName</span></code> is used in error
-          messages to describe the source of the input (e.g. a file path) and may be empty. The parser’s <code class="fsharp"><a
-          href="reply.html"><span class="ci">Reply</span></a></code> is captured and returned as a <code class="fsharp"><a
-          href="#members.ParserResult"><span class="ci">ParserResult</span></a></code> value.
-         </p>
-        </div>
-        <div class="para _2">
-         <p>
-          This function <em>does not</em> dispose the <code class="fsharp"><a href="charstream.html#CharStream"><span
-          class="ci">CharStream</span></a></code> after use.
-         </p>
-        </div>
-       </div>
-      </div>
-      <div class="interface-member _3" id="members.runParserOnString">
+      <div class="interface-member _2" id="members.runParserOnString">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.runParserOnString:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">runParserOnString</span></span><span class="cp">:</span>
@@ -567,18 +535,9 @@
           href="#members.ParserResult"><span class="ci">ParserResult</span></a></code> value.
          </p>
         </div>
-        <div class="para _2 lcinp">
-         <p>
-          <code class="fsharp"><span class="ci">runParserOnString</span> <span class="ci">p</span> <span class="ci">ustate</span> <span
-          class="ci">streamName</span> <span class="ci">str</span></code> is equivalent to
-         </p>
-<pre class="code fsharp"><span class="ck">use</span> <span class="ci">cstream</span> <span class="cp">=</span> <a href="charstream.html#CharStream.members.new_string"><span class="ck">new</span> <span class="ci">CharStream</span></a><span class="cp">(</span><span class="ci">str</span><span class="cp">,</span> <span class="cn">0</span><span class="cp">,</span> <span class="ci">str</span><span class="cm">.</span><span class="ci">Length</span><span class="cp">)</span>
-<a href="#members.runParser"><span class="ci">runParser</span></a> <span class="ci">p</span> <span class="ci">ustate</span> <span class="ci">streamName</span> <span class="ci">cstream</span>
-</pre>
-        </div>
        </div>
       </div>
-      <div class="interface-member _4" id="members.runParserOnSubstring">
+      <div class="interface-member _3" id="members.runParserOnSubstring">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.runParserOnSubstring:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">runParserOnSubstring</span></span><span class="cp">:</span>
@@ -600,18 +559,9 @@
           class="fsharp"><a href="#members.ParserResult"><span class="ci">ParserResult</span></a></code> value.
          </p>
         </div>
-        <div class="para _2 lcinp">
-         <p>
-          <code class="fsharp"><span class="ci">runParserOnSubstring</span> <span class="ci">p</span> <span class="ci">ustate</span> <span
-          class="ci">streamName</span> <span class="ci">str</span> <span class="ci">index</span> <span class="ci">count</span></code> is equivalent to
-         </p>
-<pre class="code fsharp"><span class="ck">use</span> <span class="ci">cstream</span> <span class="cp">=</span> <a href="charstream.html#CharStream.members.new_string"><span class="ck">new</span> <span class="ci">CharStream</span></a><span class="cp">(</span><span class="ci">str</span><span class="cp">,</span> <span class="ci">index</span><span class="cp">,</span> <span class="ci">count</span><span class="cp">)</span>
-<a href="#members.runParser"><span class="ci">runParser</span></a> <span class="ci">p</span> <span class="ci">ustate</span> <span class="ci">streamName</span> <span class="ci">cstream</span>
-</pre>
-        </div>
        </div>
       </div>
-      <div class="interface-member _5" id="members.runParserOnStream">
+      <div class="interface-member _4" id="members.runParserOnStream">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.runParserOnStream:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">runParserOnStream</span></span><span class="cp">:</span>
@@ -636,18 +586,9 @@
           class="ci">ParserResult</span></a></code> value.
          </p>
         </div>
-        <div class="para _2 lcinp">
-         <p>
-          <code class="fsharp"><span class="ci">runParserOnStream</span> <span class="ci">p</span> <span class="ci">ustate</span> <span
-          class="ci">streamName</span> <span class="ci">stream</span> <span class="ci">encoding</span></code> is equivalent to
-         </p>
-<pre class="code fsharp"><span class="ck">use</span> <span class="ci">cstream</span> <span class="cp">=</span> <a href="charstream.html#CharStream.members.new_stream"><span class="ck">new</span> <span class="ci">CharStream</span></a><span class="cp">(</span><span class="ci">stream</span><span class="cp">,</span> <span class="ci">encoding</span><span class="cp">)</span>
-<a href="#members.runParser"><span class="ci">runParser</span></a> <span class="ci">p</span> <span class="ci">ustate</span> <span class="ci">streamName</span> <span class="ci">cstream</span>
-</pre>
-        </div>
        </div>
       </div>
-      <div class="interface-member _6" id="members.runParserOnFile">
+      <div class="interface-member _5" id="members.runParserOnFile">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.runParserOnFile:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">runParserOnFile</span></span><span class="cp">:</span>
@@ -667,18 +608,9 @@
           class="ci">ParserResult</span></a></code> value.
          </p>
         </div>
-        <div class="para _2 lcinp">
-         <p>
-          <code class="fsharp"><span class="ci">runParserOnFile</span> <span class="ci">p</span> <span class="ci">ustate</span> <span
-          class="ci">path</span> <span class="ci">encoding</span></code> is equivalent to
-         </p>
-<pre class="code fsharp"><span class="ck">use</span> <span class="ci">cstream</span> <span class="cp">=</span> <a href="charstream.html#CharStream.members.new_file-path"><span class="ck">new</span> <span class="ci">CharStream</span></a><span class="cp">(</span><span class="ci">path</span><span class="cp">,</span> <span class="ci">encoding</span><span class="cp">)</span>
-<a href="#members.runParser"><span class="ci">runParser</span></a> <span class="ci">p</span> <span class="ci">ustate</span> <span class="ci">path</span> <span class="ci">cstream</span>
-</pre>
-        </div>
        </div>
       </div>
-      <div class="interface-member _7" id="members.run">
+      <div class="interface-member _6" id="members.run">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.run:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">run</span></span><span class="cp">:</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ctv">'a</span><span class="cp">,</span> <span class="ci">unit</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="#members.ParserResult"><span class="ci">ParserResult</span></a><span class="cp">&lt;</span><span class="ctv">'a</span><span class="cp">,</span><span class="ci">unit</span><span class="cp">&gt;</span>
@@ -695,7 +627,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _8" id="members.getPosition">
+      <div class="interface-member _7" id="members.getPosition">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.getPosition:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">getPosition</span></span><span class="cp">:</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><a href="charstream.html#CharStream.members.Position"><span class="ci">Position</span></a><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -715,7 +647,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _9" id="members.getUserState">
+      <div class="interface-member _8" id="members.getUserState">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.getUserState:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">getUserState</span></span><span class="cp">:</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ctv">'u</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -735,7 +667,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _0" id="members.setUserState">
+      <div class="interface-member _9" id="members.setUserState">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.setUserState:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">setUserState</span></span><span class="cp">:</span> <span class="ctv">'u</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -757,7 +689,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _1" id="members.updateUserState">
+      <div class="interface-member _0" id="members.updateUserState">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.updateUserState:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">updateUserState</span></span><span class="cp">:</span> <span class="cp">(</span><span class="ctv">'u</span> <span class="cr">-&gt;</span> <span class="ctv">'u</span><span class="cp">)</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -773,7 +705,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _2" id="members.userStateSatisfies">
+      <div class="interface-member _1" id="members.userStateSatisfies">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.userStateSatisfies:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">userStateSatisfies</span></span><span class="cp">:</span> <span class="cp">(</span><span class="ctv">'u</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -802,7 +734,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _3" id="members.pchar">
+      <div class="interface-member _2" id="members.pchar">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.pchar:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">pchar</span></span><span class="cp">:</span> <span class="ci">char</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">char</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -825,7 +757,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _4" id="members.skipChar">
+      <div class="interface-member _3" id="members.skipChar">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.skipChar:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">skipChar</span></span><span class="cp">:</span> <span class="ci">char</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -841,7 +773,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _5" id="members.charReturn">
+      <div class="interface-member _4" id="members.charReturn">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.charReturn:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">charReturn</span></span><span class="cp">:</span> <span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ctv">'a</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -857,7 +789,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _6" id="members.anyChar">
+      <div class="interface-member _5" id="members.anyChar">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.anyChar:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">anyChar</span></span><span class="cp">:</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">char</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -876,7 +808,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _7" id="members.skipAnyChar">
+      <div class="interface-member _6" id="members.skipAnyChar">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.skipAnyChar:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">skipAnyChar</span></span><span class="cp">:</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -892,7 +824,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _8" id="members.satisfy">
+      <div class="interface-member _7" id="members.satisfy">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.satisfy:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">satisfy</span></span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">char</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -942,7 +874,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _9" id="members.skipSatisfy">
+      <div class="interface-member _8" id="members.skipSatisfy">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.skipSatisfy:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">skipSatisfy</span></span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -958,7 +890,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _0" id="members.satisfyL">
+      <div class="interface-member _9" id="members.satisfyL">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.satisfyL:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">satisfyL</span></span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="cr">-&gt;</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">char</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -975,7 +907,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _1" id="members.skipSatisfyL">
+      <div class="interface-member _0" id="members.skipSatisfyL">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.skipSatisfyL:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">skipSatisfyL</span></span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="cr">-&gt;</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -991,7 +923,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _2" id="members.anyOf">
+      <div class="interface-member _1" id="members.anyOf">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.anyOf:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">anyOf</span></span><span class="cp">:</span> <span class="ci">seq</span><span class="cp">&lt;</span><span class="ci">char</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">char</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -1055,7 +987,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _3" id="members.skipAnyOf">
+      <div class="interface-member _2" id="members.skipAnyOf">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.skipAnyOf:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">skipAnyOf</span></span><span class="cp">:</span> <span class="ci">seq</span><span class="cp">&lt;</span><span class="ci">char</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -1078,7 +1010,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _4" id="members.noneOf">
+      <div class="interface-member _3" id="members.noneOf">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.noneOf:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">noneOf</span></span><span class="cp">:</span> <span class="ci">seq</span><span class="cp">&lt;</span><span class="ci">char</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">char</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -1144,7 +1076,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _5" id="members.skipNoneOf">
+      <div class="interface-member _4" id="members.skipNoneOf">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.skipNoneOf:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">skipNoneOf</span></span><span class="cp">:</span> <span class="ci">seq</span><span class="cp">&lt;</span><span class="ci">char</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -1167,7 +1099,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _6" id="members.asciiLower">
+      <div class="interface-member _5" id="members.asciiLower">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.asciiLower:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">asciiLower</span></span><span class="cp">:</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">char</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -1182,7 +1114,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _7" id="members.asciiUpper">
+      <div class="interface-member _6" id="members.asciiUpper">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.asciiUpper:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">asciiUpper</span></span><span class="cp">:</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">char</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -1197,7 +1129,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _8" id="members.asciiLetter">
+      <div class="interface-member _7" id="members.asciiLetter">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.asciiLetter:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">asciiLetter</span></span><span class="cp">:</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">char</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -1214,7 +1146,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _9" id="members.lower">
+      <div class="interface-member _8" id="members.lower">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.lower:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">lower</span></span><span class="cp">:</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">char</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -1229,7 +1161,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _0" id="members.upper">
+      <div class="interface-member _9" id="members.upper">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.upper:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">upper</span></span><span class="cp">:</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">char</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -1244,7 +1176,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _1" id="members.letter">
+      <div class="interface-member _0" id="members.letter">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.letter:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">letter</span></span><span class="cp">:</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">char</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -1259,7 +1191,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _2" id="members.digit">
+      <div class="interface-member _1" id="members.digit">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.digit:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">digit</span></span><span class="cp">:</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">char</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span></pre>
@@ -1273,7 +1205,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _3" id="members.hex">
+      <div class="interface-member _2" id="members.hex">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.hex:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">hex</span></span><span class="cp">:</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">char</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span></pre>
@@ -1291,7 +1223,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _4" id="members.octal">
+      <div class="interface-member _3" id="members.octal">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.octal:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">octal</span></span><span class="cp">:</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">char</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span></pre>
@@ -1305,7 +1237,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _5" id="members.isAnyOf">
+      <div class="interface-member _4" id="members.isAnyOf">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.isAnyOf:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">isAnyOf</span></span><span class="cp">:</span> <span class="ci">seq</span><span class="cp">&lt;</span><span class="ci">char</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span>
@@ -1338,7 +1270,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _6" id="members.isNoneOf">
+      <div class="interface-member _5" id="members.isNoneOf">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.isNoneOf:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">isNoneOf</span></span><span class="cp">:</span> <span class="ci">seq</span><span class="cp">&lt;</span><span class="ci">char</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span>
@@ -1371,7 +1303,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _7" id="members.isAsciiUpper">
+      <div class="interface-member _6" id="members.isAsciiUpper">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.isAsciiUpper:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="ck">inline</span> <span class="interface-member-marker"><span class="ci">isAsciiUpper</span></span><span class="cp">:</span> <span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span>
@@ -1387,7 +1319,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _8" id="members.isAsciiLower">
+      <div class="interface-member _7" id="members.isAsciiLower">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.isAsciiLower:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="ck">inline</span> <span class="interface-member-marker"><span class="ci">isAsciiLower</span></span><span class="cp">:</span> <span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span>
@@ -1403,7 +1335,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _9" id="members.isAsciiLetter">
+      <div class="interface-member _8" id="members.isAsciiLetter">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.isAsciiLetter:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="ck">inline</span> <span class="interface-member-marker"><span class="ci">isAsciiLetter</span></span><span class="cp">:</span> <span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span>
@@ -1421,7 +1353,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _0" id="members.isUpper">
+      <div class="interface-member _9" id="members.isUpper">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.isUpper:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="ck">inline</span> <span class="interface-member-marker"><span class="ci">isUpper</span></span><span class="cp">:</span> <span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span>
@@ -1436,7 +1368,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _1" id="members.isLower">
+      <div class="interface-member _0" id="members.isLower">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.isLower:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="ck">inline</span> <span class="interface-member-marker"><span class="ci">isLower</span></span><span class="cp">:</span> <span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span>
@@ -1451,7 +1383,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _2" id="members.isLetter">
+      <div class="interface-member _1" id="members.isLetter">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.isLetter:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="ck">inline</span> <span class="interface-member-marker"><span class="ci">isLetter</span></span><span class="cp">:</span> <span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span>
@@ -1466,7 +1398,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _3" id="members.isDigit">
+      <div class="interface-member _2" id="members.isDigit">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.isDigit:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="ck">inline</span> <span class="interface-member-marker"><span class="ci">isDigit</span></span><span class="cp">:</span> <span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span>
@@ -1482,7 +1414,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _4" id="members.isHex">
+      <div class="interface-member _3" id="members.isHex">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.isHex:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="ck">inline</span> <span class="interface-member-marker"><span class="ci">isHex</span></span><span class="cp">:</span> <span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span>
@@ -1502,7 +1434,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _5" id="members.isOctal">
+      <div class="interface-member _4" id="members.isOctal">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.isOctal:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="ck">inline</span> <span class="interface-member-marker"><span class="ci">isOctal</span></span><span class="cp">:</span> <span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span>
@@ -1518,7 +1450,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _6" id="members.tab">
+      <div class="interface-member _5" id="members.tab">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.tab:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">tab</span></span><span class="cp">:</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">char</span><span class="cp">,</span><span class="ctv">'U</span><span class="cp">&gt;</span>
@@ -1544,7 +1476,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _7" id="members.newline">
+      <div class="interface-member _6" id="members.newline">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.newline:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">newline</span></span><span class="cp">:</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">char</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -1563,7 +1495,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _8" id="members.skipNewline">
+      <div class="interface-member _7" id="members.skipNewline">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.skipNewline:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">skipNewline</span></span><span class="cp">:</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -1579,7 +1511,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _9" id="members.newlineReturn">
+      <div class="interface-member _8" id="members.newlineReturn">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.newlineReturn:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">newlineReturn</span></span><span class="cp">:</span> <span class="ctv">'a</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ctv">'a</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -1595,7 +1527,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _0" id="members.unicodeNewline">
+      <div class="interface-member _9" id="members.unicodeNewline">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.unicodeNewline:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">unicodeNewline</span></span><span class="cp">:</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">char</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -1651,7 +1583,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _1" id="members.skipUnicodeNewline">
+      <div class="interface-member _0" id="members.skipUnicodeNewline">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.skipUnicodeNewline:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">skipUnicodeNewline</span></span><span class="cp">:</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -1667,7 +1599,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _2" id="members.unicodeNewlineReturn">
+      <div class="interface-member _1" id="members.unicodeNewlineReturn">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.unicodeNewlineReturn:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">unicodeNewlineReturn</span></span><span class="cp">:</span> <span class="ctv">'a</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ctv">'a</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -1683,7 +1615,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _3" id="members.spaces">
+      <div class="interface-member _2" id="members.spaces">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.spaces:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">spaces</span></span><span class="cp">:</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -1702,7 +1634,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _4" id="members.spaces1">
+      <div class="interface-member _3" id="members.spaces1">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.spaces1:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">spaces1</span></span><span class="cp">:</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -1721,7 +1653,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _5" id="members.unicodeSpaces">
+      <div class="interface-member _4" id="members.unicodeSpaces">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.unicodeSpaces:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">unicodeSpaces</span></span><span class="cp">:</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -1773,7 +1705,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _6" id="members.unicodeSpaces1">
+      <div class="interface-member _5" id="members.unicodeSpaces1">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.unicodeSpaces1:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">unicodeSpaces1</span></span><span class="cp">:</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -1797,7 +1729,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _7" id="members.eof">
+      <div class="interface-member _6" id="members.eof">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.eof:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">eof</span></span><span class="cp">:</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -1809,7 +1741,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _8" id="members.pstring">
+      <div class="interface-member _7" id="members.pstring">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.pstring:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">pstring</span></span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">string</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -1834,7 +1766,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _9" id="members.skipString">
+      <div class="interface-member _8" id="members.skipString">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.skipString:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">skipString</span></span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -1850,7 +1782,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _0" id="members.stringReturn">
+      <div class="interface-member _9" id="members.stringReturn">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.stringReturn:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">stringReturn</span></span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ctv">'a</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -1866,7 +1798,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _1" id="members.pstringCI">
+      <div class="interface-member _0" id="members.pstringCI">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.pstringCI:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">pstringCI</span></span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">string</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -1892,7 +1824,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _2" id="members.skipStringCI">
+      <div class="interface-member _1" id="members.skipStringCI">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.skipStringCI:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">skipStringCI</span></span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -1908,7 +1840,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _3" id="members.stringCIReturn">
+      <div class="interface-member _2" id="members.stringCIReturn">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.stringCIReturn:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">stringCIReturn</span></span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ctv">'a</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -1925,7 +1857,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _4" id="members.anyString">
+      <div class="interface-member _3" id="members.anyString">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.anyString:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">anyString</span></span><span class="cp">:</span> <span class="ci">int32</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">string</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -1946,7 +1878,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _5" id="members.skipAnyString">
+      <div class="interface-member _4" id="members.skipAnyString">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.skipAnyString:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">skipAnyString</span></span><span class="cp">:</span> <span class="ci">int32</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -1962,7 +1894,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _6" id="members.restOfLine">
+      <div class="interface-member _5" id="members.restOfLine">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.restOfLine:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">restOfLine</span></span><span class="cp">:</span> <span class="ci">skipNewline</span><span class="cp">:</span> <span class="ci">bool</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">string</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -2002,7 +1934,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _7" id="members.skipRestOfLine">
+      <div class="interface-member _6" id="members.skipRestOfLine">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.skipRestOfLine:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">skipRestOfLine</span></span><span class="cp">:</span> <span class="ci">skipNewline</span><span class="cp">:</span> <span class="ci">bool</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -2018,7 +1950,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _8" id="members.charsTillString">
+      <div class="interface-member _7" id="members.charsTillString">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.charsTillString:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">charsTillString</span></span><span class="cp">:</span>
@@ -2065,7 +1997,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _9" id="members.skipCharsTillString">
+      <div class="interface-member _8" id="members.skipCharsTillString">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.skipCharsTillString:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">skipCharsTillString</span></span><span class="cp">:</span>
@@ -2083,7 +2015,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _0" id="members.charsTillStringCI">
+      <div class="interface-member _9" id="members.charsTillStringCI">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.charsTillStringCI:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">charsTillStringCI</span></span><span class="cp">:</span>
@@ -2129,7 +2061,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _1" id="members.skipCharsTillStringCI">
+      <div class="interface-member _0" id="members.skipCharsTillStringCI">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.skipCharsTillStringCI:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">skipCharsTillStringCI</span></span><span class="cp">:</span>
@@ -2147,7 +2079,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _2" id="members.manySatisfy">
+      <div class="interface-member _1" id="members.manySatisfy">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.manySatisfy:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">manySatisfy</span></span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">string</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -2202,7 +2134,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _3" id="members.manySatisfy2">
+      <div class="interface-member _2" id="members.manySatisfy2">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.manySatisfy2:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">manySatisfy2</span></span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="cr">-&gt;</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">string</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -2227,7 +2159,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _4" id="members.skipManySatisfy">
+      <div class="interface-member _3" id="members.skipManySatisfy">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.skipManySatisfy:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">skipManySatisfy</span></span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -2243,7 +2175,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _5" id="members.skipManySatisfy2">
+      <div class="interface-member _4" id="members.skipManySatisfy2">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.skipManySatisfy2:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">skipManySatisfy2</span></span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="cr">-&gt;</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -2260,7 +2192,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _6" id="members.many1Satisfy">
+      <div class="interface-member _5" id="members.many1Satisfy">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.many1Satisfy:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">many1Satisfy</span></span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">string</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -2328,7 +2260,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _7" id="members.many1Satisfy2">
+      <div class="interface-member _6" id="members.many1Satisfy2">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.many1Satisfy2:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">many1Satisfy2</span></span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="cr">-&gt;</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">string</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -2354,7 +2286,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _8" id="members.skipMany1Satisfy">
+      <div class="interface-member _7" id="members.skipMany1Satisfy">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.skipMany1Satisfy:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">skipMany1Satisfy</span></span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -2370,7 +2302,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _9" id="members.skipMany1Satisfy2">
+      <div class="interface-member _8" id="members.skipMany1Satisfy2">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.skipMany1Satisfy2:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">skipMany1Satisfy2</span></span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="cr">-&gt;</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -2387,7 +2319,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _0" id="members.many1SatisfyL">
+      <div class="interface-member _9" id="members.many1SatisfyL">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.many1SatisfyL:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">many1SatisfyL</span></span><span class="cp">:</span>
@@ -2404,7 +2336,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _1" id="members.many1Satisfy2L">
+      <div class="interface-member _0" id="members.many1Satisfy2L">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.many1Satisfy2L:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">many1Satisfy2L</span></span><span class="cp">:</span>
@@ -2422,7 +2354,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _2" id="members.skipMany1SatisfyL">
+      <div class="interface-member _1" id="members.skipMany1SatisfyL">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.skipMany1SatisfyL:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">skipMany1SatisfyL</span></span><span class="cp">:</span>
@@ -2440,7 +2372,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _3" id="members.skipMany1Satisfy2L">
+      <div class="interface-member _2" id="members.skipMany1Satisfy2L">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.skipMany1Satisfy2L:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">skipMany1Satisfy2L</span></span><span class="cp">:</span>
@@ -2458,7 +2390,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _4" id="members.manyMinMaxSatisfy">
+      <div class="interface-member _3" id="members.manyMinMaxSatisfy">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.manyMinMaxSatisfy:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">manyMinMaxSatisfy</span></span><span class="cp">:</span>
@@ -2541,7 +2473,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _5" id="members.manyMinMaxSatisfy2">
+      <div class="interface-member _4" id="members.manyMinMaxSatisfy2">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.manyMinMaxSatisfy2:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">manyMinMaxSatisfy2</span></span><span class="cp">:</span>
@@ -2568,7 +2500,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _6" id="members.skipManyMinMaxSatisfy">
+      <div class="interface-member _5" id="members.skipManyMinMaxSatisfy">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.skipManyMinMaxSatisfy:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">skipManyMinMaxSatisfy</span></span><span class="cp">:</span>
@@ -2586,7 +2518,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _7" id="members.skipManyMinMaxSatisfy2">
+      <div class="interface-member _6" id="members.skipManyMinMaxSatisfy2">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.skipManyMinMaxSatisfy2:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">skipManyMinMaxSatisfy2</span></span><span class="cp">:</span>
@@ -2605,7 +2537,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _8" id="members.manyMinMaxSatisfyL">
+      <div class="interface-member _7" id="members.manyMinMaxSatisfyL">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.manyMinMaxSatisfyL:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">manyMinMaxSatisfyL</span></span><span class="cp">:</span>
@@ -2624,7 +2556,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _9" id="members.manyMinMaxSatisfy2L">
+      <div class="interface-member _8" id="members.manyMinMaxSatisfy2L">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.manyMinMaxSatisfy2L:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">manyMinMaxSatisfy2L</span></span><span class="cp">:</span>
@@ -2643,7 +2575,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _0" id="members.skipManyMinMaxSatisfyL">
+      <div class="interface-member _9" id="members.skipManyMinMaxSatisfyL">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.skipManyMinMaxSatisfyL:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">skipManyMinMaxSatisfyL</span></span><span class="cp">:</span>
@@ -2662,7 +2594,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _1" id="members.skipManyMinMaxSatisfy2L">
+      <div class="interface-member _0" id="members.skipManyMinMaxSatisfy2L">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.skipManyMinMaxSatisfy2L:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">skipManyMinMaxSatisfy2L</span></span><span class="cp">:</span>
@@ -2681,7 +2613,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _2" id="members.regex">
+      <div class="interface-member _1" id="members.regex">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.regex:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">regex</span></span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">string</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -2738,7 +2670,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _3" id="members.IdentifierOptions">
+      <div class="interface-member _2" id="members.IdentifierOptions">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.IdentifierOptions:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">type</span> <span class="interface-member-marker"><span class="ci">IdentifierOptions</span></span> <span class="cp">=</span>
@@ -2924,7 +2856,7 @@
         </div>
        </div>
       </div>
-      <div class="interface-member _4" id="members.identifier">
+      <div class="interface-member _3" id="members.identifier">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.identifier:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">identifier</span></span><span class="cp">:</span> <a href="#members.IdentifierOptions"><span class="ci">IdentifierOptions</span></a> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">string</span><span class="cp">,</span> <span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -3167,7 +3099,7 @@ Expecting: end of input
         </div>
        </div>
       </div>
-      <div class="interface-member _5" id="members.manyChars">
+      <div class="interface-member _4" id="members.manyChars">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.manyChars:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">manyChars</span></span><span class="cp">:</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">char</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">string</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -3209,7 +3141,7 @@ Expecting: end of input
         </div>
        </div>
       </div>
-      <div class="interface-member _6" id="members.manyChars2">
+      <div class="interface-member _5" id="members.manyChars2">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.manyChars2:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">manyChars2</span></span><span class="cp">:</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">char</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">char</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">string</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -3235,7 +3167,7 @@ Expecting: end of input
         </div>
        </div>
       </div>
-      <div class="interface-member _7" id="members.many1Chars">
+      <div class="interface-member _6" id="members.many1Chars">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.many1Chars:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">many1Chars</span></span><span class="cp">:</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">char</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">string</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -3267,7 +3199,7 @@ Expecting: end of input
         </div>
        </div>
       </div>
-      <div class="interface-member _8" id="members.many1Chars2">
+      <div class="interface-member _7" id="members.many1Chars2">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.many1Chars2:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">many1Chars2</span></span><span class="cp">:</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">char</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">char</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">string</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -3292,7 +3224,7 @@ Expecting: end of input
         </div>
        </div>
       </div>
-      <div class="interface-member _9" id="members.manyCharsTill">
+      <div class="interface-member _8" id="members.manyCharsTill">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.manyCharsTill:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">manyCharsTill</span></span><span class="cp">:</span>
@@ -3317,7 +3249,7 @@ Expecting: end of input
         </div>
        </div>
       </div>
-      <div class="interface-member _0" id="members.manyCharsTill2">
+      <div class="interface-member _9" id="members.manyCharsTill2">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.manyCharsTill2:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">manyCharsTill2</span></span><span class="cp">:</span>
@@ -3335,7 +3267,7 @@ Expecting: end of input
         </div>
        </div>
       </div>
-      <div class="interface-member _1" id="members.manyCharsTillApply">
+      <div class="interface-member _0" id="members.manyCharsTillApply">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.manyCharsTillApply:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">manyCharsTillApply</span></span><span class="cp">:</span>
@@ -3356,7 +3288,7 @@ Expecting: end of input
         </div>
        </div>
       </div>
-      <div class="interface-member _2" id="members.manyCharsTillApply2">
+      <div class="interface-member _1" id="members.manyCharsTillApply2">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.manyCharsTillApply2:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">manyCharsTillApply2</span></span><span class="cp">:</span>
@@ -3376,7 +3308,7 @@ Expecting: end of input
         </div>
        </div>
       </div>
-      <div class="interface-member _3" id="members.many1CharsTill">
+      <div class="interface-member _2" id="members.many1CharsTill">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.many1CharsTill:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">many1CharsTill</span></span><span class="cp">:</span>
@@ -3401,7 +3333,7 @@ Expecting: end of input
         </div>
        </div>
       </div>
-      <div class="interface-member _4" id="members.many1CharsTill2">
+      <div class="interface-member _3" id="members.many1CharsTill2">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.many1CharsTill2:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">many1CharsTill2</span></span><span class="cp">:</span>
@@ -3419,7 +3351,7 @@ Expecting: end of input
         </div>
        </div>
       </div>
-      <div class="interface-member _5" id="members.many1CharsTillApply">
+      <div class="interface-member _4" id="members.many1CharsTillApply">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.many1CharsTillApply:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">many1CharsTillApply</span></span><span class="cp">:</span>
@@ -3440,7 +3372,7 @@ Expecting: end of input
         </div>
        </div>
       </div>
-      <div class="interface-member _6" id="members.many1CharsTillApply2">
+      <div class="interface-member _5" id="members.many1CharsTillApply2">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.many1CharsTillApply2:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">many1CharsTillApply2</span></span><span class="cp">:</span>
@@ -3460,7 +3392,7 @@ Expecting: end of input
         </div>
        </div>
       </div>
-      <div class="interface-member _7" id="members.manyStrings">
+      <div class="interface-member _6" id="members.manyStrings">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.manyStrings:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">manyStrings</span></span><span class="cp">:</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">string</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">string</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -3485,7 +3417,7 @@ Expecting: end of input
         </div>
        </div>
       </div>
-      <div class="interface-member _8" id="members.manyStrings2">
+      <div class="interface-member _7" id="members.manyStrings2">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.manyStrings2:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">manyStrings2</span></span><span class="cp">:</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">string</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">string</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">string</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -3502,7 +3434,7 @@ Expecting: end of input
         </div>
        </div>
       </div>
-      <div class="interface-member _9" id="members.many1Strings">
+      <div class="interface-member _8" id="members.many1Strings">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.many1Strings:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">many1Strings</span></span><span class="cp">:</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">string</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">string</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -3527,7 +3459,7 @@ Expecting: end of input
         </div>
        </div>
       </div>
-      <div class="interface-member _0" id="members.many1Strings2">
+      <div class="interface-member _9" id="members.many1Strings2">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.many1Strings2:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">many1Strings2</span></span><span class="cp">:</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">string</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">string</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">string</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -3544,7 +3476,7 @@ Expecting: end of input
         </div>
        </div>
       </div>
-      <div class="interface-member _1" id="members.stringsSepBy">
+      <div class="interface-member _0" id="members.stringsSepBy">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.stringsSepBy:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">stringsSepBy</span></span><span class="cp">:</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">string</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">string</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">string</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -3597,7 +3529,7 @@ Expecting: end of input
         </div>
        </div>
       </div>
-      <div class="interface-member _2" id="members.skipped">
+      <div class="interface-member _1" id="members.skipped">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.skipped:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">skipped</span></span><span class="cp">:</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">string</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -3617,7 +3549,7 @@ Expecting: end of input
         </div>
        </div>
       </div>
-      <div class="interface-member _3" id="members.withSkippedString">
+      <div class="interface-member _2" id="members.withSkippedString">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.withSkippedString:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">withSkippedString</span></span><span class="cp">:</span> <span class="cp">(</span><span class="ci">string</span> <span class="cr">-&gt;</span> <span class="ctv">'a</span> <span class="cr">-&gt;</span> <span class="ctv">'b</span><span class="cp">)</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ctv">'a</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ctv">'b</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -3635,7 +3567,7 @@ Expecting: end of input
         </div>
        </div>
       </div>
-      <div class="interface-member _4" id="members.NumberLiteralOptions">
+      <div class="interface-member _3" id="members.NumberLiteralOptions">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.NumberLiteralOptions:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">type</span> <span class="interface-member-marker"><span class="ci">NumberLiteralOptions</span></span></pre>
@@ -3767,7 +3699,7 @@ Expecting: end of input
         </div>
        </div>
       </div>
-      <div class="interface-member _5" id="members.NumberLiteral">
+      <div class="interface-member _4" id="members.NumberLiteral">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.NumberLiteral:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">type</span> <span class="interface-member-marker"><span class="ci">NumberLiteral</span></span></pre>
@@ -3828,7 +3760,7 @@ Expecting: end of input
         </div>
        </div>
       </div>
-      <div class="interface-member _6" id="members.numberLiteral">
+      <div class="interface-member _5" id="members.numberLiteral">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.numberLiteral:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">numberLiteral</span></span><span class="cp">:</span> <a href="#members.NumberLiteralOptions"><span class="ci">NumberLiteralOptions</span></a> <span class="cr">-&gt;</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><a href="#members.NumberLiteral"><span class="ci">NumberLiteral</span></a><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -4000,7 +3932,7 @@ Value was either too large or too small for a Double.
         </div>
        </div>
       </div>
-      <div class="interface-member _7" id="members.numberLiteralE">
+      <div class="interface-member _6" id="members.numberLiteralE">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.numberLiteralE:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">numberLiteralE</span></span><span class="cp">:</span>
@@ -4018,7 +3950,7 @@ Value was either too large or too small for a Double.
         </div>
        </div>
       </div>
-      <div class="interface-member _8" id="members.pfloat">
+      <div class="interface-member _7" id="members.pfloat">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.pfloat:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">pfloat</span></span><span class="cp">:</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">float</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -4078,7 +4010,7 @@ Value was either too large or too small for a Double.
         </div>
        </div>
       </div>
-      <div class="interface-member _9" id="members.pint64">
+      <div class="interface-member _8" id="members.pint64">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.pint64:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">pint64</span></span><span class="cp">:</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">int64</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -4115,7 +4047,7 @@ Value was either too large or too small for a Double.
         </div>
        </div>
       </div>
-      <div class="interface-member _0" id="members.pint32">
+      <div class="interface-member _9" id="members.pint32">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.pint32:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">pint32</span></span><span class="cp">:</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">int32</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -4130,7 +4062,7 @@ Value was either too large or too small for a Double.
         </div>
        </div>
       </div>
-      <div class="interface-member _1" id="members.pint16">
+      <div class="interface-member _0" id="members.pint16">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.pint16:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">pint16</span></span><span class="cp">:</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">int16</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -4145,7 +4077,7 @@ Value was either too large or too small for a Double.
         </div>
        </div>
       </div>
-      <div class="interface-member _2" id="members.pint8">
+      <div class="interface-member _1" id="members.pint8">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.pint8:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">pint8</span></span><span class="cp">:</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">int8</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -4160,7 +4092,7 @@ Value was either too large or too small for a Double.
         </div>
        </div>
       </div>
-      <div class="interface-member _3" id="members.puint64">
+      <div class="interface-member _2" id="members.puint64">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.puint64:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">puint64</span></span><span class="cp">:</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">uint64</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -4196,7 +4128,7 @@ Value was either too large or too small for a Double.
         </div>
        </div>
       </div>
-      <div class="interface-member _4" id="members.puint32">
+      <div class="interface-member _3" id="members.puint32">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.puint32:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">puint32</span></span><span class="cp">:</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">uint32</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -4211,7 +4143,7 @@ Value was either too large or too small for a Double.
         </div>
        </div>
       </div>
-      <div class="interface-member _5" id="members.puint16">
+      <div class="interface-member _4" id="members.puint16">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.puint16:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">puint16</span></span><span class="cp">:</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">uint16</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -4226,7 +4158,7 @@ Value was either too large or too small for a Double.
         </div>
        </div>
       </div>
-      <div class="interface-member _6" id="members.puint8">
+      <div class="interface-member _5" id="members.puint8">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.puint8:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">puint8</span></span><span class="cp">:</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">uint8</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -4241,7 +4173,7 @@ Value was either too large or too small for a Double.
         </div>
        </div>
       </div>
-      <div class="interface-member _7" id="members.notFollowedByEof">
+      <div class="interface-member _6" id="members.notFollowedByEof">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.notFollowedByEof:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">notFollowedByEof</span></span><span class="cp">:</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -4257,7 +4189,7 @@ Value was either too large or too small for a Double.
         </div>
        </div>
       </div>
-      <div class="interface-member _8" id="members.followedByNewline">
+      <div class="interface-member _7" id="members.followedByNewline">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.followedByNewline:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">followedByNewline</span></span><span class="cp">:</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -4273,7 +4205,7 @@ Value was either too large or too small for a Double.
         </div>
        </div>
       </div>
-      <div class="interface-member _9" id="members.notFollowedByNewline">
+      <div class="interface-member _8" id="members.notFollowedByNewline">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.notFollowedByNewline:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">notFollowedByNewline</span></span><span class="cp">:</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -4289,7 +4221,7 @@ Value was either too large or too small for a Double.
         </div>
        </div>
       </div>
-      <div class="interface-member _0" id="members.followedByString">
+      <div class="interface-member _9" id="members.followedByString">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.followedByString:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">followedByString</span></span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -4308,7 +4240,7 @@ Value was either too large or too small for a Double.
         </div>
        </div>
       </div>
-      <div class="interface-member _1" id="members.followedByStringCI">
+      <div class="interface-member _0" id="members.followedByStringCI">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.followedByStringCI:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">followedByStringCI</span></span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -4327,7 +4259,7 @@ Value was either too large or too small for a Double.
         </div>
        </div>
       </div>
-      <div class="interface-member _2" id="members.notFollowedByString">
+      <div class="interface-member _1" id="members.notFollowedByString">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.notFollowedByString:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">notFollowedByString</span></span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -4346,7 +4278,7 @@ Value was either too large or too small for a Double.
         </div>
        </div>
       </div>
-      <div class="interface-member _3" id="members.notFollowedByStringCI">
+      <div class="interface-member _2" id="members.notFollowedByStringCI">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.notFollowedByStringCI:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">notFollowedByStringCI</span></span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -4365,7 +4297,7 @@ Value was either too large or too small for a Double.
         </div>
        </div>
       </div>
-      <div class="interface-member _4" id="members.nextCharSatisfies">
+      <div class="interface-member _3" id="members.nextCharSatisfies">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.nextCharSatisfies:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">nextCharSatisfies</span></span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -4394,7 +4326,7 @@ Value was either too large or too small for a Double.
         </div>
        </div>
       </div>
-      <div class="interface-member _5" id="members.nextCharSatisfiesNot">
+      <div class="interface-member _4" id="members.nextCharSatisfiesNot">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.nextCharSatisfiesNot:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">nextCharSatisfiesNot</span></span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -4423,7 +4355,7 @@ Value was either too large or too small for a Double.
         </div>
        </div>
       </div>
-      <div class="interface-member _6" id="members.next2CharsSatisfy">
+      <div class="interface-member _5" id="members.next2CharsSatisfy">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.next2CharsSatisfy:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">next2CharsSatisfy</span></span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -4458,7 +4390,7 @@ Value was either too large or too small for a Double.
         </div>
        </div>
       </div>
-      <div class="interface-member _7" id="members.next2CharsSatisfyNot">
+      <div class="interface-member _6" id="members.next2CharsSatisfyNot">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.next2CharsSatisfyNot:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">next2CharsSatisfyNot</span></span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -4494,7 +4426,7 @@ Value was either too large or too small for a Double.
         </div>
        </div>
       </div>
-      <div class="interface-member _8" id="members.previousCharSatisfies">
+      <div class="interface-member _7" id="members.previousCharSatisfies">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.previousCharSatisfies:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">previousCharSatisfies</span></span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -4530,7 +4462,7 @@ Value was either too large or too small for a Double.
         </div>
        </div>
       </div>
-      <div class="interface-member _9" id="members.previousCharSatisfiesNot">
+      <div class="interface-member _8" id="members.previousCharSatisfiesNot">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.previousCharSatisfiesNot:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">previousCharSatisfiesNot</span></span><span class="cp">:</span> <span class="cp">(</span><span class="ci">char</span> <span class="cr">-&gt;</span> <span class="ci">bool</span><span class="cp">)</span> <span class="cr">-&gt;</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">unit</span><span class="cp">,</span><span class="ctv">'u</span><span class="cp">&gt;</span>
@@ -4567,7 +4499,7 @@ Value was either too large or too small for a Double.
         </div>
        </div>
       </div>
-      <div class="interface-member _0" id="members.foldCase">
+      <div class="interface-member _9" id="members.foldCase">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.foldCase:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">foldCase</span></span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <span class="ci">string</span>
@@ -4582,7 +4514,7 @@ Value was either too large or too small for a Double.
         </div>
        </div>
       </div>
-      <div class="interface-member _1" id="members.normalizeNewlines">
+      <div class="interface-member _0" id="members.normalizeNewlines">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.normalizeNewlines:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">normalizeNewlines</span></span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <span class="ci">string</span>
@@ -4597,7 +4529,7 @@ Value was either too large or too small for a Double.
         </div>
        </div>
       </div>
-      <div class="interface-member _2" id="members.floatToHexString">
+      <div class="interface-member _1" id="members.floatToHexString">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.floatToHexString:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">floatToHexString</span></span><span class="cp">:</span> <span class="ci">float</span> <span class="cr">-&gt;</span> <span class="ci">string</span>
@@ -4614,7 +4546,7 @@ Value was either too large or too small for a Double.
         </div>
        </div>
       </div>
-      <div class="interface-member _3" id="members.floatOfHexString">
+      <div class="interface-member _2" id="members.floatOfHexString">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.floatOfHexString:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">floatOfHexString</span></span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <span class="ci">float</span>
@@ -4661,7 +4593,7 @@ Value was either too large or too small for a Double.
         </div>
        </div>
       </div>
-      <div class="interface-member _4" id="members.float32ToHexString">
+      <div class="interface-member _3" id="members.float32ToHexString">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.float32ToHexString:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">float32ToHexString</span></span><span class="cp">:</span> <span class="ci">float32</span> <span class="cr">-&gt;</span> <span class="ci">string</span>
@@ -4678,7 +4610,7 @@ Value was either too large or too small for a Double.
         </div>
        </div>
       </div>
-      <div class="interface-member _5" id="members.float32OfHexString">
+      <div class="interface-member _4" id="members.float32OfHexString">
        <div class="interface-member-code">
         <a class="interface-member-backlink" href="#interface.float32OfHexString:B:">⇧</a>
 <pre class="code fsharp"><span class="ck">val</span> <span class="interface-member-marker"><span class="ci">float32OfHexString</span></span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <span class="ci">float32</span>

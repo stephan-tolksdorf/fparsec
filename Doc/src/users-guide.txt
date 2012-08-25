@@ -43,9 +43,9 @@ Implementing parser grammars with FParsec usually means composing parsers for hi
 
 [section Running parsers on input]
 
-While it is not difficult to construct a `CharStream` instance yourself, then apply a parser function to the `CharStream`, then interpret the returned `Reply` value and finally dispose the `CharStream` again, it takes less effort to instead use one of the several @`runParser` functions@ from the `CharParsers` module.
+While it is not difficult to construct a `CharStream` instance yourself, then apply a parser function to the `CharStream`, then interpret the returned `Reply` value and finally dispose the `CharStream` again, it takes less effort to instead use one of the several @`runParser...` functions@ from the `CharParsers` module.
 
-Among the `runParser` functions `run` is the most convenient for simple testing purposes:
+Among the `runParser...` functions `run` is the most convenient for simple testing purposes:
 ``val @run@: Parser<'a, unit> -> string -> ParserResult<'a,unit>``
 
 `run` applies the parser given as the first argument to a `CharStream` constructed from the string argument and then captures the return value as `ParserResult` value. The `ParserResult` type is a simple discriminated union that is a bit more convenient to interpret than the `Reply` values returned by `Parser` functions.
@@ -65,9 +65,9 @@ Expecting: hexadecimal digit
 
 The text messages displayed in these examples after the `=` signs are the default string representations of the returned `ParserResult` values, just like they are printed in the [@ F# Interactive] console. The reference documentation describes the two union cases `Success` and `Failure` of the `ParserResult` type in more detail.
 
-`run` only supports parser functions with no user state, i.e. with a `unit` user state. If you want to test parsers that depend on a user state, you will need to use one of the other `runParser` functions, e.g. `runParserOnString`. Please see the reference for more details on the @runParser-functions@.
+`run` only supports parser functions with no user state, i.e. with a `unit` user state. If you want to test parsers that depend on a user state, you will need to use one of the other `runParser...` functions, e.g. `runParserOnString`. Please see the reference for more details on the @`runParser...` functions@.
 
-Note that the `runParser` functions are primarily meant for the "end-users" of parsers, i.e. those users that apply an aggregate parser on the content of a complete input stream. This is a situation different from the one where you implement a `Parser` function yourself. In the latter case you typically work directly with the input `CharStream` and output `Reply` values.
+Note that the `runParser...` functions are primarily meant for the "end-users" of parsers, i.e. those users that apply an aggregate parser on the content of a complete input stream. This is a situation different from the one where you implement a `Parser` function yourself. In the latter case you typically work directly with the input `CharStream` and output `Reply` values.
 
 [/section]
 

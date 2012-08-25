@@ -177,15 +177,15 @@
      href="../reference/charstream.html#CharStream"><span class="ci">CharStream</span></a></code>, then interpret the returned <code class="fsharp"><a
      href="../reference/reply.html"><span class="ci">Reply</span></a></code> value and finally dispose the <code class="fsharp"><a
      href="../reference/charstream.html#CharStream"><span class="ci">CharStream</span></a></code> again, it takes less effort to instead use one of
-     the several <a href="../reference/charparsers.html#interface.runparser-functions"><code class="fsharp"><span class="ci">runParser</span></code>
-     functions</a> from the <code class="fsharp"><a href="../reference/charparsers.html"><span class="ci">CharParsers</span></a></code> module.
+     the several <a href="../reference/charparsers.html#interface.runparser-functions"><code class="fsharp"><span class="ci">runParser</span><span
+     class="co">...</span></code> functions</a> from the <code class="fsharp"><a href="../reference/charparsers.html"><span
+     class="ci">CharParsers</span></a></code> module.
     </p>
    </div>
    <div class="para _2 lcinp">
     <p>
-     Among the <code class="fsharp"><a href="../reference/charparsers.html#members.runParser"><span class="ci">runParser</span></a></code> functions
-     <code class="fsharp"><a href="../reference/charparsers.html#members.run"><span class="ci">run</span></a></code> is the most convenient for simple
-     testing purposes:
+     Among the <code class="fsharp"><span class="ci">runParser</span><span class="co">...</span></code> functions <code class="fsharp"><a
+     href="../reference/charparsers.html#members.run"><span class="ci">run</span></a></code> is the most convenient for simple testing purposes:
     </p>
 <pre class="code fsharp"><span class="ck">val</span> <a href="../reference/charparsers.html#members.run"><span class="ci">run</span></a><span class="cp">:</span> <a href="../reference/primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ctv">'a</span><span class="cp">,</span> <span class="ci">unit</span><span class="cp">&gt;</span> <span class="cr">-&gt;</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="../reference/charparsers.html#members.ParserResult"><span class="ci">ParserResult</span></a><span class="cp">&lt;</span><span class="ctv">'a</span><span class="cp">,</span><span class="ci">unit</span><span class="cp">&gt;</span></pre>
    </div>
@@ -229,20 +229,21 @@ Expecting: hexadecimal digit
     <p>
      <code class="fsharp"><a href="../reference/charparsers.html#members.run"><span class="ci">run</span></a></code> only supports parser functions
      with no user state, i.e. with a <code class="fsharp"><span class="ci">unit</span></code> user state. If you want to test parsers that depend on a
-     user state, you will need to use one of the other <code class="fsharp"><a href="../reference/charparsers.html#members.runParser"><span
-     class="ci">runParser</span></a></code> functions, e.g. <code class="fsharp"><a
-     href="../reference/charparsers.html#members.runParserOnString"><span class="ci">runParserOnString</span></a></code>. Please see the reference for
-     more details on the <a href="../reference/charparsers.html#interface.runparser-functions">runParser‐functions</a>.
+     user state, you will need to use one of the other <code class="fsharp"><span class="ci">runParser</span><span class="co">...</span></code>
+     functions, e.g. <code class="fsharp"><a href="../reference/charparsers.html#members.runParserOnString"><span
+     class="ci">runParserOnString</span></a></code>. Please see the reference for more details on the <a
+     href="../reference/charparsers.html#interface.runparser-functions"><code class="fsharp"><span class="ci">runParser</span><span
+     class="co">...</span></code> functions</a>.
     </p>
    </div>
    <div class="para _7">
     <p>
-     Note that the <code class="fsharp"><a href="../reference/charparsers.html#members.runParser"><span class="ci">runParser</span></a></code>
-     functions are primarily meant for the &#x201C;end‐users&#x201D; of parsers, i.e. those users that apply an aggregate parser on the content of a
-     complete input stream. This is a situation different from the one where you implement a <code class="fsharp"><a
-     href="../reference/primitives.html#members.Parser"><span class="ci">Parser</span></a></code> function yourself. In the latter case you typically
-     work directly with the input <code class="fsharp"><a href="../reference/charstream.html#CharStream"><span class="ci">CharStream</span></a></code>
-     and output <code class="fsharp"><a href="../reference/reply.html"><span class="ci">Reply</span></a></code> values.
+     Note that the <code class="fsharp"><span class="ci">runParser</span><span class="co">...</span></code> functions are primarily meant for the
+     &#x201C;end‐users&#x201D; of parsers, i.e. those users that apply an aggregate parser on the content of a complete input stream. This is a
+     situation different from the one where you implement a <code class="fsharp"><a href="../reference/primitives.html#members.Parser"><span
+     class="ci">Parser</span></a></code> function yourself. In the latter case you typically work directly with the input <code class="fsharp"><a
+     href="../reference/charstream.html#CharStream"><span class="ci">CharStream</span></a></code> and output <code class="fsharp"><a
+     href="../reference/reply.html"><span class="ci">Reply</span></a></code> values.
     </p>
    </div>
   </div>

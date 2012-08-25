@@ -97,7 +97,7 @@ The `pstring` function isn't named `string` because otherwise it would hide the 
 
 To save a few keystrokes we abbreviate `pstring` as `str`. So, for instance, `str "["` is a parser that skips over the char `'['`.
 
-The binary operators `>>.` and `<<.` have the following types:
+The binary operators `>>.` and `.>>` have the following types:
 ``
 val (>>.): Parser<'a,'u> -> Parser<'b,'u> -> Parser<'b,'u>
 val (.>>): Parser<'a,'u> -> Parser<'b,'u> -> Parser<'a,'u>
