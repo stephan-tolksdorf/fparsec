@@ -1,4 +1,4 @@
-﻿// Copyright (c) Stephan Tolksdorf 2008-2009
+﻿// Copyright (c) Stephan Tolksdorf 2008-2013
 // License: Simplified BSD License. See accompanying documentation.
 
 using System;
@@ -6,7 +6,9 @@ using System;
 namespace FParsec {
 
 public static class HexFloat {
-// see the documentation of floatToHexString and floatOfHexString for more info
+
+// see http://www.quanttec.com/fparsec/reference/charparsers.html#members.floatToHexString
+// for more information on the supported hexadecimal floating-point format
 
 #pragma warning disable 0429 // unreachable expression code
 #pragma warning disable 0162 // unreachable code
@@ -19,19 +21,39 @@ public static class HexFloat {
 // In the unlikely event anyone ever runs this code on a platform where
 // this is not the case the unit tests will detect the problem.
 
+    private static readonly byte[] asciiHexValuePlus1s = {
+        0,  0,  0,  0,  0,  0,  0, 0, 0,  0, 0, 0, 0, 0, 0, 0,
+        0,  0,  0,  0,  0,  0,  0, 0, 0,  0, 0, 0, 0, 0, 0, 0,
+        0,  0,  0,  0,  0,  0,  0, 0, 0,  0, 0, 0, 0, 0, 0, 0,
+        1,  2,  3,  4,  5,  6,  7, 8, 9, 10, 0, 0, 0, 0, 0, 0,
+        0, 11, 12, 13, 14, 15, 16, 0, 0,  0, 0, 0, 0, 0, 0, 0,
+        0,  0,  0,  0,  0,  0,  0, 0, 0,  0, 0, 0, 0, 0, 0, 0,
+        0, 11, 12, 13, 14, 15, 16, 0, 0,  0, 0, 0, 0, 0, 0, 0,
+        0,  0,  0,  0,  0,  0,  0, 0, 0,  0, 0, 0, 0, 0, 0, 0
+    };
+
+#if !LOW_TRUST
+    private unsafe struct _24CharsBuffer {
+        public fixed char chars[24];
+    }
+#endif
+
 #if !LOW_TRUST
     unsafe
 #endif
 public static string DoubleToHexString(double x) {
     const int expBits = 11;  // bits for biased exponent
     const int maxBits = 53;  // significant bits (including implicit bit)
+#if LOW_TRUST
     const int maxChars = 24; // "-0x1.fffffffffffffp-1022"
-
+#else
+    _24CharsBuffer buffer;
+#endif
     const int maxBiasedExp = (1 << expBits) - 1;
     const int maxExp       = 1 << (expBits - 1); // max n for which 0.5*2^n is a double
     const int bias = maxExp - 1;
 
-    const int maxFractNibbles = (maxBits - 1)/4 + (((maxBits - 1)%4) == 0 ? 0 : 1);
+    const int maxFractNibbles = (maxBits - 1 + 3)/4;
     const ulong mask  = (1UL << (maxBits - 1)) - 1; // mask for lower (maxBits - 1) bits
 
 #if LOW_TRUST
@@ -44,7 +66,11 @@ public static string DoubleToHexString(double x) {
     ulong s  = xn & mask; // the significand (without the implicit bit)
     if (e < maxBiasedExp) {
         if (e == 0 && s == 0) return sign == 0 ? "0x0.0p0" : "-0x0.0p0";
+    #if LOW_TRUST
         char[] str = new char[maxChars];
+    #else
+        char* str = buffer.chars;
+    #endif
         int i = 0;
         if (sign != 0) str[i++] = '-';
         str[i++] = '0'; str[i++] = 'x';
@@ -82,18 +108,27 @@ public static string DoubleToHexString(double x) {
 }
 
 #if !LOW_TRUST
+    private unsafe struct _16CharsBuffer {
+        public fixed char chars[16];
+    }
+#endif
+
+#if !LOW_TRUST
     unsafe
 #endif
 public static string SingleToHexString(float x) {
     const int expBits = 8;   // bits for biased exponent
     const int maxBits = 24;  // significant bits (including implicit bit)
+#if LOW_TRUST
     const int maxChars = 16; // "-0x1.fffffep-126"
-
+#else
+    _16CharsBuffer buffer;
+#endif
     const int maxBiasedExp = (1 << expBits) - 1;
     const int maxExp       = 1 << (expBits - 1); // max n for which 0.5*2^n is a double
     const int bias = maxExp - 1;
 
-    const int maxFractNibbles = (maxBits - 1)/4 + (((maxBits - 1)%4) == 0 ? 0 : 1);
+    const int maxFractNibbles = (maxBits - 1 + 3)/4;
     const uint mask = (1U << (maxBits - 1)) - 1; // mask for lower (maxBits - 1) bits
 
 #if LOW_TRUST
@@ -106,7 +141,11 @@ public static string SingleToHexString(float x) {
     uint s = xn & mask; // the significand (without the implicit bit)
     if (e < maxBiasedExp) {
         if (e == 0 && s == 0) return sign == 0 ? "0x0.0p0" : "-0x0.0p0";
+    #if LOW_TRUST
         char[] str = new char[maxChars];
+    #else
+        char* str = buffer.chars;
+    #endif
         int i = 0;
         if (sign != 0) str[i++] = '-';
         str[i++] = '0'; str[i++] = 'x';
@@ -199,9 +238,9 @@ public static double DoubleFromHexString(string str) {
                 else goto InvalidFormat;
             }
             char c = s[i++];
-            if (c <= '9' ? c >= '0' : (c <= 'f' && (c >= 'a' || (c >= 'A' && c <= 'F')))) {
-                int h = c;
-                h = (h & 15) + (h >> 6)*9; // converts hex char to int
+            int h;
+            if (c < 128 && (h = asciiHexValuePlus1s[c]) != 0) {
+                --h;
                 if (nBits <= 0 ) {
                     xn |= (uint)h;
                     nBits = 0;
@@ -218,7 +257,10 @@ public static double DoubleFromHexString(string str) {
                     int nRemBits = maxBits2 - nBits;
                     int nSurplusBits = 4 - nRemBits;
                     int surplusBits = h & (0xf >> nRemBits);
-                    surplusBits = (0xfffe >> surplusBits) & 1; // == surplusBits != 0 ? 1 : 0
+                    // The .NET JIT is not able to emit branch-free code for
+                    //    surplusBits = surplusBits != 0 ? 1 : 0;
+                    // So we use this version instead:
+                    surplusBits = (0xfffe >> surplusBits) & 1; // = surplusBits != 0 ? 1 : 0
                     xn <<= nRemBits;
                     xn |= (uint)((h >> nSurplusBits) | surplusBits);
                     nBits += 4;
@@ -230,7 +272,7 @@ public static double DoubleFromHexString(string str) {
                 if (pastDot) goto InvalidFormat;
                 pastDot = true;
                 exp = nBits >= 0 ? nBits : 0; // exponent for integer part of float
-            } else if ((c == 'p' || c == 'P') && nBits >= 0) {
+            } else if ((c | ' ') == 'p' && nBits >= 0) {
                 if (!pastDot) exp = nBits;
                 int eSign = 1;
                 if (i < n && (s[i] == '-' || s[i] == '+')) {
@@ -241,7 +283,7 @@ public static double DoubleFromHexString(string str) {
                 int e = 0;
                 do {
                     c = s[i++];
-                    if ('0' <= c && c <= '9') {
+                    if (((uint)c - (uint)'0') <= 9) {
                         if (e <= (int.MaxValue - 9)/10) e = e*10 + (c - '0');
                         else e = int.MaxValue - 8;
                     } else goto InvalidFormat;
@@ -271,20 +313,20 @@ public static double DoubleFromHexString(string str) {
             } else {
                 --i;
                 if (nBits == -1 && i + 3 <= n) {
-                    if (   (s[i    ] == 'i' || s[i]     == 'I')
-                        && (s[i + 1] == 'n' || s[i + 1] == 'N')
-                        && (s[i + 2] == 'f' || s[i + 2] == 'F')
+                    if (   ((s[i    ] | ' ') == 'i')
+                        && ((s[i + 1] | ' ') == 'n')
+                        && ((s[i + 2] | ' ') == 'f')
                         && (i + 3 == n
-                            || (i + 8 == n && (s[i + 3] == 'i' || s[i + 3] == 'I')
-                                           && (s[i + 4] == 'n' || s[i + 4] == 'N')
-                                           && (s[i + 5] == 'i' || s[i + 5] == 'I')
-                                           && (s[i + 6] == 't' || s[i + 6] == 'T')
-                                           && (s[i + 7] == 'y' || s[i + 7] == 'Y'))))
+                            || (i + 8 == n && ((s[i + 3] | ' ') == 'i')
+                                           && ((s[i + 4] | ' ') == 'n')
+                                           && ((s[i + 5] | ' ') == 'i')
+                                           && ((s[i + 6] | ' ') == 't')
+                                           && ((s[i + 7] | ' ') == 'y'))))
                     {
                         return sign == 0 ? Double.PositiveInfinity : Double.NegativeInfinity;
-                    } else if (i + 3 == n && (s[i]     == 'n' || s[i]     == 'N')
-                                          && (s[i + 1] == 'a' || s[i + 1] == 'A')
-                                          && (s[i + 2] == 'n' || s[i + 2] == 'N'))
+                    } else if (i + 3 == n && ((s[i]     | ' ') == 'n')
+                                          && ((s[i + 1] | ' ') == 'a')
+                                          && ((s[i + 2] | ' ') == 'n'))
                     {
                         return Double.NaN;
                     }
@@ -399,9 +441,9 @@ public static float SingleFromHexString(string str) {
                 else goto InvalidFormat;
             }
             char c = s[i++];
-            if (c <= '9' ? c >= '0' : (c <= 'f' && (c >= 'a' || (c >= 'A' && c <= 'F')))) {
-                int h = c;
-                h = (h & 15) + (h >> 6)*9; // converts hex char to int
+            int h;
+            if (c < 128 && (h = asciiHexValuePlus1s[c]) != 0) {
+                --h;
                 if (nBits <= 0 ) {
                     xn |= h;
                     nBits = 0;
@@ -418,6 +460,9 @@ public static float SingleFromHexString(string str) {
                     int nRemBits = maxBits2 - nBits;
                     int nSurplusBits = 4 - nRemBits;
                     int surplusBits = h & (0xf >> nRemBits);
+                    // The .NET JIT is not able to emit branch-free code for
+                    //    surplusBits = surplusBits != 0 ? 1 : 0;
+                    // So we use this version instead:
                     surplusBits = (0xfffe >> surplusBits) & 1; // == surplusBits != 0 ? 1 : 0
                     xn <<= nRemBits;
                     xn |= (h >> nSurplusBits) | surplusBits;
@@ -430,7 +475,7 @@ public static float SingleFromHexString(string str) {
                 if (pastDot) goto InvalidFormat;
                 pastDot = true;
                 exp = nBits >= 0 ? nBits : 0; // exponent for integer part of float
-            } else if ((c == 'p' || c == 'P') && nBits >= 0) {
+            } else if ((c | ' ') == 'p' && nBits >= 0) {
                 if (!pastDot) exp = nBits;
                 int eSign = 1;
                 if (i < n && (s[i] == '-' || s[i] == '+')) {
@@ -441,7 +486,7 @@ public static float SingleFromHexString(string str) {
                 int e = 0;
                 do {
                     c = s[i++];
-                    if ('0' <= c && c <= '9') {
+                    if (((uint)c - (uint)'0') <= 9) {
                         if (e <= (int.MaxValue - 9)/10) e = e*10 + (c - '0');
                         else e = int.MaxValue - 8;
                     } else goto InvalidFormat;
@@ -471,20 +516,20 @@ public static float SingleFromHexString(string str) {
             } else {
                 --i;
                 if (nBits == -1 && i + 3 <= n) {
-                    if (   (s[i    ] == 'i' || s[i]     == 'I')
-                        && (s[i + 1] == 'n' || s[i + 1] == 'N')
-                        && (s[i + 2] == 'f' || s[i + 2] == 'F')
+                    if (   ((s[i    ] | ' ') == 'i')
+                        && ((s[i + 1] | ' ') == 'n')
+                        && ((s[i + 2] | ' ') == 'f')
                         && (i + 3 == n
-                            || (i + 8 == n && (s[i + 3] == 'i' || s[i + 3] == 'I')
-                                           && (s[i + 4] == 'n' || s[i + 4] == 'N')
-                                           && (s[i + 5] == 'i' || s[i + 5] == 'I')
-                                           && (s[i + 6] == 't' || s[i + 6] == 'T')
-                                           && (s[i + 7] == 'y' || s[i + 7] == 'Y'))))
+                            || (i + 8 == n && ((s[i + 3] | ' ') == 'i')
+                                           && ((s[i + 4] | ' ') == 'n')
+                                           && ((s[i + 5] | ' ') == 'i')
+                                           && ((s[i + 6] | ' ') == 't')
+                                           && ((s[i + 7] | ' ') == 'y'))))
                     {
                         return sign == 0 ? Single.PositiveInfinity : Single.NegativeInfinity;
-                    } else if (i + 3 == n && (s[i]     == 'n' || s[i]     == 'N')
-                                          && (s[i + 1] == 'a' || s[i + 1] == 'A')
-                                          && (s[i + 2] == 'n' || s[i + 2] == 'N'))
+                    } else if (i + 3 == n && ((s[i]     | ' ') == 'n')
+                                          && ((s[i + 1] | ' ') == 'a')
+                                          && ((s[i + 2] | ' ') == 'n'))
                     {
                         return Single.NaN;
                     }

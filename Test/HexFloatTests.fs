@@ -60,6 +60,12 @@ let testDoubleHexFloat() =
     checkFormatError "1x1"
     checkFormatError "x1"
     checkFormatError "0xx1"
+    checkFormatError "0x/"
+    checkFormatError "0x:"
+    checkFormatError "0x@"
+    checkFormatError "0xG"
+    checkFormatError "0x`"
+    checkFormatError "0xg"
     checkFormatError "0.1pp1"
     checkFormatError "0.1p+"
     checkFormatError "0.1p-"
@@ -179,6 +185,13 @@ let testDoubleHexFloat() =
     floatOfHexString "-0.001P-2147483640" |> BEqual -0.
     floatOfHexString "-0.001P-2147483647" |> BEqual -0.
     floatOfHexString "-0.001P-9999999999999999999999999" |> BEqual -0.
+
+    floatOfHexString "0x0123" |> Equal (double 0x0123)
+    floatOfHexString "0x4567" |> Equal (double 0x4567)
+    floatOfHexString "0x89ab" |> Equal (double 0x89ab)
+    floatOfHexString "0x89AB" |> Equal (double 0x89ab)
+    floatOfHexString "0xcdef" |> Equal (double 0xcdef)
+    floatOfHexString "0xCDEF" |> Equal (double 0xcdef)
 
     let v = floatOfHexString "0x1.23456789abcde"
 
@@ -433,6 +446,12 @@ let testSingleHexFloat() =
     checkFormatError "1x1"
     checkFormatError "x1"
     checkFormatError "0xx1"
+    checkFormatError "0x/"
+    checkFormatError "0x:"
+    checkFormatError "0x@"
+    checkFormatError "0xG"
+    checkFormatError "0x`"
+    checkFormatError "0xg"
     checkFormatError "0.1pp1"
     checkFormatError "0.1p+"
     checkFormatError "0.1p-"
@@ -552,6 +571,13 @@ let testSingleHexFloat() =
     float32OfHexString "-0.001P-2147483640" |> BEqual -0.f
     float32OfHexString "-0.001P-2147483647" |> BEqual -0.f
     float32OfHexString "-0.001P-9999999999999999999999999" |> BEqual -0.f
+
+    float32OfHexString "0x0123" |> Equal (single 0x0123)
+    float32OfHexString "0x4567" |> Equal (single 0x4567)
+    float32OfHexString "0x89ab" |> Equal (single 0x89ab)
+    float32OfHexString "0x89AB" |> Equal (single 0x89ab)
+    float32OfHexString "0xcdef" |> Equal (single 0xcdef)
+    float32OfHexString "0xCDEF" |> Equal (single 0xcdef)
 
     let v = float32OfHexString "0x1.23456e"
 
