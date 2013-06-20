@@ -590,9 +590,9 @@ The parser `skipSepEndBy1 p sep` is an optimized implementation of `sepEndBy1 p 
 val @manyTill@:      Parser<'a,'u> -> Parser<'b,'u> -> Parser<'a list,'u>
 ``]
 [
-The parser `manyTill p endp` repeatedly applies the parser `p` for as long as `endp` does not succeed. It returns a list of the results returned by `p`.
+The parser `manyTill p endp` repeatedly applies the parser `p` for as long as `endp` fails (without changing the parser state). It returns a list of the results returned by `p`.
 
-`manyTill p endp` is an optimized implementation of `many (notFollowedBy endp >>. p) .>> endp` that doesn't have to apply `endp` twice at the end of the sequence.
+`manyTill p endp` is an optimized variant of `many (notFollowedBy endp >>. p) .>> endp` that doesn't have to apply `endp` twice at the end of the sequence and that fails with the error reported by `endp` if `endp` fails after changing the parser state.
 ]
 
 [``

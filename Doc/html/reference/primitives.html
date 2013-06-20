@@ -1660,18 +1660,19 @@
          <p>
           The parser <code class="fsharp"><span class="ci">manyTill</span> <span class="ci">p</span> <span class="ci">endp</span></code> repeatedly
           applies the parser <code class="fsharp"><span class="ci">p</span></code> for as long as <code class="fsharp"><span
-          class="ci">endp</span></code> does not succeed. It returns a list of the results returned by <code class="fsharp"><span
-          class="ci">p</span></code>.
+          class="ci">endp</span></code> fails (without changing the parser state). It returns a list of the results returned by <code
+          class="fsharp"><span class="ci">p</span></code>.
          </p>
         </div>
         <div class="para _2">
          <p>
-          <code class="fsharp"><span class="ci">manyTill</span> <span class="ci">p</span> <span class="ci">endp</span></code> is an optimized
-          implementation of <code class="fsharp"><a href="#members.many"><span class="ci">many</span></a> <span class="cp">(</span><a
+          <code class="fsharp"><span class="ci">manyTill</span> <span class="ci">p</span> <span class="ci">endp</span></code> is an optimized variant
+          of <code class="fsharp"><a href="#members.many"><span class="ci">many</span></a> <span class="cp">(</span><a
           href="#members.notFollowedBy"><span class="ci">notFollowedBy</span></a> <span class="ci">endp</span> <a href="#members.:62::62:.."><span
           class="co">&gt;&gt;.</span></a> <span class="ci">p</span><span class="cp">)</span> <a href="#members...:62::62:"><span
           class="co">.&gt;&gt;</span></a> <span class="ci">endp</span></code> that doesn’t have to apply <code class="fsharp"><span
-          class="ci">endp</span></code> twice at the end of the sequence.
+          class="ci">endp</span></code> twice at the end of the sequence and that fails with the error reported by <code class="fsharp"><span
+          class="ci">endp</span></code> if <code class="fsharp"><span class="ci">endp</span></code> fails after changing the parser state.
          </p>
         </div>
        </div>

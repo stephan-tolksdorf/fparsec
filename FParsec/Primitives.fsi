@@ -293,10 +293,9 @@ val sepEndBy1: Parser<'a,'u> -> Parser<'b,'u> -> Parser<'a list,'u>
 val skipSepEndBy1: Parser<'a,'u> -> Parser<'b,'u> -> Parser<unit,'u>
 
 
-/// The parser `manyTill p endp` repeatedly applies the parser `p`
-/// while `endp` does not succeed. It returns a list of the results returned by `p`.
-/// `manyTill p endp` is an optimized implementation of `many (notFollowedBy endp >>. p) .>> endp`
-/// that doesn't have to apply `endp` twice at the end of the sequence.
+/// The `parser manyTill p endp` repeatedly applies the parser `p` 
+/// for as long as `endp` fails (without changing the parser state).
+/// It returns a list of the results returned by `p`.
 val manyTill: Parser<'a,'u> -> Parser<'b,'u> -> Parser<'a list,'u>
 
 /// The parser `skipManyTill p endp` is an optimized implementation of `manyTill p endp |>> ignore`.
