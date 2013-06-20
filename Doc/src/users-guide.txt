@@ -808,7 +808,7 @@ The integer must be positive.
 
 [section Customizing error messages]
 
-Generating relevant and informative parser error messages is one of FParsec greatest strengths. The top-down approach of recursive-descent parsing guarantees that there is always enough context to describe the exact cause of a parser error and how it could be avoided. FParsec exploits this context to automatically generate descriptive error messages whenever possible. This chapter explains how you can ensure with minimal efforts that your parser always produces understandable error messages.
+Generating relevant and informative parser error messages is one of FParsec's greatest strengths. The top-down approach of recursive-descent parsing guarantees that there is always enough context to describe the exact cause of a parser error and how it could be avoided. FParsec exploits this context to automatically generate descriptive error messages whenever possible. This chapter explains how you can ensure with minimal efforts that your parser always produces understandable error messages.
 
 As we already described in detail in [^applying-parsers-in-sequence.merging-error-messages], error reporting in FParsec is based on the following two principles:
 - Parsers that fail or could have consumed more input return as part of their `Reply` an `ErrorMessageList` describing the input they expected or the reason they failed.
