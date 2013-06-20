@@ -4,7 +4,7 @@ CSC_FLAGS_COMMON:= /noconfig /codepage:utf8 /warn:4 /nowarn:1591 /unsafe /define
 CSC_FLAGS_DEBUG:= $(CSC_FLAGS_COMMON) /debug:full /optimize- /define:DEBUG
 CSC_FLAGS_RELEASE:= $(CSC_FLAGS_COMMON) /debug /debug:pdbonly /optimize+
 
-FSC:= fsc
+FSC:= fsharpc
 FSC_FLAGS_COMMON:= /warn:4 /tailcalls- /define:LOW_TRUST
 FSC_FLAGS_DEBUG:= $(FSC_FLAGS_COMMON) /debug:full /optimize- /define:DEBUG /define:NOINLINE /define:DEBUG_STATIC_MAPPING
 FSC_FLAGS_RELEASE:= $(FSC_FLAGS_COMMON) /debug /debug:pdbonly /optimize+
