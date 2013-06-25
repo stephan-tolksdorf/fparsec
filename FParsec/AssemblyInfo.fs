@@ -18,22 +18,12 @@ open System.Runtime.InteropServices
 
 [<assembly: AssemblyTitle("FParsec.dll")>]
 [<assembly: AssemblyDescription("FParsec.dll")>]
-#if DEBUG
-    #if LOW_TRUST
-        [<assembly: AssemblyConfiguration("Debug Build (--define:LOW_TRUST)")>]
-    #else
-        [<assembly: AssemblyConfiguration("Debug Build")>]
-    #endif
-#else
-    #if LOW_TRUST
-        [<assembly: AssemblyConfiguration("Release Build (--define:LOW_TRUST)")>]
-    #else
-        [<assembly: AssemblyConfiguration("Release Build")>]
-    #endif
-#endif
-[<assembly: AssemblyProduct("FParsec")>]
-[<assembly: AssemblyCopyright("Copyright \169 Stephan Tolksdorf 2007-2011")>]
-[<assembly: AssemblyVersion("0.9.2.0")>]
-[<assembly: AssemblyFileVersion("0.9.2.0")>]
-[<assembly: InternalsVisibleTo("test_fparsec")>]
+
+[<assembly: AssemblyProduct(FParsec.CommonAssemblyInfo.Product)>]
+[<assembly: AssemblyCopyright(FParsec.CommonAssemblyInfo.Copyright)>]
+[<assembly: AssemblyVersion(FParsec.CommonAssemblyInfo.Version)>]
+[<assembly: AssemblyFileVersion(FParsec.CommonAssemblyInfo.FileVersion)>]
+[<assembly: AssemblyConfiguration(FParsec.CommonAssemblyInfo.Configuration)>]
+
+[<assembly: InternalsVisibleTo(FParsec.CommonAssemblyInfo.TestAssemblyName)>]
 do ()
