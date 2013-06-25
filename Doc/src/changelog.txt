@@ -1,6 +1,17 @@
 ﻿[section Changelog]
 [no-subsection-numbers]
 
+[section#v1_0_1 Version 1.0.1, 2013-06-25]
+- The maintainership of the FParsec NuGet package(s) was handed over from Ryan Riley,
+  Huw Simpson, Cameron Taggart and Khan Thompson to Stephan Tolksdorf. Thanks
+  Ryan, Huw, Cameron and Khan for creating and maintaining the previous versions of the NuGet package!
+- FParsec now has two @NuGet packages@, built with a new fsx script
+- fixed a [url "https://bitbucket.org/fparsec/main/pull-request/3/bug-fix-use-the-leaveopen-parameter-passed/diff" bug in one of the `CharStream` constructors] (reported and patched by Andrew Smith -- thanks Andrew!)
+- added `USE_STATIC_MAPPING_FOR_IS_ANY_OF` and `UNALIGNED_READS` as default compilation options in the Visual Studio projects (the default options now match the ones used by the "Big Data edition" NuGet package)
+- some minor code tweaking / micro-optimizations
+- fixed some minor documentation issues
+[/section]
+
 [section#v1_0 Version 1.0.0, 2012-07-19]
 - disabled code generation in `isAnyOf`, `isNoneOf`, `anyOf`, `skipAnyOf`, `noneOf` and `skipNoneOf` by default (you can reenable it using the new `USE_STATIC_MAPPING_FOR_IS_ANY_OF` compilation option)
 - annotated some `CharStream` methods with the .NET 4.5 `AggressiveInlining` option (see the new `CLR45` compilation option)

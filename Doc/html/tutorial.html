@@ -229,9 +229,11 @@
    <div class="intro i2">
     <div class="para _1">
      <p>
-      FParsec is built as two DLLs: <span class="tt">FParsec.dll</span> and <span class="tt">FParsecCS.dll</span>. The easiest way to build these DLLs
-      is to use the Visual Studio solution files in the folders <span class="tt">Build/VS9</span> (for Visual Studio 2008) and <span
-      class="tt">Build/VS10</span> (for Visual Studio 2010). Any project that uses FParsec has to reference both DLLs. See <a
+      FParsec is built as two DLLs: <span class="tt">FParsec.dll</span> and <span class="tt">FParsecCS.dll</span>. To use FParsec in your project, you
+      can either let <a href="http://nuget.org">NuGet</a> install one of the <a href="download-and-installation.html#nuget-packages">NuGet
+      packages</a>, or you can build the two FParsec DLLs from source. The easiest way to build FParsec from source is using the Visual Studio
+      solution files in the <span class="tt">Build/VS..</span> folders of the <a href="https://bitbucket.org/fparsec/main/get/tip.zip">source code
+      package</a>, e.g. in <span class="tt">Build/VS11</span> for Visual Studio 2012. Any project that uses FParsec has to reference both DLLs. See <a
       href="download-and-installation.html">Download and Installation</a> for more details.
      </p>
     </div>
@@ -964,7 +966,7 @@ Expecting: end of input
     <span class="ck">let</span> <span class="ci">isIdentifierChar</span> <span class="ci">c</span> <span class="cp">=</span> <a href="reference/charparsers.html#members.isLetter"><span class="ci">isLetter</span></a> <span class="ci">c</span> <span class="co">||</span> <a href="reference/charparsers.html#members.isDigit"><span class="ci">isDigit</span></a> <span class="ci">c</span> <span class="co">||</span> <span class="ci">c</span> <span class="co">=</span> <span class="cc"><span class="cld">'</span>_<span class="crd">'</span></span>
 
     <a href="reference/charparsers.html#members.many1Satisfy2L"><span class="ci">many1Satisfy2L</span></a> <span class="ci">isIdentifierFirstChar</span> <span class="ci">isIdentifierChar</span> <span class="cs"><span class="cld">"</span>identifier<span class="crd">"</span></span>
-    <a href="reference/primitives.html#members...:62::62:"><span class="co">.&gt;&gt;</span></a> <span class="ci">ws</span> <span class="clc"><span class="cld">//</span> skips trailing whitepace</span>
+    <a href="reference/primitives.html#members...:62::62:"><span class="co">.&gt;&gt;</span></a> <span class="ci">ws</span> <span class="clc"><span class="cld">//</span> skips trailing whitespace</span>
 </pre>
     </div>
     <div class="para _0">

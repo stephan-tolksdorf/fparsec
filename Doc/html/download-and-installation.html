@@ -50,33 +50,37 @@
            <table class="nav n3">
             <tbody class="nav-before-open n3">
              <tr class="nav-entry n3 _1">
-              <td class="nav-number n3"><a href="#getting-the-source"><span class="section-number">1</span><span class="nav-space"></span></a></td>
-              <td class="nav-title n3"><a href="#getting-the-source">Getting the source</a></td>
+              <td class="nav-number n3"><a href="#nuget-packages"><span class="section-number">1</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="#nuget-packages">NuGet packages</a></td>
              </tr>
              <tr class="nav-entry n3 _2">
-              <td class="nav-number n3">
-               <a href="#fparsec-is-built-as-two-dlls"><span class="section-number">2</span><span class="nav-space"></span></a>
-              </td>
-              <td class="nav-title n3"><a href="#fparsec-is-built-as-two-dlls">FParsec is built as two DLLs</a></td>
+              <td class="nav-number n3"><a href="#getting-the-source"><span class="section-number">2</span><span class="nav-space"></span></a></td>
+              <td class="nav-title n3"><a href="#getting-the-source">Getting the source</a></td>
              </tr>
              <tr class="nav-entry n3 _3">
               <td class="nav-number n3">
-               <a href="#building-fparsec-with-visual-studio"><span class="section-number">3</span><span class="nav-space"></span></a>
+               <a href="#fparsec-is-built-as-two-dlls"><span class="section-number">3</span><span class="nav-space"></span></a>
               </td>
-              <td class="nav-title n3"><a href="#building-fparsec-with-visual-studio">Building FParsec with Visual Studio</a></td>
+              <td class="nav-title n3"><a href="#fparsec-is-built-as-two-dlls">FParsec is built as two DLLs</a></td>
              </tr>
              <tr class="nav-entry n3 _4">
               <td class="nav-number n3">
-               <a href="#building-fparsec-with-mono"><span class="section-number">4</span><span class="nav-space"></span></a>
+               <a href="#building-fparsec-with-visual-studio"><span class="section-number">4</span><span class="nav-space"></span></a>
+              </td>
+              <td class="nav-title n3"><a href="#building-fparsec-with-visual-studio">Building FParsec with Visual Studio</a></td>
+             </tr>
+             <tr class="nav-entry n3 _5">
+              <td class="nav-number n3">
+               <a href="#building-fparsec-with-mono"><span class="section-number">5</span><span class="nav-space"></span></a>
               </td>
               <td class="nav-title n3"><a href="#building-fparsec-with-mono">Building FParsec with Mono</a></td>
              </tr>
-             <tr class="nav-entry n3 _5">
-              <td class="nav-number n3"><a href="#low-trust-version"><span class="section-number">5</span><span class="nav-space"></span></a></td>
+             <tr class="nav-entry n3 _6">
+              <td class="nav-number n3"><a href="#low-trust-version"><span class="section-number">6</span><span class="nav-space"></span></a></td>
               <td class="nav-title n3"><a href="#low-trust-version">The Low‐Trust version of FParsec</a></td>
              </tr>
-             <tr class="nav-entry n3 _6">
-              <td class="nav-number n3"><a href="#configuration-options"><span class="section-number">6</span><span class="nav-space"></span></a></td>
+             <tr class="nav-entry n3 _7">
+              <td class="nav-number n3"><a href="#configuration-options"><span class="section-number">7</span><span class="nav-space"></span></a></td>
               <td class="nav-title n3"><a href="#configuration-options">Configuration options</a></td>
              </tr>
             </tbody>
@@ -122,46 +126,119 @@
   <h1 class="title h1"><span><span class="section-number">3</span> Download and installation</span></h1>
   <div class="intro i1">
    <div class="para _1">
-    <p>FParsec is currently distributed only in source code form.</p>
+    <p>FParsec is distributed in source code form and as NuGet packages.</p>
    </div>
-   <div class="para _2 lcinp">
+   <div class="para _2">
+    <p>
+     If you’re new to FParsec, I’d recommend to start by downloading the <a href="https://bitbucket.org/fparsec/main/get/tip.zip">source code
+     package</a> and experimenting a bit with the included sample projects. With the Visual Studio project and solution files (e.g. in the <span
+     class="tt">Build/VS11</span> subfolder) building the library and the samples is as easy as clicking a button.
+    </p>
+   </div>
+   <div class="para _3">
+    <p>The source package also includes a complete copy of the HTML documentation for offline viewing.</p>
+   </div>
+   <div class="para _4">
+    <p>
+     To use FParsec in your own projects, you just need to reference the <span class="tt">FParsecCS.dll</span> and <span class="tt">FParsec.dll</span>
+     assemblies produced by the FParsec project files. Alternatively, you can use the <a href="http://nuget.org">NuGet package manager</a> to download
+     precompiled FParsec assemblies and setup the references.
+    </p>
+   </div>
+   <div class="para _5 lcinp">
     <div class="local-toc">
      <div class="toc-toc-title">
       Contents
      </div>
      <table class="toc t1">
       <tr class="toc-entry toc t1 _0">
-       <td class="toc-number toc t1"><a href="#getting-the-source"><span class="toc-number">1</span><span class="toc-space"></span></a></td>
-       <td class="toc-title toc t1"><a href="#getting-the-source">Getting the source</a></td>
+       <td class="toc-number toc t1"><a href="#nuget-packages"><span class="toc-number">1</span><span class="toc-space"></span></a></td>
+       <td class="toc-title toc t1"><a href="#nuget-packages">NuGet packages</a></td>
       </tr>
       <tr class="toc-entry toc t1 _1">
-       <td class="toc-number toc t1"><a href="#fparsec-is-built-as-two-dlls"><span class="toc-number">2</span><span class="toc-space"></span></a></td>
-       <td class="toc-title toc t1"><a href="#fparsec-is-built-as-two-dlls">FParsec is built as two DLLs</a></td>
+       <td class="toc-number toc t1"><a href="#getting-the-source"><span class="toc-number">2</span><span class="toc-space"></span></a></td>
+       <td class="toc-title toc t1"><a href="#getting-the-source">Getting the source</a></td>
       </tr>
       <tr class="toc-entry toc t1 _2">
+       <td class="toc-number toc t1"><a href="#fparsec-is-built-as-two-dlls"><span class="toc-number">3</span><span class="toc-space"></span></a></td>
+       <td class="toc-title toc t1"><a href="#fparsec-is-built-as-two-dlls">FParsec is built as two DLLs</a></td>
+      </tr>
+      <tr class="toc-entry toc t1 _3">
        <td class="toc-number toc t1">
-        <a href="#building-fparsec-with-visual-studio"><span class="toc-number">3</span><span class="toc-space"></span></a>
+        <a href="#building-fparsec-with-visual-studio"><span class="toc-number">4</span><span class="toc-space"></span></a>
        </td>
        <td class="toc-title toc t1"><a href="#building-fparsec-with-visual-studio">Building FParsec with Visual Studio</a></td>
       </tr>
-      <tr class="toc-entry toc t1 _3">
-       <td class="toc-number toc t1"><a href="#building-fparsec-with-mono"><span class="toc-number">4</span><span class="toc-space"></span></a></td>
+      <tr class="toc-entry toc t1 _4">
+       <td class="toc-number toc t1"><a href="#building-fparsec-with-mono"><span class="toc-number">5</span><span class="toc-space"></span></a></td>
        <td class="toc-title toc t1"><a href="#building-fparsec-with-mono">Building FParsec with Mono</a></td>
       </tr>
-      <tr class="toc-entry toc t1 _4">
-       <td class="toc-number toc t1"><a href="#low-trust-version"><span class="toc-number">5</span><span class="toc-space"></span></a></td>
+      <tr class="toc-entry toc t1 _5">
+       <td class="toc-number toc t1"><a href="#low-trust-version"><span class="toc-number">6</span><span class="toc-space"></span></a></td>
        <td class="toc-title toc t1"><a href="#low-trust-version">The Low‐Trust version of FParsec</a></td>
       </tr>
-      <tr class="toc-entry toc t1 _5">
-       <td class="toc-number toc t1"><a href="#configuration-options"><span class="toc-number">6</span><span class="toc-space"></span></a></td>
+      <tr class="toc-entry toc t1 _6">
+       <td class="toc-number toc t1"><a href="#configuration-options"><span class="toc-number">7</span><span class="toc-space"></span></a></td>
        <td class="toc-title toc t1"><a href="#configuration-options">Configuration options</a></td>
       </tr>
      </table>
     </div>
    </div>
   </div>
+  <div id="nuget-packages" class="section s2">
+   <h2 class="title h2"><span><span class="section-number">3.1</span> NuGet packages</span></h2>
+   <div class="intro i2">
+    <div class="para _1">
+     <p>There are two NuGet packages of FParsec, which are built with different configuration options.</p>
+    </div>
+    <div class="para _2">
+     <p>
+      The <a href="http://nuget.org/packages/FParsec">basic package</a> uses the <a href="#low-trust-version">Low‐Trust version</a> of FParsec, which
+      uses no <a href="http://msdn.microsoft.com/en-us/library/t2yzs44b.aspx">unverifiable code</a> and is optimized for maximum portability. The main
+      limitation of this version is that any input stream is completely read into a string before parsing, which limits the maximum practical input
+      size.
+     </p>
+    </div>
+    <div class="para _3">
+     <p>
+      The <a href="http://nuget.org/packages/FParsec-Big-Data-Edition/">&#x201C;Big Data edition&#x201D; package</a> uses the non‐Low‐Trust version of
+      FParsec that is optimized for maximum performance and supports extremely large input streams. Since this configuration is also the default
+      configuration of the solution files included with the source code, it is sometimes referred to as the &#x201C;normal&#x201D; version of FParsec.
+      This version of FParsec does use &#x201C;unsafe&#x201D; (i.e. unverifiable) code involving unmanaged pointers. It also uses code generation in
+      the implementation of <code class="fsharp"><a href="reference/charparsers.html#members.isAnyOf"><span class="ci">isAnyOf</span></a></code>,
+      <code class="fsharp"><a href="reference/charparsers.html#members.isNoneOf"><span class="ci">isNoneOf</span></a></code>, <code class="fsharp"><a
+      href="reference/charparsers.html#members.anyOf"><span class="ci">anyOf</span></a></code>, <code class="fsharp"><a
+      href="reference/charparsers.html#members.skipAnyOf"><span class="ci">skipAnyOf</span></a></code>, <code class="fsharp"><a
+      href="reference/charparsers.html#members.noneOf"><span class="ci">noneOf</span></a></code> and <code class="fsharp"><a
+      href="reference/charparsers.html#members.skipNoneOf"><span class="ci">skipNoneOf</span></a></code>.
+     </p>
+    </div>
+    <div class="para _4">
+     <p>
+      You can find the precise <a href="#configuration-options">configuration options</a> used to built the two NuGet packages below. Should you
+      measure a significant performance <span class="i">degradation</span> when switching to the Big Data edition, you’re probably inadvertently
+      recreating the same <code class="fsharp"><a href="reference/charparsers.html#members.isAnyOf"><span class="ci">isAnyOf</span></a></code>‐ or
+      <code class="fsharp"><a href="reference/charparsers.html#members.isNoneOf"><span class="ci">isNoneOf</span></a></code>‐based parsers again and
+      again, as explained <a href="users-guide/performance-optimizations.html#performance-guidelines.construct-parsers-once">here</a> and <a
+      href="users-guide/where-is-the-monad.html#why-the-monadic-syntax-is-slow">here</a>.
+     </p>
+    </div>
+    <div class="para _5">
+     <p>The NuGet packages are strongly signed. Their assembly version numbers will only be incremented for breaking changes.</p>
+    </div>
+    <div class="para _6">
+     <p>
+      For every published FParsec NuGet package a corresponding <a
+      href="http://docs.nuget.org/docs/creating-packages/creating-and-publishing-a-symbol-package">symbol package</a> with PDBs and source files is
+      uploaded to <a href="http://www.symbolsource.org/">SymbolSource.org</a>. So, if you enable source server support in the Visual Studio debugging
+      options and <a href="http://www.symbolsource.org/Public/Home/VisualStudio">configure</a> symbolsource.org as a symbol server, you can step into
+      the FParsec code in the debugger.
+     </p>
+    </div>
+   </div>
+  </div>
   <div id="getting-the-source" class="section s2">
-   <h2 class="title h2"><span><span class="section-number">3.1</span> Getting the source</span></h2>
+   <h2 class="title h2"><span><span class="section-number">3.2</span> Getting the source</span></h2>
    <div class="intro i2">
     <div class="para _1">
      <p>FParsec’s source code repository is hosted on BitBucket at: <a href="https://bitbucket.org/fparsec/main">bitbucket.org/fparsec/main</a></p>
@@ -169,7 +246,7 @@
     <div class="para _2">
      <p>
       You can &#x201C;clone&#x201D; the source code using <a href="http://mercurial.selenic.com/">Mercurial (HG)</a> or you can <a
-      href="https://bitbucket.org/fparsec/main/downloads">download it as a zip‐file</a>.
+      href="https://bitbucket.org/fparsec/main/get/tip.zip">download it as a zip‐file</a>.
      </p>
     </div>
     <div class="para _3">
@@ -191,7 +268,7 @@
    </div>
   </div>
   <div id="fparsec-is-built-as-two-dlls" class="section s2">
-   <h2 class="title h2"><span><span class="section-number">3.2</span> FParsec is built as two DLLs</span></h2>
+   <h2 class="title h2"><span><span class="section-number">3.3</span> FParsec is built as two DLLs</span></h2>
    <div class="intro i2">
     <div class="para _1">
      <p>
@@ -242,13 +319,13 @@
    </div>
   </div>
   <div id="building-fparsec-with-visual-studio" class="section s2">
-   <h2 class="title h2"><span><span class="section-number">3.3</span> Building FParsec with Visual Studio</span></h2>
+   <h2 class="title h2"><span><span class="section-number">3.4</span> Building FParsec with Visual Studio</span></h2>
    <div class="intro i2">
     <div class="para _1">
      <p>
-      The folders <span class="tt">Build/VS9</span> and <span class="tt">Build/VS10</span> contain solution files for Visual Studio 2008 and 2010. The
-      folder <span class="tt">Build/Silverlight</span> contains a Visual Studio 2010 solution specifically configured to produce Silverlight
-      4‐compatible assemblies.
+      The folders <span class="tt">Build/VS9</span>, <span class="tt">Build/VS10</span> and <span class="tt">Build/VS11</span> contain solution files
+      for Visual Studio 2008, 2010 and 2012. The folder <span class="tt">Build/Silverlight</span> contains a Visual Studio 2010 solution specifically
+      configured to produce Silverlight 4‐compatible assemblies.
      </p>
     </div>
     <div class="para _2">
@@ -264,7 +341,7 @@
    </div>
   </div>
   <div id="building-fparsec-with-mono" class="section s2">
-   <h2 class="title h2"><span><span class="section-number">3.4</span> Building FParsec with Mono</span></h2>
+   <h2 class="title h2"><span><span class="section-number">3.5</span> Building FParsec with Mono</span></h2>
    <div class="intro i2">
     <div class="para _1">
      <p>
@@ -312,29 +389,14 @@
       </li>
      </ul>
     </div>
-    <div class="para _6 lcinp">
-     <p>There are also two issues with the official &#x201C;source code drop&#x201D; for the F# compiler:</p>
-     <ul class="l1">
-      <li class="_1">
-       The assemblies for the .NET 4 profile contain duplicate symbols. See <a href="https://bugzilla.novell.com/show_bug.cgi?id=686312">here</a> for
-       instructions how to fix this.
-      </li>
-      <li class="_2">
-       On Unix platforms the F# compiler generates debug symbols with invalid source code file paths. This prevents debugging with tools like
-       MonoDevelop. You can fix this by commenting out <code class="fsharp"><span class="cp">&gt;</span><span class="cp">&gt;</span> <span
-       class="ci">normalize</span></code> on line 724 of <a href="https://github.com/fsharp/fsharp/blob/master/src/fsharp/env.fs#L724"><span
-       class="tt">fsharp/env.fs</span></a> before building F# from source.
-      </li>
-     </ul>
-    </div>
    </div>
   </div>
   <div id="low-trust-version" class="section s2">
-   <h2 class="title h2"><span><span class="section-number">3.5</span> The Low‐Trust version of FParsec</span></h2>
+   <h2 class="title h2"><span><span class="section-number">3.6</span> The Low‐Trust version of FParsec</span></h2>
    <div class="intro i2">
     <div class="para _1">
      <p>
-      For optimization reasons the normal implementation of FParsec involves <a
+      For optimization reasons the normal implementation (the &#x201C;Big Data edition&#x201D;) of FParsec involves <a
       href="http://msdn.microsoft.com/en-us/library/t2yzs44b.aspx">unverifiable code</a> using unmanaged pointers.
      </p>
     </div>
@@ -370,7 +432,7 @@
    </div>
   </div>
   <div id="configuration-options" class="section s2">
-   <h2 class="title h2"><span><span class="section-number">3.6</span> Configuration options</span></h2>
+   <h2 class="title h2"><span><span class="section-number">3.7</span> Configuration options</span></h2>
    <div class="intro i2">
     <div class="para _1">
      <p>
@@ -386,7 +448,23 @@
       a separate <span class="tt">/define:</span> option for each symbol).
      </p>
     </div>
-    <div class="para _3 lcinp">
+    <div class="para _3">
+     <p>
+      The <a href="http://nuget.org/packages/FParsec">basic</a> NuGet package is built with the following options:<br /><code class="fsharp"><span
+      class="ci">LOW_TRUST</span></code>, <code class="fsharp"><span class="ci">SMALL_STATETAG</span></code>, <code class="fsharp"><span
+      class="ci">CLR4</span></code>
+     </p>
+    </div>
+    <div class="para _4">
+     <p>
+      The <a href="http://nuget.org/packages/FParsec-Big-Data-Edition">&#x201C;Big Data edition&#x201D;</a> package is built with the following
+      options:<br /><code class="fsharp"><a href="#configuration-options.USE_STATIC_MAPPING_FOR_IS_ANY_OF"><span
+      class="ci">USE_STATIC_MAPPING_FOR_IS_ANY_OF</span></a></code>, <code class="fsharp"><a href="#configuration-options.UNALIGNED_READS"><span
+      class="ci">UNALIGNED_READS</span></a></code>, <code class="fsharp"><span class="ci">CLR4</span></code>, <code class="fsharp"><a
+      href="#configuration-options.CLR45"><span class="ci">CLR45</span></a></code>.
+     </p>
+    </div>
+    <div class="para _5 lcinp">
      <div class="dl multi-para">
       <div class="dl-title">Options for <span class="tt">FParsecCS.dll</span></div>
       <dl class="dl multi-para">
@@ -451,13 +529,13 @@
          <p>Optimize for CPUs that support fast unaligned memory reads, i.e. any modern x86‐based CPU.</p>
         </div>
         <div class="para _3">
-         <p>This option only makes a noticable difference is some specific situations.</p>
+         <p>This option only makes a noticeable difference is some specific situations.</p>
         </div>
        </dd>
       </dl>
      </div>
     </div>
-    <div class="para _4 lcinp">
+    <div class="para _6 lcinp">
      <div class="dl multi-para">
       <div class="dl-title">Options for <span class="tt">FParsec.dll</span></div>
       <dl class="dl multi-para">
@@ -516,7 +594,7 @@
         </div>
         <div class="para _4">
          <p>
-          If you run into noticable performance problems or memory leaks when enabling this option, you’re probably inadvertently recreating the same
+          If you run into noticeable performance problems or memory leaks when enabling this option, you’re probably inadvertently recreating the same
           <code class="fsharp"><a href="reference/charparsers.html#members.isAnyOf"><span class="ci">isAnyOf</span></a></code>‐ or <code
           class="fsharp"><a href="reference/charparsers.html#members.isNoneOf"><span class="ci">isNoneOf</span></a></code>‐based parser again and
           again, as explained <a href="users-guide/performance-optimizations.html#performance-guidelines.construct-parsers-once">here</a> and <a

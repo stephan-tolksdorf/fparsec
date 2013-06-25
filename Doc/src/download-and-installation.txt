@@ -1,13 +1,36 @@
 ﻿[section Download and installation]
 
-FParsec is currently distributed only in source code form.
+FParsec is distributed in source code form and as NuGet packages.
+
+If you're new to FParsec, I'd recommend to start by downloading the [url "https://bitbucket.org/fparsec/main/get/tip.zip" source code package] and experimenting a bit with the included sample projects. With the Visual Studio project and solution files (e.g. in the [=Build/VS11] subfolder) building the library and the samples is as easy as clicking a button.
+
+The source package also includes a complete copy of the HTML documentation for offline viewing.
+
+To use FParsec in your own projects, you just need to reference the =FParsecCS.dll= and =FParsec.dll= assemblies produced by the FParsec project files. Alternatively, you can use the [url "http://nuget.org" NuGet package manager] to download precompiled FParsec assemblies and setup the references.
 
 [toc]
 
+[section NuGet packages]
+
+There are two NuGet packages of FParsec, which are built with different configuration options.
+
+The [url "http://nuget.org/packages/FParsec" basic package] uses the @Low-Trust version@ of FParsec, which uses no [url "http://msdn.microsoft.com/en-us/library/t2yzs44b.aspx" unverifiable code] and is optimized for maximum portability. The main limitation of this version is that any input stream is completely read into a string before parsing, which limits the maximum practical input size.
+
+The [url "http://nuget.org/packages/FParsec-Big-Data-Edition/" "Big Data edition" package] uses the non-Low-Trust version of FParsec that is optimized for maximum performance and supports extremely large input streams. Since this configuration is also the default configuration of the solution files included with the source code, it is sometimes referred to as the "normal" version of FParsec. This version of FParsec does use "unsafe" (i.e. unverifiable) code involving unmanaged pointers. It also uses code generation in the implementation of `isAnyOf`, `isNoneOf`, `anyOf`, `skipAnyOf`, `noneOf` and `skipNoneOf`.
+
+You can find the precise @configuration options@ used to built the two NuGet packages below. Should you measure a significant performance /degradation/ when switching to the Big Data edition, you're probably inadvertently recreating the same `isAnyOf`- or `isNoneOf`-based parsers again and again, as explained [^construct-parsers-once here] and [^why-the-monadic-syntax-is-slow here].
+
+The NuGet packages are strongly signed. Their assembly version numbers will only be incremented for breaking changes.
+
+For every published FParsec NuGet package a corresponding [url "http://docs.nuget.org/docs/creating-packages/creating-and-publishing-a-symbol-package" symbol package] with PDBs and source files is uploaded to [url "http://www.symbolsource.org/" SymbolSource.org]. So, if you enable source server support in the Visual Studio debugging options and [url "http://www.symbolsource.org/Public/Home/VisualStudio" configure] symbolsource.org as a symbol server, you can step into the FParsec code in the debugger.
+
+[/section]
+
 [section Getting the source]
+
 FParsec's source code repository is hosted on BitBucket at: [url "https://bitbucket.org/fparsec/main" bitbucket.org/fparsec/main]
 
-You can "clone" the source code using [url "http://mercurial.selenic.com/" Mercurial (HG)] or you can [url "https://bitbucket.org/fparsec/main/downloads" download it as a zip-file].
+You can "clone" the source code using [url "http://mercurial.selenic.com/" Mercurial (HG)] or you can [url "https://bitbucket.org/fparsec/main/get/tip.zip" download it as a zip-file].
 
 It's an FParsec project policy to check only stable and tested code into the BitBucket repository, so you can normally just work with the "tip" version of FParsec.
 
@@ -36,7 +59,7 @@ Unfortunately, the same option cannot be used to merge =FParsecCS.dll= into the 
 
 [section Building FParsec with Visual Studio]
 
-The folders [= Build/VS9] and [= Build/VS10] contain solution files for Visual Studio 2008 and 2010. The folder [= Build/Silverlight] contains a Visual Studio 2010 solution specifically configured to produce Silverlight 4-compatible assemblies.
+The folders [= Build/VS9], [= Build/VS10] and [= Build/VS11] contain solution files for Visual Studio 2008, 2010 and 2012. The folder [= Build/Silverlight] contains a Visual Studio 2010 solution specifically configured to produce Silverlight 4-compatible assemblies.
 
 When you build FParsec with these solution files, the compiled assemblies will be put into the [= bin/Debug] or [= bin/Release] subfolders, depending on the project configuration. For example, the VS10 solution will put the assemblies into the folders [= Build/VS10/bin/Debug] and [= Build/VS10/bin/Release].
 
@@ -58,15 +81,11 @@ Note:
 - Mono [url "https://bugzilla.novell.com/show_bug.cgi?id=480178" currently doesn't properly support] Unicode code points outside the Basic Multilingual Plane (i.e. code points above 0xffff). This breaks FParsec's `identifier` parser, for example. *(Note: The linked ticket has been closed in the meantime, so the issue might have been fixed since the last time I checked.)*
 - The `regex` parser and the `[^Match_Regex CharStream.Match](Regex)` method curently don't work on Mono, because Mono's regular expression implementation [url "https://bugzilla.novell.com/show_bug.cgi?id=474154" does not correctly match regexes on substrings] (Laurent Le Brun reported this issue - thanks Laurent!).
 
-There are also two issues with the official "source code drop" for the F# compiler:
-- The assemblies for the .NET 4 profile contain duplicate symbols. See [url "https://bugzilla.novell.com/show_bug.cgi?id=686312" here] for instructions how to fix this.
-- On Unix platforms the F# compiler generates debug symbols with invalid source code file paths. This prevents debugging with tools like MonoDevelop. You can fix this by commenting out `>> normalize` on line 724 of [url "https://github.com/fsharp/fsharp/blob/master/src/fsharp/env.fs#L724" [= fsharp/env.fs]] before building F# from source.
-
 [/section]
 
 [section#low-trust-version The Low-Trust version of FParsec]
 
-For optimization reasons the normal implementation of FParsec involves [url "http://msdn.microsoft.com/en-us/library/t2yzs44b.aspx" unverifiable code] using unmanaged pointers.
+For optimization reasons the normal implementation (the "Big Data edition") of FParsec involves [url "http://msdn.microsoft.com/en-us/library/t2yzs44b.aspx" unverifiable code] using unmanaged pointers.
 
 If you compile FParsec with the `LOW_TRUST` conditional compiler symbol, the unverifiable code is replaced with a "safe" alternative. This allows FParsec to be run in environments with "reduced trust", such as medium trust ASP.NET applications or Silverlight applications.
 
@@ -85,6 +104,10 @@ You can configure FParsec's source code with a number of conditional compilation
 
 You can set conditional compilation symbols either in the Visual Studio project configuration in the "Build" tab (multiple symbols can be separated by semicolons) or on the compiler command-line with the [= /define:SYMBOL] option (the F# compiler requires a separate [= /define:] option for each symbol).
 
+The [url "http://nuget.org/packages/FParsec" basic] NuGet package is built with the following options:[br]`LOW_TRUST`, `SMALL_STATETAG`, `CLR4`
+
+The [url "http://nuget.org/packages/FParsec-Big-Data-Edition" "Big Data edition"]  package is built with the following options:[br]`USE_STATIC_MAPPING_FOR_IS_ANY_OF`, `UNALIGNED_READS`, `CLR4`, `CLR45`.
+
 [dl Options for =FParsecCS.dll=
 
 [`LOW_TRUST`]
@@ -94,7 +117,7 @@ You can set conditional compilation symbols either in the Visual Studio project 
 [Compile for a CLR version ≥ 4.]
 
 [`#CLR45#`]
-[ 
+[
 Compile for a CLR version ≥ 4.5.
 
 This option allows annotating methods with the new `MethodImplOptions.AggressiveInlining` attribute.
@@ -116,7 +139,7 @@ This is an optimization for 32-bit runtimes. You can find more information about
 
 Optimize for CPUs that support fast unaligned memory reads, i.e. any modern x86-based CPU.
 
-This option only makes a noticable difference is some specific situations.
+This option only makes a noticeable difference is some specific situations.
 ]
 
 ]
@@ -146,7 +169,7 @@ Use `StaticMapping.createStaticCharIndicatorFunction` for the implementation of 
 
 Runtime code generation is a relatively expensive operation, so this optimization is primarily meant for parsers that are applied to large (or lots of) input streams. Please see the remarks for the `StaticMapping` module for more information.
 
-If you run into noticable performance problems or memory leaks when enabling this option, you're probably inadvertently recreating the same `isAnyOf`- or `isNoneOf`-based parser again and again, as explained [^construct-parsers-once here] and [^why-the-monadic-syntax-is-slow here].
+If you run into noticeable performance problems or memory leaks when enabling this option, you're probably inadvertently recreating the same `isAnyOf`- or `isNoneOf`-based parser again and again, as explained [^construct-parsers-once here] and [^why-the-monadic-syntax-is-slow here].
 ]
 
 [`DEBUG_STATIC_MAPPING` ]

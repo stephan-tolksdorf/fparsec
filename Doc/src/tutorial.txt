@@ -8,7 +8,7 @@ This tutorial introduces you to the basic concepts of FParsec. Our goal is to gi
 
 [section Preliminaries]
 
-FParsec is built as two DLLs: =FParsec.dll= and =FParsecCS.dll=. The easiest way to build these DLLs is to use the Visual Studio solution files in the folders [=Build/VS9] (for Visual Studio 2008) and [=Build/VS10] (for Visual Studio 2010). Any project that uses FParsec has to reference both DLLs. See @Download and Installation@ for more details.
+FParsec is built as two DLLs: =FParsec.dll= and =FParsecCS.dll=. To use FParsec in your project, you can either let [url "http://nuget.org" NuGet] install one of the [^nuget-packages NuGet packages], or you can build the two FParsec DLLs from source. The easiest way to build FParsec from source is using the Visual Studio solution files in the [=Build/VS..] folders of the [url "https://bitbucket.org/fparsec/main/get/tip.zip" source code package], e.g. in [=Build/VS11] for Visual Studio 2012. Any project that uses FParsec has to reference both DLLs. See @Download and Installation@ for more details.
 
 All FParsec types and modules are declared in the `FParsec` namespace. This namespace contains some basic classes (such as `CharStream` and `Reply`) and four F# modules, namely
 - `Primitives`, containing basic type definitions and parser combinators,
@@ -372,7 +372,7 @@ let identifier =
     let isIdentifierChar c = isLetter c || isDigit c || c = '_'
 
     many1Satisfy2L isIdentifierFirstChar isIdentifierChar "identifier"
-    .>> ws // skips trailing whitepace
+    .>> ws // skips trailing whitespace
 ``
 
 Here we have used the `many1Satisfy2L` string parser, which is one of several primitives for parsing strings based on char predicates (i.e. functions that take a char as input and return a boolean value). It parses any sequence of one or more chars (hence the "many1" in the name) whose first char satisfies the first predicate function and whose remaining chars satisfy the second predicate (hence the "Satisfy2"). The string label given as the third argument (hence the "L") is used in error message to describe the expected input.
