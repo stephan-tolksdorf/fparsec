@@ -294,33 +294,34 @@ let skipNoneOf (chars: seq<char>) =
     let str = charsToString chars
     skipSatisfyE (isNoneOf str) (Errors.ExpectedAnyCharNotIn(str))
 
+let inline isAsciiUpper (c: char) =
+    uint32 c - uint32 'A' <= uint32 'Z' - uint32 'A'
 
-let inline isAsciiUpper c  = c >= 'A' && c <= 'Z'
-let inline isAsciiLower c  = c >= 'a' && c <= 'z'
-let inline isAsciiLetter (c: char) = let cc = int c ||| int ' '
-                                     cc >= int 'a' && cc <= int 'z'
+let inline isAsciiLower (c: char) = 
+    uint32 c - uint32 'a' <= uint32 'z' - uint32 'a'
 
-let inline isUpper c =
-    c >= 'A' && (c <= 'Z' || (c > '\u007F' && System.Char.IsUpper(c)))
+let inline isAsciiLetter (c: char) = 
+    let cc = uint32 c ||| uint32 ' '
+    cc - uint32 'a' <= uint32 'z' - uint32 'a'
 
-let inline isLower c =
-    c >= 'a' && (c <= 'z' || (c > '\u007F' && System.Char.IsLower(c)))
+let inline isUpper (c: char) =
+    isAsciiUpper c || (c > '\u007F' && System.Char.IsUpper(c))
 
-let inline isLetter c =
-    if c <= '\u007F' then
-         let cc = int c ||| int ' '
-         cc >= int 'a' && cc <= int 'z'
-    else System.Char.IsLetter(c)
+let inline isLower (c: char) =
+    isAsciiLower c || (c > '\u007F' && System.Char.IsLower(c))
 
-let inline isDigit c = c <= '9' && c >= '0'
+let inline isLetter (c: char) =
+    isAsciiLetter c || (c > '\u007F' && System.Char.IsLetter(c))
 
-let inline isHex c    =
-    if c <= '9' then c >= '0'
-    else
-        let cc = int c ||| int ' '
-        cc <= int 'f' && cc >= int 'a'
+let inline isDigit (c: char) =
+    uint32 c - uint32 '0' <= uint32 '9' - uint32 '0'
 
-let inline isOctal c  = c <= '7' && c >= '0'
+let inline isHex (c: char) =
+    let cc = uint32 c ||| uint32 ' '
+    isDigit c || cc - uint32 'a' <= uint32 'f' - uint32 'a'
+
+let inline isOctal (c: char) =
+    uint32 c - uint32 '0' <= uint32 '7' - uint32 '0'
 
 let asciiUpper  stream = fastInlineSatisfyE isAsciiUpper  Errors.ExpectedAsciiUppercaseLetter stream
 let asciiLower  stream = fastInlineSatisfyE isAsciiLower  Errors.ExpectedAsciiLowercaseLetter stream
