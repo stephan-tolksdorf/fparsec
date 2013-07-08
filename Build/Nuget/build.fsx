@@ -45,7 +45,7 @@ let version =
     let i0 = str.IndexOf(mark) + mark.Length
     let i1 = str.IndexOf(".0\"", i0) - 1
     if i1 < 0 || i0 >= i1 then failwith "Could not determine assembly version"
-    str.[i0..i1] + "-RC2"
+    str.[i0..i1] // + "-RC1"
 
 let authors = "Stephan Tolksdorf"
 let copyright = "Copyright © 2013 Stephan Tolksdorf"
@@ -53,7 +53,7 @@ let tags = "parser, combinator, f#, fsharp, c#, csharp"
 
 let commonDescription = """FParsec is a parser combinator library for F#.
 
-You can find comprehensive documentation for FParsec at http://www.quanttec.com/fparsec, including a feature list, a tutorial, a user’s guide and an API reference."""
+You can find comprehensive documentation for FParsec at http://www.quanttec.com/fparsec. The documentation includes a feature list, a tutorial, a user’s guide and an API reference."""
 
 let lowTrustDescription = """
 
@@ -223,7 +223,7 @@ let copySources packageId =
     let packageSrcDir = thisDir + "/" + packageId + "/src"
     if System.IO.Directory.Exists(packageSrcDir) then
         System.IO.Directory.Delete(packageSrcDir, true)
-    copyDir (thisDir + "/../../FParsecCS") (packageSrcDir + "/FParseCS")
+    copyDir (thisDir + "/../../FParsecCS") (packageSrcDir + "/FParsecCS")
     copyDir (thisDir + "/../../FParsec") (packageSrcDir + "/FParsec")
 
 let exec program args =
