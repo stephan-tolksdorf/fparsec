@@ -226,7 +226,7 @@ let getLineSnippet (stream: CharStream<'u>) (p: Position) (space: int) (tabSize:
     Debug.Assert(p.Index >= stream.IndexOfFirstChar && p.Index <= stream.IndexOfLastCharPlus1)
 
     let isCombiningChar (s: string) =
-        match System.Char.GetUnicodeCategory(s, 0) with
+        match System.Globalization.CharUnicodeInfo.GetUnicodeCategory(s, 0) with
         | System.Globalization.UnicodeCategory.NonSpacingMark
         | System.Globalization.UnicodeCategory.SpacingCombiningMark
         | System.Globalization.UnicodeCategory.EnclosingMark

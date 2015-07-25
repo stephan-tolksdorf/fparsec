@@ -383,7 +383,7 @@ public static int CountTextElements(string str) {
         Switch:
             switch (uc) {
             case UnicodeCategory.Surrogate:
-                uc = Char.GetUnicodeCategory(str, i - 1);
+                uc = CharUnicodeInfo.GetUnicodeCategory(str, i - 1);
                 if (uc == UnicodeCategory.Surrogate) continue;
                 ++i;
                 goto Switch;
@@ -428,7 +428,7 @@ public static int CountTextElements(string str) {
             case UnicodeCategory.EnclosingMark:
                 continue;
             case UnicodeCategory.Surrogate:
-                uc = Char.GetUnicodeCategory(str, i - 1);
+                uc = CharUnicodeInfo.GetUnicodeCategory(str, i - 1);
                 if (uc != UnicodeCategory.Surrogate) {
                     ++i;
                     goto Switch;
