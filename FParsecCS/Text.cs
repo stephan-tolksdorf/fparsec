@@ -473,29 +473,32 @@ public static bool IsWhitespace(char ch) {
 #else
 
 internal unsafe struct IsWhitespaceHelper {
+
     // we use the same data structure and algorithm as for IdentifierValidator
 
     private static readonly byte[] DataArray = {
-        0,1,1,1,1,1,1,1,1,1,1,2,3,1,1,1,4,1,1,1,1,1,1,1,5,1,1,1,1,1,1,1,
-        1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-        1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-        1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-
-        0,1,2,2,3,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
-        2,2,2,2,1,2,2,2,2,2,2,2,2,2,2,2,4,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
-        5,6,7,2,2,2,2,2,2,2,2,2,2,2,2,2,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
-
-        0,62,0,0,1,0,0,0,0,0,0,0,32,0,0,0,0,64,0,0,255,7,0,0,0,131,0,0,0,0,0,128,
+        0,1,1,1,1,1,1,1,1,1,1,2,1,1,1,1,3,1,1,1,
+        1,1,1,1,4,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+        1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+        1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+        1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+        1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+        1,1,1,1,1,1,1,1,0,1,2,2,3,1,2,2,2,2,2,2,
+        2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
+        2,2,2,2,1,2,2,2,2,2,2,2,2,2,2,2,4,5,6,2,
+        2,2,2,2,2,2,2,2,2,2,2,2,1,2,2,2,2,2,2,2,
+        2,2,2,2,2,2,2,2,0,62,0,0,1,0,0,0,0,0,0,0,
+        32,0,0,0,255,7,0,0,0,131,0,0,0,0,0,128,
     };
 
     private const int Table1Offset = 0;
     private const int Table1Size = 128;
     private const int Table1Log2Length = 7;
     private const int Table2Offset = 128;
-    private const int Table2Size = 96;
+    private const int Table2Size = 80;
     private const int Table2Log2BlockLength = 4;
     private const int Table3Offset = Table2Offset + Table2Size;
-    private const int Table3Size = 32;
+    private const int Table3Size = 28;
     private const int Table3Log2BlockLength = 5;
 
 #if LOW_TRUST

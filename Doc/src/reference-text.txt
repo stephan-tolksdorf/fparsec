@@ -36,7 +36,7 @@ type Text =
 ``]
 [
 Returns a case-folded copy of the string argument. All chars are mapped using
-the (non-Turkic) 1-to-1 [url  "http://www.unicode.org/Public/6.1.0/ucd/CaseFolding.txt" case folding mappings] (v. 6.1.0) for Unicode code points in the Basic Multilingual Plane, i.e. code points below 0x10000. If the case-folded string equals the argument string, the original argument is returned (to preserve its reference identity). If the argument is `null`, `null` is returned.
+the (non-Turkic) 1-to-1 [url  "http://www.unicode.org/Public/8.0.0/ucd/CaseFolding.txt" case folding mappings] (v. 8.0.0) for Unicode code points in the Basic Multilingual Plane, i.e. code points below 0x10000. If the case-folded string equals the argument string, the original argument is returned (to preserve its reference identity). If the argument is `null`, `null` is returned.
 ]
 
 [``
