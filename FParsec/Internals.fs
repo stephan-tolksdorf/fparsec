@@ -62,7 +62,7 @@ type LineWrapper(tw: System.IO.TextWriter, columnWidth: int, writerIsMultiCharGr
 
     new (tw: System.IO.TextWriter, columnWidth: int) =
         new LineWrapper(tw, columnWidth,
-                                     #if SILVERLIGHT
+                                     #if PCL
                                          true)
                                      #else
                                          not tw.Encoding.IsSingleByte)

@@ -17,7 +17,14 @@ let main(argv: string[]) =
     // Run the parser prog on the file path in argv.[0]
     // If the file has no byte order marks, System.Text.Encoding.Default
     // is assumed to be the encoding.
-    let result = runParserOnFile Parser.prog () (argv.[0]) System.Text.Encoding.Default
+    let fileName = argv.[0]
+    let result =
+    #if PCL_FPARSEC
+        runParserOnString Parser.prog () fileName (System.IO.File.ReadAllText(fileName, System.Text.Encoding.UTF8))
+    #else
+        runParserOnFile Parser.prog () fileName System.Text.Encoding.Default
+    #endif
+
     let myProg =
         match result with
         | Success (v, _, _) -> v

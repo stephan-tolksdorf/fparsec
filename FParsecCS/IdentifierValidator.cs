@@ -59,6 +59,10 @@ public sealed class IdentifierValidator {
         AsciiCharOptions = asciiCharOptions;
     }
 
+#if PCL
+    #pragma warning disable 164, 219 // label not referenced, variable not used
+#endif
+
     /// <summary>Returns the normalized string, or null in case an invalid identifier
     /// character is found. If an invalid character is found, the string index of the
     /// invalid character is assigned to the out parameter, otherwise -1.</summary>
@@ -152,8 +156,8 @@ public sealed class IdentifierValidator {
             }
         }
         errorPosition = -1;
-#if SILVERLIGHT
-        return str; // Silverlight does not support Unicode normalization
+#if PCL
+        return str; // The PCL API subset does not support Unicode normalization.
     Error:
 #else
         if (NormalizationForm == 0 || (isOnlyAscii | isSecondRound)) return str;
@@ -176,6 +180,10 @@ public sealed class IdentifierValidator {
         errorPosition = i - 1;
         return null;
     }
+
+#if PCL
+    #pragma warning restore 164, 219
+#endif
 
     private class IsIdStartCharOrSurrogateFSharpFunc : FSharpFunc<char, bool> {
         private IdentifierCharFlags[] AsciiCharOptions;

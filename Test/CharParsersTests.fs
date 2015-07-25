@@ -295,17 +295,20 @@ let testIdentifier() =
     identifier (IdentifierOptions(label="test")) |> RError "1" 0 (expected "test")
     identifier (IdentifierOptions(invalidCharMessage="test")) |> RFatalError "क्‍" 2 (messageError "test")
 
+    identifier defaultOpts |> ROk "ϒ\u0308" 2 "ϒ\u0308"
+    identifier defaultOpts |> ROk mc2 2 "MC"
+#if PCL
+#else
     let normOpts = IdentifierOptions(normalization=System.Text.NormalizationForm.FormKC)
     let preNormOpts = IdentifierOptions(normalization=System.Text.NormalizationForm.FormKC,
                                         normalizeBeforeValidation=true,
                                         preCheckContinue= fun c -> FParsec.IdentifierValidator.IsXIdContinueOrSurrogate(c) || c > '\u007f')
 
-    identifier defaultOpts |> ROk "ϒ\u0308" 2 "ϒ\u0308"
     identifier normOpts    |> ROk "ϒ\u0308" 2 "\u03AB"
 
-    identifier defaultOpts |> ROk mc2 2 "MC"
     identifier normOpts    |> ROk mc2 2 "MC"
     identifier preNormOpts |> ROk mc2 3 "MC2"
+#endif
 
     let abOpts = IdentifierOptions(isAsciiIdStart=((=) 'a'), isAsciiIdContinue=((=) 'b'))
 

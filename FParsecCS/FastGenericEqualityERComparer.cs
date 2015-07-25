@@ -5,6 +5,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
+#if PCL
+using System.Reflection;
+#endif
+
 using Microsoft.FSharp.Core;
 
 namespace FParsec {
@@ -24,9 +28,16 @@ internal static class FastGenericEqualityERComparer {
     public static EqualityComparer<T> Create<T>() {
         var t = typeof(T);
         if (t.IsArray) return new ArrayStructuralEqualityERComparer<T>();
-        if (typeof(IStructuralEquatable).IsAssignableFrom(t)) {
-            var gct = t.IsValueType ? typeof(StructStructuralEqualityERComparer<>)
-                                    : typeof(ClassStructuralEqualityERComparer<>);
+    #if PCL
+        var ti = t.GetTypeInfo();
+        var ise = typeof(IStructuralEquatable).GetTypeInfo();
+    #else
+        var ti = t;
+        var ise = typeof(IStructuralEquatable);
+    #endif
+        if (ise.IsAssignableFrom(ti)) {
+            var gct = ti.IsValueType ? typeof(StructStructuralEqualityERComparer<>)
+                                     : typeof(ClassStructuralEqualityERComparer<>);
             var ct = gct.MakeGenericType(t);
         #if LOW_TRUST
             return (EqualityComparer<T>)Activator.CreateInstance(ct);

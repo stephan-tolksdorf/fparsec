@@ -1998,6 +1998,15 @@ let testIdentifierValidator() =
             let mutable errorPos1 = 0
             let str1 = iv.ValidateAndNormalize(id, &errorPos1)
 
+            if isId then
+                str1 |> Equal id
+                errorPos1  |> Equal -1
+            else
+                str1 |> Equal null
+                errorPos1 |> Equal errorPos
+
+        #if PCL
+        #else
             iv.NormalizationForm <- System.Text.NormalizationForm.FormKC
             let mutable errorPos2 = 0
             let str2 = iv.ValidateAndNormalize(id, &errorPos2)
@@ -2010,15 +2019,11 @@ let testIdentifierValidator() =
             iv.NormalizeBeforeValidation <- false
 
             if isId then
-                str1 |> Equal id
-                errorPos1  |> Equal -1
                 str2 |> Equal idN
                 errorPos2  |> Equal -1
                 str3 |> Equal idN
                 errorPos3  |> Equal -1
             else
-                str1 |> Equal null
-                errorPos1 |> Equal errorPos
                 str2 |> Equal null
                 errorPos2 |> Equal errorPos
                 if isIdN then
@@ -2027,6 +2032,7 @@ let testIdentifierValidator() =
                 else
                     str3 |> Equal null
                     errorPos3 |> Equal errorPosN
+        #endif
 
         check false
         iv.AllowJoinControlCharsAsIdContinueChars <- true
@@ -2034,11 +2040,14 @@ let testIdentifierValidator() =
         iv.AllowJoinControlCharsAsIdContinueChars <- false
 
     let mutable errorPos = 0
+#if PCL
+#else
     iv.NormalizationForm <- System.Text.NormalizationForm.FormC
     iv.ValidateAndNormalize("ϒ\u0308", &errorPos) |> Equal "\u03D4"
     iv.NormalizationForm <- System.Text.NormalizationForm.FormKC
     iv.ValidateAndNormalize("ϒ\u0308", &errorPos) |> Equal "\u03AB"
     iv.NormalizationForm <- enum 0
+#endif
 
     let mutable i = 0
     checkValidate ""

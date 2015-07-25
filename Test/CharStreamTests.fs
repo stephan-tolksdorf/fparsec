@@ -150,6 +150,8 @@ let testStreamConstructorArgumentChecking() =
     nonReadableStream.Write(streamBytes, 0, streamBytes.Length)
     nonReadableStream.Close()
 
+#if PCL
+#else
     try new CharStream<unit>((null: string), encoding) |> ignore; Fail()
     with :? System.ArgumentNullException -> ()
     try new CharStream<unit>("", (null: System.Text.Encoding)) |> ignore; Fail()
@@ -158,6 +160,7 @@ let testStreamConstructorArgumentChecking() =
     use charStream = new CharStream<unit>(tempFilePath, System.Text.Encoding.ASCII, true)
     charStream.Read(str.Length + 1) |> Equal str
     charStream.Dispose()
+#endif
 
     System.IO.File.Delete(tempFilePath)
 
@@ -189,15 +192,8 @@ let testEncodingDetection() =
         use cs3 = new CharStream<unit>(new System.IO.MemoryStream(bs, false), false, gb18030, false);
         cs3.Encoding |> ReferenceEqual gb18030
 
-#if SILVERLIGHT
-    try test (System.Text.UTF32Encoding(false, true)); Fail()
-    with :? System.NotSupportedException -> ()
-    try test (System.Text.UTF32Encoding(true, true)); Fail()
-    with :? System.NotSupportedException -> ()
-#else
     test (System.Text.UTF32Encoding(false, true))
     test (System.Text.UTF32Encoding(true, true))
-#endif
 
     test (System.Text.UnicodeEncoding(false, true))
     test (System.Text.UnicodeEncoding(true, true))

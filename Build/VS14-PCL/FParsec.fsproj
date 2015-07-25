@@ -1,0 +1,104 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{8ea340d3-e9e0-477e-9ac3-fbfdf3bad41e}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>FParsec</RootNamespace>
+    <AssemblyName>FParsec</AssemblyName>
+    <Name>FParsec</Name>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Profile259</TargetFrameworkProfile>
+    <TargetProfile>netcore</TargetProfile>
+    <TargetFSharpCoreVersion>3.259.4.0</TargetFSharpCoreVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DocumentationFile>$(OutputPath)\$(AssemblyName).XML</DocumentationFile>
+    <DefineConstants>TRACE;DEBUG;NOINLINE;LOW_TRUST;PCL;CLR4;CLR45</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>3</WarningLevel>
+    <OtherFlags>/nooptimizationdata</OtherFlags>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DocumentationFile>$(OutputPath)\$(AssemblyName).XML</DocumentationFile>
+    <DefineConstants>TRACE;LOW_TRUST;PCL;CLR4;CLR45</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>3</WarningLevel>
+    <Tailcalls>false</Tailcalls>
+    <OtherFlags>/nooptimizationdata</OtherFlags>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'nuget' ">
+    <DocumentationFile>$(OutputPath)\$(AssemblyName).XML</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="FSharp.Core">
+      <Name>FSharp.Core</Name>
+      <AssemblyName>FSharp.Core.dll</AssemblyName>
+      <HintPath>$(MSBuildExtensionsPath32)\..\Reference Assemblies\Microsoft\FSharp\.NETCore\$(TargetFSharpCoreVersion)\FSharp.Core.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="FParsecCS.csproj">
+      <Name>FParsecCS</Name>
+      <Project>{501423c3-8ea5-4e54-8d9c-ef60272b57fa}</Project>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\FParsec\AssemblyInfo.fs">
+      <Link>AssemblyInfo.fs</Link>
+    </Compile>
+    <Compile Include="..\..\FParsec\Internals.fs">
+      <Link>Internals.fs</Link>
+    </Compile>
+    <Compile Include="..\..\FParsec\Range.fs">
+      <Link>Range.fs</Link>
+    </Compile>
+    <Compile Include="..\..\FParsec\Emit.fs">
+      <Link>Emit.fs</Link>
+    </Compile>
+    <Compile Include="..\..\FParsec\StaticMapping.fsi">
+      <Link>StaticMapping.fsi</Link>
+    </Compile>
+    <Compile Include="..\..\FParsec\StaticMapping.fs">
+      <Link>StaticMapping.fs</Link>
+    </Compile>
+    <Compile Include="..\..\FParsec\Error.fsi">
+      <Link>Error.fsi</Link>
+    </Compile>
+    <Compile Include="..\..\FParsec\Error.fs">
+      <Link>Error.fs</Link>
+    </Compile>
+    <Compile Include="..\..\FParsec\Primitives.fsi">
+      <Link>Primitives.fsi</Link>
+    </Compile>
+    <Compile Include="..\..\FParsec\Primitives.fs">
+      <Link>Primitives.fs</Link>
+    </Compile>
+    <Compile Include="..\..\FParsec\CharParsers.fsi">
+      <Link>CharParsers.fsi</Link>
+    </Compile>
+    <Compile Include="..\..\FParsec\CharParsers.fs">
+      <Link>CharParsers.fs</Link>
+    </Compile>
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.Portable.FSharp.Targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+	     Other similar extension points exist, see Microsoft.Common.targets.
+	<Target Name="BeforeBuild">
+	</Target>
+	<Target Name="AfterBuild">
+	</Target>
+	-->
+</Project>

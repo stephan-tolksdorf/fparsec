@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 [assembly: ComVisible(false)]
 
-#if LOW_TRUST && CLR4 && !SILVERLIGHT
+#if LOW_TRUST && CLR4
     [assembly: System.Security.AllowPartiallyTrustedCallers]
     [assembly: System.Security.SecurityTransparent]
 #endif

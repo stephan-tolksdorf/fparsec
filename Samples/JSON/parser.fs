@@ -83,7 +83,11 @@ let parseJsonString str = run json str
 
 // UTF8 is the default, but it will detect UTF16 or UTF32 byte-order marks automatically
 let parseJsonFile fileName encoding =
+#if PCL_FPARSEC
+    runParserOnString json () fileName (System.IO.File.ReadAllText(fileName, System.Text.Encoding.UTF8))
+#else
     runParserOnFile json () fileName System.Text.Encoding.UTF8
+#endif
 
 let parseJsonStream stream encoding =
     runParserOnStream json () "" stream System.Text.Encoding.UTF8

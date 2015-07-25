@@ -1,4 +1,4 @@
-﻿// Copyright (c) Stephan Tolksdorf 2007-2012
+﻿// Copyright (c) Stephan Tolksdorf 2007-2015
 // License: Simplified BSD License. See accompanying documentation.
 
 [<AutoOpen>]
@@ -80,6 +80,8 @@ let runParserOnStream (parser: Parser<'Result,'UserState>) (ustate: 'UserState) 
     stream.Name <- streamName
     applyParser parser stream
 
+#if PCL
+#else
 let runParserOnFile (parser: Parser<'Result,'UserState>) (ustate: 'UserState) (path: string) (encoding: System.Text.Encoding) =
 #if LOW_TRUST
     let
@@ -89,6 +91,7 @@ let runParserOnFile (parser: Parser<'Result,'UserState>) (ustate: 'UserState) (p
         stream = new CharStream<'UserState>(path, encoding)
     stream.UserState <- ustate
     applyParser parser stream
+#endif
 
 let run parser (string: string) =
     runParserOnString parser () "" string
@@ -248,9 +251,23 @@ let skipSatisfyL f label = skipSatisfyE f (expected label)
 
 
 let private charsToString (chars: seq<char>) =
+#if PCL
+    match box chars with
+#else
     match chars with
+#endif
     | :? string as str -> str
     | _ -> new string(Array.ofSeq chars)
+
+let private stringToChars (str: string) =
+#if PCL
+    match box str with
+    | :? seq<char> as chars -> chars
+    | _ -> seq { for i = 0 to str.Length - 1 do yield str.[i] }
+#else
+    str
+#endif
+
 
 let isAnyOf (chars: seq<char>) =
 #if LOW_TRUST
@@ -280,27 +297,31 @@ let isNoneOf (chars: seq<char>) =
 
 let anyOf (chars: seq<char>) =
     let str = charsToString chars
-    satisfyE (isAnyOf str) (Errors.ExpectedAnyCharIn(str))
+    let chars = stringToChars str // PCL workaround
+    satisfyE (isAnyOf chars) (Errors.ExpectedAnyCharIn(str))
 
 let skipAnyOf (chars: seq<char>) =
     let str = charsToString chars
-    skipSatisfyE (isAnyOf str) (Errors.ExpectedAnyCharIn(str))
+    let chars = stringToChars str // PCL workaround
+    skipSatisfyE (isAnyOf chars) (Errors.ExpectedAnyCharIn(str))
 
 let noneOf (chars: seq<char>) =
     let str = charsToString chars
-    satisfyE (isNoneOf str) (Errors.ExpectedAnyCharNotIn(str))
+    let chars = stringToChars str // PCL workaround
+    satisfyE (isNoneOf chars) (Errors.ExpectedAnyCharNotIn(str))
 
 let skipNoneOf (chars: seq<char>) =
     let str = charsToString chars
-    skipSatisfyE (isNoneOf str) (Errors.ExpectedAnyCharNotIn(str))
+    let chars = stringToChars str // PCL workaround
+    skipSatisfyE (isNoneOf chars) (Errors.ExpectedAnyCharNotIn(str))
 
 let inline isAsciiUpper (c: char) =
     uint32 c - uint32 'A' <= uint32 'Z' - uint32 'A'
 
-let inline isAsciiLower (c: char) = 
+let inline isAsciiLower (c: char) =
     uint32 c - uint32 'a' <= uint32 'z' - uint32 'a'
 
-let inline isAsciiLetter (c: char) = 
+let inline isAsciiLetter (c: char) =
     let cc = uint32 c ||| uint32 ' '
     cc - uint32 'a' <= uint32 'z' - uint32 'a'
 
@@ -620,7 +641,7 @@ let regexL pattern label = regexE pattern (expected label)
 type private IdFlags = IdentifierValidator.IdentifierCharFlags
 
 type IdentifierOptions(?isAsciiIdStart, ?isAsciiIdContinue,
-                   #if SILVERLIGHT
+                   #if PCL
                    #else
                        ?normalization,
                        ?normalizeBeforeValidation,
@@ -629,7 +650,7 @@ type IdentifierOptions(?isAsciiIdStart, ?isAsciiIdContinue,
     // we use match instead of defaultArg here, so that the function wrapper objects only get constructed when needed
     let isAsciiIdStart    = match isAsciiIdStart    with Some v -> v | _ -> IdentifierValidator.IsXIdStartOrSurrogate
     let isAsciiIdContinue = match isAsciiIdContinue with Some v -> v | _ -> IdentifierValidator.IsXIdContinueOrSurrogate
-#if SILVERLIGHT
+#if PCL
 #else
     let normalizationForm = defaultArg normalization (enum<NormalizationForm> 0)
     let normalizeBeforeValidation = defaultArg normalizeBeforeValidation false
@@ -659,7 +680,7 @@ type IdentifierOptions(?isAsciiIdStart, ?isAsciiIdContinue,
 
     let iv = new IdentifierValidator(asciiOptions)
     do
-    #if SILVERLIGHT
+    #if PCL
     #else
        iv.NormalizationForm <- normalizationForm
        iv.NormalizeBeforeValidation <- normalizeBeforeValidation

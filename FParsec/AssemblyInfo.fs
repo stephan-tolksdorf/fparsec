@@ -8,11 +8,8 @@ open System.Runtime.InteropServices
 
 #if LOW_TRUST
  #if CLR4
-  #if SILVERLIGHT
-  #else
     [<assembly: System.Security.AllowPartiallyTrustedCallers>]
     [<assembly: System.Security.SecurityTransparent>]
-  #endif
  #endif
 #endif
 

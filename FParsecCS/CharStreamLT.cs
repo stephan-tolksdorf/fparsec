@@ -202,6 +202,7 @@ public class CharStream : IDisposable {
         StringToStreamIndexOffset = streamBeginIndex - index;
     }
 
+#if !PCL
     public CharStream(string path, Encoding encoding)
            : this(path, encoding, true, DefaultByteBufferLength) { }
 
@@ -210,11 +211,8 @@ public class CharStream : IDisposable {
 
     public CharStream(string path, Encoding encoding, bool detectEncodingFromByteOrderMarks, int byteBufferLength) {
         if (encoding == null) throw new ArgumentNullException("encoding");
-        Stream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096
-                                  #if !SILVERLIGHT
-                                      , FileOptions.SequentialScan
-                                  #endif
-                                      );
+        Stream stream = new FileStream(path, FileMode.Open, FileAccess.Read,
+                                       FileShare.Read, 4096, FileOptions.SequentialScan);
         try {
            StreamConstructorContinue(stream, false, encoding, detectEncodingFromByteOrderMarks, byteBufferLength);
         } catch {
@@ -222,6 +220,7 @@ public class CharStream : IDisposable {
             throw;
         }
     }
+#endif
 
     public CharStream(Stream stream, Encoding encoding)
            : this(stream, false, encoding, true, DefaultByteBufferLength) { }
@@ -303,7 +302,7 @@ public class CharStream : IDisposable {
                 flush = byteBufferCount == 0;
             }
             String = sb.ToString();
-            if (!leaveOpen) stream.Close();
+            if (!leaveOpen) stream.Dispose();
         } else {
             String = "";
         }
@@ -1852,6 +1851,7 @@ public sealed class CharStream<TUserState> : CharStream {
     public CharStream(string chars, int index, int length, long streamBeginIndex)
            : base(chars, index, length, streamBeginIndex) {}
 
+#if !PCL
     public CharStream(string path, Encoding encoding) : base(path, encoding) {}
 
     public CharStream(string path, Encoding encoding, bool detectEncodingFromByteOrderMarks)
@@ -1859,6 +1859,7 @@ public sealed class CharStream<TUserState> : CharStream {
 
     public CharStream(string path, Encoding encoding, bool detectEncodingFromByteOrderMarks, int byteBufferLength)
            : base(path, encoding, detectEncodingFromByteOrderMarks, byteBufferLength) {}
+#endif
 
     public CharStream(Stream stream, Encoding encoding) : base(stream, encoding) {}
 
