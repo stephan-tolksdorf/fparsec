@@ -1158,7 +1158,7 @@ val @many1Strings2@: Parser<string,'u> -> Parser<string,'u> -> Parser<string,'u>
 val @stringsSepBy@: Parser<string,'u> -> Parser<string,'u> -> Parser<string,'u>
 ``]
 [
-`stringsSepBy sp sep` parses *zero* or more occurrences of `p` separated by `sep`
+`stringsSepBy sp sep` parses *zero* or more occurrences of `sp` separated by `sep`
 (in EBNF: `{EBNF}(p (sep p)*)?`). It returns the strings parsed by `p` *and* `sep` in concatenated form.
 
 `stringsSepBy` behaves like `sepBy`, except that instead of returning a list of the results of only the first argument parser it returns a concatenated string of all strings returned by both argument parsers (in the sequence they occurred).
