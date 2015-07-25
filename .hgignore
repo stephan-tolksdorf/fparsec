@@ -12,3 +12,4 @@ Unused/*
 *.asv
 *.swp
 *.pdb
+*/packages/*

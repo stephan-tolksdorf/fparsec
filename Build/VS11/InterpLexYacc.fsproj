@@ -14,6 +14,8 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFSharpCoreVersion>4.3.0.0</TargetFSharpCoreVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -57,12 +59,14 @@
     <Compile Include="..\..\Samples\FSharpParsingSample\LexYaccVersion\interp.fs">
       <Link>interp.fs</Link>
     </Compile>
-    <Content Include="..\..\Samples\FSharpParsingSample\LexYaccVersion\lex.fsl">
+    <FsLex Include="..\..\Samples\FSharpParsingSample\LexYaccVersion\lex.fsl">
       <Link>lex.fsl</Link>
-    </Content>
-    <Content Include="..\..\Samples\FSharpParsingSample\LexYaccVersion\pars.fsy">
+      <OtherFlags>--unicode -o ..\..\Samples\FSharpParsingSample\LexYaccVersion\lex.fs</OtherFlags>
+    </FsLex>
+    <FsYacc Include="..\..\Samples\FSharpParsingSample\LexYaccVersion\pars.fsy">
       <Link>pars.fsy</Link>
-    </Content>
+      <OtherFlags>--module Parser -o ..\..\Samples\FSharpParsingSample\LexYaccVersion\pars.fs</OtherFlags>
+    </FsYacc>
     <Compile Include="..\..\Samples\FSharpParsingSample\LexYaccVersion\pars.fsi">
       <Link>pars.fsi</Link>
     </Compile>
@@ -75,16 +79,26 @@
     <Compile Include="..\..\Samples\FSharpParsingSample\LexYaccVersion\main.fs">
       <Link>main.fs</Link>
     </Compile>
+    <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <Private>True</Private>
     </Reference>
-    <Reference Include="FSharp.PowerPack" />
-    <Reference Include="FSharp.PowerPack.Compatibility" />
+    <Reference Include="FsLexYacc.Runtime">
+      <HintPath>packages\FsLexYacc.Runtime.6.1.0\lib\net40\FsLexYacc.Runtime.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="System" />
   </ItemGroup>
+  <Import Project="packages\FsLexYacc.6.1.0\build\FsLexYacc.targets" Condition="Exists('packages\FsLexYacc.6.1.0\build\FsLexYacc.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('packages\FsLexYacc.6.1.0\build\FsLexYacc.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\FsLexYacc.6.1.0\build\FsLexYacc.targets'))" />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
 	     Other similar extension points exist, see Microsoft.Common.targets.
 	<Target Name="BeforeBuild">

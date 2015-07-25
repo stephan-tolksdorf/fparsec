@@ -1,18 +1,21 @@
-﻿// Copyright (c) Microsoft Corporation 2005-2006.
-// This sample code is provided "as is" without warranty of any kind.
-// We disclaim all warranties, either express or implied, including the
-// warranties of merchantability and fitness for a particular purpose.
+﻿
+// Original code:
+//     Copyright (c) Microsoft Corporation 2005-2006.
+//     This sample code is provided "as is" without warranty of any kind.
+//     We disclaim all warranties, either express or implied, including the
+//     warranties of merchantability and fitness for a particular purpose.
 
-// This project requires the F# PowerPack available at
-// http://fsharppowerpack.codeplex.com/
+// Modifications:
+//    Copyright (c) Stephan Tolksdorf 2015.
+//    License: Simplified BSD License. See accompanying documentation.
 
-#light
+// This program uses FsLex and FsYacc:
+// http://fsprojects.github.io/FsLexYacc/
 
-open System.IO
 open Ast
 open Printf
 
-open Lexing
+open Microsoft.FSharp.Text.Lexing
 
 [<EntryPoint>]
 let main(argv: string[]) =
@@ -21,17 +24,17 @@ let main(argv: string[]) =
         printf "usage: interp.exe <file>\n"
         exit 1
 
-    let stream = new StreamReader(argv.[0])
+    let stream = new System.IO.StreamReader(argv.[0], System.Text.Encoding.UTF8)
     let myProg =
 
         // Create the lexer, presenting the bytes to the lexer as ASCII regardless of the original
         // encoding of the stream (the lexer specification
         // is designed to consume ASCII)
-        let lexbuf = Lexing.from_text_reader System.Text.Encoding.ASCII stream
+        let lexbuf = LexBuffer<char>.FromTextReader(stream)
 
         // Call the parser
         try
-            Pars.start Lex.token lexbuf
+            Parser.start Lex.token lexbuf
         with e ->
             let pos = lexbuf.EndPos
             printf "error near line %d, character %d\n%s\n" pos.Line pos.Column (e.ToString());

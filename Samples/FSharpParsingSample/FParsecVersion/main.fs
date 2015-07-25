@@ -1,12 +1,8 @@
 ﻿// Copyright (c) Stephan Tolksdorf 2008
 // License: Simplified BSD License. See accompanying documentation.
 
-// This is a port of the parsing sample that comes with F# 1.9.4.19
-// distribution (see http://research.microsoft.com/fsharp/release.aspx).
-
-// This project requires the F# PowerPack available at
-// http://fsharppowerpack.codeplex.com/
-
+// This is a port of the parsing sample that came with the F# 1.9.4.19
+// distribution.
 
 open FParsec
 

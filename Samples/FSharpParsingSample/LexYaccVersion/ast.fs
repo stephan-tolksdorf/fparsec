@@ -5,20 +5,20 @@
 
 module Ast
 
-type expr =
+type Expr =
     | Val of string
     | Int of int
     | Float of float
-    | Decr of expr
+    | Decr of Expr
 
-type stmt =
-    | Assign of string * expr
-    | While of expr * stmt
-    | Seq of stmt list
-    | IfThen of expr * stmt
-    | IfThenElse of expr * stmt * stmt
-    | Print of expr
+type Stmt =
+    | Assign of string * Expr
+    | While of Expr * Stmt
+    | Seq of Stmt list
+    | IfThen of Expr * Stmt
+    | IfThenElse of Expr * Stmt * Stmt
+    | Print of Expr
 
-type prog = Prog of stmt list
+type Prog = Prog of Stmt list
 
 

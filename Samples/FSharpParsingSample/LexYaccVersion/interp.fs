@@ -1,15 +1,23 @@
 ﻿
-// Copyright (c) Microsoft Corporation 2005-2006.
-// This sample code is provided "as is" without warranty of any kind.
-// We disclaim all warranties, either express or implied, including the
-// warranties of merchantability and fitness for a particular purpose.
-//
+// Original code:
+//     Copyright (c) Microsoft Corporation 2005-2006.
+//     This sample code is provided "as is" without warranty of any kind.
+//     We disclaim all warranties, either express or implied, including the
+//     warranties of merchantability and fitness for a particular purpose.
+
+// Modifications:
+//    Copyright (c) Stephan Tolksdorf 2015.
+//    License: Simplified BSD License. See accompanying documentation.
 
 module Interp
 
 open Ast
 
-type v = INT of int | FLOAT of float
+open System.Collections.Generic
+
+type Value = INT of int | FLOAT of float
+
+type State = Dictionary<string, Value>
 
 let printVal os v =
     match v with
@@ -17,15 +25,15 @@ let printVal os v =
     | FLOAT f -> Printf.fprintf os "%g" f
 
 let rec prog (Prog l ) =
-    stmts (Hashtbl.create 10) l
+    stmts (new Dictionary<_,_>()) l
 
 and stmts s l =
     List.iter (stmt s) l
 
-and stmt s st =
+and stmt (s: State) st =
     match st with
     | Assign (a,b) ->
-        Hashtbl.replace s a (expr s b)
+        s.[a] <- expr s b
     | While (a,b) ->
         while expr s a <> INT 0 do
             stmt s b
@@ -40,15 +48,15 @@ and stmt s st =
         Printf.printf "--> %a\n" printVal (expr s e)
         stdout.Flush()
 
-and expr s e =
+and expr (s: State) e =
     match e with
     | Val n ->
-        if Hashtbl.mem s n then Hashtbl.find s n
-        else
-            Printf.eprintf "warning: location %s not defined\n" n;
-            INT 0
-    | Int n -> INT n
-    | Float f -> FLOAT f
+        match s.TryGetValue(n) with
+        | true, v  -> v
+        | false, _ -> Printf.eprintf "warning: location %s not defined\n" n;
+                      INT 0
+    | Expr.Int n -> INT n
+    | Expr.Float f -> FLOAT f
     | Decr e2 ->
         match expr s e2 with
         | INT n -> INT (n-1)

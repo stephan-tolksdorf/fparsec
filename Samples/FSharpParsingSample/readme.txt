@@ -1,5 +1,6 @@
-﻿This sample is derived from the parsing sample that shipped with the F# 1.9.4.19 distribution.
-See http://research.microsoft.com/fsharp/release.aspx
+﻿This sample is derived from the parsing sample that shipped with the F# 1.9.4.19
+distribution originally published at
+http://research.microsoft.com/fsharp/release.aspx
 
 The original sample code was provided by Microsoft under the following licence:
 

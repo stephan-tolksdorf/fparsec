@@ -27,7 +27,7 @@ open Ast
 
 // This is the type of the data produced by a successful reduction of the 'start'
 // symbol:
-%type < Ast.prog > start
+%type < Ast.Prog > start
 
 %%
 
