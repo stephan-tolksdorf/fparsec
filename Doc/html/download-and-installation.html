@@ -70,17 +70,11 @@
               <td class="nav-title n3"><a href="#building-fparsec-with-visual-studio">Building FParsec with Visual Studio</a></td>
              </tr>
              <tr class="nav-entry n3 _5">
-              <td class="nav-number n3">
-               <a href="#building-fparsec-with-mono"><span class="section-number">5</span><span class="nav-space"></span></a>
-              </td>
-              <td class="nav-title n3"><a href="#building-fparsec-with-mono">Building FParsec with Mono</a></td>
-             </tr>
-             <tr class="nav-entry n3 _6">
-              <td class="nav-number n3"><a href="#low-trust-version"><span class="section-number">6</span><span class="nav-space"></span></a></td>
+              <td class="nav-number n3"><a href="#low-trust-version"><span class="section-number">5</span><span class="nav-space"></span></a></td>
               <td class="nav-title n3"><a href="#low-trust-version">The Low‐Trust version of FParsec</a></td>
              </tr>
-             <tr class="nav-entry n3 _7">
-              <td class="nav-number n3"><a href="#configuration-options"><span class="section-number">7</span><span class="nav-space"></span></a></td>
+             <tr class="nav-entry n3 _6">
+              <td class="nav-number n3"><a href="#configuration-options"><span class="section-number">6</span><span class="nav-space"></span></a></td>
               <td class="nav-title n3"><a href="#configuration-options">Configuration options</a></td>
              </tr>
             </tbody>
@@ -109,7 +103,7 @@
    </table>
   </div>
   <div id="copyright">
-    <span>Copyright © 2013 <a href="about/contact.html">Stephan Tolksdorf</a></span>
+    <span>Copyright © 2015 <a href="about/contact.html">Stephan Tolksdorf</a></span>
   </div>
  </div>
  </div>
@@ -170,15 +164,11 @@
        <td class="toc-title toc t1"><a href="#building-fparsec-with-visual-studio">Building FParsec with Visual Studio</a></td>
       </tr>
       <tr class="toc-entry toc t1 _4">
-       <td class="toc-number toc t1"><a href="#building-fparsec-with-mono"><span class="toc-number">5</span><span class="toc-space"></span></a></td>
-       <td class="toc-title toc t1"><a href="#building-fparsec-with-mono">Building FParsec with Mono</a></td>
-      </tr>
-      <tr class="toc-entry toc t1 _5">
-       <td class="toc-number toc t1"><a href="#low-trust-version"><span class="toc-number">6</span><span class="toc-space"></span></a></td>
+       <td class="toc-number toc t1"><a href="#low-trust-version"><span class="toc-number">5</span><span class="toc-space"></span></a></td>
        <td class="toc-title toc t1"><a href="#low-trust-version">The Low‐Trust version of FParsec</a></td>
       </tr>
-      <tr class="toc-entry toc t1 _6">
-       <td class="toc-number toc t1"><a href="#configuration-options"><span class="toc-number">7</span><span class="toc-space"></span></a></td>
+      <tr class="toc-entry toc t1 _5">
+       <td class="toc-number toc t1"><a href="#configuration-options"><span class="toc-number">6</span><span class="toc-space"></span></a></td>
        <td class="toc-title toc t1"><a href="#configuration-options">Configuration options</a></td>
       </tr>
      </table>
@@ -196,7 +186,7 @@
       The <a href="http://nuget.org/packages/FParsec">basic package</a> uses the <a href="#low-trust-version">Low‐Trust version</a> of FParsec, which
       uses no <a href="http://msdn.microsoft.com/en-us/library/t2yzs44b.aspx">unverifiable code</a> and is optimized for maximum portability. The main
       limitation of this version is that any input stream is completely read into a string before parsing, which limits the maximum practical input
-      size.
+      size. This package also contains PCL profile 259 versions of the FParsec assemblies.
      </p>
     </div>
     <div class="para _3">
@@ -323,16 +313,17 @@
    <div class="intro i2">
     <div class="para _1">
      <p>
-      The folders <span class="tt">Build/VS9</span>, <span class="tt">Build/VS10</span> and <span class="tt">Build/VS11</span> contain solution files
-      for Visual Studio 2008, 2010 and 2012. The folder <span class="tt">Build/Silverlight</span> contains a Visual Studio 2010 solution specifically
-      configured to produce Silverlight 4‐compatible assemblies.
+      The folder <span class="tt">Build/VS11</span> contains a solution file for Visual Studio 2012 and later. The folder <span
+      class="tt">Build/VS14‐PCL</span> contains a solution specifically configured to compile FParsec for PCL profile 259. The PCL build requires
+      Visual Studio 2015 / F# 4.0 due to a <a href="https://github.com/Microsoft/visualfsharp/issues/239#issuecomment-95728020">bug</a> in the PCL
+      support of earlier versions of F#.
      </p>
     </div>
     <div class="para _2">
      <p>
       When you build FParsec with these solution files, the compiled assemblies will be put into the <span class="tt">bin/Debug</span> or <span
-      class="tt">bin/Release</span> subfolders, depending on the project configuration. For example, the VS10 solution will put the assemblies into
-      the folders <span class="tt">Build/VS10/bin/Debug</span> and <span class="tt">Build/VS10/bin/Release</span>.
+      class="tt">bin/Release</span> subfolders, depending on the project configuration. For example, the VS11 solution will put the assemblies into
+      the folders <span class="tt">Build/VS11/bin/Debug</span> and <span class="tt">Build/VS11/bin/Release</span>.
      </p>
     </div>
     <div class="para _3">
@@ -340,59 +331,8 @@
     </div>
    </div>
   </div>
-  <div id="building-fparsec-with-mono" class="section s2">
-   <h2 class="title h2"><span><span class="section-number">3.5</span> Building FParsec with Mono</span></h2>
-   <div class="intro i2">
-    <div class="para _1">
-     <p>
-      <em>This information is this section might be partially out‐of‐date. Please <a href="https://bitbucket.org/fparsec/main/issues/new">file a
-      documentation bug</a> if you can provide more up‐to‐date information.</em>
-     </p>
-    </div>
-    <div class="para _2">
-     <p>
-      FParsec is compatible with the latest version of Mono from the <a href="https://github.com/mono/mono">GitHub</a> <span class="tt">master</span>
-      branch (the <span class="tt">2.10</span> branch is missing at least commit <a
-      href="https://github.com/mono/mono/commit/410b3e423f1135a9783d">410b3e423f1135a9783d</a> for FParsec to compile).
-     </p>
-    </div>
-    <div class="para _3">
-     <p>
-      You can build FParsec for Mono using the <span class="tt">Makefile</span> in the <span class="tt">Build</span> directory. The debug and release
-      assemblies will be put in the <span class="tt">Build/bin/Debug</span> and <span class="tt">Build/bin/Release</span> directories respectively.
-     </p>
-    </div>
-    <div class="para _4">
-     <p>
-      Mono’s <code class="fsharp"><span class="ci">System</span><span class="cm">.</span><span class="ci">Text</span><span class="cm">.</span><span
-      class="ci">Decoder</span></code> classes have some bugs that cause issues with FParsec. Until these bugs are fixed only the <a
-      href="#low-trust-version">Low‐Trust version</a> of FParsec works under Mono.
-     </p>
-    </div>
-    <div class="para _5 lcinp">
-     <p>Note:</p>
-     <ul class="l1">
-      <li class="_1">
-       Mono <a href="https://bugzilla.novell.com/show_bug.cgi?id=480178">currently doesn’t properly support</a> Unicode code points outside the Basic
-       Multilingual Plane (i.e. code points above 0xffff). This breaks FParsec’s <code class="fsharp"><a
-       href="reference/charparsers.html#members.identifier"><span class="ci">identifier</span></a></code> parser, for example. <em>(Note: The linked
-       ticket has been closed in the meantime, so the issue might have been fixed since the last time I checked.)</em>
-      </li>
-      <li class="_2">
-       The <code class="fsharp"><a href="reference/charparsers.html#members.regex"><span class="ci">regex</span></a></code> parser and the <code
-       class="fsharp"><a href="reference/charstream.html#CharStream.members.Match_Regex"><span class="ci">CharStream</span><span
-       class="cm">.</span><span class="ci">Match</span></a><span class="cp">(</span><a
-       href="http://msdn.microsoft.com/en-us/library/system.text.regularexpressions.regex.aspx"><span class="ci">Regex</span></a><span
-       class="cp">)</span></code> method curently don’t work on Mono, because Mono’s regular expression implementation <a
-       href="https://bugzilla.novell.com/show_bug.cgi?id=474154">does not correctly match regexes on substrings</a> (Laurent Le Brun reported this
-       issue ‐ thanks Laurent!).
-      </li>
-     </ul>
-    </div>
-   </div>
-  </div>
   <div id="low-trust-version" class="section s2">
-   <h2 class="title h2"><span><span class="section-number">3.6</span> The Low‐Trust version of FParsec</span></h2>
+   <h2 class="title h2"><span><span class="section-number">3.5</span> The Low‐Trust version of FParsec</span></h2>
    <div class="intro i2">
     <div class="para _1">
      <p>
@@ -404,7 +344,7 @@
      <p>
       If you compile FParsec with the <code class="fsharp"><span class="ci">LOW_TRUST</span></code> conditional compiler symbol, the unverifiable code
       is replaced with a &#x201C;safe&#x201D; alternative. This allows FParsec to be run in environments with &#x201C;reduced trust&#x201D;, such as
-      medium trust ASP.NET applications or Silverlight applications.
+      medium trust ASP.NET applications, and it also allows FParsec to be compiled against reduced subsets of the .NET API such as PCL profile 259.
      </p>
     </div>
     <div class="para _3">
@@ -432,13 +372,12 @@
    </div>
   </div>
   <div id="configuration-options" class="section s2">
-   <h2 class="title h2"><span><span class="section-number">3.7</span> Configuration options</span></h2>
+   <h2 class="title h2"><span><span class="section-number">3.6</span> Configuration options</span></h2>
    <div class="intro i2">
     <div class="para _1">
      <p>
       You can configure FParsec’s source code with a number of conditional compilation symbols (a.k.a. preprocessor defines). Besides the <a
-      href="#low-trust-version">Low‐Trust option</a>, these symbols mostly serve tuning purposes. The Visual Studio solutions and the Mono Makefile
-      both come with sensible defaults, so that you don’t have to worry about these options if you don’t want to.
+      href="#low-trust-version">Low‐Trust option</a>, these symbols mostly serve tuning purposes.
      </p>
     </div>
     <div class="para _2">
@@ -451,8 +390,10 @@
     <div class="para _3">
      <p>
       The <a href="http://nuget.org/packages/FParsec">basic</a> NuGet package is built with the following options:<br /><code class="fsharp"><span
-      class="ci">LOW_TRUST</span></code>, <code class="fsharp"><span class="ci">SMALL_STATETAG</span></code>, <code class="fsharp"><span
-      class="ci">CLR4</span></code>
+      class="ci">LOW_TRUST</span></code>, <code class="fsharp"><a href="#configuration-options.SMALL_STATETAG"><span
+      class="ci">SMALL_STATETAG</span></a></code>, <code class="fsharp"><span class="ci">CLR4</span></code>, plus <code class="fsharp"><a
+      href="#configuration-options.CLR45"><span class="ci">CLR45</span></a></code> and <code class="fsharp"><span class="ci">PCL</span></code> for the
+      PCL version.
      </p>
     </div>
     <div class="para _4">
@@ -493,13 +434,15 @@
          </p>
         </div>
        </dd>
-       <dt class="_4"><code class="fsharp"><span class="ci">SILVERLIGHT</span></code></dt>
+       <dt class="_4"><code class="fsharp"><span class="ci">PCL</span></code></dt>
        <dd class="_4">
         <div class="para _1">
-         <p>Compile for Silverlight.</p>
+         <p>Compile for a PCL subset of the .NET API.</p>
         </div>
        </dd>
-       <dt class="_5"><code class="fsharp"><span class="ci">SMALL_STATETAG</span></code></dt>
+       <dt class="_5">
+        <code class="fsharp"><span class="a" id="configuration-options.SMALL_STATETAG"><span class="ci">SMALL_STATETAG</span></span></code>
+       </dt>
        <dd class="_5">
         <div class="para _1">
          <p>

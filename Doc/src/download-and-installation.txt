@@ -14,7 +14,7 @@ To use FParsec in your own projects, you just need to reference the =FParsecCS.d
 
 There are two NuGet packages of FParsec, which are built with different configuration options.
 
-The [url "http://nuget.org/packages/FParsec" basic package] uses the @Low-Trust version@ of FParsec, which uses no [url "http://msdn.microsoft.com/en-us/library/t2yzs44b.aspx" unverifiable code] and is optimized for maximum portability. The main limitation of this version is that any input stream is completely read into a string before parsing, which limits the maximum practical input size.
+The [url "http://nuget.org/packages/FParsec" basic package] uses the @Low-Trust version@ of FParsec, which uses no [url "http://msdn.microsoft.com/en-us/library/t2yzs44b.aspx" unverifiable code] and is optimized for maximum portability. The main limitation of this version is that any input stream is completely read into a string before parsing, which limits the maximum practical input size. This package also contains PCL profile 259 versions of the FParsec assemblies.
 
 The [url "http://nuget.org/packages/FParsec-Big-Data-Edition/" "Big Data edition" package] uses the non-Low-Trust version of FParsec that is optimized for maximum performance and supports extremely large input streams. Since this configuration is also the default configuration of the solution files included with the source code, it is sometimes referred to as the "normal" version of FParsec. This version of FParsec does use "unsafe" (i.e. unverifiable) code involving unmanaged pointers. It also uses code generation in the implementation of `isAnyOf`, `isNoneOf`, `anyOf`, `skipAnyOf`, `noneOf` and `skipNoneOf`.
 
@@ -59,27 +59,11 @@ Unfortunately, the same option cannot be used to merge =FParsecCS.dll= into the 
 
 [section Building FParsec with Visual Studio]
 
-The folders [= Build/VS9], [= Build/VS10] and [= Build/VS11] contain solution files for Visual Studio 2008, 2010 and 2012. The folder [= Build/Silverlight] contains a Visual Studio 2010 solution specifically configured to produce Silverlight 4-compatible assemblies.
+The folder [= Build/VS11] contains a solution file for Visual Studio 2012 and later. The folder [= Build/VS14-PCL] contains a solution specifically configured to compile FParsec for PCL profile 259. The PCL build requires Visual Studio 2015 / F# 4.0 due to a [url "https://github.com/Microsoft/visualfsharp/issues/239#issuecomment-95728020" bug] in the PCL support of earlier versions of F#.
 
-When you build FParsec with these solution files, the compiled assemblies will be put into the [= bin/Debug] or [= bin/Release] subfolders, depending on the project configuration. For example, the VS10 solution will put the assemblies into the folders [= Build/VS10/bin/Debug] and [= Build/VS10/bin/Release].
+When you build FParsec with these solution files, the compiled assemblies will be put into the [= bin/Debug] or [= bin/Release] subfolders, depending on the project configuration. For example, the VS11 solution will put the assemblies into the folders [= Build/VS11/bin/Debug] and [= Build/VS11/bin/Release].
 
 The =Test= project in the solution files contains the unit tests for FParsec.
-
-[/section]
-
-[section Building FParsec with Mono]
-
-[*This information is this section might be partially out-of-date. Please [url "https://bitbucket.org/fparsec/main/issues/new" file a documentation bug] if you can provide more up-to-date information.]
-
-FParsec is compatible with the latest version of Mono from the [url "https://github.com/mono/mono" GitHub] =master= branch (the =2.10= branch is missing at least commit [url "https://github.com/mono/mono/commit/410b3e423f1135a9783d" 410b3e423f1135a9783d] for FParsec to compile).
-
-You can build FParsec for Mono using the =Makefile= in the =Build= directory. The debug and release assemblies will be put in the [= Build/bin/Debug] and [= Build/bin/Release] directories respectively.
-
-Mono's `[no-auto-link System.Text.Decoder]` classes have some bugs that cause issues with FParsec.  Until these bugs are fixed only the @Low-Trust version@ of FParsec works under Mono.
-
-Note:
-- Mono [url "https://bugzilla.novell.com/show_bug.cgi?id=480178" currently doesn't properly support] Unicode code points outside the Basic Multilingual Plane (i.e. code points above 0xffff). This breaks FParsec's `identifier` parser, for example. *(Note: The linked ticket has been closed in the meantime, so the issue might have been fixed since the last time I checked.)*
-- The `regex` parser and the `[^Match_Regex CharStream.Match](Regex)` method curently don't work on Mono, because Mono's regular expression implementation [url "https://bugzilla.novell.com/show_bug.cgi?id=474154" does not correctly match regexes on substrings] (Laurent Le Brun reported this issue - thanks Laurent!).
 
 [/section]
 
@@ -87,7 +71,7 @@ Note:
 
 For optimization reasons the normal implementation (the "Big Data edition") of FParsec involves [url "http://msdn.microsoft.com/en-us/library/t2yzs44b.aspx" unverifiable code] using unmanaged pointers.
 
-If you compile FParsec with the `LOW_TRUST` conditional compiler symbol, the unverifiable code is replaced with a "safe" alternative. This allows FParsec to be run in environments with "reduced trust", such as medium trust ASP.NET applications or Silverlight applications.
+If you compile FParsec with the `LOW_TRUST` conditional compiler symbol, the unverifiable code is replaced with a "safe" alternative. This allows FParsec to be run in environments with "reduced trust", such as medium trust ASP.NET applications, and it also allows FParsec to be compiled against reduced subsets of the .NET API such as PCL profile 259.
 
 The next section explains how you can set a conditional compiler symbol. If you want to use the Low-Trust version of FParsec, you need to compile each of the `FParsecCS`, `FParsec` and `Test` projects with the `LOW_TRUST` symbol.
 
@@ -100,11 +84,11 @@ The Low-Trust version of FParsec has the following two major limitations:
 
 [section Configuration options]
 
-You can configure FParsec's source code with a number of conditional compilation symbols (a.k.a. preprocessor defines). Besides the [^low-trust-version Low-Trust option], these symbols mostly serve tuning purposes. The Visual Studio solutions and the Mono Makefile both come with sensible defaults, so that you don't have to worry about these options if you don't want to.
+You can configure FParsec's source code with a number of conditional compilation symbols (a.k.a. preprocessor defines). Besides the [^low-trust-version Low-Trust option], these symbols mostly serve tuning purposes.
 
 You can set conditional compilation symbols either in the Visual Studio project configuration in the "Build" tab (multiple symbols can be separated by semicolons) or on the compiler command-line with the [= /define:SYMBOL] option (the F# compiler requires a separate [= /define:] option for each symbol).
 
-The [url "http://nuget.org/packages/FParsec" basic] NuGet package is built with the following options:[br]`LOW_TRUST`, `SMALL_STATETAG`, `CLR4`
+The [url "http://nuget.org/packages/FParsec" basic] NuGet package is built with the following options:[br]`LOW_TRUST`, `SMALL_STATETAG`, `CLR4`, plus `CLR45` and `PCL` for the PCL version.
 
 The [url "http://nuget.org/packages/FParsec-Big-Data-Edition" "Big Data edition"]  package is built with the following options:[br]`USE_STATIC_MAPPING_FOR_IS_ANY_OF`, `UNALIGNED_READS`, `CLR4`, `CLR45`.
 
@@ -123,10 +107,10 @@ Compile for a CLR version ≥ 4.5.
 This option allows annotating methods with the new `MethodImplOptions.AggressiveInlining` attribute.
 ]
 
-[`SILVERLIGHT`]
-[Compile for Silverlight.]
+[`PCL`]
+[Compile for a PCL subset of the .NET API.]
 
-[`SMALL_STATETAG`]
+[`#SMALL_STATETAG#`]
 [
 Use a 32-bit `StateTag` in the `CharStream` class instead of the default 64-bit one.
 

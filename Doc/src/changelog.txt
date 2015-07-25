@@ -1,6 +1,14 @@
 ﻿[section Changelog]
 [no-subsection-numbers]
 
+[section#v1_0_2 Version 1.0.2, 2015-mm-dd]
+- replaced all uses of `[url "https://msdn.microsoft.com/en-us/library/hz49h034.aspx" Char.GetUnicodeCategory]` with `[url "https://msdn.microsoft.com/en-us/library/h6sx68ke.aspx" CharCodeInfo.GetUnicodeCategory]`, since the former may or may not track the current Unicode standard and the latter is the only one supported by the PCL API subset
+- updated the case folding, whitespace and XID property data tables to Unicode 8.0.0
+- added a PCL Profile 259 version to the FParsec NuGet package
+- removed the Silverlight, VS9 and VS10 solution files and the Mono Makefile
+- updated the Lex & Yacc version of the =FSharpParsingSample= to use the [url "http://fsprojects.github.io/FsLexYacc/" `FsLexYacc`] NuGet packages
+[/section]
+
 [section#v1_0_1 Version 1.0.1, 2013-06-25]
 - The maintainership of the FParsec NuGet package(s) was handed over from Ryan Riley,
   Huw Simpson, Cameron Taggart and Khan Thompson to Stephan Tolksdorf. Thanks
