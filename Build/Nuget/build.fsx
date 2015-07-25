@@ -48,8 +48,8 @@ let version =
     str.[i0..i1] // + "-RC1"
 
 let authors = "Stephan Tolksdorf"
-let copyright = "Copyright © 2013 Stephan Tolksdorf"
-let tags = "parser, combinator, f#, fsharp, c#, csharp"
+let copyright = "Copyright © 2015 Stephan Tolksdorf"
+let tags = "parser combinator f# fsharp c# csharp"
 
 let commonDescription = """FParsec is a parser combinator library for F#.
 
