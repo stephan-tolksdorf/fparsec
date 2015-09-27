@@ -144,7 +144,7 @@ Note that all infix F# operators that begin with `<` or '>' (leading '.' charact
 
 [section Abstracting parsers]
 
-One of FParsec's greatest strenghts is the ease with which you can define your own parser abstractions.
+One of FParsec's greatest strengths is the ease with which you can define your own parser abstractions.
 
 Take for instance the `floatBetweenBrackets` from the previous section. If you intend to also parse other elements between strings, you could define your own specialized combinator for this purpose:
 ``
