@@ -74,7 +74,7 @@ let version =
     str.[i0..i1] // + "-RC1"
 
 let authors = "Stephan Tolksdorf"
-let copyright = "Copyright © 2015 Stephan Tolksdorf"
+let copyright = "Copyright © Stephan Tolksdorf"
 let tags = "parser combinator f# fsharp c# csharp parsec fparsec"
 
 let commonDescription = """FParsec is a parser combinator library for F#.
