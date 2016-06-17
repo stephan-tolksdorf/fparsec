@@ -424,7 +424,7 @@ Let's test the `stringLiteral` parser with a few test inputs:
 ``{fsi}
 > test stringLiteral "\"abc\"";;
 Success: "abc"
-> test stringLiteral "\"abc\\\"def\\\\ghi";;
+> test stringLiteral "\"abc\\\"def\\\\ghi\"";;
 Success: "abc"def\ghi"
 > test stringLiteral "\"abc\\def\"";;
 Failure: Error in Ln: 1 Col: 6
