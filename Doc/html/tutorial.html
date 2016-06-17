@@ -1064,7 +1064,7 @@ Expecting: identifier
      <p>Let’s test the <code class="fsharp"><span class="ci">stringLiteral</span></code> parser with a few test inputs:</p>
 <pre class="code fsharp"><span class="cmd"><span class="cmdp">&gt;</span> <span class="ci">test</span> <span class="ci">stringLiteral</span> <span class="cs"><span class="cld">"</span><span class="ce">\"</span>abc<span class="ce">\"</span><span class="crd">"</span></span><span class="cp">;;</span></span>
 <span class="cout">Success: "abc"
-</span><span class="cmd"><span class="cmdp">&gt;</span> <span class="ci">test</span> <span class="ci">stringLiteral</span> <span class="cs"><span class="cld">"</span><span class="ce">\"</span>abc<span class="ce">\\</span><span class="ce">\"</span>def<span class="ce">\\</span><span class="ce">\\</span>ghi<span class="crd">"</span></span><span class="cp">;;</span></span>
+</span><span class="cmd"><span class="cmdp">&gt;</span> <span class="ci">test</span> <span class="ci">stringLiteral</span> <span class="cs"><span class="cld">"</span><span class="ce">\"</span>abc<span class="ce">\\</span><span class="ce">\"</span>def<span class="ce">\\</span><span class="ce">\\</span>ghi<span class="ce">\"</span><span class="crd">"</span></span><span class="cp">;;</span></span>
 <span class="cout">Success: "abc"def\ghi"
 </span><span class="cmd"><span class="cmdp">&gt;</span> <span class="ci">test</span> <span class="ci">stringLiteral</span> <span class="cs"><span class="cld">"</span><span class="ce">\"</span>abc<span class="ce">\\</span>def<span class="ce">\"</span><span class="crd">"</span></span><span class="cp">;;</span></span>
 <span class="cout">Failure: Error in Ln: 1 Col: 6
