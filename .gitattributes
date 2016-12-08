@@ -1,0 +1,20 @@
+* text=auto
+
+*.cs  text diff=csharp
+*.fs  text diff=csharp
+*.fsi text diff=csharp
+*.fsx text diff=csharp
+
+*.sln      text eol=crlf
+*.csproj   text
+*.fsproj   text
+*.config   text
+*.json     text
+
+*.txt  text
+*.html text
+*.css  text
+
+*.jpg  binary
+*.png  binary
+*.gif  binary
