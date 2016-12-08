@@ -12,8 +12,8 @@
 *.json     text
 
 *.txt  text
-*.html text
-*.css  text
+*.html text linguist-documentation
+*.css  text linguist-documentation
 
 *.jpg  binary
 *.png  binary
