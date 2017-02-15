@@ -5,6 +5,7 @@
 - moved source repository to GitHub
 - added `stringsSepBy1` parser ([url "https://github.com/stephan-tolksdorf/fparsec/pull/4" implemented by Robin Munn] -- thanks Robin!)
 - fixed documentation typos (one was spotted by Brandon Dimperio -- thanks Brandon!)
+- Renamed `CLR45` to `AGGRESSIVE_INLINING` to better match its purpose
 [/section]
 
 [section#v1_0_2 Version 1.0.2, 2015-09-27]

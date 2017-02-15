@@ -20,7 +20,7 @@
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
     <DocumentationFile>$(OutputPath)\$(AssemblyName).XML</DocumentationFile>
-    <DefineConstants>TRACE;DEBUG;NOINLINE;DEBUG_STATIC_MAPPING;CLR4;CLR45;USE_STATIC_MAPPING_FOR_IS_ANY_OF;UNALIGNED_READS</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NOINLINE;DEBUG_STATIC_MAPPING;CLR4;AGGRESSIVE_INLINING;USE_STATIC_MAPPING_FOR_IS_ANY_OF;UNALIGNED_READS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>3</WarningLevel>
     <OtherFlags>/nooptimizationdata</OtherFlags>
@@ -30,7 +30,7 @@
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DocumentationFile>$(OutputPath)\$(AssemblyName).XML</DocumentationFile>
-    <DefineConstants>TRACE;CLR4;CLR45;USE_STATIC_MAPPING_FOR_IS_ANY_OF;UNALIGNED_READS</DefineConstants>
+    <DefineConstants>TRACE;CLR4;AGGRESSIVE_INLINING;USE_STATIC_MAPPING_FOR_IS_ANY_OF;UNALIGNED_READS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>3</WarningLevel>
     <Tailcalls>false</Tailcalls>

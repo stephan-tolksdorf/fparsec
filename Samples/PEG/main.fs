@@ -19,7 +19,7 @@ let main(args: string[]) =
     // is assumed to be the encoding.
     // The parser result will be the abstract syntax tree of the input file.
     let fileName = args.[0]
-#if PCL_FPARSEC
+#if !CLR4 || PCL
     let result = runParserOnString Parser.pGrammar () fileName (System.IO.File.ReadAllText(fileName, System.Text.Encoding.UTF8))
 #else
     let result = runParserOnFile Parser.pGrammar () fileName System.Text.Encoding.Default

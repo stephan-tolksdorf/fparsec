@@ -1,8 +1,8 @@
 Thumbs.db
-Build/bin/*
+Build/bin/
 Unused/*
-*/bin/*
-*/obj/*
+bin/
+obj/
 *.user
 *.suo
 *.pyc
@@ -10,4 +10,5 @@ Unused/*
 *.asv
 *.swp
 *.pdb
-*/packages/*
+packages/
+version.props

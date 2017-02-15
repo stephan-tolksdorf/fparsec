@@ -1,0 +1,6 @@
+<Project Sdk="FSharp.NET.Sdk;Microsoft.NET.Sdk">
+  <Import Project="..\FParsec.Samples.Common.targets" />
+  <ItemGroup>
+    <Compile Include="tutorial.fs" />
+  </ItemGroup>
+</Project>
