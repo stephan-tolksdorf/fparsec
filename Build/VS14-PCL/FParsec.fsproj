@@ -22,7 +22,7 @@
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
     <DocumentationFile>$(OutputPath)\$(AssemblyName).XML</DocumentationFile>
-    <DefineConstants>TRACE;DEBUG;NOINLINE;LOW_TRUST;PCL;CLR4;CLR45</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NOINLINE;LOW_TRUST;PCL;CLR4;AGGRESSIVE_INLINING</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>3</WarningLevel>
     <OtherFlags>/nooptimizationdata</OtherFlags>
@@ -32,7 +32,7 @@
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DocumentationFile>$(OutputPath)\$(AssemblyName).XML</DocumentationFile>
-    <DefineConstants>TRACE;LOW_TRUST;PCL;CLR4;CLR45</DefineConstants>
+    <DefineConstants>TRACE;LOW_TRUST;PCL;CLR4;AGGRESSIVE_INLINING</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>3</WarningLevel>
     <Tailcalls>false</Tailcalls>

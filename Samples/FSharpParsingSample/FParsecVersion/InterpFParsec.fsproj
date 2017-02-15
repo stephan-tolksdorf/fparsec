@@ -1,0 +1,9 @@
+<Project Sdk="FSharp.NET.Sdk;Microsoft.NET.Sdk">
+  <Import Project="..\..\FParsec.Samples.Common.targets" />
+  <ItemGroup>
+    <Compile Include="..\LexYaccVersion\ast.fs" />
+    <Compile Include="..\LexYaccVersion\interp.fs" />
+    <Compile Include="parser.fs" />
+    <Compile Include="main.fs" />
+  </ItemGroup>
+</Project>

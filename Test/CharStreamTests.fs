@@ -6,6 +6,7 @@ module FParsec.Test.CharStreamTests
 #nowarn "9" // "Uses of this construct may result in the generation of unverifiable .NET IL code."
 #nowarn "51" // "The address-of operator may result in non-verifiable code."
 
+open System.Text
 open System.Text.RegularExpressions
 
 open Microsoft.FSharp.NativeInterop
@@ -148,7 +149,7 @@ let testStreamConstructorArgumentChecking() =
     try new CharStream<unit>(nonReadableStream, encoding) |> ignore; Fail()
     with :? System.ArgumentException -> ()
     nonReadableStream.Write(streamBytes, 0, streamBytes.Length)
-    nonReadableStream.Close()
+    nonReadableStream.Dispose()
 
 #if PCL
 #else
@@ -171,26 +172,26 @@ type CustomPreambleUTF8Encoding(preamble: byte[]) =
 
 let testEncodingDetection() =
     let s = "1234567890"
-    let gb18030 = System.Text.Encoding.GetEncoding(54936) // an encoding we can't detect
+    let iso8859_1 = System.Text.Encoding.GetEncoding(28591) // an encoding we can't detect
 
     let test (e: System.Text.Encoding) =
         let bs0 = e.GetPreamble()
-        use cs0 = new CharStream<unit>(new System.IO.MemoryStream(bs0, false), gb18030);
+        use cs0 = new CharStream<unit>(new System.IO.MemoryStream(bs0, false), iso8859_1);
         cs0.Encoding.CodePage |> Equal (e.CodePage)
 
         bs0.[1] <- 33uy
-        use cs0 = new CharStream<unit>(new System.IO.MemoryStream(bs0, false), gb18030);
-        cs0.Encoding|> ReferenceEqual gb18030
+        use cs0 = new CharStream<unit>(new System.IO.MemoryStream(bs0, false), iso8859_1);
+        cs0.Encoding|> ReferenceEqual iso8859_1
 
         let bs = Array.append (e.GetPreamble()) (e.GetBytes(s))
-        use cs = new CharStream<unit>(new System.IO.MemoryStream(bs, false), gb18030);
+        use cs = new CharStream<unit>(new System.IO.MemoryStream(bs, false), iso8859_1);
         cs.Encoding.CodePage |> Equal (e.CodePage)
         cs.Read(s.Length) |> Equal s
         use cs2 = new CharStream<unit>(new System.IO.MemoryStream(bs, false), e);
         cs2.Encoding |> ReferenceEqual e
         cs2.Read(s.Length) |> Equal s
-        use cs3 = new CharStream<unit>(new System.IO.MemoryStream(bs, false), false, gb18030, false);
-        cs3.Encoding |> ReferenceEqual gb18030
+        use cs3 = new CharStream<unit>(new System.IO.MemoryStream(bs, false), false, iso8859_1, false);
+        cs3.Encoding |> ReferenceEqual iso8859_1
 
     test (System.Text.UTF32Encoding(false, true))
     test (System.Text.UTF32Encoding(true, true))
@@ -2483,6 +2484,9 @@ let run() =
         use emptyFileStream2 = createMultiBlockTestStream (new System.IO.MemoryStream([||], false)) System.Text.Encoding.Unicode
         testEmptyStream emptyFileStream2
 
+#if NETCORE
+    Encoding.RegisterProvider CodePagesEncodingProvider.Instance
+#endif
     testStreams()
     xTest()
     testSkipWhitespace()

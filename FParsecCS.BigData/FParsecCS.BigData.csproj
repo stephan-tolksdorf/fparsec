@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <FullTrust>true</FullTrust>
+    <AssemblyName>FParsecCS</AssemblyName>
+    <PackageId>FParsecCS-Big-Data-Edition</PackageId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\FParsecCS\*.cs" />
+    <Compile Include="..\FParsecCS\Properties\*.cs" />
+  </ItemGroup>
+
+  <Import Project="..\Build\FParsec.Common.targets" />
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard1.6'">
+    <PackageReference Include="System.Globalization.Extensions" Version="4.3.0" />
+    <PackageReference Include="System.Runtime.Serialization.Formatters" Version="4.3.0" />
+    <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFrameworkIdentifier)' == '.NETPortable'">
+    <Reference Include="System" />
+    <Reference Include="System.Globalization" />
+    <Reference Include="System.Collections" />
+    <Reference Include="System.Text.Encoding" />
+    <Reference Include="System.Diagnostics.Debug" />
+    <Reference Include="System.Diagnostics.Tools" />
+    <Reference Include="System.Reflection" />
+    <Reference Include="System.Runtime.Extensions" />
+    <Reference Include="System.Runtime" />
+    <Reference Include="System.IO" />
+    <Reference Include="System.Text.RegularExpressions" />
+  </ItemGroup>
+</Project>

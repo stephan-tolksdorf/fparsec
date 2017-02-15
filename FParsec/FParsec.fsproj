@@ -1,0 +1,30 @@
+<Project Sdk="FSharp.NET.Sdk;Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <Import Project="..\Build\FParsec.Common.targets" />
+
+  <ItemGroup Condition="'$(TargetFrameworkIdentifier)' != '.NETPortable'">
+    <PackageReference Include="FSharp.NET.Sdk" Version="1.*" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="Internals.fs" />
+    <Compile Include="Range.fs" />
+    <Compile Include="Emit.fs" />
+    <Compile Include="StaticMapping.fsi" />
+    <Compile Include="StaticMapping.fs" />
+    <Compile Include="Error.fsi" />
+    <Compile Include="Error.fs" />
+    <Compile Include="Primitives.fsi" />
+    <Compile Include="Primitives.fs" />
+    <Compile Include="CharParsers.fsi" />
+    <Compile Include="CharParsers.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FParsecCS\FParsecCS.csproj" />
+  </ItemGroup>
+</Project>

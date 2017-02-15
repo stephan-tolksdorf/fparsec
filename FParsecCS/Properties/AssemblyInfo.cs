@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
     [assembly: System.Security.SecurityTransparent]
 #endif
 
+#if PCL
 [assembly: AssemblyTitle      ("FParsecCS.dll")]
 [assembly: AssemblyDescription("FParsecCS.dll")]
 
@@ -17,10 +18,10 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyVersion      (FParsec.CommonAssemblyInfo.Version)]
 [assembly: AssemblyFileVersion  (FParsec.CommonAssemblyInfo.FileVersion)]
 [assembly: AssemblyConfiguration(FParsec.CommonAssemblyInfo.CSConfiguration)]
+#endif
 
 [assembly: InternalsVisibleTo (FParsec.CommonAssemblyInfo.FParsecAssemblyName)]
 [assembly: InternalsVisibleTo (FParsec.CommonAssemblyInfo.TestAssemblyName)]
-
 
 namespace FParsec {
 
@@ -28,7 +29,7 @@ internal static partial class CommonAssemblyInfo {
     public const string Product     = "FParsec";
     public const string Copyright   = "Copyright © Stephan Tolksdorf 2007-2015";
     public const string Version     = "1.0.0.0";
-    public const string FileVersion = "1.0.2.0";
+    public const string FileVersion = "1.0.3.0";
 
 #if !NUGET // the NuGet package build script sets these attributes
     public const string Configuration =
@@ -48,7 +49,7 @@ internal static partial class CommonAssemblyInfo {
     public const string CSConfiguration = Configuration;
     public const string FSConfiguration = Configuration;
     public const string FParsecAssemblyName = "FParsec";
-    public const string TestAssemblyName = "test_fparsec";
+    public const string TestAssemblyName = "Test";
 #endif
 };
 

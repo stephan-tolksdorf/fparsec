@@ -1,0 +1,33 @@
+<Project Sdk="FSharp.NET.Sdk;Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <FullTrust>true</FullTrust>
+    <AssemblyName>FParsec</AssemblyName>
+    <PackageId>FParsec-Big-Data-Edition</PackageId>
+  </PropertyGroup>
+
+  <Import Project="..\Build\FParsec.Common.targets" />
+
+  <ItemGroup Condition="'$(TargetFrameworkIdentifier)' != '.NETPortable'">
+    <PackageReference Include="FSharp.NET.Sdk" Version="1.*" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\FParsec\AssemblyInfo.fs" />
+    <Compile Include="..\FParsec\Internals.fs" />
+    <Compile Include="..\FParsec\Range.fs" />
+    <Compile Include="..\FParsec\Emit.fs" />
+    <Compile Include="..\FParsec\StaticMapping.fsi" />
+    <Compile Include="..\FParsec\StaticMapping.fs" />
+    <Compile Include="..\FParsec\Error.fsi" />
+    <Compile Include="..\FParsec\Error.fs" />
+    <Compile Include="..\FParsec\Primitives.fsi" />
+    <Compile Include="..\FParsec\Primitives.fs" />
+    <Compile Include="..\FParsec\CharParsers.fsi" />
+    <Compile Include="..\FParsec\CharParsers.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FParsecCS.BigData\FParsecCS.BigData.csproj" />
+  </ItemGroup>
+</Project>

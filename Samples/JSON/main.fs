@@ -19,7 +19,11 @@ let main(args: string[]) =
     // If the file has no byte order marks, System.Text.Encoding.Default
     // is assumed to be the encoding.
     // The parser result will be the abstract syntax tree of the input file.
+#if !CLR4 || PCL
+    let result = parseJsonFile args.[0] System.Text.Encoding.UTF8
+#else
     let result = parseJsonFile args.[0] System.Text.Encoding.Default
+#endif
     // for the moment we just print out the AST
     match result with
     | Success (v, _, _) ->

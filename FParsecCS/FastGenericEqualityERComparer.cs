@@ -5,7 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-#if PCL
+#if PCL || NETSTANDARD1_6
 using System.Reflection;
 #endif
 
@@ -28,7 +28,7 @@ internal static class FastGenericEqualityERComparer {
     public static EqualityComparer<T> Create<T>() {
         var t = typeof(T);
         if (t.IsArray) return new ArrayStructuralEqualityERComparer<T>();
-    #if PCL
+    #if PCL || NETSTANDARD1_6
         var ti = t.GetTypeInfo();
         var ise = typeof(IStructuralEquatable).GetTypeInfo();
     #else
@@ -39,7 +39,7 @@ internal static class FastGenericEqualityERComparer {
             var gct = ti.IsValueType ? typeof(StructStructuralEqualityERComparer<>)
                                      : typeof(ClassStructuralEqualityERComparer<>);
             var ct = gct.MakeGenericType(t);
-        #if LOW_TRUST
+        #if LOW_TRUST || NETSTANDARD1_6
             return (EqualityComparer<T>)Activator.CreateInstance(ct);
         #else
             return (EqualityComparer<T>)System.Runtime.Serialization.FormatterServices.GetUninitializedObject(ct);

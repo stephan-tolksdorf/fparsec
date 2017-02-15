@@ -13,6 +13,7 @@ open System.Runtime.InteropServices
  #endif
 #endif
 
+#if PCL
 [<assembly: AssemblyTitle("FParsec.dll")>]
 [<assembly: AssemblyDescription("FParsec.dll")>]
 
@@ -21,6 +22,7 @@ open System.Runtime.InteropServices
 [<assembly: AssemblyVersion(FParsec.CommonAssemblyInfo.Version)>]
 [<assembly: AssemblyFileVersion(FParsec.CommonAssemblyInfo.FileVersion)>]
 [<assembly: AssemblyConfiguration(FParsec.CommonAssemblyInfo.FSConfiguration)>]
+#endif
 
 [<assembly: InternalsVisibleTo(FParsec.CommonAssemblyInfo.TestAssemblyName)>]
 do ()

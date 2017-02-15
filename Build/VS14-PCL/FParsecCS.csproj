@@ -21,7 +21,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;LOW_TRUST;PCL;CLR4;CLR45;SMALL_STATETAG</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;LOW_TRUST;PCL;CLR4;AGGRESSIVE_INLINING;SMALL_STATETAG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -32,7 +32,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;LOW_TRUST;PCL;CLR4;CLR45;SMALL_STATETAG</DefineConstants>
+    <DefineConstants>TRACE;LOW_TRUST;PCL;CLR4;AGGRESSIVE_INLINING;SMALL_STATETAG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>

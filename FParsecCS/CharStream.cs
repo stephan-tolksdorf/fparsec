@@ -317,7 +317,7 @@ public unsafe class CharStream : IDisposable {
 
 
     public long Index {
-    #if CLR45
+    #if AGGRESSIVE_INLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
     #endif
         get {
@@ -1175,7 +1175,7 @@ public unsafe class CharStream : IDisposable {
         return EOS;
     }
 
-#if CLR45
+#if AGGRESSIVE_INLINING
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
     public void Skip() {
@@ -1190,7 +1190,7 @@ public unsafe class CharStream : IDisposable {
     [MethodImplAttribute(MethodImplOptions.NoInlining)]
     private void SkipContinue() { SkipContinue(1u); }
 
-#if CLR45
+#if AGGRESSIVE_INLINING
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
     public char Read() {
@@ -1211,7 +1211,7 @@ public unsafe class CharStream : IDisposable {
         return c;
     }
 
-#if CLR45
+#if AGGRESSIVE_INLINING
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
     public char SkipAndPeek() {
@@ -1228,7 +1228,7 @@ public unsafe class CharStream : IDisposable {
 
     private static readonly bool IsLittleEndian = BitConverter.IsLittleEndian; // improves inlining and dead code elimination, at least with the .NET JIT
 
-#if CLR45
+#if AGGRESSIVE_INLINING
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
     public TwoChars Peek2() {
@@ -1251,7 +1251,7 @@ public unsafe class CharStream : IDisposable {
         return new TwoChars(Peek(), Peek(1u));
     }
 
-#if CLR45
+#if AGGRESSIVE_INLINING
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
     public char Peek(uint utf16Offset) {
@@ -1272,7 +1272,7 @@ public unsafe class CharStream : IDisposable {
         return c;
     }
 
-#if CLR45
+#if AGGRESSIVE_INLINING
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
     public void Skip(uint utf16Offset) {
@@ -1296,7 +1296,7 @@ public unsafe class CharStream : IDisposable {
         Seek(Index + utf16Offset);
     }
 
-#if CLR45
+#if AGGRESSIVE_INLINING
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
     public char SkipAndPeek(uint utf16Offset) {
@@ -1631,7 +1631,7 @@ public unsafe class CharStream : IDisposable {
         return false;
     }
 
-#if CLR45
+#if AGGRESSIVE_INLINING
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
     public bool Skip(TwoChars twoChars) {

@@ -3,6 +3,10 @@
 
 module FParsec.Test.TextTests
 
+#if NETCORE
+open System.Reflection
+#endif
+
 open FParsec.Test.Test
 
 type Text = FParsec.Text
@@ -17,7 +21,15 @@ let testFoldCase() =
     Text.FoldCase("aaA")  |> Equal "aaa"
     Text.FoldCase("abcAOUÄÖÜdef") |> Equal "abcaouäöüdef"
 
-    let oneToOneMappings = getStaticField (typeof<FParsec.CharStream>.Assembly.GetType("FParsec.CaseFoldTable")) "oneToOneMappings" : string
+
+    let oneToOneMappings =
+        let charStreamType = typeof<FParsec.CharStream>
+#if NETCORE
+        let a = charStreamType.GetTypeInfo().Assembly
+#else
+        let a = charStreamType.Assembly
+#endif
+        getStaticField (a.GetType("FParsec.CaseFoldTable")) "oneToOneMappings" : string
 
     let mutable j = 0
     for i in 0..2..(oneToOneMappings.Length - 2) do

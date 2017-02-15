@@ -1,0 +1,30 @@
+version: 1.0.3-aci-{build}
+image: Visual Studio 2017 RC
+environment:
+  CLI_VERSION: 1.0.0-rc4-004842
+
+build_script:
+  - ps: dotnet --info
+  - ps: dotnet restore
+  - ps: dotnet build -c Release FParsecCS\FParsecCS.csproj --version-suffix "aci-${env:APPVEYOR_BUILD_NUMBER}"
+  - ps: dotnet build -c Release FParsecCS.BigData\FParsecCS.BigData.csproj --version-suffix "aci-${env:APPVEYOR_BUILD_NUMBER}"
+  - ps: dotnet build -c Release FParsec\FParsec.fsproj --version-suffix "aci-${env:APPVEYOR_BUILD_NUMBER}"
+  - ps: dotnet build -c Release FParsec.BigData\FParsec.BigData.fsproj --version-suffix "aci-${env:APPVEYOR_BUILD_NUMBER}"
+  - ps: dotnet build -c Release -f netcoreapp1.1 Samples\Calculator\Calculator.fsproj
+  - ps: dotnet build -c Release -f netcoreapp1.1 Samples\FSharpParsingSample\FParsecVersion\InterpFParsec.fsproj
+  - ps: dotnet build -c Release -f netcoreapp1.1 Samples\JSON\JsonParser.fsproj
+  - ps: dotnet build -c Release -f netcoreapp1.1 Samples\PEG\PegParser.fsproj
+  - ps: dotnet build -c Release -f netcoreapp1.1 Samples\Tutorial\Tutorial.fsproj
+  - ps: dotnet build -c Release -f netcoreapp1.1 Test\Test.fsproj
+  - ps: dotnet .\Samples\Calculator\bin\Release\netcoreapp1.1\Calculator.dll
+  - ps: dotnet .\Samples\FSharpParsingSample\FParsecVersion\bin\Release\netcoreapp1.1\InterpFParsec.dll .\Samples\FSharpParsingSample\LexYaccVersion\test.lang
+  - ps: dotnet .\Samples\JSON\bin\Release\netcoreapp1.1\JsonParser.dll .\Samples\JSON\test_json.txt
+  - ps: dotnet .\Samples\PEG\bin\Release\netcoreapp1.1\PegParser.dll .\Samples\PEG\test_peg.txt
+  - ps: dotnet .\Samples\Tutorial\bin\Release\netcoreapp1.1\Tutorial.dll
+  - ps: dotnet .\Test\bin\Release\netcoreapp1.1\Test.dll
+  - ps: dotnet pack -c Release --include-symbols --version-suffix "aci-${env:APPVEYOR_BUILD_NUMBER}"
+
+test: off
+
+artifacts:
+  - path: '**\*.nupkg'

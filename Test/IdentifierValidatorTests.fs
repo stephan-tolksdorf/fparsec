@@ -3,6 +3,10 @@
 
 module FParsec.Test.IdentifierValidatorTests
 
+#if NETCORE
+open System
+#endif
+
 open FParsec.Test.Test
 
 // the following string contains parts of http://www.unicode.org/Public/8.0.0/ucd/DerivedCoreProperties.txt
