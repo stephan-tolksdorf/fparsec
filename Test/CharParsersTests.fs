@@ -661,7 +661,7 @@ let testNumberParsers() =
                  ||| NLO.AllowOctal
                  ||| NLO.AllowInfinity
                  ||| NLO.AllowNaN
-
+                 ||| NLO.AllowDigitSeparator
 
         numberLiteral all "nl" |> RError "|"  0 (expected "nl")
         numberLiteral all "nl" |> RError "+|" 0 (expected "nl")
@@ -782,6 +782,89 @@ let testNumberParsers() =
         numberLiteral (all ^^^ NLO.AllowInfinity) "nl" |> ROk     "NaN|" (NumberLiteral("NaN", NLF.IsNaN, EOS, EOS, EOS, EOS))
         numberLiteral (all ^^^ NLO.AllowNaN) "nl"      |> RError  "NaN|" 0 (expected "nl")
         numberLiteral (all ^^^ NLO.AllowNaN) "nl"      |> ROk     "Infinity|" (NumberLiteral("Infinity", NLF.IsInfinity, EOS, EOS, EOS, EOS))
+
+        numberLiteral all "nl" |> ROk "0_0|"    (NumberLiteral("0_0", NLF.HasDigitSeparator ||| NLF.IsDecimal ||| NLF.HasIntegerPart, EOS, EOS, EOS, EOS))
+        numberLiteral all "nl" |> ROk ".0_0|"   (NumberLiteral(".0_0", NLF.HasDigitSeparator ||| NLF.IsDecimal ||| NLF.HasFraction, EOS, EOS, EOS, EOS))
+        numberLiteral all "nl" |> ROk "0e-0_0|" (NumberLiteral("0e-0_0", NLF.HasDigitSeparator ||| NLF.IsDecimal ||| NLF.HasIntegerPart ||| NLF.HasExponent, EOS, EOS, EOS, EOS))
+
+        numberLiteral all "nl" |> ROk "0_000_0_00|"    (NumberLiteral("0_000_0_00", NLF.HasDigitSeparator ||| NLF.IsDecimal ||| NLF.HasIntegerPart, EOS, EOS, EOS, EOS))
+        numberLiteral all "nl" |> ROk ".0_000_0_00|"   (NumberLiteral(".0_000_0_00", NLF.HasDigitSeparator ||| NLF.IsDecimal ||| NLF.HasFraction, EOS, EOS, EOS, EOS))
+        numberLiteral all "nl" |> ROk "0e-0_000_0_00|" (NumberLiteral("0e-0_000_0_00", NLF.HasDigitSeparator ||| NLF.IsDecimal ||| NLF.HasIntegerPart ||| NLF.HasExponent, EOS, EOS, EOS, EOS))
+
+        numberLiteral all "nl" |> ROk "0x0_0|"    (NumberLiteral("0x0_0", NLF.HasDigitSeparator ||| NLF.IsHexadecimal ||| NLF.HasIntegerPart, EOS, EOS, EOS, EOS))
+        numberLiteral all "nl" |> ROk "0x.0_0|"   (NumberLiteral("0x.0_0", NLF.HasDigitSeparator ||| NLF.IsHexadecimal ||| NLF.HasFraction, EOS, EOS, EOS, EOS))
+        numberLiteral all "nl" |> ROk "0x0p-0_0|" (NumberLiteral("0x0p-0_0", NLF.HasDigitSeparator ||| NLF.IsHexadecimal ||| NLF.HasIntegerPart ||| NLF.HasExponent, EOS, EOS, EOS, EOS))
+
+        numberLiteral all "nl" |> ROk "0x0_000_0_00|"    (NumberLiteral("0x0_000_0_00", NLF.HasDigitSeparator ||| NLF.IsHexadecimal ||| NLF.HasIntegerPart, EOS, EOS, EOS, EOS))
+        numberLiteral all "nl" |> ROk "0x.0_000_0_00|"   (NumberLiteral("0x.0_000_0_00", NLF.HasDigitSeparator ||| NLF.IsHexadecimal ||| NLF.HasFraction, EOS, EOS, EOS, EOS))
+        numberLiteral all "nl" |> ROk "0x0p-0_000_0_00|" (NumberLiteral("0x0p-0_000_0_00", NLF.HasDigitSeparator ||| NLF.IsHexadecimal ||| NLF.HasIntegerPart ||| NLF.HasExponent, EOS, EOS, EOS, EOS))
+        
+        numberLiteral all "nl" |> ROk "0o0_0|"         (NumberLiteral("0o0_0", NLF.HasDigitSeparator ||| NLF.IsOctal ||| NLF.HasIntegerPart, EOS, EOS, EOS, EOS))
+        numberLiteral all "nl" |> ROk "0o0_000_0_00|"  (NumberLiteral("0o0_000_0_00", NLF.HasDigitSeparator ||| NLF.IsOctal ||| NLF.HasIntegerPart, EOS, EOS, EOS, EOS))
+        
+        numberLiteral all "nl" |> ROk "0b0_0|"         (NumberLiteral("0b0_0", NLF.HasDigitSeparator ||| NLF.IsBinary ||| NLF.HasIntegerPart, EOS, EOS, EOS, EOS))
+        numberLiteral all "nl" |> ROk "0b0_000_0_00|"  (NumberLiteral("0b0_000_0_00", NLF.HasDigitSeparator ||| NLF.IsBinary ||| NLF.HasIntegerPart, EOS, EOS, EOS, EOS))
+
+        numberLiteral (all ^^^ NLO.AllowDigitSeparator) "nl" |> ROkI "0_0|"   1 (NumberLiteral("0", NLF.IsDecimal ||| NLF.HasIntegerPart, EOS, EOS, EOS, EOS))
+        numberLiteral (all ^^^ NLO.AllowDigitSeparator) "nl" |> ROkI ".0_0|"  2 (NumberLiteral(".0",  NLF.IsDecimal ||| NLF.HasFraction, EOS, EOS, EOS, EOS))
+        numberLiteral (all ^^^ NLO.AllowDigitSeparator) "nl" |> ROkI "0e0_0|" 3 (NumberLiteral("0e0",  NLF.IsDecimal ||| NLF.HasIntegerPart ||| NLF.HasExponent, EOS, EOS, EOS, EOS))
+               
+        numberLiteral (all ^^^ NLO.AllowDigitSeparator) "nl" |> ROkI "0x0_0|"   3 (NumberLiteral("0x0", NLF.IsHexadecimal ||| NLF.HasIntegerPart, EOS, EOS, EOS, EOS))
+        numberLiteral (all ^^^ NLO.AllowDigitSeparator) "nl" |> ROkI "0x.0_0|"  4 (NumberLiteral("0x.0",  NLF.IsHexadecimal ||| NLF.HasFraction, EOS, EOS, EOS, EOS))
+        numberLiteral (all ^^^ NLO.AllowDigitSeparator) "nl" |> ROkI "0x0p0_0|" 5 (NumberLiteral("0x0p0",  NLF.IsHexadecimal ||| NLF.HasIntegerPart ||| NLF.HasExponent, EOS, EOS, EOS, EOS))
+
+        numberLiteral (all ^^^ NLO.AllowDigitSeparator) "nl" |> ROkI "0o0_0|"   3 (NumberLiteral("0o0", NLF.IsOctal ||| NLF.HasIntegerPart, EOS, EOS, EOS, EOS))
+        numberLiteral (all ^^^ NLO.AllowDigitSeparator) "nl" |> ROkI "0b0_0|"   3 (NumberLiteral("0b0", NLF.IsBinary ||| NLF.HasIntegerPart, EOS, EOS, EOS, EOS))
+
+        numberLiteral all "nl" |> RError "_1" 0 (expected "nl")
+        numberLiteral (all ^^^ NLO.AllowFractionWOIntegerPart) "nl" |> RError "._0" 0 (expected "nl")
+        
+        numberLiteral (all ^^^ NLO.AllowDigitSeparator) "nl" |> ROkI "1_." 1  (NumberLiteral("1", NLF.IsDecimal ||| NLF.HasIntegerPart, EOS, EOS, EOS, EOS))
+
+        numberLiteral all "nl" |> RError "1_." 2  Errors.ExpectedDecimalDigit
+        numberLiteral all "nl" |> RError "1__1" 2  Errors.ExpectedDecimalDigit
+        numberLiteral all "nl" |> RError "1._e" 2  Errors.ExpectedDecimalDigit
+        numberLiteral all "nl" |> RError "1.1_e" 4  Errors.ExpectedDecimalDigit
+        numberLiteral all "nl" |> RError "1.e_0" 3  Errors.ExpectedDecimalDigit
+        numberLiteral all "nl" |> RError "1.e1_f" 5  Errors.ExpectedDecimalDigit
+
+        numberLiteral all "nl" |> RError "1_1_." 4  Errors.ExpectedDecimalDigit
+        numberLiteral all "nl" |> RError "1.1_e" 4  Errors.ExpectedDecimalDigit
+        numberLiteral all "nl" |> RError "1.1_1_e" 6  Errors.ExpectedDecimalDigit
+        numberLiteral all "nl" |> RError "1.e1_1_f" 7  Errors.ExpectedDecimalDigit
+        
+        numberLiteral all "nl" |> RError "1_." 2  Errors.ExpectedDecimalDigit
+        numberLiteral all "nl" |> RError "1._e" 2  Errors.ExpectedDecimalDigit
+        numberLiteral all "nl" |> RError "1.1_e" 4  Errors.ExpectedDecimalDigit
+        numberLiteral all "nl" |> RError "1.e_0" 3  Errors.ExpectedDecimalDigit
+        numberLiteral all "nl" |> RError "1.e1_f" 5  Errors.ExpectedDecimalDigit
+
+        numberLiteral all "nl" |> RError "1_1_." 4  Errors.ExpectedDecimalDigit
+        numberLiteral all "nl" |> RError "1.1_e" 4  Errors.ExpectedDecimalDigit
+        numberLiteral all "nl" |> RError "1.1_1_e" 6  Errors.ExpectedDecimalDigit
+        numberLiteral all "nl" |> RError "1.e1_1_f" 7  Errors.ExpectedDecimalDigit
+
+        numberLiteral all "nl" |> RError "0x_1" 2  Errors.ExpectedHexadecimalDigit
+        numberLiteral all "nl" |> RError "0x1_." 4  Errors.ExpectedHexadecimalDigit
+        numberLiteral all "nl" |> RError "0x1__1" 4  Errors.ExpectedHexadecimalDigit
+        numberLiteral all "nl" |> RError "0x1._p" 4  Errors.ExpectedHexadecimalDigit
+        numberLiteral all "nl" |> RError "0x1.1_p" 6  Errors.ExpectedHexadecimalDigit
+        numberLiteral all "nl" |> RError "0x1.p_0" 5  Errors.ExpectedDecimalDigit
+        numberLiteral all "nl" |> RError "0x1.p1_f" 7  Errors.ExpectedDecimalDigit
+
+        numberLiteral all "nl" |> RError "0x1_1_." 6  Errors.ExpectedHexadecimalDigit
+        numberLiteral all "nl" |> RError "0x1.1_p" 6  Errors.ExpectedHexadecimalDigit
+        numberLiteral all "nl" |> RError "0x1.1_1_p" 8  Errors.ExpectedHexadecimalDigit
+        numberLiteral all "nl" |> RError "0x1.p1_1_f" 9  Errors.ExpectedDecimalDigit
+
+        numberLiteral all "nl" |> RError "0o_1" 2  Errors.ExpectedOctalDigit
+        numberLiteral all "nl" |> RError "0o1__1" 4  Errors.ExpectedOctalDigit
+        numberLiteral all "nl" |> RError "0o1_2__1" 6  Errors.ExpectedOctalDigit
+
+        numberLiteral all "nl" |> RError "0b_1" 2  Errors.ExpectedBinaryDigit
+        numberLiteral all "nl" |> RError "0b1__1" 4  Errors.ExpectedBinaryDigit
+        numberLiteral all "nl" |> RError "0b1_0__1" 6  Errors.ExpectedBinaryDigit
+
 
     testNumberLiteral()
 

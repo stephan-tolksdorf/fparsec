@@ -344,6 +344,10 @@ let inline isHex (c: char) =
 let inline isOctal (c: char) =
     uint32 c - uint32 '0' <= uint32 '7' - uint32 '0'
 
+let inline private isBinaryDigit (c: char) =
+    uint32 c - uint32 '0' <= uint32 '1' - uint32 '0'
+
+
 let asciiUpper  stream = fastInlineSatisfyE isAsciiUpper  Errors.ExpectedAsciiUppercaseLetter stream
 let asciiLower  stream = fastInlineSatisfyE isAsciiLower  Errors.ExpectedAsciiLowercaseLetter stream
 let asciiLetter stream = fastInlineSatisfyE isAsciiLetter Errors.ExpectedAsciiLetter stream
@@ -937,42 +941,46 @@ let withSkippedString (f: string -> 'a -> 'b) (p: Parser<'a,'u>) : Parser<'b,'u>
 [<System.Flags>]
 type NumberLiteralOptions =
      | None                             = 0
-     | AllowSuffix                      = 0b000000000001
-     | AllowMinusSign                   = 0b000000000010
-     | AllowPlusSign                    = 0b000000000100
-     | AllowFraction                    = 0b000000001000
-     | AllowFractionWOIntegerPart       = 0b000000010000
-     | AllowExponent                    = 0b000000100000
-     | AllowHexadecimal                 = 0b000001000000
-     | AllowBinary                      = 0b000010000000
-     | AllowOctal                       = 0b000100000000
-     | AllowInfinity                    = 0b001000000000
-     | AllowNaN                         = 0b010000000000
+     | AllowSuffix                      = 0b0000000000001
+     | AllowMinusSign                   = 0b0000000000010
+     | AllowPlusSign                    = 0b0000000000100
+     | AllowFraction                    = 0b0000000001000
+     | AllowFractionWOIntegerPart       = 0b0000000010000
+     | AllowExponent                    = 0b0000000100000
+     | AllowHexadecimal                 = 0b0000001000000
+     | AllowBinary                      = 0b0000010000000
+     | AllowOctal                       = 0b0000100000000
+     | AllowInfinity                    = 0b0001000000000
+     | AllowNaN                         = 0b0010000000000
+          
+     | DefaultInteger                   = 0b0000111000110
+     | DefaultUnsignedInteger           = 0b0000111000000
+     | DefaultFloat                     = 0b0011001101110
 
-     | IncludeSuffixCharsInString       = 0b100000000000
+     | IncludeSuffixCharsInString       = 0b0100000000000
 
-     | DefaultInteger                   = 0b000111000110
-     | DefaultUnsignedInteger           = 0b000111000000
-     | DefaultFloat                     = 0b011001101110
+     | AllowDigitSeparator              = 0b1000000000000
+    
 
 type internal NLO = NumberLiteralOptions
 
 [<System.Flags>]
 type NumberLiteralResultFlags =
-     | None             = 0
-     | SuffixLengthMask = 0b0000000000001111
-     | HasMinusSign     = 0b0000000000010000
-     | HasPlusSign      = 0b0000000000100000
-     | HasIntegerPart   = 0b0000000001000000
-     | HasFraction      = 0b0000000010000000
-     | HasExponent      = 0b0000000100000000
-     | IsDecimal        = 0b0000001000000000
-     | IsHexadecimal    = 0b0000010000000000
-     | IsBinary         = 0b0000100000000000
-     | IsOctal          = 0b0001000000000000
-     | BaseMask         = 0b0001111000000000
-     | IsInfinity       = 0b0010000000000000
-     | IsNaN            = 0b0100000000000000
+     | None                  = 0
+     | SuffixLengthMask      = 0b0000000000001111
+     | HasMinusSign          = 0b0000000000010000
+     | HasPlusSign           = 0b0000000000100000
+     | HasIntegerPart        = 0b0000000001000000
+     | HasDigitSeparator     = 0b1000000000000000
+     | HasFraction           = 0b0000000010000000
+     | HasExponent           = 0b0000000100000000
+     | IsDecimal             = 0b0000001000000000
+     | IsHexadecimal         = 0b0000010000000000
+     | IsBinary              = 0b0000100000000000
+     | IsOctal               = 0b0001000000000000
+     | BaseMask              = 0b0001111000000000
+     | IsInfinity            = 0b0010000000000000
+     | IsNaN                 = 0b0100000000000000
 
 type internal NLF = NumberLiteralResultFlags
 
@@ -987,18 +995,19 @@ type NumberLiteral(string, info, suffixChar1, suffixChar2, suffixChar3, suffixCh
 
     member t.Info = info
 
-    member t.HasMinusSign   = int (info &&& NLF.HasMinusSign) <> 0
-    member t.HasPlusSign    = int (info &&& NLF.HasPlusSign) <> 0
-    member t.HasIntegerPart = int (info &&& NLF.HasIntegerPart) <> 0
-    member t.HasFraction    = int (info &&& NLF.HasFraction) <> 0
-    member t.HasExponent    = int (info &&& NLF.HasExponent) <> 0
-    member t.IsInteger      = int (info &&& (NLF.HasFraction ||| NLF.HasExponent)) = 0 // HasIntegerPart must be set if HasFraction and HasExponent both aren't
-    member t.IsDecimal      = int (info &&& NLF.IsDecimal) <> 0
-    member t.IsHexadecimal  = int (info &&& NLF.IsHexadecimal) <> 0
-    member t.IsBinary       = int (info &&& NLF.IsBinary) <> 0
-    member t.IsOctal        = int (info &&& NLF.IsOctal) <> 0
-    member t.IsNaN          = int (info &&& NLF.IsNaN) <> 0
-    member t.IsInfinity     = int (info &&& NLF.IsInfinity) <> 0
+    member t.HasMinusSign      = int (info &&& NLF.HasMinusSign) <> 0
+    member t.HasPlusSign       = int (info &&& NLF.HasPlusSign) <> 0
+    member t.HasIntegerPart    = int (info &&& NLF.HasIntegerPart) <> 0
+    member t.HasDigitSeparator = int (info &&& NLF.HasDigitSeparator) <> 0
+    member t.HasFraction       = int (info &&& NLF.HasFraction) <> 0
+    member t.HasExponent       = int (info &&& NLF.HasExponent) <> 0
+    member t.IsInteger         = int (info &&& (NLF.HasFraction ||| NLF.HasExponent)) = 0 // HasIntegerPart must be set if HasFraction and HasExponent both aren't
+    member t.IsDecimal         = int (info &&& NLF.IsDecimal) <> 0
+    member t.IsHexadecimal     = int (info &&& NLF.IsHexadecimal) <> 0
+    member t.IsBinary          = int (info &&& NLF.IsBinary) <> 0
+    member t.IsOctal           = int (info &&& NLF.IsOctal) <> 0
+    member t.IsNaN             = int (info &&& NLF.IsNaN) <> 0
+    member t.IsInfinity        = int (info &&& NLF.IsInfinity) <> 0
 
     override t.Equals(other: obj) =
         match other with
@@ -1021,6 +1030,11 @@ let numberLiteralE (opt: NumberLiteralOptions) (errorInCaseNoLiteralFound: Error
     let mutable error = NoErrorMessages
     let mutable flags = NLF.None
 
+    // Note: Limitations of the F# compiler's inliner prevent us from refactoring out the common
+    // parts of this function if we don't want to compromise on performance. :-(
+
+    let digitSeparator = '_'
+    
     if c = '-' && (opt &&& NLO.AllowMinusSign) <> NLO.None then
         flags <- NLF.HasMinusSign
         c <- stream.SkipAndPeek()
@@ -1035,6 +1049,7 @@ let numberLiteralE (opt: NumberLiteralOptions) (errorInCaseNoLiteralFound: Error
         if    c <> '0'
            || (c1 <- stream.SkipAndPeek();
                   c1 <= '9'
+               || c1 = digitSeparator
                || (opt &&& (NLO.AllowBinary ||| NLO.AllowOctal ||| NLO.AllowHexadecimal)) = NLO.None
                || ((int c1 ||| int ' ') = int 'e'))
         then
@@ -1047,25 +1062,59 @@ let numberLiteralE (opt: NumberLiteralOptions) (errorInCaseNoLiteralFound: Error
                     c <- c1
                 while isDigit c do
                     c <- stream.SkipAndPeek()
+                if (opt &&& NLO.AllowDigitSeparator) <> NLO.None then
+                    while c = digitSeparator do
+                        flags <- flags ||| NLF.HasDigitSeparator
+                        c <- stream.SkipAndPeek()
+                        if isDigit c then
+                            c <- stream.SkipAndPeek()
+                            while isDigit c do
+                                c <- stream.SkipAndPeek()
+                        else
+                           error <- Errors.ExpectedDecimalDigit
+                           c <- '!'
             if c = '.' && (opt &&& NLO.AllowFraction) <> NLO.None then
                 flags <- flags ||| NLF.HasFraction
                 c <- stream.SkipAndPeek()
                 if isDigit c then
                     c <- stream.SkipAndPeek()
-                elif (flags &&& NLF.HasIntegerPart) = NLF.None then
-                    // at least one digit before or after the . is required
+                elif c = digitSeparator || (flags &&& NLF.HasIntegerPart) = NLF.None then    
                     error <- Errors.ExpectedDecimalDigit
+                    c <- '!'
                 while isDigit c do
                     c <- stream.SkipAndPeek()
-            if (int c ||| int ' ') = int 'e' && isNull error && (opt &&& NLO.AllowExponent) <> NLO.None then
+                if (opt &&& NLO.AllowDigitSeparator) <> NLO.None then
+                    while c = digitSeparator do
+                        flags <- flags ||| NLF.HasDigitSeparator
+                        c <- stream.SkipAndPeek()
+                        if isDigit c then
+                            c <- stream.SkipAndPeek()
+                            while isDigit c do
+                                c <- stream.SkipAndPeek()
+                        else
+                            error <- Errors.ExpectedDecimalDigit
+                            c <- '!'
+            if (int c ||| int ' ') = int 'e' && (opt &&& NLO.AllowExponent) <> NLO.None then
                 flags <- flags ||| NLF.HasExponent
                 c <- stream.SkipAndPeek()
                 if c = '-' || c = '+' then
                     c <- stream.SkipAndPeek()
                 if not (isDigit c) then
                     error <- Errors.ExpectedDecimalDigit
+                    c <- '!'
                 while isDigit c do
                     c <- stream.SkipAndPeek()
+                if (opt &&& NLO.AllowDigitSeparator) <> NLO.None then
+                    while c = digitSeparator do
+                        flags <- flags ||| NLF.HasDigitSeparator
+                        c <- stream.SkipAndPeek()
+                        if isDigit c then
+                            c <- stream.SkipAndPeek()
+                            while isDigit c do
+                                c <- stream.SkipAndPeek()
+                        else
+                            error <- Errors.ExpectedDecimalDigit
+                            c <- '!'
         else
             match int c1 ||| int ' ' with
             | 0x78 (* 'x' *) when (opt &&& NLO.AllowHexadecimal) <> NLO.None ->
@@ -1074,33 +1123,68 @@ let numberLiteralE (opt: NumberLiteralOptions) (errorInCaseNoLiteralFound: Error
                 if isHex c then
                     flags <- flags ||| NLF.HasIntegerPart
                     c <- stream.SkipAndPeek()
-                elif (opt &&& NLO.AllowFractionWOIntegerPart) = NLO.None then
-                    // integer part required
+                elif c = digitSeparator || (opt &&& NLO.AllowFractionWOIntegerPart) = NLO.None then
                     error <- Errors.ExpectedHexadecimalDigit
+                    c <- '!'
                 while isHex c do
                     c <- stream.SkipAndPeek()
-                if c = '.' && isNull error && (opt &&& NLO.AllowFraction) <> NLO.None then
+                if (opt &&& NLO.AllowDigitSeparator) <> NLO.None then
+                    while c = digitSeparator do
+                        flags <- flags ||| NLF.HasDigitSeparator
+                        c <- stream.SkipAndPeek()
+                        if isHex c then
+                            c <- stream.SkipAndPeek()
+                            while isHex c do
+                                c <- stream.SkipAndPeek()
+                        else
+                            error <- Errors.ExpectedHexadecimalDigit
+                            c <- '!'
+                if c = '.' && (opt &&& NLO.AllowFraction) <> NLO.None then
                     flags <- flags ||| NLF.HasFraction
                     c <- stream.SkipAndPeek()
                     if isHex c then
                         c <- stream.SkipAndPeek()
-                    elif (flags &&& NLF.HasIntegerPart) = NLF.None then
-                        // at least one digit before or after the . is required
+                    elif c = digitSeparator || (flags &&& NLF.HasIntegerPart) = NLF.None then
                         error <- Errors.ExpectedHexadecimalDigit
+                        c <- '!'
                     while isHex c do
                         c <- stream.SkipAndPeek()
+                    if (opt &&& NLO.AllowDigitSeparator) <> NLO.None then                        
+                        while c = digitSeparator do
+                            flags <- flags ||| NLF.HasDigitSeparator
+                            c <- stream.SkipAndPeek()
+                            if isHex c then
+                                c <- stream.SkipAndPeek()
+                                while isHex c do
+                                    c <- stream.SkipAndPeek()
+                            else
+                                error <- Errors.ExpectedHexadecimalDigit
+                                c <- '!'
                 elif (flags &&& NLF.HasIntegerPart) = NLF.None then
                     // we neither have an integer part nor a fraction
                     error <- Errors.ExpectedHexadecimalDigit
-                if (int c ||| int ' ') = int 'p' && isNull error && (opt &&& NLO.AllowExponent) <> NLO.None then
+                    c <- '!'
+                if (int c ||| int ' ') = int 'p' && (opt &&& NLO.AllowExponent) <> NLO.None then
                     flags <- flags ||| NLF.HasExponent
                     c <- stream.SkipAndPeek()
                     if c = '-' || c = '+' then
                         c <- stream.SkipAndPeek()
                     if not (isDigit c) then
                         error <- Errors.ExpectedDecimalDigit
+                        c <- '!'
                     while isDigit c do
                         c <- stream.SkipAndPeek()
+                    if (opt &&& NLO.AllowDigitSeparator) <> NLO.None then
+                        while c = digitSeparator do
+                            flags <- flags ||| NLF.HasDigitSeparator
+                            c <- stream.SkipAndPeek()
+                            if isDigit c then
+                                c <- stream.SkipAndPeek()
+                                while isDigit c do
+                                    c <- stream.SkipAndPeek()
+                            else
+                                error <- Errors.ExpectedDecimalDigit
+                                c <- '!'
             | 0x6f (* 'o' *) when (opt &&& NLO.AllowOctal) <> NLO.None ->
                 flags <- flags ||| NLF.IsOctal
                 c <- stream.SkipAndPeek()
@@ -1109,18 +1193,42 @@ let numberLiteralE (opt: NumberLiteralOptions) (errorInCaseNoLiteralFound: Error
                     c <- stream.SkipAndPeek()
                 else
                     error <- Errors.ExpectedOctalDigit
+                    c <- '!'
                 while isOctal c do
                     c <- stream.SkipAndPeek()
+                if (opt &&& NLO.AllowDigitSeparator) <> NLO.None then
+                    while c = digitSeparator do
+                        flags <- flags ||| NLF.HasDigitSeparator
+                        c <- stream.SkipAndPeek()
+                        if isOctal c then
+                            c <- stream.SkipAndPeek()
+                            while isOctal c do
+                                c <- stream.SkipAndPeek()
+                        else
+                            error <- Errors.ExpectedOctalDigit
+                            c <- '!'
             | 0x62 (* 'b' *) when (opt &&& NLO.AllowBinary) <> NLO.None ->
                 flags <- flags ||| NLF.IsBinary
                 c <- stream.SkipAndPeek()
-                if c = '0' || c = '1' then
+                if isBinaryDigit c then
                     flags <- flags ||| NLF.HasIntegerPart
                     c <- stream.SkipAndPeek()
                 else
                     error <- Errors.ExpectedBinaryDigit
-                while c = '0' || c = '1' do
+                    c <- '!'
+                while isBinaryDigit c do
                     c <- stream.SkipAndPeek()
+                if (opt &&& NLO.AllowDigitSeparator) <> NLO.None then
+                    while c = digitSeparator do
+                        flags <- flags ||| NLF.HasDigitSeparator
+                        c <- stream.SkipAndPeek()
+                        if isBinaryDigit c then
+                            c <- stream.SkipAndPeek()
+                            while isBinaryDigit c do
+                                c <- stream.SkipAndPeek()
+                        else
+                            error <- Errors.ExpectedBinaryDigit
+                            c <- '!'
             | _ ->
                 flags <- flags ||| (NLF.IsDecimal ||| NLF.HasIntegerPart)
                 c <- c1

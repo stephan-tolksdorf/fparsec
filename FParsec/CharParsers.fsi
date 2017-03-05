@@ -511,23 +511,27 @@ val withSkippedString: (string -> 'a -> 'b) -> Parser<'a,'u> -> Parser<'b,'u>
 [<System.Flags>]
 type NumberLiteralOptions =
      | None                             = 0
-     | AllowSuffix                      = 0b000000000001
-     | AllowMinusSign                   = 0b000000000010
-     | AllowPlusSign                    = 0b000000000100
-     | AllowFraction                    = 0b000000001000
-     | AllowFractionWOIntegerPart       = 0b000000010000
-     | AllowExponent                    = 0b000000100000
-     | AllowHexadecimal                 = 0b000001000000
-     | AllowBinary                      = 0b000010000000
-     | AllowOctal                       = 0b000100000000
-     | AllowInfinity                    = 0b001000000000
-     | AllowNaN                         = 0b010000000000
+     | AllowSuffix                      = 0b0000000000001
+     | AllowMinusSign                   = 0b0000000000010
+     | AllowPlusSign                    = 0b0000000000100
+     | AllowFraction                    = 0b0000000001000
+     | AllowFractionWOIntegerPart       = 0b0000000010000
+     | AllowExponent                    = 0b0000000100000
+     | AllowHexadecimal                 = 0b0000001000000
+     | AllowBinary                      = 0b0000010000000
+     | AllowOctal                       = 0b0000100000000
+     | AllowInfinity                    = 0b0001000000000
+     | AllowNaN                         = 0b0010000000000
+          
+     | DefaultInteger                   = 0b0000111000110
+     | DefaultUnsignedInteger           = 0b0000111000000
+     | DefaultFloat                     = 0b0011001101110
 
-     | IncludeSuffixCharsInString       = 0b100000000000
+     | IncludeSuffixCharsInString       = 0b0100000000000
 
-     | DefaultInteger                   = 0b000111000110
-     | DefaultUnsignedInteger           = 0b000111000000
-     | DefaultFloat                     = 0b011001101110
+     /// Allows an underscore char ('_') as a digit separator.
+     /// Each underscore must be surrounded by digits on both sides.
+     | AllowDigitSeparator              = 0b1000000000000
 
 /// The return type of the `numberLiteral` parser. An instance contains the parsed
 /// number literal and various bits of information about it.
@@ -558,6 +562,7 @@ type NumberLiteral =
     member HasMinusSign: bool
     member HasPlusSign: bool
     member HasIntegerPart: bool
+    member HasDigitSeparator: bool
     member HasFraction: bool
     member HasExponent: bool
     member IsInteger: bool
@@ -574,20 +579,21 @@ type NumberLiteral =
 and /// Encodes various bits of information about a parsed number literal.
     [<System.Flags>]
     NumberLiteralResultFlags =
-     | None             = 0
-     | SuffixLengthMask = 0b0000000000001111
-     | HasMinusSign     = 0b0000000000010000
-     | HasPlusSign      = 0b0000000000100000
-     | HasIntegerPart   = 0b0000000001000000
-     | HasFraction      = 0b0000000010000000
-     | HasExponent      = 0b0000000100000000
-     | IsDecimal        = 0b0000001000000000
-     | IsHexadecimal    = 0b0000010000000000
-     | IsBinary         = 0b0000100000000000
-     | IsOctal          = 0b0001000000000000
-     | BaseMask         = 0b0001111000000000
-     | IsInfinity       = 0b0010000000000000
-     | IsNaN            = 0b0100000000000000
+     | None                  = 0
+     | SuffixLengthMask      = 0b0000000000001111
+     | HasMinusSign          = 0b0000000000010000
+     | HasPlusSign           = 0b0000000000100000
+     | HasIntegerPart        = 0b0000000001000000
+     | HasDigitSeparator     = 0b1000000000000000
+     | HasFraction           = 0b0000000010000000
+     | HasExponent           = 0b0000000100000000
+     | IsDecimal             = 0b0000001000000000
+     | IsHexadecimal         = 0b0000010000000000
+     | IsBinary              = 0b0000100000000000
+     | IsOctal               = 0b0001000000000000
+     | BaseMask              = 0b0001111000000000
+     | IsInfinity            = 0b0010000000000000
+     | IsNaN                 = 0b0100000000000000
 
 
 /// `numberLiteral options label` parses a number literal and returns the result in form
