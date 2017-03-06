@@ -1155,7 +1155,7 @@ val @many1Strings2@: Parser<string,'u> -> Parser<string,'u> -> Parser<string,'u>
 
 [``
 
-val @stringsSepBy@: Parser<string,'u> -> Parser<string,'u> -> Parser<string,'u>
+val @stringsSepBy@:  Parser<string,'u> -> Parser<string,'u> -> Parser<string,'u>
 ``]
 [
 `stringsSepBy sp sep` parses *zero* or more occurrences of the string parser `sp` separated by `sep`
@@ -1195,7 +1195,7 @@ val @stringsSepBy1@: Parser<string,'u> -> Parser<string,'u> -> Parser<string,'u>
 `stringsSepBy1 sp sep` parses *one* or more occurrences of the string parser `sp` separated by `sep`
 (in EBNF: `{EBNF}(sp (sep sp)*)`). It returns the strings parsed by `sp` *and* `sep` in concatenated form.
 
-`stringsSepBy1` behaves like `stringsSepBy`, except that it fails without consuming input if `sp` does not match at least once.
+`stringsSepBy1` behaves like `stringsSepBy`, except that it fails without consuming input if `sp` does not succeed at least once.
 ]
 
 [``

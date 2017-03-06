@@ -1,6 +1,12 @@
 ﻿[section Changelog]
 [no-subsection-numbers]
 
+[section#v1_0_3 Version 1.0.3, 2017-mm-dd /(not yet released)/]
+- moved source repository to GitHub
+- added `stringsSepBy1` parser ([url "https://github.com/stephan-tolksdorf/fparsec/pull/4" implemented by Robin Munn] -- thanks Robin!)
+- fixed documentation typos (one was spotted by Brandon Dimperio -- thanks Brandon!)
+[/section]
+
 [section#v1_0_2 Version 1.0.2, 2015-09-27]
 - replaced all uses of `[url "https://msdn.microsoft.com/en-us/library/hz49h034.aspx" Char.GetUnicodeCategory]` with `[url "https://msdn.microsoft.com/en-us/library/h6sx68ke.aspx" CharCodeInfo.GetUnicodeCategory]`, since the former may or may not track the current Unicode standard and the latter is the only one supported by the PCL API subset
 - updated the case folding, whitespace and XID property data tables to Unicode 8.0.0

@@ -533,6 +533,16 @@ let testMany() =
                     yield [p1; p2; p3; p4; p5], [sep1; sep2; sep3; sep4]  *)
               }
 
+    let expectedStringsSepByResultForSepByReply (reply: Reply<string list>) =
+        if reply.Status <> Ok then null
+        else match reply.Result with
+             | []          -> ""
+             | [_]         -> "1"
+             | [_;_]       -> "1a2"
+             | [_;_;_]     -> "1a2b3"
+             | [_;_;_;_]   -> "1a2b3c4"
+             | [_;_;_;_;_] -> "1a2b3c4d5"
+             | _ -> failwith "stringsSepByTest"
 
     let mutable i = 0
     let userState0 = stream.UserState
@@ -545,16 +555,14 @@ let testMany() =
                     (fun stream ->
                         pr(); sr()
                         let r = sepBy p s stream
-                        let result =
-                            if r.Status <> Ok then null
-                            else match r.Result with
-                                    | []          -> ""
-                                    | [_]         -> "1"
-                                    | [_;_]       -> "1a2"
-                                    | [_;_;_]     -> "1a2b3"
-                                    | [_;_;_;_]   -> "1a2b3c4"
-                                    | [_;_;_;_;_] -> "1a2b3c4d5"
-                                    | _ -> failwith "manyStringsSepByTest"
+                        let result = expectedStringsSepByResultForSepByReply r
+                        Reply(r.Status, result, r.Error)) stream
+        pr(); sr();
+        checkParser (stringsSepBy1 p s)
+                    (fun stream ->
+                        pr(); sr()
+                        let r = sepBy1 p s stream
+                        let result = expectedStringsSepByResultForSepByReply r
                         Reply(r.Status, result, r.Error)) stream
 
     try stringsSepBy (preturn "1") (preturn ";") stream |> ignore; Fail()

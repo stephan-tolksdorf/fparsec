@@ -488,7 +488,7 @@ val many1Strings2: Parser<string,'u> -> Parser<string,'u> -> Parser<string,'u>
 
 /// `stringsSepBy sp sep` parses *zero* or more occurrences of `sp` separated by `sep`.
 /// It returns the strings parsed by `sp` *and* `sep` in concatenated form.
-val stringsSepBy: Parser<string,'u> -> Parser<string,'u> -> Parser<string,'u>
+val stringsSepBy:  Parser<string,'u> -> Parser<string,'u> -> Parser<string,'u>
 
 /// `stringsSepBy1 sp sep` parses *one* or more occurrences of `sp` separated by `sep`.
 /// It returns the strings parsed by `sp` *and* `sep` in concatenated form.
