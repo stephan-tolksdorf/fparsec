@@ -818,7 +818,12 @@ let manyStrings p = manyStrings2 p p
 let many1Strings2 p1 p = manyStringsImpl true p1 p
 let many1Strings p = many1Strings2 p p
 
-let stringsSepBy (p: Parser<string,'u>) (sep: Parser<string,'u>) : Parser<string,'u> =
+let
+#if NOINLINE
+#else
+    inline
+#endif
+           internal stringsSepByImpl require1 (p: Parser<string,'u>) (sep: Parser<string,'u>) : Parser<string,'u> =
     fun stream ->
         let mutable stateTag = stream.StateTag
         let mutable reply = p stream
@@ -889,10 +894,13 @@ let stringsSepBy (p: Parser<string,'u>) (sep: Parser<string,'u>) : Parser<string
                     if stateTag0 = stateTag then
                         error <- mergeErrors error0 error
                     reply.Error <- error
-        elif reply.Status = Error && stateTag = stream.StateTag then
+        elif not require1 && reply.Status = Error && stateTag = stream.StateTag then
             reply.Status <- Ok
             reply.Result <- ""
         reply
+
+let stringsSepBy  p sep = stringsSepByImpl false p sep
+let stringsSepBy1 p sep = stringsSepByImpl true  p sep
 
 let skipped (p: Parser<unit,'u>) : Parser<string,'u> =
     fun stream ->

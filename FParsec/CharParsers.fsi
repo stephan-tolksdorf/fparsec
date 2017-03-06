@@ -490,6 +490,10 @@ val many1Strings2: Parser<string,'u> -> Parser<string,'u> -> Parser<string,'u>
 /// It returns the strings parsed by `sp` *and* `sep` in concatenated form.
 val stringsSepBy: Parser<string,'u> -> Parser<string,'u> -> Parser<string,'u>
 
+/// `stringsSepBy1 sp sep` parses *one* or more occurrences of `sp` separated by `sep`.
+/// It returns the strings parsed by `sp` *and* `sep` in concatenated form.
+val stringsSepBy1: Parser<string,'u> -> Parser<string,'u> -> Parser<string,'u>
+
 /// `skipped p` applies the parser `p` and returns the chars skipped over by `p` as a string.
 /// All newlines ("\r\n", "\r" or "\n") are normalized to "\n".
 val skipped: Parser<unit,'u> -> Parser<string,'u>
