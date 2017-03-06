@@ -17,7 +17,7 @@
  <div id="fixed-layer">
  <div id="fixed-wrapper">
  <div id="sidebar">
-  <div id="top-links"><span><a href="http://bitbucket.org/fparsec/main">FParsec @ BitBucket</a> | <a href="https://bitbucket.org/fparsec/main/issues">Report a bug</a> | <a href="mailto:fparsec [at] quanttec.com?subject=FParsec&amp;body=Hello Stephan,%0A%0A[your feedback]">Feedback</a></span></div>
+  <div id="top-links"><span><a href="https://github.com/stephan-tolksdorf/fparsec">FParsec @ GitHub</a> | <a href="https://github.com/stephan-tolksdorf/fparsec/issues">Report a bug</a> | <a href="mailto:fparsec [at] quanttec.com?subject=FParsec&amp;body=Hi Stephan,%0A%0A[your feedback]">Feedback</a></span></div>
   <div id="nav-tree">
    <table class="nav n1">
     <tbody class="nav-open n1">
@@ -103,7 +103,7 @@
    </table>
   </div>
   <div id="copyright">
-    <span>Copyright © 2015 <a href="about/contact.html">Stephan Tolksdorf</a></span>
+    <span>Copyright © 2017 <a href="about/contact.html">Stephan Tolksdorf</a></span>
   </div>
  </div>
  </div>
@@ -124,9 +124,10 @@
    </div>
    <div class="para _2">
     <p>
-     If you’re new to FParsec, I’d recommend to start by downloading the <a href="https://bitbucket.org/fparsec/main/get/tip.zip">source code
-     package</a> and experimenting a bit with the included sample projects. With the Visual Studio project and solution files (e.g. in the <span
-     class="tt">Build/VS11</span> subfolder) building the library and the samples is as easy as clicking a button.
+     If you’re new to FParsec, I’d recommend to start by downloading the <a
+     href="https://github.com/stephan-tolksdorf/fparsec/archive/master.zip">source code package</a> and experimenting a bit with the included sample
+     projects. With the Visual Studio project and solution files (e.g. in the <span class="tt">Build/VS11</span> subfolder) building the library and
+     the samples is as easy as clicking a button.
     </p>
    </div>
    <div class="para _3">
@@ -183,16 +184,16 @@
     </div>
     <div class="para _2">
      <p>
-      The <a href="http://nuget.org/packages/FParsec">basic package</a> uses the <a href="#low-trust-version">Low‐Trust version</a> of FParsec, which
-      uses no <a href="http://msdn.microsoft.com/en-us/library/t2yzs44b.aspx">unverifiable code</a> and is optimized for maximum portability. The main
-      limitation of this version is that any input stream is completely read into a string before parsing, which limits the maximum practical input
-      size. This package also contains PCL profile 259 versions of the FParsec assemblies.
+      The <a href="https://nuget.org/packages/FParsec">basic package</a> uses the <a href="#low-trust-version">Low‐Trust version</a> of FParsec, which
+      uses no <a href="https://msdn.microsoft.com/en-us/library/t2yzs44b.aspx">unverifiable code</a> and is optimized for maximum portability. The
+      main limitation of this version is that any input stream is completely read into a string before parsing, which limits the maximum practical
+      input size. This package also contains PCL profile 259 versions of the FParsec assemblies.
      </p>
     </div>
     <div class="para _3">
      <p>
-      The <a href="http://nuget.org/packages/FParsec-Big-Data-Edition/">&#x201C;Big Data edition&#x201D; package</a> uses the non‐Low‐Trust version of
-      FParsec that is optimized for maximum performance and supports extremely large input streams. Since this configuration is also the default
+      The <a href="https://nuget.org/packages/FParsec-Big-Data-Edition/">&#x201C;Big Data edition&#x201D; package</a> uses the non‐Low‐Trust version
+      of FParsec that is optimized for maximum performance and supports extremely large input streams. Since this configuration is also the default
       configuration of the solution files included with the source code, it is sometimes referred to as the &#x201C;normal&#x201D; version of FParsec.
       This version of FParsec does use &#x201C;unsafe&#x201D; (i.e. unverifiable) code involving unmanaged pointers. It also uses code generation in
       the implementation of <code class="fsharp"><a href="reference/charparsers.html#members.isAnyOf"><span class="ci">isAnyOf</span></a></code>,
@@ -219,7 +220,7 @@
     <div class="para _6">
      <p>
       For every published FParsec NuGet package a corresponding <a
-      href="http://docs.nuget.org/docs/creating-packages/creating-and-publishing-a-symbol-package">symbol package</a> with PDBs and source files is
+      href="https://docs.nuget.org/docs/creating-packages/creating-and-publishing-a-symbol-package">symbol package</a> with PDBs and source files is
       uploaded to <a href="http://www.symbolsource.org/">SymbolSource.org</a>. So, if you enable source server support in the Visual Studio debugging
       options and <a href="http://www.symbolsource.org/Public/Home/VisualStudio">configure</a> symbolsource.org as a symbol server, you can step into
       the FParsec code in the debugger.
@@ -231,18 +232,21 @@
    <h2 class="title h2"><span><span class="section-number">3.2</span> Getting the source</span></h2>
    <div class="intro i2">
     <div class="para _1">
-     <p>FParsec’s source code repository is hosted on BitBucket at: <a href="https://bitbucket.org/fparsec/main">bitbucket.org/fparsec/main</a></p>
+     <p>
+      FParsec’s source code repository is hosted on GitHub at: <a
+      href="https://github.com/stephan-tolksdorf/fparsec">github.com/stephan‐tolksdorf/fparsec</a>
+     </p>
     </div>
     <div class="para _2">
      <p>
-      You can &#x201C;clone&#x201D; the source code using <a href="http://mercurial.selenic.com/">Mercurial (HG)</a> or you can <a
-      href="https://bitbucket.org/fparsec/main/get/tip.zip">download it as a zip‐file</a>.
+      You can clone the source code using Git or you can <a href="https://github.com/stephan-tolksdorf/fparsec/archive/master.zip">download it as a
+      zip‐file</a>.
      </p>
     </div>
     <div class="para _3">
      <p>
-      It’s an FParsec project policy to check only stable and tested code into the BitBucket repository, so you can normally just work with the
-      &#x201C;tip&#x201D; version of FParsec.
+      It’s an FParsec project policy to check only stable and tested code into the master branch of the GitHub repository, so you can normally just
+      work with the master version of FParsec.
      </p>
     </div>
     <div class="para _4 lcinp">
@@ -250,7 +254,7 @@
       <div class="admonition-title">Tip</div>
       <div class="admonition-body">
        <div class="para _1">
-        <p><a href="http://tortoisehg.bitbucket.org/">TortoiseHG</a> is a great Mercurial GUI for Windows.</p>
+        <p><a href="https://www.sourcetreeapp.com/">SourceTree</a> is a great free GUI for Git for Windows and MacOS.</p>
        </div>
       </div>
      </div>
@@ -277,7 +281,7 @@
     </div>
     <div class="para _4">
      <p>
-      If you reference the DLLs in the <a href="http://msdn.microsoft.com/en-us/library/dd233175.aspx">F# Interactive</a> console, you need to
+      If you reference the DLLs in the <a href="https://msdn.microsoft.com/en-us/library/dd233175.aspx">F# Interactive</a> console, you need to
       reference <code class="fsharp"><span class="ci">FParsecCS</span><span class="cm">.</span><span class="ci">dll</span></code> before you reference
       <code class="fsharp"><span class="ci">FParsec</span><span class="cm">.</span><span class="ci">dll</span></code>.
      </p>
@@ -289,8 +293,8 @@
        <div class="para _1">
         <p>
          If you don’t want to distribute the FParsec DLLs together with the assembly of your project, you can use the <a
-         href="http://msdn.microsoft.com/en-us/library/dd233171.aspx"><span class="tt">staticlink</span> command‐line option</a> of the F# compiler to
-         merge the FParsec DLLs into your assembly.
+         href="https://msdn.microsoft.com/en-us/library/dd233171.aspx"><span class="tt">staticlink</span> command‐line option</a> of the F# compiler
+         to merge the FParsec DLLs into your assembly.
         </p>
        </div>
        <div class="para _2">
@@ -337,7 +341,7 @@
     <div class="para _1">
      <p>
       For optimization reasons the normal implementation (the &#x201C;Big Data edition&#x201D;) of FParsec involves <a
-      href="http://msdn.microsoft.com/en-us/library/t2yzs44b.aspx">unverifiable code</a> using unmanaged pointers.
+      href="https://msdn.microsoft.com/en-us/library/t2yzs44b.aspx">unverifiable code</a> using unmanaged pointers.
      </p>
     </div>
     <div class="para _2">
@@ -360,7 +364,7 @@
      <ul class="l1">
       <li class="_1">
        A <code class="fsharp"><a href="reference/charstream.html#CharStream"><span class="ci">CharStream</span></a></code> that is constructed from a
-       <code class="fsharp"><a href="http://msdn.microsoft.com/en-us/library/system.io.stream.aspx"><span class="ci">System</span><span
+       <code class="fsharp"><a href="https://msdn.microsoft.com/en-us/library/system.io.stream.aspx"><span class="ci">System</span><span
        class="cm">.</span><span class="ci">IO</span><span class="cm">.</span><span class="ci">Stream</span></a></code> or a file path reads the
        complete file into a single string during construction. <em>This severely limits the maximum practical input stream size.</em>
       </li>
@@ -389,7 +393,7 @@
     </div>
     <div class="para _3">
      <p>
-      The <a href="http://nuget.org/packages/FParsec">basic</a> NuGet package is built with the following options:<br /><code class="fsharp"><span
+      The <a href="https://nuget.org/packages/FParsec">basic</a> NuGet package is built with the following options:<br /><code class="fsharp"><span
       class="ci">LOW_TRUST</span></code>, <code class="fsharp"><a href="#configuration-options.SMALL_STATETAG"><span
       class="ci">SMALL_STATETAG</span></a></code>, <code class="fsharp"><span class="ci">CLR4</span></code>, plus <code class="fsharp"><a
       href="#configuration-options.CLR45"><span class="ci">CLR45</span></a></code> and <code class="fsharp"><span class="ci">PCL</span></code> for the
@@ -398,7 +402,7 @@
     </div>
     <div class="para _4">
      <p>
-      The <a href="http://nuget.org/packages/FParsec-Big-Data-Edition">&#x201C;Big Data edition&#x201D;</a> package is built with the following
+      The <a href="https://nuget.org/packages/FParsec-Big-Data-Edition">&#x201C;Big Data edition&#x201D;</a> package is built with the following
       options:<br /><code class="fsharp"><a href="#configuration-options.USE_STATIC_MAPPING_FOR_IS_ANY_OF"><span
       class="ci">USE_STATIC_MAPPING_FOR_IS_ANY_OF</span></a></code>, <code class="fsharp"><a href="#configuration-options.UNALIGNED_READS"><span
       class="ci">UNALIGNED_READS</span></a></code>, <code class="fsharp"><span class="ci">CLR4</span></code>, <code class="fsharp"><a
@@ -429,7 +433,7 @@
         <div class="para _2">
          <p>
           This option allows annotating methods with the new <code class="fsharp"><a
-          href="http://msdn.microsoft.com/en-us/library/system.runtime.compilerservices.methodimploptions(v=vs.110).aspx"><span
+          href="https://msdn.microsoft.com/en-us/library/system.runtime.compilerservices.methodimploptions(v=vs.110).aspx"><span
           class="ci">MethodImplOptions</span></a><span class="cm">.</span><span class="ci">AggressiveInlining</span></code> attribute.
          </p>
         </div>

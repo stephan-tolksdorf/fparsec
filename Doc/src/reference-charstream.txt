@@ -20,7 +20,7 @@ The `CharStream` class provides a unified interface for efficiently reading UTF-
 
 [** The `CharStream` class is the base class of `[^CharStream_1 CharStream<'TUserState>\ ]`], which adds a user-definable state component and some convenience methods for working with the state of a `CharStream` instance.
 
-[#block-wise A `CharStream` constructed from a `[url "http://msdn.microsoft.com/en-us/library/system.io.stream.aspx" System.IO.Stream]` or a file path reads the stream block-wise and only holds the most recently accessed block in memory.] The blocks overlap in order to provide efficient access on the boundary between blocks.
+[#block-wise A `CharStream` constructed from a `[url "https://msdn.microsoft.com/en-us/library/system.io.stream.aspx" System.IO.Stream]` or a file path reads the stream block-wise and only holds the most recently accessed block in memory.] The blocks overlap in order to provide efficient access on the boundary between blocks.
 
 If the char content is already available as a string or a char array, a `CharStream` can be directly constructed from the char buffer (without needing to copy the buffer). The overhead of accessing an in-memory char buffer through a `CharStream` is minimal.
 
@@ -43,7 +43,7 @@ The other 3 properties further describe the text location of the char identified
 
 [Newlines]
 [
-For performance reasons the most basic stream operations do *not* automatically recognize [url "http://en.wikipedia.org/wiki/Newline" newlines] (end-of-line markers) in the stream content. If you skip any newline with these methods, you have to manually register the newline afterwards with one of the [^RegisterNewline-methods `RegisterNewline` methods] (otherwise the line and column count becomes incorrect).
+For performance reasons the most basic stream operations do *not* automatically recognize [url "https://en.wikipedia.org/wiki/Newline" newlines] (end-of-line markers) in the stream content. If you skip any newline with these methods, you have to manually register the newline afterwards with one of the [^RegisterNewline-methods `RegisterNewline` methods] (otherwise the line and column count becomes incorrect).
 
 In order to provide a convenient interface for parser routines, the `CharStream` class also provides [^methods-that-register-newlines some more advanced methods] that automatically register any skipped standard newline (`"\n"`, `"\r\n"` and `"\r"`). Additionally, it provides two methods that automatically register any Unicode newline (`SkipUnicodeWhitespace` and `SkipUnicodeNewline`).
 
@@ -81,7 +81,7 @@ A `CharStream` holds managed and unmanaged resources that need to be explicitly 
 [[#low-trust Low-Trust version]]
 [
 If you compile FParsec with the `LOW_TRUST` conditional compiler symbol, the `CharStream` class differs from the normal version as follows:
-- No [url "http://msdn.microsoft.com/en-us/library/t2yzs44b.aspx" unverifiable code] involving pointers is used. *This allows FParsec to be executed in an environment with reduced trust*, such as medium trust ASP.NET applications or Silverlight applications.
+- No [url "https://msdn.microsoft.com/en-us/library/t2yzs44b.aspx" unverifiable code] involving pointers is used. *This allows FParsec to be executed in an environment with reduced trust*, such as medium trust ASP.NET applications or Silverlight applications.
 - A `CharStream` that is constructed from a `System.IO.Stream` or a file path reads the complete file into a single string during construction. *This severely limits the maximum practical stream size.*
 - Although the `CharStream` class still supports the `IDisposable` interface, disposing the `CharStream` instances is no longer necessary, since no resources are hold that need to be explicitly released.
 See also [^download-and-installation.low-trust-version].
@@ -114,7 +114,7 @@ In general it is *not* safe to continue to use a `CharStream` instance after one
 [`[no-auto-link DecoderFallbackException]`]
 [The underlying byte stream contains invalid bytes for which the decoder fallback threw this exception.
 
-The byte index of the invalid bytes in the stream is stored as a boxed `System.Int64` in the `"Stream.Position"` entry of the `[url "http://msdn.microsoft.com/en-us/library/system.exception.data.aspx" Data]` member of the exception instance. The precision of the index depends on the precision of the `DecoderFallbackException`'s `[url "http://msdn.microsoft.com/en-us/library/system.text.decoderfallbackexception.index.aspx" Index]` member. If the underlying `System.IO.Stream` is not seekable, the byte index only takes into account the bytes read by the `CharStream`, but not any bytes read before the `CharStream` was constructed.
+The byte index of the invalid bytes in the stream is stored as a boxed `System.Int64` in the `"Stream.Position"` entry of the `[url "https://msdn.microsoft.com/en-us/library/system.exception.data.aspx" Data]` member of the exception instance. The precision of the index depends on the precision of the `DecoderFallbackException`'s `[url "http://msdn.microsoft.com/en-us/library/system.text.decoderfallbackexception.index.aspx" Index]` member. If the underlying `System.IO.Stream` is not seekable, the byte index only takes into account the bytes read by the `CharStream`, but not any bytes read before the `CharStream` was constructed.
 ]
 ]
 
@@ -156,7 +156,7 @@ The first char in the stream is assigned the index `streamBeginIndex`. A positiv
 
 [important
 [small [/ This note does not apply to the [^low-trust Low-Trust version] of FParsec.]][br]
-The given string is "[url "http://msdn.microsoft.com/en-us/library/83y4ak54.aspx" pinned]" until the `CharStream` is disposed. Pinning the string prevents the GC from moving it around in memory during garbage collection. On .NET (at least in versions up to and including 4.0) the pinning has no effect if the string is large enough to be allocated on the Large Object Heap, i.e. has a length of about 42500 chars or more. However, pinning smaller strings does constrain the normal operations of the GC. Thus, **to minimize the negative impact on the GC, you should dispose `CharStream` instances constructed from small strings as soon as you're done parsing it**. If you keep a large number of `CharStream` instances constructed from small strings around for an extended period of time, you risk fragmenting the heap.
+The given string is "[url "https://msdn.microsoft.com/en-us/library/83y4ak54.aspx" pinned]" until the `CharStream` is disposed. Pinning the string prevents the GC from moving it around in memory during garbage collection. On .NET (at least in versions up to and including 4.0) the pinning has no effect if the string is large enough to be allocated on the Large Object Heap, i.e. has a length of about 42500 chars or more. However, pinning smaller strings does constrain the normal operations of the GC. Thus, **to minimize the negative impact on the GC, you should dispose `CharStream` instances constructed from small strings as soon as you're done parsing it**. If you keep a large number of `CharStream` instances constructed from small strings around for an extended period of time, you risk fragmenting the heap.
 ]
 ]
 
@@ -189,7 +189,7 @@ The first char in the stream is assigned the index `streamBeginIndex`. A positiv
 [note A `CharStream` constructed from a char array does not support .NET regex matching via the `[^Match_Regex Match]` method.]
 
 [important
-The given char array is "[url "http://msdn.microsoft.com/en-us/library/83y4ak54.aspx" pinned]" until the `CharStream` is disposed. Pinning the char array prevents the GC from moving it around in memory during garbage collection. On .NET (at least in versions up to and including 4.0) the pinning has no effect if the char array is large enough to be allocated on the Large Object Heap, i.e. has a length of about 42500 chars or more. However, pinning smaller char arrays does constrain the normal operations of the GC. Thus, **to minimize the negative impact on the GC, you should dispose `CharStream` instances constructed from small char arrays as soon as you're done parsing it**. If you keep a large number of `CharStream` instances constructed from small char arrays around for an extended period of time, you risk fragmenting the heap.
+The given char array is "[url "https://msdn.microsoft.com/en-us/library/83y4ak54.aspx" pinned]" until the `CharStream` is disposed. Pinning the char array prevents the GC from moving it around in memory during garbage collection. On .NET (at least in versions up to and including 4.0) the pinning has no effect if the char array is large enough to be allocated on the Large Object Heap, i.e. has a length of about 42500 chars or more. However, pinning smaller char arrays does constrain the normal operations of the GC. Thus, **to minimize the negative impact on the GC, you should dispose `CharStream` instances constructed from small char arrays as soon as you're done parsing it**. If you keep a large number of `CharStream` instances constructed from small char arrays around for an extended period of time, you risk fragmenting the heap.
 ]
 
 
@@ -342,7 +342,7 @@ The normal version of the `CharStream` class supports stream sizes up to approxi
 Arguments:
 [dl
 [`stream`]
-[The byte stream providing the input. If `stream.[url "http://msdn.microsoft.com/en-us/library/system.io.stream.canread.aspx" CanRead]` returns `false`, an `ArgumentException` is thrown.]
+[The byte stream providing the input. If `stream.[url "https://msdn.microsoft.com/en-us/library/system.io.stream.canread.aspx" CanRead]` returns `false`, an `ArgumentException` is thrown.]
 
 [`leaveOpen`]
 [Indicates whether the `stream` should be left open when the `CharStream` has finished reading it.]
@@ -350,11 +350,11 @@ Arguments:
 [`encoding`]
 [The default `Encoding` used for decoding the byte stream into chars.
 
-If the preamble returned by `encoding.[url "http://msdn.microsoft.com/en-us/library/system.text.encoding.getpreamble.aspx" GetPreamble]()` is present at the beginning of the stream, the `CharStream` will skip over it.
+If the preamble returned by `encoding.[url "https://msdn.microsoft.com/en-us/library/system.text.encoding.getpreamble.aspx" GetPreamble]()` is present at the beginning of the stream, the `CharStream` will skip over it.
 ]
 
 [`detectEncodingFromByteOrderMarks`]
-[Indicates whether the constructor should detect the encoding from a unicode [url "http://en.wikipedia.org/wiki/Byte-order_mark" byte-order mark] at the beginning of the stream. An encoding detected from a byte-order mark overrides the default `encoding`. The standard byte-order marks for the following encodings are supported: UTF-8, UTF-16 LE/BE and UTF-32 LE/BE.]
+[Indicates whether the constructor should detect the encoding from a unicode [url "https://en.wikipedia.org/wiki/Byte-order_mark" byte-order mark] at the beginning of the stream. An encoding detected from a byte-order mark overrides the default `encoding`. The standard byte-order marks for the following encodings are supported: UTF-8, UTF-16 LE/BE and UTF-32 LE/BE.]
 
 [`blockSize`]
 [The number of chars per block. The value is rounded up to the first positive multiple of 1536. The default is 3×2[sup 16] ≈ 200k.]

@@ -8,7 +8,7 @@ This tutorial introduces you to the basic concepts of FParsec. Our goal is to gi
 
 [section Preliminaries]
 
-FParsec is built as two DLLs: =FParsec.dll= and =FParsecCS.dll=. To use FParsec in your project, you can either let [url "http://nuget.org" NuGet] install one of the [^nuget-packages NuGet packages], or you can build the two FParsec DLLs from source. The easiest way to build FParsec from source is using the Visual Studio solution files in the [=Build/VS..] folders of the [url "https://bitbucket.org/fparsec/main/get/tip.zip" source code package], e.g. in [=Build/VS11] for Visual Studio 2012. Any project that uses FParsec has to reference both DLLs. See @Download and Installation@ for more details.
+FParsec is built as two DLLs: =FParsec.dll= and =FParsecCS.dll=. To use FParsec in your project, you can either let [url "http://nuget.org" NuGet] install one of the [^nuget-packages NuGet packages], or you can build the two FParsec DLLs from source. The easiest way to build FParsec from source is using the Visual Studio solution files in the [=Build/VS..] folders of the [url "https://github.com/stephan-tolksdorf/fparsec/archive/master.zip" source code package], e.g. in [=Build/VS11] for Visual Studio 2012. Any project that uses FParsec has to reference both DLLs. See @Download and Installation@ for more details.
 
 All FParsec types and modules are declared in the `FParsec` namespace. This namespace contains some basic classes (such as `CharStream` and `Reply`) and four F# modules, namely
 - `Primitives`, containing basic type definitions and parser combinators,

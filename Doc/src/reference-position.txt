@@ -22,7 +22,7 @@ type Position =
   override ToString: unit -> string
 
   interface System.IEquatable<Position>
-  interface [url "http://msdn.microsoft.com/en-us/library/4d7sx9hd.aspx" System.IComparable]<Position>
+  interface [url "https://msdn.microsoft.com/en-us/library/4d7sx9hd.aspx" System.IComparable]<Position>
   interface System.IComparable
 ``]
 [/interface-members]

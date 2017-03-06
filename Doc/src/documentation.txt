@@ -6,24 +6,24 @@
 [default-code-language "f#"]
 [split-section]
 
-FParsec is a [url "http://en.wikipedia.org/wiki/Parser_combinator" parser combinator] library for [url "http://msdn.microsoft.com/fsharp" F#].
+FParsec is a [url "https://en.wikipedia.org/wiki/Parser_combinator" parser combinator] library for [url "http://fsharp.org" F#].
 
-With FParsec you can implement [url "http://en.wikipedia.org/wiki/Recursive_descent_parser" recursive-descent] text parsers for [url "http://en.wikipedia.org/wiki/Formal_grammar" formal grammars].
+With FParsec you can implement [url "https://en.wikipedia.org/wiki/Recursive_descent_parser" recursive-descent] text parsers for [url "https://en.wikipedia.org/wiki/Formal_grammar" formal grammars].
 
 FParsec's features include:
 - support for context-sensitive, infinite look-ahead grammars,
 - automatically generated, highly readable error messages,
 - Unicode support,
 - efficient support for very large files,
-- an embeddable, runtime-configurable [url "http://en.wikipedia.org/wiki/Operator-precedence_parser" operator-precedence parser] component,
+- an embeddable, runtime-configurable [url "https://en.wikipedia.org/wiki/Operator-precedence_parser" operator-precedence parser] component,
 - a simple, efficient and easily extensible API,
 - an implementation thoroughly optimized for performance,
 - comprehensive documentation,
 - a permissive open source @license@.
 
-FParsec is an F# adaptation of [url "http://www.haskell.org/haskellwiki/Parsec" Parsec], the popular parser combinator library for Haskell by [url "http://research.microsoft.com/en-us/um/people/daan/" Daan Leijen]. While the implementations of Parsec and FParsec are completely different, they share a similar top-level API.
+FParsec is an F# adaptation of [url "https://www.haskell.org/haskellwiki/Parsec" Parsec], the popular parser combinator library for Haskell by [url "https://www.microsoft.com/en-us/research/people/daan" Daan Leijen]. While the implementations of Parsec and FParsec are completely different, they share a similar top-level API.
 
-[/ **Latest release:**] FParsec 1.0.2, 2015-09-27, [url "https://bitbucket.org/fparsec/main/get/tip.zip" Download], [^download-and-installation.nuget-packages NuGet packages], [^about.changelog Changes]
+[/ **Latest release:**] FParsec 1.0.2, 2015-09-27, [url "https://github.com/stephan-tolksdorf/fparsec/archive/master.zip" Download], [^download-and-installation.nuget-packages NuGet packages], [^about.changelog Changes]
 
 [auto-link{
     do-not-pick-up-as-link-targets = [ "ToString"],
@@ -46,38 +46,38 @@ FParsec is an F# adaptation of [url "http://www.haskell.org/haskellwiki/Parsec" 
              "ErrorMessageList.Merge" : reference.ErrorMessageList.members.Merge,
              "api-reference": reference
             ],
-    urls = ["FileStream" : "http://msdn.microsoft.com/en-us/library/system.io.filestream.aspx",
-            "System.IO.Stream" : "http://msdn.microsoft.com/en-us/library/system.io.stream.aspx",
-            "Decoder" : "http://msdn.microsoft.com/en-us/library/system.text.decoder.aspx",
-            "System.Text.Encoding" : "http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx",
-            "Encoding" : "http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx",
-            "System.IEquatable" : "http://msdn.microsoft.com/en-us/library/ms131187.aspx",
-            "System.IComparable" : "http://msdn.microsoft.com/en-us/library/system.icomparable.aspx",
-            "System.Char.IsWhiteSpace" : "http://msdn.microsoft.com/en-us/library/t809ektx.aspx",
-            "System.Collections.IStructuralEquatable" : "http://msdn.microsoft.com/en-us/library/system.collections.istructuralequatable(VS.100).aspx",
-            "HashSet" : "http://msdn.microsoft.com/en-us/library/bb359438.aspx",
-            "System.Globalization.StringInfo" : "http://msdn.microsoft.com/en-us/library/system.globalization.stringinfo.aspx",
-            "LengthInTextElements" : "http://msdn.microsoft.com/en-us/library/system.globalization.stringinfo.lengthintextelements.aspx",
-            "System.Text.RegularExpressions" : "http://msdn.microsoft.com/en-us/library/system.text.regularexpressions.aspx",
-            "System.Text.RegularExpressions.Regex" : "http://msdn.microsoft.com/en-us/library/system.text.regularexpressions.regex.aspx",
-            "System.Text.NormalizationForm" : "http://msdn.microsoft.com/en-us/library/system.text.normalizationform.aspx",
-            "Regex" : "http://msdn.microsoft.com/en-us/library/system.text.regularexpressions.regex.aspx",
-            "System.Text.RegularExpressions.Match" : "http://msdn.microsoft.com/en-us/library/system.text.regularexpressions.match.aspx",
-            "StringWriter" : "http://msdn.microsoft.com/en-us/library/system.io.stringwriter.aspx",
-            "System.IO.StringWriter" : "http://msdn.microsoft.com/en-us/library/system.io.stringwriter.aspx",
-            "TextWriter" : "http://msdn.microsoft.com/en-us/library/system.io.textwriter.aspx",
-            "System.IO.TextWriter" : "http://msdn.microsoft.com/en-us/library/system.io.textwriter.aspx",
-            "ArgumentException" : "http://msdn.microsoft.com/en-us/library/system.argumentexception.aspx",
-            "ArgumentOutOfRangeException" : "http://msdn.microsoft.com/en-us/library/system.argumentoutofrangeexception.aspx",
-            "NotSupportedException" : "http://msdn.microsoft.com/en-us/library/system.notsupportedexception.aspx",
-            "NullReferenceException" : "http://msdn.microsoft.com/en-us/library/system.nullreferenceexception.aspx",
-            "IOException" : "http://msdn.microsoft.com/en-us/library/system.io.ioexception.aspx",
-            "DecoderFallbackException" : "http://msdn.microsoft.com/en-us/library/system.text.decoderfallbackexception.aspx",
-            "computation-expressions": "http://msdn.microsoft.com/en-us/library/dd233182.aspx",
-            "computation-expression": "http://msdn.microsoft.com/en-us/library/dd233182.aspx",
-            "monad": "http://en.wikipedia.org/wiki/Monad_%28functional_programming%29",
-            "f-interactive": "http://msdn.microsoft.com/en-us/library/dd233175.aspx",
-            "MethodImplOptions": "http://msdn.microsoft.com/en-us/library/system.runtime.compilerservices.methodimploptions(v=vs.110).aspx"
+    urls = ["FileStream" : "https://msdn.microsoft.com/en-us/library/system.io.filestream.aspx",
+            "System.IO.Stream" : "https://msdn.microsoft.com/en-us/library/system.io.stream.aspx",
+            "Decoder" : "https://msdn.microsoft.com/en-us/library/system.text.decoder.aspx",
+            "System.Text.Encoding" : "https://msdn.microsoft.com/en-us/library/system.text.encoding.aspx",
+            "Encoding" : "https://msdn.microsoft.com/en-us/library/system.text.encoding.aspx",
+            "System.IEquatable" : "https://msdn.microsoft.com/en-us/library/ms131187.aspx",
+            "System.IComparable" : "https://msdn.microsoft.com/en-us/library/system.icomparable.aspx",
+            "System.Char.IsWhiteSpace" : "https://msdn.microsoft.com/en-us/library/t809ektx.aspx",
+            "System.Collections.IStructuralEquatable" : "https://msdn.microsoft.com/en-us/library/system.collections.istructuralequatable(VS.100).aspx",
+            "HashSet" : "https://msdn.microsoft.com/en-us/library/bb359438.aspx",
+            "System.Globalization.StringInfo" : "https://msdn.microsoft.com/en-us/library/system.globalization.stringinfo.aspx",
+            "LengthInTextElements" : "https://msdn.microsoft.com/en-us/library/system.globalization.stringinfo.lengthintextelements.aspx",
+            "System.Text.RegularExpressions" : "https://msdn.microsoft.com/en-us/library/system.text.regularexpressions.aspx",
+            "System.Text.RegularExpressions.Regex" : "https://msdn.microsoft.com/en-us/library/system.text.regularexpressions.regex.aspx",
+            "System.Text.NormalizationForm" : "https://msdn.microsoft.com/en-us/library/system.text.normalizationform.aspx",
+            "Regex" : "https://msdn.microsoft.com/en-us/library/system.text.regularexpressions.regex.aspx",
+            "System.Text.RegularExpressions.Match" : "https://msdn.microsoft.com/en-us/library/system.text.regularexpressions.match.aspx",
+            "StringWriter" : "https://msdn.microsoft.com/en-us/library/system.io.stringwriter.aspx",
+            "System.IO.StringWriter" : "https://msdn.microsoft.com/en-us/library/system.io.stringwriter.aspx",
+            "TextWriter" : "https://msdn.microsoft.com/en-us/library/system.io.textwriter.aspx",
+            "System.IO.TextWriter" : "https://msdn.microsoft.com/en-us/library/system.io.textwriter.aspx",
+            "ArgumentException" : "https://msdn.microsoft.com/en-us/library/system.argumentexception.aspx",
+            "ArgumentOutOfRangeException" : "https://msdn.microsoft.com/en-us/library/system.argumentoutofrangeexception.aspx",
+            "NotSupportedException" : "https://msdn.microsoft.com/en-us/library/system.notsupportedexception.aspx",
+            "NullReferenceException" : "https://msdn.microsoft.com/en-us/library/system.nullreferenceexception.aspx",
+            "IOException" : "https://msdn.microsoft.com/en-us/library/system.io.ioexception.aspx",
+            "DecoderFallbackException" : "https://msdn.microsoft.com/en-us/library/system.text.decoderfallbackexception.aspx",
+            "computation-expressions": "https://msdn.microsoft.com/en-us/library/dd233182.aspx",
+            "computation-expression": "https://msdn.microsoft.com/en-us/library/dd233182.aspx",
+            "monad": "https://en.wikipedia.org/wiki/Monad_%28functional_programming%29",
+            "f-interactive": "https://msdn.microsoft.com/en-us/library/dd233175.aspx",
+            "MethodImplOptions": "https://msdn.microsoft.com/en-us/library/system.runtime.compilerservices.methodimploptions(v=vs.110).aspx"
     ] }]
 
 [section#about About FParsec]

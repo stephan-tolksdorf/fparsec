@@ -136,7 +136,7 @@ let manyReduce f defVal p = (many1 p |>> List.reduce f) <|>% defVal.
 ``
 
 If you need *optimized* implementations, you can define them using the new `Inline` helper class.
-The file [url "https://bitbucket.org/fparsec/main/src/tip/Doc/misc/removed-many-variants.fs" [= Doc/misc/removed-many-variants.fs]] contains optimized definitions for all removed variants.
+The file [url "https://github.com/stephan-tolksdorf/fparsec/blob/master/Doc/misc/removed-many-variants.fs" [= Doc/misc/removed-many-variants.fs]] contains optimized definitions for all removed variants.
 ]
 
 

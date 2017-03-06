@@ -1,1 +1,0 @@
-See http://www.quanttec.com/fparsec

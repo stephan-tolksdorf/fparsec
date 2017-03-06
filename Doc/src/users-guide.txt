@@ -16,7 +16,7 @@ The first seven chapters of this user's guide build on each other. The remaining
 
 [section Parser functions]
 
-An FParsec parser is a function that reads input from a text stream. When it succeeds, it returns a result value (e.g. a parsed number or an [url "http://en.wikipedia.org/wiki/Abstract_syntax_tree" AST] node); when it fails, it returns error messages describing what went wrong.
+An FParsec parser is a function that reads input from a text stream. When it succeeds, it returns a result value (e.g. a parsed number or an [url "https://en.wikipedia.org/wiki/Abstract_syntax_tree" AST] node); when it fails, it returns error messages describing what went wrong.
 
 The following type abbreviation from the `Primitives` module defines the basic type of parser function supported throughout the FParsec library:
 ``type Parser<'Result,'UserState> = CharStream<'UserState> -> Reply<'Result>``
@@ -314,7 +314,7 @@ This combinator is also significant for the role it plays in the monadic parser 
 In the previous chapter we discussed various ways to sequentially apply two or more parsers. In this section we will explain how to repeatedly apply the same parser in order to parse a sequence with an arbitrary number of elements.
 
 [section The `many` parser]
-In regular expressions and many grammar formalisms a [url "http://en.wikipedia.org/wiki/Kleene_star" Kleene Star] marks a parser rule that can be repeatedly applied. For example, `number*` could represent a sequence of zero or more numbers.
+In regular expressions and many grammar formalisms a [url "https://en.wikipedia.org/wiki/Kleene_star" Kleene Star] marks a parser rule that can be repeatedly applied. For example, `number*` could represent a sequence of zero or more numbers.
 
 In FParsec the `many` combinator takes the place of the Kleene Star:
 ``val many: Parser<'a,'u> -> Parser<'a list, 'u>``
@@ -1855,7 +1855,7 @@ unknown tag name 'bold'
 
 If your parser implementation backtracks a lot when parsing typical inputs and as a result repeatedly applies some `Parser` functions at the same input position, it can be beneficial to memoize these `Parser` functions, i.e. cache their results for each input position.
 
-In the extreme case, [url "http://en.wikipedia.org/wiki/Memoization" memoization] can mean the difference between linear and exponential execution times. In practice, FParsec is typically used for formal grammars that hardly require any extensive backtracking, so that memoization would usually only have a negative affect on performance.
+In the extreme case, [url "https://en.wikipedia.org/wiki/Memoization" memoization] can mean the difference between linear and exponential execution times. In practice, FParsec is typically used for formal grammars that hardly require any extensive backtracking, so that memoization would usually only have a negative affect on performance.
 
 In situation where you really do need to memoize parsers, you can work with a generic `memoize` combinator like the one in the following example:
 
@@ -1920,7 +1920,7 @@ let memoize (p: Parser<'a,UserState>) : Parser<'a,UserState> =
 [/section]
 
 [section Parsing F# infix operators]
-F# supports user-definable infix operators whose precedence and associativity depend on the first chars of the operator name. For example, the [url "http://research.microsoft.com/en-us/um/cambridge/projects/fsharp/manual/spec.html#_Toc257733507" F# spec] states that operators that start with `*` are left-associative, while operators that start with `**` are right associative and have a higher precedence, so that `1*2*.3**4**.5` is parsed as `((1*2)*.(3**(4 **.5)))`.
+F# supports user-definable infix operators whose precedence and associativity depend on the first chars of the operator name. For example, the [url "http://fsharp.org/specs/language-spec/4.0/FSharpSpec-4.0-latest.pdf" F# spec] states that operators that start with `*` are left-associative, while operators that start with `**` are right associative and have a higher precedence, so that `1*2*.3**4**.5` is parsed as `((1*2)*.(3**(4 **.5)))`.
 
 Since the precedence and associativity rules are fixed, you can parse F# expressions with a static operator precedence grammar, i.e. without having to reconfigure the parser when a new operator is defined in the parsed source code. However, it's probably not immediately obvious how to do this with FParsec's `OperatorPrecedenceParser` class (OPP), since the OPP normally expects all possible operators to be (individually) specified before they are used.
 

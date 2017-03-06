@@ -51,7 +51,7 @@ The following tables contain a bullet-point comparison between FParsec and the t
 [
 - Tradeoff between declarativeness and performance
 - Syntax less readable than PEG or Regular Expression syntax
-- [url "http://en.wikipedia.org/wiki/Left_recursion" Left-recursive] grammar rules have to be rewritten
+- [url "https://en.wikipedia.org/wiki/Left_recursion" Left-recursive] grammar rules have to be rewritten
 - Does not support a pre-parsing tokenization phase
 - You have to learn the API
 - Limited to F#

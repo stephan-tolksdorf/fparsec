@@ -21,7 +21,7 @@ The `Equals` override ignores the `Result` value when it compares two `Reply` va
 
 The `Reply` fields are mutable because that allows us to implement library primitives with more compact code, for which the .NET JIT produces faster machine code.
 
-Of course, if you object to mutable structs [url "http://stackoverflow.com/questions/441309/why-are-mutable-structs-evil" on religious grounds] or if you're not familiar with the somewhat subtle behaviour of mutable structs in certain sitations, you can always treat the `Reply` type as if it was immutable.
+Of course, if you object to mutable structs [url "https://stackoverflow.com/questions/441309/why-are-mutable-structs-evil" on religious grounds] or if you're not familiar with the somewhat subtle behaviour of mutable structs in certain sitations, you can always treat the `Reply` type as if it was immutable.
 ]
 
 [/section]

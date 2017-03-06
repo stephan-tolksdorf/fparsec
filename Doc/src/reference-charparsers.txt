@@ -776,9 +776,9 @@ val @skipManyMinMaxSatisfy2L@:
 val @regex@:  string -> Parser<string,'u>
 ``]
 [
-`regex pattern` matches the .NET [url "http://msdn.microsoft.com/en-us/library/az24scfc.aspx" regular expression] given by the string `pattern` on the chars beginning at the current index in the input stream. If the regular expression matches, the parser skips the matched chars and returns them as a string. If the regular expression does not match, the parser fails without consuming input.
+`regex pattern` matches the .NET [url "https://msdn.microsoft.com/en-us/library/az24scfc.aspx" regular expression] given by the string `pattern` on the chars beginning at the current index in the input stream. If the regular expression matches, the parser skips the matched chars and returns them as a string. If the regular expression does not match, the parser fails without consuming input.
 
-The `System.Text.RegularExpressions.Regex` object that is internally used to match the pattern is constructed with the `[url "http://msdn.microsoft.com/en-us/library/system.text.regularexpressions.regexoptions.aspx" RegexOptions]` `MultiLine` and `ExplicitCapture`. In order to ensure that the regular expression can only match at the beginning of a string, `"\\A"` is automatically prepended to the pattern. You should avoid the use of greedy expressions like `".*"`, because these might trigger a scan of the complete input every time the regex is matched.
+The `System.Text.RegularExpressions.Regex` object that is internally used to match the pattern is constructed with the `[url "https://msdn.microsoft.com/en-us/library/system.text.regularexpressions.regexoptions.aspx" RegexOptions]` `MultiLine` and `ExplicitCapture`. In order to ensure that the regular expression can only match at the beginning of a string, `"\\A"` is automatically prepended to the pattern. You should avoid the use of greedy expressions like `".*"`, because these might trigger a scan of the complete input every time the regex is matched.
 
 Newline chars (`'\r'` and `'\n'`) in the pattern are interpreted literally. For example, an `'\n'` char in the pattern will only match `"\n"`, not `"\r"` or `"\r\n"`. However, in the returned string all newlines (`"\n"`, `"\r\n"` or `"\r"`) are normalized to `"\n"`.
 
@@ -817,9 +817,9 @@ Specifies the ASCII characters that are valid as non-first characters of an iden
 [`normalization`]
 [
 [small [/ This option is not supported in the Silverlight version of FParsec.]][br]
-The [url "http://www.Unicode.org/reports/tr15/" normalization form] to which identifier strings are normalized. The value must be one of the four enum values of `System.Text.NormalizationForm`. If no `normalization` parameter is given, no normalization is performed.
+The [url "https://www.Unicode.org/reports/tr15/" normalization form] to which identifier strings are normalized. The value must be one of the four enum values of `System.Text.NormalizationForm`. If no `normalization` parameter is given, no normalization is performed.
 
-The normalization is performed with the [url "http://msdn.microsoft.com/en-us/library/ebza6ck1.aspx" `System.String.Normalize`] method provided by the Base Class Library.
+The normalization is performed with the [url "https://msdn.microsoft.com/en-us/library/ebza6ck1.aspx" `System.String.Normalize`] method provided by the Base Class Library.
 ]
 
 [`normalizeBeforeValidation`]
@@ -830,7 +830,7 @@ Indicates whether the identifier string should be normalized before validation (
 
 [`allowJoinControlChars`]
 [
-Indicates whether the two join control characters ([url "http://en.wikipedia.org/wiki/Zero-width_non-joiner" zero-width non-joiner] and [url "http://en.wikipedia.org/wiki/Zero-width_joiner" zero-width joiner]) are allowed at any non-start character position in the identifier.
+Indicates whether the two join control characters ([url "https://en.wikipedia.org/wiki/Zero-width_non-joiner" zero-width non-joiner] and [url "https://en.wikipedia.org/wiki/Zero-width_joiner" zero-width joiner]) are allowed at any non-start character position in the identifier.
 ]
 
 [`preCheckStart`, `preCheckContinue`]
@@ -858,7 +858,7 @@ The error message that is reported when an invalid char is found during validati
 ]
 ]
 
-The following example implements a parser for [url "http://docs.python.org/dev/py3k/index.html" Python] identifiers as described in [url "http://www.python.org/dev/peps/pep-3131/" PEP-3131]:
+The following example implements a parser for [url "https://docs.python.org/3/index.html" Python] identifiers as described in [url "https://www.python.org/dev/peps/pep-3131/" PEP-3131]:
 ``
 let pythonIdentifier =
     let isAsciiIdStart    = fun c -> isAsciiLetter c || c = '_'
@@ -867,7 +867,7 @@ let pythonIdentifier =
     identifier (IdentifierOptions(
                     isAsciiIdStart = isAsciiIdStart,
                     isAsciiIdContinue = isAsciiIdContinue,
-                    normalization = [url "http://msdn.microsoft.com/en-us/library/system.text.normalizationform.aspx" System.Text.NormalizationForm].FormKC,
+                    normalization = [url "https://msdn.microsoft.com/en-us/library/system.text.normalizationform.aspx" System.Text.NormalizationForm].FormKC,
                     normalizeBeforeValidation = true,
                     allowAllNonAsciiCharsInPreCheck = true))
 ``
@@ -895,7 +895,7 @@ identifier (IdentifierOptions(isAsciiIdStart    = isAsciiIdStart,
                               isAsciiIdContinue = isAsciiIdContinue))
 ``
 
-By default, identifiers cannot contain the two join control characters [url "http://en.wikipedia.org/wiki/Zero-width_non-joiner" zero-width non-joiner] and [url "http://en.wikipedia.org/wiki/Zero-width_joiner" zero-width joiner]. While these characters can be abused to create distinct identifiers that look confusingly similar or even identical, they are also necessary to create identifiers with the correct visual appearance for common words or phrases in certain languages. [url "http://www.Unicode.org/reports/tr31/#Layout_and_Format_Control_Characters" Section 2.3] of the Unicode Standard Annex #31 recommends to accept join control characters if the identifier system is supposed to support "natural representations of terms in modern, customary use". However, in order to minimize the potential for abuse it also recommends accepting these characters only in some very specific contexts.
+By default, identifiers cannot contain the two join control characters [url "https://en.wikipedia.org/wiki/Zero-width_non-joiner" zero-width non-joiner] and [url "https://en.wikipedia.org/wiki/Zero-width_joiner" zero-width joiner]. While these characters can be abused to create distinct identifiers that look confusingly similar or even identical, they are also necessary to create identifiers with the correct visual appearance for common words or phrases in certain languages. [url "http://www.Unicode.org/reports/tr31/#Layout_and_Format_Control_Characters" Section 2.3] of the Unicode Standard Annex #31 recommends to accept join control characters if the identifier system is supposed to support "natural representations of terms in modern, customary use". However, in order to minimize the potential for abuse it also recommends accepting these characters only in some very specific contexts.
 
 Unfortunately, the proposed rules describing the contexts in which join control character should be allowed are rather difficult to implement, especially with the limited Unicode support in .NET. For this reason the `identifier` parser currently only supports a simpler option: if you set the parameter `allowJoinControlChars` to `true`, the parser accepts the two join control characters in any non-start position.  Whether this setting is a reasonable compromise between not supporting join control characters at all and implementing the complicated rules proposed in Annex #31 obviously depends on the individual requirements of your project. An example of a programming language that [url "https://mail.mozilla.org/pipermail/es5-discuss/2009-June/002832.html" adopted] the same compromise is [url "http://www.ecma-international.org/publications/standards/Ecma-262.htm" ECMAScript 5].
 
