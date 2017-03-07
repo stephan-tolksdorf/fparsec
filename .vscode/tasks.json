@@ -1,0 +1,30 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "0.1.0",
+    "command": "dotnet",
+    "isShellCommand": true,
+    "args": [],
+    "tasks": [
+        {
+            "taskName": "build",
+            "args": [ ],
+            "isBuildCommand": true,
+            "showOutput": "silent",
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "taskName": "Test .NET Core",
+            "args": [ "Test/bin/Debug/netcoreapp1.1/Test.dll" ],
+            "suppressTaskName": true,
+            "isTestCommand": true,
+            "showOutput": "always"
+        },
+        {
+            "taskName": "Test .NET 4.5",
+            "suppressTaskName": true,
+            "command": "Test/bin/Debug/net45/Test.exe",
+            "showOutput": "always"
+        }
+    ]
+}
