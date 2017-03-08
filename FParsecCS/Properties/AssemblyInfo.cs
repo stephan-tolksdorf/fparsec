@@ -9,7 +9,6 @@ using System.Runtime.InteropServices;
     [assembly: System.Security.SecurityTransparent]
 #endif
 
-#if PCL
 [assembly: AssemblyTitle      ("FParsecCS.dll")]
 [assembly: AssemblyDescription("FParsecCS.dll")]
 
@@ -18,7 +17,6 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyVersion      (FParsec.CommonAssemblyInfo.Version)]
 [assembly: AssemblyFileVersion  (FParsec.CommonAssemblyInfo.FileVersion)]
 [assembly: AssemblyConfiguration(FParsec.CommonAssemblyInfo.CSConfiguration)]
-#endif
 
 [assembly: InternalsVisibleTo (FParsec.CommonAssemblyInfo.FParsecAssemblyName)]
 [assembly: InternalsVisibleTo (FParsec.CommonAssemblyInfo.TestAssemblyName)]
