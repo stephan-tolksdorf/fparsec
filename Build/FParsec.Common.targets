@@ -2,14 +2,12 @@
   <PropertyGroup Condition="'$(FullTrust)' != 'true'">
     <DefineConstants>$(DefineConstants);LOW_TRUST</DefineConstants>
     <!--TargetFrameworks Condition="'$(TargetFrameworks)' == '' and '$(TargetFramework)' == '' and '$(OutputType)' == 'Library'">net45;portable-net45+win8+wpa81+wp8;netstandard1.6</TargetFrameworks-->
-    <TargetFrameworks Condition="'$(TargetFrameworks)' == '' and '$(TargetFramework)' == '' and '$(OutputType)' == 'Library'">net45;netstandard1.6</TargetFrameworks>
-    <TargetFrameworks Condition="'$(TargetFrameworks)' == '' and '$(TargetFramework)' == '' and '$(OutputType)' == 'Exe'">net45;netcoreapp1.1</TargetFrameworks>
+    <TargetFrameworks>net45;netstandard1.6</TargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(FullTrust)' == 'true'">
     <DefineConstants>$(DefineConstants);USE_STATIC_MAPPING_FOR_IS_ANY_OF</DefineConstants>
-    <TargetFrameworks Condition="'$(TargetFrameworks)' == '' and '$(TargetFramework)' == '' and '$(OutputType)' == 'Library'">net45</TargetFrameworks>
-    <TargetFrameworks Condition="'$(TargetFrameworks)' == '' and '$(TargetFramework)' == '' and '$(OutputType)' == 'Exe'">net45</TargetFrameworks>
+    <TargetFrameworks>net45</TargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'portable-net45+win8+wpa81+wp8'">
@@ -32,6 +30,12 @@
 
   <PropertyGroup Condition="'$(TargetFrameworkIdentifier)' == '.NETFramework'">
     <DefineConstants>$(DefineConstants);CLR4</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)\fparsec.snk</AssemblyOriginatorKeyFile>
+    <SignAssembly>true</SignAssembly>
+    <PublicSign Condition="'$(OS)' != 'Windows_NT'">true</PublicSign>
   </PropertyGroup>
 
   <Import Project="NuGet.props" />
