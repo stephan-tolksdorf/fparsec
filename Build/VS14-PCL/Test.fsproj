@@ -9,7 +9,7 @@
     <ProjectGuid>{a5957be0-a31b-4245-be7f-2218caf83541}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>Test</RootNamespace>
-    <AssemblyName>test_fparsec</AssemblyName>
+    <AssemblyName>Test</AssemblyName>
     <Name>Test</Name>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFSharpCoreVersion>4.4.0.0</TargetFSharpCoreVersion>
