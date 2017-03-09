@@ -4,6 +4,9 @@
     <OutputType>Exe</OutputType>
     <IsPackable>false</IsPackable>
     <DefineConstants Condition="'$(TargetFramework)' == 'netcoreapp1.1'">$(DefineConstants);NETCORE;LOW_TRUST</DefineConstants>
+    <AssemblyOriginatorKeyFile>..\Build\fparsec.snk</AssemblyOriginatorKeyFile>
+    <SignAssembly>true</SignAssembly>
+    <PublicSign Condition="'$(OS)' != 'Windows_NT'">true</PublicSign>
   </PropertyGroup>
 
   <ItemGroup>
