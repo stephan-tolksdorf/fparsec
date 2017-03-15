@@ -22,6 +22,7 @@
 
   <PropertyGroup>
     <DefineConstants>$(DefineConstants);AGGRESSIVE_INLINING</DefineConstants>
+    <SignAssembly>true</SignAssembly>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFrameworkIdentifier)' != '.NETPortable'">
@@ -32,10 +33,10 @@
     <DefineConstants>$(DefineConstants);CLR4</DefineConstants>
   </PropertyGroup>
 
-  <PropertyGroup>
+  <PropertyGroup Condition="'$(SignAssembly)' == 'true'">
     <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)\fparsec.snk</AssemblyOriginatorKeyFile>
-    <SignAssembly>true</SignAssembly>
     <PublicSign Condition="'$(OS)' != 'Windows_NT'">true</PublicSign>
+    <DefineConstants>$(DefineConstants);STRONG_NAME</DefineConstants>
   </PropertyGroup>
 
   <Import Project="NuGet.props" />
