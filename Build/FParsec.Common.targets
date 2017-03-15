@@ -22,7 +22,7 @@
 
   <PropertyGroup>
     <DefineConstants>$(DefineConstants);AGGRESSIVE_INLINING</DefineConstants>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFrameworkIdentifier)' != '.NETPortable'">
