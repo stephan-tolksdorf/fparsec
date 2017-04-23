@@ -19,7 +19,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;CLR4;AGGRESSIVE_INLINING;UNALIGNED_READS</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;AGGRESSIVE_INLINING;UNALIGNED_READS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -30,7 +30,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;CLR4;AGGRESSIVE_INLINING;UNALIGNED_READS</DefineConstants>
+    <DefineConstants>TRACE;AGGRESSIVE_INLINING;UNALIGNED_READS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>

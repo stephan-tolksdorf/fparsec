@@ -17,7 +17,7 @@
     <NugetTargetMoniker>.NETPortable,Version=v0.0,Profile=Profile259</NugetTargetMoniker>
     <LanguageTargets>C:\Program Files (x86)\Microsoft SDKs\F#\4.0\Framework\v4.0\Microsoft.FSharp.targets</LanguageTargets>
     <TargetFSharpCoreVersion>3.259.4.0</TargetFSharpCoreVersion>
-    <DefineConstants>$(DefineConstants);PCL;CLR4;SMALL_STATETAG</DefineConstants>
+    <DefineConstants>$(DefineConstants);PCL;SMALL_STATETAG</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -27,10 +27,6 @@
 
   <PropertyGroup Condition="'$(TargetFrameworkIdentifier)' != '.NETPortable'">
     <DefineConstants>$(DefineConstants);UNALIGNED_READS</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(TargetFrameworkIdentifier)' == '.NETFramework'">
-    <DefineConstants>$(DefineConstants);CLR4</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(SignAssembly)' == 'true'">

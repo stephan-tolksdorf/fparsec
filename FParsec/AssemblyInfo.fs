@@ -7,10 +7,8 @@ open System.Runtime.InteropServices
 [<assembly: ComVisible(false)>]
 
 #if LOW_TRUST
- #if CLR4
     [<assembly: System.Security.AllowPartiallyTrustedCallers>]
     [<assembly: System.Security.SecurityTransparent>]
- #endif
 #endif
 
 [<assembly: AssemblyTitle("FParsec.dll")>]

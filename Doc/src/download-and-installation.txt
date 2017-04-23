@@ -88,17 +88,14 @@ You can configure FParsec's source code with a number of conditional compilation
 
 You can set conditional compilation symbols either in the Visual Studio project configuration in the "Build" tab (multiple symbols can be separated by semicolons) or on the compiler command-line with the [= /define:SYMBOL] option (the F# compiler requires a separate [= /define:] option for each symbol).
 
-The [url "http://nuget.org/packages/FParsec" basic] NuGet package is built with the following options:[br]`LOW_TRUST`, `SMALL_STATETAG`, `CLR4`, plus `AGGRESSIVE_INLINING` and `PCL` for the PCL version.
+The [url "http://nuget.org/packages/FParsec" basic] NuGet package is built with the following options:[br]`LOW_TRUST`, `SMALL_STATETAG`, plus `AGGRESSIVE_INLINING` and `PCL` for the PCL version.
 
-The [url "http://nuget.org/packages/FParsec-Big-Data-Edition" "Big Data edition"]  package is built with the following options:[br]`USE_STATIC_MAPPING_FOR_IS_ANY_OF`, `UNALIGNED_READS`, `CLR4`, `AGGRESSIVE_INLINING`.
+The [url "http://nuget.org/packages/FParsec-Big-Data-Edition" "Big Data edition"]  package is built with the following options:[br]`USE_STATIC_MAPPING_FOR_IS_ANY_OF`, `UNALIGNED_READS`, `AGGRESSIVE_INLINING`.
 
 [dl Options for =FParsecCS.dll=
 
 [`LOW_TRUST`]
 [See [^low-trust-version above].]
-
-[`CLR4`]
-[Compile for a CLR version ≥ 4.]
 
 [`#AGGRESSIVE_INLINING#`]
 [

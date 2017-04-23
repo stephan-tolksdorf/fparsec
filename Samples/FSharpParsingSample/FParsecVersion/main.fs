@@ -19,10 +19,10 @@ let main(argv: string[]) =
     // is assumed to be the encoding.
     let fileName = argv.[0]
     let result =
-    #if !CLR4 || PCL
+    #if PCL_FPARSEC
         runParserOnString Parser.prog () fileName (System.IO.File.ReadAllText(fileName, System.Text.Encoding.UTF8))
     #else
-        runParserOnFile Parser.prog () fileName System.Text.Encoding.Default
+        runParserOnFile Parser.prog () fileName System.Text.Encoding.UTF8
     #endif
 
     let myProg =

@@ -743,13 +743,8 @@ public abstract class Cloner {
 
             Type proxyType;
 
-        #if CLR4
             if (!info.IsFullTypeNameSetExplicit && !info.IsAssemblyNameSetExplicit) {
                 proxyType = info.ObjectType;
-        #else
-            if (info.FullTypeName == Type.FullName && info.AssemblyName == Type.Assembly.FullName) {
-                proxyType = Type;
-        #endif
             } else {
                 try {
                     var assembly = Assembly.Load(info.AssemblyName);

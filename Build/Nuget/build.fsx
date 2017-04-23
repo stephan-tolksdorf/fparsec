@@ -105,11 +105,11 @@ let packages =
      Tags = tags
      Configs = [{Framework = Net40Client
                  FSharpCoreVersion = FSharpCore30
-                 Defines = "CLR4;LOW_TRUST;SMALL_STATETAG"
+                 Defines = "LOW_TRUST;SMALL_STATETAG"
                  UsesUnsafeCode = false}
                 {Framework = PclProfile259
                  FSharpCoreVersion = FSharpCore40
-                 Defines = "PCL;CLR4;AGGRESSIVE_INLINING;LOW_TRUST;SMALL_STATETAG"
+                 Defines = "PCL;AGGRESSIVE_INLINING;LOW_TRUST;SMALL_STATETAG"
                  UsesUnsafeCode = false}]};
 
    {Id = "FParsec-Big-Data-Edition"
@@ -125,11 +125,11 @@ let packages =
     Tags = tags
     Configs = [{Framework = Net40Client
                 FSharpCoreVersion = FSharpCore30
-                Defines = "CLR4;UNALIGNED_READS;USE_STATIC_MAPPING_FOR_IS_ANY_OF"
+                Defines = "UNALIGNED_READS;USE_STATIC_MAPPING_FOR_IS_ANY_OF"
                 UsesUnsafeCode = true}
                {Framework = Net45
                 FSharpCoreVersion = FSharpCore30
-                Defines = "CLR4;AGGRESSIVE_INLINING;UNALIGNED_READS;USE_STATIC_MAPPING_FOR_IS_ANY_OF"
+                Defines = "AGGRESSIVE_INLINING;UNALIGNED_READS;USE_STATIC_MAPPING_FOR_IS_ANY_OF"
                 UsesUnsafeCode = true}]
    }]
 
