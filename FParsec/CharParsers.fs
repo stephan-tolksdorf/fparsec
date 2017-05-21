@@ -734,29 +734,17 @@ let identifier (identifierOptions: IdentifierOptions) : Parser<string, _> =
 // Parsing strings with the help of other parsers
 // ----------------------------------------------
 
-#if AGGRESSIVE_INLINING
-[<MethodImplAttribute(MethodImplOptions.NoInlining)>]
-#endif
 let manyChars2 p1 p = ManyChars(p1, p).AsFSharpFunc
 let manyChars     p = manyChars2 p p
 
-#if AGGRESSIVE_INLINING
-[<MethodImplAttribute(MethodImplOptions.NoInlining)>]
-#endif
 let many1Chars2 p1 p = Many1Chars(p1, p).AsFSharpFunc
 let many1Chars     p = many1Chars2 p p
 
-#if AGGRESSIVE_INLINING
-[<MethodImplAttribute(MethodImplOptions.NoInlining)>]
-#endif
 let manyCharsTillApply2 p1 p endp f = ManyCharsTill(p1, p, endp, f).AsFSharpFunc
 let manyCharsTillApply     p endp f = manyCharsTillApply2 p p endp f
 let manyCharsTill2      p1 p endp   = manyCharsTillApply2 p1 p endp (fun str _ -> str)
 let manyCharsTill          p endp   = manyCharsTill2 p p endp
 
-#if AGGRESSIVE_INLINING
-[<MethodImplAttribute(MethodImplOptions.NoInlining)>]
-#endif
 let many1CharsTillApply2 p1 p endp f = Many1CharsTill(p1, p, endp, f).AsFSharpFunc
 let many1CharsTillApply     p endp f = many1CharsTillApply2 p p endp f
 let many1CharsTill2      p1 p endp   = many1CharsTillApply2 p1 p endp (fun str _ -> str)
