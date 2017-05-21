@@ -1,12 +1,14 @@
 <Project Sdk="FSharp.NET.Sdk;Microsoft.NET.Sdk" ToolsVersion="15.0">
   <PropertyGroup>
-    <TargetFrameworks>net45;netcoreapp1.1</TargetFrameworks>
     <OutputType>Exe</OutputType>
     <IsPackable>false</IsPackable>
-    <DefineConstants Condition="'$(TargetFramework)' == 'netcoreapp1.1'">$(DefineConstants);NETCORE;LOW_TRUST</DefineConstants>
-    <AssemblyOriginatorKeyFile>..\Build\fparsec.snk</AssemblyOriginatorKeyFile>
-    <SignAssembly>true</SignAssembly>
-    <PublicSign Condition="'$(OS)' != 'Windows_NT'">true</PublicSign>
+    <TargetFrameworks>net40-client;net45;netcoreapp1.1</TargetFrameworks>
+  </PropertyGroup>
+
+  <Import Project="..\Build\FParsec.Common.targets" />
+
+  <PropertyGroup Condition="'$(TargetFrameworkIdentifier)' == '.NETCoreApp'">
+    <DefineConstants>$(DefineConstants);NETCORE</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -28,26 +30,23 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp1.1'">
-    <PackageReference Include="FSharp.Core" Version="4.1.0" />
     <PackageReference Include="System.Globalization.Extensions" Version="4.*" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="4.*" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net45'">
-    <PackageReference Include="FSharp.Core" Version="3.1.2.5" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="FSharp.NET.Sdk" Version="1.*" PrivateAssets="All" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp1.1'">
-    <ProjectReference Include="$(MSBuildThisFileDirectory)\..\FParsec\FParsec.fsproj" />
-    <ProjectReference Include="$(MSBuildThisFileDirectory)\..\FParsecCS\FParsecCS.csproj" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net45'">
-    <ProjectReference Include="$(MSBuildThisFileDirectory)\..\FParsec.BigData\FParsec.BigData.fsproj" />
-    <ProjectReference Include="$(MSBuildThisFileDirectory)\..\FParsecCS.BigData\FParsecCS.BigData.csproj" />
-  </ItemGroup>
+  <Choose>
+    <When Condition="'$(TestPCLFParsec)' == 'true' and '$(TargetFrameworkIdentifier)' == '.NETFramework'">
+      <PropertyGroup><DefineConstants>$(DefineConstants);PCL</DefineConstants></PropertyGroup>
+      <ItemGroup>
+        <Reference Include="FParsecCS" HintPath="$(MSBuildThisFileDirectory)\..\FParsec\bin\$(Configuration)\portable-net45+win8+wp8+wpa81\FParsecCS.dll" />
+        <Reference Include="FParsec" HintPath="$(MSBuildThisFileDirectory)\..\FParsec\bin\$(Configuration)\portable-net45+win8+wp8+wpa81\FParsec.dll" />
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <ItemGroup>
+        <ProjectReference Include="$(MSBuildThisFileDirectory)\..\FParsec\FParsec.fsproj" />
+        <ProjectReference Include="$(MSBuildThisFileDirectory)\..\FParsecCS\FParsecCS.csproj" />
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
 </Project>

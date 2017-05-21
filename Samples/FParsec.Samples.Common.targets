@@ -1,12 +1,32 @@
 <Project>
   <PropertyGroup>
-    <TargetFrameworks>net45;netcoreapp1.1</TargetFrameworks>
     <OutputType>Exe</OutputType>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <LowTrust>false</LowTrust>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug-LowTrust' Or '$(Configuration)' == 'Release-LowTrust'">
+    <LowTrust>true</LowTrust>
+    <DefineConstants>$(DefineConstants);LOW_TRUST</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <CoreOnNonWin>false</CoreOnNonWin>
+    <CoreOnNonWin Condition="'$(MSBuildRuntimeType)' == 'Core' and '$(OS)' != 'Windows_NT'">true</CoreOnNonWin>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(LowTrust)' == 'false'">
+    <TargetFrameworks>net45</TargetFrameworks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(LowTrust)' == 'true'">
+    <TargetFrameworks>netcoreapp1.1</TargetFrameworks>
+    <TargetFrameworks Condition="'$(CoreOnNonWin)' == 'false'">$(TargetFrameworks);net45</TargetFrameworks>
+  </PropertyGroup>
+
   <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp1.1'">
-    <PackageReference Include="FSharp.Core" Version="4.1.0" />
+    <PackageReference Include="FSharp.Core" Version="4.*" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net45'">
@@ -15,7 +35,21 @@
 
   <ItemGroup>
     <PackageReference Include="FSharp.NET.Sdk" Version="1.*" PrivateAssets="All" />
-    <ProjectReference Include="$(MSBuildThisFileDirectory)\..\FParsec\FParsec.fsproj" />
-    <ProjectReference Include="$(MSBuildThisFileDirectory)\..\FParsecCS\FParsecCS.csproj" />
   </ItemGroup>
+
+  <Choose>
+    <When Condition="'$(TestPCLFParsec)' == 'true' and '$(TargetFramework)' == 'net45'">
+      <PropertyGroup><DefineConstants>$(DefineConstants);PCL_FPARSEC</DefineConstants></PropertyGroup>
+      <ItemGroup>
+        <Reference Include="FParsecCS" HintPath="..\FParsec\bin\$(Configuration)\portable-net45+win8+wp8+wpa81\FParsecCS.dll" />
+        <Reference Include="FParsec" HintPath="..\FParsec\bin\$(Configuration)\portable-net45+win8+wp8+wpa81\FParsec.dll" />
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <ItemGroup>
+        <ProjectReference Include="$(MSBuildThisFileDirectory)\..\FParsec\FParsec.fsproj" />
+        <ProjectReference Include="$(MSBuildThisFileDirectory)\..\FParsecCS\FParsecCS.csproj" />
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
 </Project>

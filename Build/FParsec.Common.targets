@@ -1,32 +1,125 @@
 <Project>
-  <PropertyGroup Condition="'$(FullTrust)' != 'true'">
+
+  <PropertyGroup>
+    <LowTrust>false</LowTrust>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug-LowTrust' or '$(Configuration)' == 'Release-LowTrust'">
+    <LowTrust>true</LowTrust>
     <DefineConstants>$(DefineConstants);LOW_TRUST</DefineConstants>
-    <!--TargetFrameworks Condition="'$(TargetFrameworks)' == '' and '$(TargetFramework)' == '' and '$(OutputType)' == 'Library'">net45;portable-net45+win8+wpa81+wp8;netstandard1.6</TargetFrameworks-->
-    <TargetFrameworks>net45;netstandard1.6</TargetFrameworks>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(FullTrust)' == 'true'">
-    <DefineConstants>$(DefineConstants);USE_STATIC_MAPPING_FOR_IS_ANY_OF</DefineConstants>
-    <TargetFrameworks>net45</TargetFrameworks>
+  <PropertyGroup>
+    <FSharpPortableLanguageTargets>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.Portable.FSharp.Targets</FSharpPortableLanguageTargets>
+    <FSharpPortableLanguageTargets Condition="!Exists('$(FSharpPortableLanguageTargets)')" />
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)' == 'portable-net45+win8+wpa81+wp8'">
+  <PropertyGroup>
+    <CoreOnNonWin>false</CoreOnNonWin>
+    <CoreOnNonWin Condition="'$(MSBuildRuntimeType)' == 'Core' and '$(OS)' != 'Windows_NT'">true</CoreOnNonWin>
+  </PropertyGroup>
+
+  <Target Name="CheckFParsecConfiguration" BeforeTargets="BeforeBuild;_GetProjectJsonPath">
+    <Error Condition="'$(LowTrust)' == 'false' and '$(CoreOnNonWin)' == 'true'" 
+           Text="Currently, only the configurations 'Debug-LowTrust' and 'Release-LowTrust' are .NET Core compatible, but the selected configuration is: '$(Configuration)'." />
+  </Target>
+
+  <PropertyGroup Condition="'$(LowTrust)' != 'true'">
+    <TargetFrameworks>net40-client;net45</TargetFrameworks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(LowTrust)' == 'true'">
+    <TargetFrameworks Condition="'$(OutputType)' != 'Exe'">netstandard1.6</TargetFrameworks>
+    <TargetFrameworks Condition="'$(OutputType)' != 'Exe' and '$(CoreOnNonWin)' == 'false'">$(TargetFrameworks);net40-client</TargetFrameworks>
+    <TargetFrameworks Condition="'$(OutputType)' != 'Exe' and '$(FSharpPortableLanguageTargets)' != ''">$(TargetFrameworks);portable-net45+win8+wp8+wpa81</TargetFrameworks>
+    <TargetFrameworks Condition="'$(OutputType)' == 'Exe'">netcoreapp1.1</TargetFrameworks>
+    <TargetFrameworks Condition="'$(OutputType)' == 'Exe' and '$(CoreOnNonWin)' == 'false'">$(TargetFrameworks);net45</TargetFrameworks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net40-client'">
+    <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'portable-net45+win8+wp8+wpa81'">
     <TargetFrameworkIdentifier>.NETPortable</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>Profile259</TargetFrameworkProfile>
     <NugetTargetMoniker>.NETPortable,Version=v0.0,Profile=Profile259</NugetTargetMoniker>
-    <LanguageTargets>C:\Program Files (x86)\Microsoft SDKs\F#\4.0\Framework\v4.0\Microsoft.FSharp.targets</LanguageTargets>
+    <TargetProfile>netcore</TargetProfile>
     <TargetFSharpCoreVersion>3.259.4.0</TargetFSharpCoreVersion>
-    <DefineConstants>$(DefineConstants);PCL;SMALL_STATETAG</DefineConstants>
+    <!-- https://github.com/NuGet/Home/issues/5021 -->
+    <IncludeProjectPriFile>false</IncludeProjectPriFile>
   </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFrameworkIdentifier)' == ''">
+    <TargetFrameworkIdentifier Condition="'$(TargetFramework)' == 'net45'">.NETFramework</TargetFrameworkIdentifier>
+    <TargetFrameworkIdentifier Condition="'$(TargetFramework)' == 'netstandard1.6'">.NETStandard</TargetFrameworkIdentifier>
+    <TargetFrameworkIdentifier Condition="'$(TargetFramework)' == 'netcoreapp1.1'">.NETCoreApp</TargetFrameworkIdentifier>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(MSBuildProjectExtension)' == '.fsproj'">
+    <PackageReference Include="FSharp.NET.Sdk" Version="1.*" PrivateAssets="All" />
+  </ItemGroup>
+
+  <PropertyGroup Condition="'$(TargetFrameworkIdentifier)' == '.NETPortable'">
+    <LanguageTargets Condition="'$(MSBuildProjectExtension)' == '.csproj'">$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets</LanguageTargets>
+    <LanguageTargets Condition="'$(MSBuildProjectExtension)' == '.fsproj'">$(FSharpPortableLanguageTargets)</LanguageTargets>
+  </PropertyGroup>
+
+  <Choose>
+    <When Condition="'$(TargetFrameworkIdentifier)' == '.NETStandard' or '$(TargetFrameworkIdentifier)' == '.NETCoreApp'">
+      <ItemGroup><PackageReference Include="FSharp.Core" Version="4.*" /></ItemGroup>
+    </When>
+    <When Condition="'$(TargetFrameworkIdentifier)' == '.NETPortable'">
+      <ItemGroup>
+        <Reference Include="FSharp.Core">
+          <Name>FSharp.Core</Name>
+          <AssemblyName>FSharp.Core.dll</AssemblyName>
+          <HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\FSharp\.NETCore\$(TargetFSharpCoreVersion)\FSharp.Core.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <ItemGroup><PackageReference Include="FSharp.Core" Version="3.1.2.5" /></ItemGroup>
+    </Otherwise>
+  </Choose>
 
   <PropertyGroup>
+    <DisableImplicitConfigurationDefines>true</DisableImplicitConfigurationDefines>
+  </PropertyGroup>
+  <Choose>
+    <When Condition="'$(Configuration)' == 'Debug' or '$(Configuration)' == 'Debug-LowTrust'">
+      <PropertyGroup>
+        <DefineConstants>$(DefineConstants);DEBUG</DefineConstants>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(Configuration)' == 'Release' or '$(Configuration)' == 'Release-LowTrust'">
+      <PropertyGroup>
+        <DefineConstants>$(DefineConstants);RELEASE</DefineConstants>
+      </PropertyGroup>
+    </When>
+  </Choose>
+
+  <PropertyGroup Condition="'$(LowTrust)' == 'true'">
+    <DefineConstants>$(DefineConstants);SMALL_STATETAG</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' != 'net40-client'">
     <DefineConstants>$(DefineConstants);AGGRESSIVE_INLINING</DefineConstants>
-    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFrameworkIdentifier)' == '.NETFramework'">
+    <DefineConstants>$(DefineConstants);UNALIGNED_READS</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFrameworkIdentifier)' == '.NETPortable'">
+    <DefineConstants>$(DefineConstants);PCL</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(LowTrust)' == 'false' and '$(AssemblyName)' != 'FParsecCS'">
+    <DefineConstants>$(DefineConstants);USE_STATIC_MAPPING_FOR_IS_ANY_OF</DefineConstants>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(TargetFrameworkIdentifier)' != '.NETPortable'">
-    <DefineConstants>$(DefineConstants);UNALIGNED_READS</DefineConstants>
+  <PropertyGroup Condition="'$(FParsecNuGet)' == 'true'">
+    <SignAssembly Condition="'$(TargetFrameworkIdentifier)' == '.NETFramework' or '$(TargetFrameworkIdentifier)' == '.NETPortable'">true</SignAssembly>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(SignAssembly)' == 'true'">
@@ -35,23 +128,33 @@
     <DefineConstants>$(DefineConstants);STRONG_NAME</DefineConstants>
   </PropertyGroup>
 
-  <Import Project="NuGet.props" />
+  <Import Project="..\Build\NuGet.props" />
 
-  <ItemGroup Condition="'$(TargetFrameworkIdentifier)' == '.NETStandard'">
-    <PackageReference Include="FSharp.Core" Version="4.1.0" />
-  </ItemGroup>
+  <!-- See https://github.com/dotnet/netcorecli-fsc/issues/93 -->
+  <Target Name="FParsecAssemblyInfoWorkaround"
+          Condition="'$(AssemblyName)' == 'FParsec'"
+          AfterTargets="GetAssemblyVersion" BeforeTargets="GenerateAssemblyInfo">
+    <PropertyGroup>
+      <FParsecAssemblyInfoFile>$(IntermediateOutputPath)$(AssemblyName).ExtraAssemblyInfo.fs</FParsecAssemblyInfoFile>
+<FParsecAssemblyInfo><![CDATA[
+namespace FParsec
+open System.Reflection
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net45'">
-    <PackageReference Include="FSharp.Core" Version="3.1.2.5" />
-  </ItemGroup>
-  
-  <ItemGroup Condition="'$(TargetFrameworkIdentifier)' == '.NETPortable'">
-    <Reference Include="FSharp.Core">
-      <Name>FSharp.Core</Name>
-      <AssemblyName>FSharp.Core.dll</AssemblyName>
-      <!--HintPath>$(MSBuildExtensionsPath32)\..\Reference Assemblies\Microsoft\FSharp\.NETCore\$(TargetFSharpCoreVersion)\FSharp.Core.dll</HintPath-->
-      <!--HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\FSharp\.NETCore\$(TargetFSharpCoreVersion)\FSharp.Core.dll</HintPath-->
-      <!--HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\FSharp\.NETPortable\3.47.4.0\FSharp.Core.dll</HintPath-->
-    </Reference>
-  </ItemGroup>
+[<assembly: System.Runtime.Versioning.TargetFrameworkAttribute("$(TargetFrameworkMoniker)", FrameworkDisplayName = "$(TargetFrameworkMonikerDisplayName)")>]
+[<assembly: AssemblyConfiguration("$(Configuration)")>]
+[<assembly: AssemblyCopyright("$(Copyright)")>]
+[<assembly: AssemblyFileVersion("$(FileVersion)")>]
+[<assembly: AssemblyInformationalVersion("$(InformationalVersion)")>]
+[<assembly: AssemblyProduct("$(Product)")>]
+[<assembly: AssemblyTitle("$(AssemblyName)")>]
+[<assembly: AssemblyVersion("$(AssemblyVersion)")>]
+do ()
+]]></FParsecAssemblyInfo>
+    </PropertyGroup>
+    <WriteLinesToFile File="$(FParsecAssemblyInfoFile)" Lines="$(FParsecAssemblyInfo)" Overwrite="true" Encoding="UTF-8" />
+    <ItemGroup>
+      <Compile Include="$(FParsecAssemblyInfoFile)" />
+    </ItemGroup>
+  </Target>
+
 </Project>

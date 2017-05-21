@@ -1,13 +1,13 @@
 <Project Sdk="FSharp.NET.Sdk;Microsoft.NET.Sdk" ToolsVersion="15.0">
+
   <PropertyGroup>
+    <TargetFrameworks>net40-client;net45;netstandard1.6;portable-net45+win8+wp8+wpa81</TargetFrameworks>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Tailcalls>false</Tailcalls>
+    <OtherFlags>/nooptimizationdata</OtherFlags>
   </PropertyGroup>
 
   <Import Project="..\Build\FParsec.Common.targets" />
-
-  <ItemGroup Condition="'$(TargetFrameworkIdentifier)' != '.NETPortable'">
-    <PackageReference Include="FSharp.NET.Sdk" Version="1.*" PrivateAssets="All" />
-  </ItemGroup>
 
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
@@ -24,7 +24,20 @@
     <Compile Include="CharParsers.fs" />
   </ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="$(MergedFParsecPackage) != true">
     <ProjectReference Include="..\FParsecCS\FParsecCS.csproj" />
   </ItemGroup>
+
+  <Target Name="FParsecMergedPack" BeforeTargets="_IntermediatePack">    
+    <ItemGroup Condition="'$(MergedFParsecPackage)' == 'true'">
+      <FParsecTargetFrameworks Include="$(TargetFrameworks.Split(';'))" />
+      <None Include="$(OutputPath)\%(FParsecTargetFrameworks.Identity)\FParsecCS.*" Pack="true" PackagePath="lib\%(Identity)\"/>
+      <None Include="..\FParsecCS\Properties\*.cs" Pack="true" PackagePath="src\FParsecCS\Properties\" />
+      <None Include="..\FParsecCS\*.cs" Pack="true" PackagePath="src\FParsecCS\" />
+      <None Include="..\FParsecCS\FParsecCS.csproj" Pack="true" PackagePath="src\FParsecCS\" />
+      <None Include="..\Build\FParsec.Common.targets" Pack="true" PackagePath="src\Build\FParsec.Common.targets" />
+      <None Include="..\Build\NuGet.props" Pack="true" PackagePath="src\Build\NuGet.props" />
+    </ItemGroup>
+  </Target>
+
 </Project>

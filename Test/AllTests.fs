@@ -37,5 +37,6 @@ let run() =
     FParsec.Test.RangeTests.run()
     FParsec.Test.StaticMappingTests.run()
 #endif
+    printfn "No error was found."
 
 run()

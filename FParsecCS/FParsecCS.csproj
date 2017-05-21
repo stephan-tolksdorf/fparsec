@@ -1,28 +1,22 @@
 <Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
+
   <PropertyGroup>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <TargetFrameworks>net40-client;net45;netstandard1.6;portable-net45+win8+wp8+wpa81</TargetFrameworks>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>    
+    <NoWarn>1591</NoWarn>
+    <IsPackable Condition="'$(MergedFParsecPackage)' == 'true'">false</IsPackable>
   </PropertyGroup>
 
   <Import Project="..\Build\FParsec.Common.targets" />
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard1.6'">
-    <PackageReference Include="System.Globalization.Extensions" Version="4.3.0" />
-    <PackageReference Include="System.Runtime.Serialization.Formatters" Version="4.3.0" />
-    <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.3.0" />
+  <ItemGroup>
+    <Compile Include="Properties\*.cs" />
+    <Compile Include="*.cs" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFrameworkIdentifier)' == '.NETPortable'">
-    <Reference Include="System" />
-    <Reference Include="System.Globalization" />
-    <Reference Include="System.Collections" />
-    <Reference Include="System.Text.Encoding" />
-    <Reference Include="System.Diagnostics.Debug" />
-    <Reference Include="System.Diagnostics.Tools" />
-    <Reference Include="System.Reflection" />
-    <Reference Include="System.Runtime.Extensions" />
-    <Reference Include="System.Runtime" />
-    <Reference Include="System.IO" />
-    <Reference Include="System.Text.RegularExpressions" />
+  <ItemGroup Condition="'$(TargetFrameworkIdentifier)' == '.NETStandard'">
+    <PackageReference Include="System.Globalization.Extensions" Version="4.*" />
   </ItemGroup>
+
 </Project>

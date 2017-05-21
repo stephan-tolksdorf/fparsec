@@ -7,23 +7,46 @@
     "args": [],
     "tasks": [
         {
-            "taskName": "build",
-            "args": [ ],
+            "taskName": "Restore (Config: Debug-LowTrust)",
+            "suppressTaskName": true,
+            "args": ["restore", "/p:Configuration=Debug-LowTrust"],
+            "showOutput": "always",
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "taskName": "Build .NET Core Test (Config: Debug-LowTrust)",
+            "suppressTaskName": true,
+            "args": ["build", "Test", "-c", "Debug-LowTrust", "-f", "netcoreapp1.1"],
             "isBuildCommand": true,
             "showOutput": "silent",
             "problemMatcher": "$msCompile"
         },
         {
-            "taskName": "Test .NET Core",
-            "args": [ "Test/bin/Debug/netcoreapp1.1/Test.dll" ],
+            "taskName": "Build .NET 4.5 Test (Config: Debug-LowTrust)",
             "suppressTaskName": true,
+            "args": ["build", "Test", "-c", "Debug-LowTrust", "-f", "net45"],
+            "showOutput": "silent",
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "taskName": "Build All (Config: Debug-LowTrust)",
+            "suppressTaskName": true,
+            "args": ["build", "-c", "Debug-LowTrust"],
+            "showOutput": "silent",
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "taskName": "Test .NET  Core (Config: Debug-LowTrust)",
+            "suppressTaskName": true,
+            "args": [ "Test/bin/Debug-LowTrust/netcoreapp1.1/Test.dll" ],
             "isTestCommand": true,
             "showOutput": "always"
         },
+        
         {
-            "taskName": "Test .NET 4.5",
+            "taskName": "Test .NET 4.5 (Config: Debug-LowTrust)",
             "suppressTaskName": true,
-            "command": "Test/bin/Debug/net45/Test.exe",
+            "command": "Test/bin/Debug-LowTrust/net45/Test.exe",
             "showOutput": "always"
         }
     ]
