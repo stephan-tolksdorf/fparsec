@@ -16,7 +16,7 @@ $ErrorActionPreference = 'Stop'
 $configs = $('Release-LowTrust', 'Release')
 
 $testTargetFrameworks = @{'Release'          = $('net45', 'net40-client')
-                          'Release-LowTrust' = $('netcoreapp1.1', 'net45')}
+                          'Release-LowTrust' = $('netcoreapp2.0', 'net45')}
 $testPCL = $true
 
 function invoke([string] $cmd) {
@@ -41,7 +41,7 @@ foreach ($config in $configs) {
     invoke "msbuild FParsec /t:Build $props"
     invoke "msbuild Test /t:Build $props"
     foreach ($tf in $testTargetFrameworks[$config]) {
-        if ($tf -eq 'netcoreapp1.1') {
+        if ($tf.StartsWith('netcoreapp')) {
             invoke "dotnet .\Test\bin\$config\$tf\Test.dll"
         } else {
             invoke ".\Test\bin\$config\$tf\Test.exe"

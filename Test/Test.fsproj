@@ -2,7 +2,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <IsPackable>false</IsPackable>
-    <TargetFrameworks>net40-client;net45;netcoreapp1.1</TargetFrameworks>
+    <TargetFrameworks>net40-client;net45;netcoreapp2.0</TargetFrameworks>
   </PropertyGroup>
 
   <Import Project="..\Build\FParsec.Common.targets" />
@@ -29,7 +29,7 @@
     <Compile Include="AllTests.fs" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp1.1'">
+  <ItemGroup Condition="'$(TargetFrameworkIdentifier)' == '.NETCoreApp'">
     <PackageReference Include="System.Globalization.Extensions" Version="4.*" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="4.*" />
   </ItemGroup>
