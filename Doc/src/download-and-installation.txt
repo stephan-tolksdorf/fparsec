@@ -6,23 +6,21 @@ If you're new to FParsec, I'd recommend to start by downloading the [url "https:
 
 The source package also includes a complete copy of the HTML documentation for offline viewing.
 
-To use FParsec in your own projects, you just need to reference the =FParsecCS.dll= and =FParsec.dll= assemblies produced by the FParsec project files. Alternatively, you can use the [url "http://nuget.org" NuGet package manager] to download precompiled FParsec assemblies and setup the references.
-
 [toc]
 
 [section NuGet packages]
 
 There are two NuGet packages of FParsec, which are built with different configuration options.
 
-The [url "https://nuget.org/packages/FParsec" basic package] uses the @Low-Trust version@ of FParsec, which uses no [url "https://msdn.microsoft.com/en-us/library/t2yzs44b.aspx" unverifiable code] and is optimized for maximum portability. The main limitation of this version is that any input stream is completely read into a string before parsing, which limits the maximum practical input size. This package also contains PCL profile 259 versions of the FParsec assemblies.
+The [url "https://nuget.org/packages/FParsec" basic package] uses the @Low-Trust version@ of FParsec, which uses no [url "https://msdn.microsoft.com/en-us/library/t2yzs44b.aspx" unverifiable code] and is optimized for maximum portability. The main limitation of this version is that any input stream is completely read into a string before parsing, which limits the maximum practical input size. This package also contains assemblies for .NET Standard 1.6.
 
-The [url "https://nuget.org/packages/FParsec-Big-Data-Edition/" "Big Data edition" package] uses the non-Low-Trust version of FParsec that is optimized for maximum performance and supports extremely large input streams. Since this configuration is also the default configuration of the solution files included with the source code, it is sometimes referred to as the "normal" version of FParsec. This version of FParsec does use "unsafe" (i.e. unverifiable) code involving unmanaged pointers. It also uses code generation in the implementation of `isAnyOf`, `isNoneOf`, `anyOf`, `skipAnyOf`, `noneOf` and `skipNoneOf`.
+The [url "https://nuget.org/packages/FParsec-Big-Data-Edition/" "Big Data edition" package] uses the non-Low-Trust version of FParsec that is optimized for maximum performance and supports extremely large input streams. Since this configuration is also the default configuration of the solution files included with the source code, it is sometimes referred to as the "normal" version of FParsec. This version of FParsec does use "unsafe" (i.e. unverifiable) code involving unmanaged pointers. It also uses code generation in the implementation of `isAnyOf`, `isNoneOf`, `anyOf`, `skipAnyOf`, `noneOf` and `skipNoneOf`. [* Unfortunately, this version is currently not compatible with .NET Standard/.NET Core.]
 
-You can find the precise @configuration options@ used to built the two NuGet packages below. Should you measure a significant performance /degradation/ when switching to the Big Data edition, you're probably inadvertently recreating the same `isAnyOf`- or `isNoneOf`-based parsers again and again, as explained [^construct-parsers-once here] and [^why-the-monadic-syntax-is-slow here].
+Should you measure a significant performance /degradation/ when switching to the Big Data edition, you're probably inadvertently recreating the same `isAnyOf`- or `isNoneOf`-based parsers again and again, as explained [^construct-parsers-once here] and [^why-the-monadic-syntax-is-slow here].
 
-The NuGet packages are strongly signed. Their assembly version numbers will only be incremented for breaking changes.
+The .NET Framework assemblies in the NuGet packages are strongly signed. Their assembly version numbers will only be incremented for breaking changes. The .NET Standard assembly in the `FParsec` package is not signed.
 
-For every published FParsec NuGet package a corresponding [url "https://docs.nuget.org/docs/creating-packages/creating-and-publishing-a-symbol-package" symbol package] with PDBs and source files is uploaded to [url "http://www.symbolsource.org/" SymbolSource.org]. So, if you enable source server support in the Visual Studio debugging options and [url "http://www.symbolsource.org/Public/Home/VisualStudio" configure] symbolsource.org as a symbol server, you can step into the FParsec code in the debugger.
+For every published FParsec NuGet package a corresponding [url "https://docs.nuget.org/docs/creating-packages/creating-and-publishing-a-symbol-package" symbol package] with PDBs and source files is uploaded to [url "http://www.symbolsource.org/" SymbolSource.org]. So, if you enable source server support in the Visual Studio debugging options and add https://nuget.smbsrc.net as a symbol source, you can step into the FParsec code in the debugger.
 
 [/section]
 
@@ -57,23 +55,27 @@ Unfortunately, the same option cannot be used to merge =FParsecCS.dll= into the 
 
 [/section]
 
-[section Building FParsec with Visual Studio]
+[section Building FParsec from source]
 
-The folder [= Build/VS11] contains a solution file for Visual Studio 2012 and later. The folder [= Build/VS14-PCL] contains a solution specifically configured to compile FParsec for PCL profile 259. The PCL build requires Visual Studio 2015 / F# 4.0 due to a [url "https://github.com/Microsoft/visualfsharp/issues/239#issuecomment-95728020" bug] in the PCL support of earlier versions of F#.
+The .NET Core solution file [= FParsec.sln] in the root source folder and the associated project files in the subfolders can be used to build FParsec from the command line. To build the Low-Trust version of FParsec, you have to specifiy either `Debug-LowTrust` or `Release-LowTrust` as the configuration. The `Debug` and `Release` configurations build the non-Low-Trust version of FParsec, which currently is not compatible with the .NET Core runtime. 
 
-When you build FParsec with these solution files, the compiled assemblies will be put into the [= bin/Debug] or [= bin/Release] subfolders, depending on the project configuration. For example, the VS11 solution will put the assemblies into the folders [= Build/VS11/bin/Debug] and [= Build/VS11/bin/Release].
+The solution file in the root source folder does not yet properly work within the Visual Studio 2017 IDE (due to incomplete support for F# in VS). However, the folder [= Build/VS11] contains a solution file that works with Visual Studio 2012 and later. When you build FParsec with this solution file, the compiled assemblies will be put into the [= Build/VS11/bin/{Configuration}] subfolder.
 
 The =Test= project in the solution files contains the unit tests for FParsec.
+
+The file [url "https://github.com/stephan-tolksdorf/fparsec/blob/master/.vscode/tasks.json" [= .vscode/tasks.json]] contains some convenient task definitions for Visual Studio Code.
+
+The NuGet packages are built with the [url "https://github.com/stephan-tolksdorf/fparsec/blob/master/pack.ps1" [= pack.ps1]] PowerShell script.
 
 [/section]
 
 [section#low-trust-version The Low-Trust version of FParsec]
 
-For optimization reasons the normal implementation (the "Big Data edition") of FParsec involves [url "https://msdn.microsoft.com/en-us/library/t2yzs44b.aspx" unverifiable code] using unmanaged pointers.
+For optimization reasons the normal implementation (the "Big Data edition") of FParsec involves [url "https://msdn.microsoft.com/en-us/library/t2yzs44b.aspx" unverifiable code] using unmanaged pointers and runtime code generation. 
 
-If you compile FParsec with the `LOW_TRUST` conditional compiler symbol, the unverifiable code is replaced with a "safe" alternative. This allows FParsec to be run in environments with "reduced trust", such as medium trust ASP.NET applications, and it also allows FParsec to be compiled against reduced subsets of the .NET API such as PCL profile 259.
+If you compile FParsec with the `LOW_TRUST` conditional compiler symbol, the unverifiable code is replaced with a "safe" alternative. This allows FParsec to be run in environments with "reduced trust", such as medium trust ASP.NET applications, and it also allows FParsec to be compiled against reduced subsets of the .NET API.
 
-The next section explains how you can set a conditional compiler symbol. If you want to use the Low-Trust version of FParsec, you need to compile each of the `FParsecCS`, `FParsec` and `Test` projects with the `LOW_TRUST` symbol.
+In the `Debug-LowTrust` and `Release-LowTrust` configurations of the [= FParsec.sln] solution file in the root source folder, `LOW_TRUST` is automatically defined as `true`.
 
 The Low-Trust version of FParsec has the following two major limitations:
 - A `CharStream` that is constructed from a `System.IO.Stream` or a file path reads the complete file into a single string during construction. *This severely limits the maximum practical input stream size.*
@@ -86,12 +88,6 @@ The Low-Trust version of FParsec has the following two major limitations:
 
 You can configure FParsec's source code with a number of conditional compilation symbols (a.k.a. preprocessor defines). Besides the [^low-trust-version Low-Trust option], these symbols mostly serve tuning purposes.
 
-You can set conditional compilation symbols either in the Visual Studio project configuration in the "Build" tab (multiple symbols can be separated by semicolons) or on the compiler command-line with the [= /define:SYMBOL] option (the F# compiler requires a separate [= /define:] option for each symbol).
-
-The [url "http://nuget.org/packages/FParsec" basic] NuGet package is built with the following options:[br]`LOW_TRUST`, `SMALL_STATETAG`, plus `AGGRESSIVE_INLINING` and `PCL` for the PCL version.
-
-The [url "http://nuget.org/packages/FParsec-Big-Data-Edition" "Big Data edition"]  package is built with the following options:[br]`USE_STATIC_MAPPING_FOR_IS_ANY_OF`, `UNALIGNED_READS`, `AGGRESSIVE_INLINING`.
-
 [dl Options for =FParsecCS.dll=
 
 [`LOW_TRUST`]
@@ -99,9 +95,9 @@ The [url "http://nuget.org/packages/FParsec-Big-Data-Edition" "Big Data edition"
 
 [`#AGGRESSIVE_INLINING#`]
 [
-Compile for a CLR version ≥ 4.5.
+Requires a version of NET ≥ 4.5.
 
-This option allows annotating methods with the new `MethodImplOptions.AggressiveInlining` attribute.
+Annotates some functions with the `MethodImplOptions.AggressiveInlining` attribute.
 ]
 
 [`PCL`]

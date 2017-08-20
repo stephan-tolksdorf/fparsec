@@ -65,9 +65,9 @@
              </tr>
              <tr class="nav-entry n3 _4">
               <td class="nav-number n3">
-               <a href="#building-fparsec-with-visual-studio"><span class="section-number">4</span><span class="nav-space"></span></a>
+               <a href="#building-fparsec-from-source"><span class="section-number">4</span><span class="nav-space"></span></a>
               </td>
-              <td class="nav-title n3"><a href="#building-fparsec-with-visual-studio">Building FParsec with Visual Studio</a></td>
+              <td class="nav-title n3"><a href="#building-fparsec-from-source">Building FParsec from source</a></td>
              </tr>
              <tr class="nav-entry n3 _5">
               <td class="nav-number n3"><a href="#low-trust-version"><span class="section-number">5</span><span class="nav-space"></span></a></td>
@@ -133,14 +133,7 @@
    <div class="para _3">
     <p>The source package also includes a complete copy of the HTML documentation for offline viewing.</p>
    </div>
-   <div class="para _4">
-    <p>
-     To use FParsec in your own projects, you just need to reference the <span class="tt">FParsecCS.dll</span> and <span class="tt">FParsec.dll</span>
-     assemblies produced by the FParsec project files. Alternatively, you can use the <a href="http://nuget.org">NuGet package manager</a> to download
-     precompiled FParsec assemblies and setup the references.
-    </p>
-   </div>
-   <div class="para _5 lcinp">
+   <div class="para _4 lcinp">
     <div class="local-toc">
      <div class="toc-toc-title">
       Contents
@@ -159,10 +152,8 @@
        <td class="toc-title toc t1"><a href="#fparsec-is-built-as-two-dlls">FParsec is built as two DLLs</a></td>
       </tr>
       <tr class="toc-entry toc t1 _3">
-       <td class="toc-number toc t1">
-        <a href="#building-fparsec-with-visual-studio"><span class="toc-number">4</span><span class="toc-space"></span></a>
-       </td>
-       <td class="toc-title toc t1"><a href="#building-fparsec-with-visual-studio">Building FParsec with Visual Studio</a></td>
+       <td class="toc-number toc t1"><a href="#building-fparsec-from-source"><span class="toc-number">4</span><span class="toc-space"></span></a></td>
+       <td class="toc-title toc t1"><a href="#building-fparsec-from-source">Building FParsec from source</a></td>
       </tr>
       <tr class="toc-entry toc t1 _4">
        <td class="toc-number toc t1"><a href="#low-trust-version"><span class="toc-number">5</span><span class="toc-space"></span></a></td>
@@ -187,7 +178,7 @@
       The <a href="https://nuget.org/packages/FParsec">basic package</a> uses the <a href="#low-trust-version">Low‐Trust version</a> of FParsec, which
       uses no <a href="https://msdn.microsoft.com/en-us/library/t2yzs44b.aspx">unverifiable code</a> and is optimized for maximum portability. The
       main limitation of this version is that any input stream is completely read into a string before parsing, which limits the maximum practical
-      input size. This package also contains PCL profile 259 versions of the FParsec assemblies.
+      input size. This package also contains assemblies for .NET Standard 1.6.
      </p>
     </div>
     <div class="para _3">
@@ -201,29 +192,32 @@
       href="reference/charparsers.html#members.anyOf"><span class="ci">anyOf</span></a></code>, <code class="fsharp"><a
       href="reference/charparsers.html#members.skipAnyOf"><span class="ci">skipAnyOf</span></a></code>, <code class="fsharp"><a
       href="reference/charparsers.html#members.noneOf"><span class="ci">noneOf</span></a></code> and <code class="fsharp"><a
-      href="reference/charparsers.html#members.skipNoneOf"><span class="ci">skipNoneOf</span></a></code>.
+      href="reference/charparsers.html#members.skipNoneOf"><span class="ci">skipNoneOf</span></a></code>. <em>Unfortunately, this version is currently
+      not compatible with .NET Standard/.NET Core.</em>
      </p>
     </div>
     <div class="para _4">
      <p>
-      You can find the precise <a href="#configuration-options">configuration options</a> used to built the two NuGet packages below. Should you
-      measure a significant performance <span class="i">degradation</span> when switching to the Big Data edition, you’re probably inadvertently
-      recreating the same <code class="fsharp"><a href="reference/charparsers.html#members.isAnyOf"><span class="ci">isAnyOf</span></a></code>‐ or
-      <code class="fsharp"><a href="reference/charparsers.html#members.isNoneOf"><span class="ci">isNoneOf</span></a></code>‐based parsers again and
-      again, as explained <a href="users-guide/performance-optimizations.html#performance-guidelines.construct-parsers-once">here</a> and <a
+      Should you measure a significant performance <span class="i">degradation</span> when switching to the Big Data edition, you’re probably
+      inadvertently recreating the same <code class="fsharp"><a href="reference/charparsers.html#members.isAnyOf"><span
+      class="ci">isAnyOf</span></a></code>‐ or <code class="fsharp"><a href="reference/charparsers.html#members.isNoneOf"><span
+      class="ci">isNoneOf</span></a></code>‐based parsers again and again, as explained <a
+      href="users-guide/performance-optimizations.html#performance-guidelines.construct-parsers-once">here</a> and <a
       href="users-guide/where-is-the-monad.html#why-the-monadic-syntax-is-slow">here</a>.
      </p>
     </div>
     <div class="para _5">
-     <p>The NuGet packages are strongly signed. Their assembly version numbers will only be incremented for breaking changes.</p>
+     <p>
+      The .NET Framework assemblies in the NuGet packages are strongly signed. Their assembly version numbers will only be incremented for breaking
+      changes. The .NET Standard assembly in the <code class="fsharp"><span class="ci">FParsec</span></code> package is not signed.
+     </p>
     </div>
     <div class="para _6">
      <p>
       For every published FParsec NuGet package a corresponding <a
       href="https://docs.nuget.org/docs/creating-packages/creating-and-publishing-a-symbol-package">symbol package</a> with PDBs and source files is
       uploaded to <a href="http://www.symbolsource.org/">SymbolSource.org</a>. So, if you enable source server support in the Visual Studio debugging
-      options and <a href="http://www.symbolsource.org/Public/Home/VisualStudio">configure</a> symbolsource.org as a symbol server, you can step into
-      the FParsec code in the debugger.
+      options and add https://nuget.smbsrc.net as a symbol source, you can step into the FParsec code in the debugger.
      </p>
     </div>
    </div>
@@ -312,26 +306,41 @@
     </div>
    </div>
   </div>
-  <div id="building-fparsec-with-visual-studio" class="section s2">
-   <h2 class="title h2"><span><span class="section-number">3.4</span> Building FParsec with Visual Studio</span></h2>
+  <div id="building-fparsec-from-source" class="section s2">
+   <h2 class="title h2"><span><span class="section-number">3.4</span> Building FParsec from source</span></h2>
    <div class="intro i2">
     <div class="para _1">
      <p>
-      The folder <span class="tt">Build/VS11</span> contains a solution file for Visual Studio 2012 and later. The folder <span
-      class="tt">Build/VS14‐PCL</span> contains a solution specifically configured to compile FParsec for PCL profile 259. The PCL build requires
-      Visual Studio 2015 / F# 4.0 due to a <a href="https://github.com/Microsoft/visualfsharp/issues/239#issuecomment-95728020">bug</a> in the PCL
-      support of earlier versions of F#.
+      The .NET Core solution file <span class="tt">FParsec.sln</span> in the root source folder and the associated project files in the subfolders can
+      be used to build FParsec from the command line. To build the Low‐Trust version of FParsec, you have to specifiy either <code
+      class="fsharp"><span class="ci">Debug</span><span class="co">-</span><span class="ci">LowTrust</span></code> or <code class="fsharp"><span
+      class="ci">Release</span><span class="co">-</span><span class="ci">LowTrust</span></code> as the configuration. The <code class="fsharp"><span
+      class="ci">Debug</span></code> and <code class="fsharp"><span class="ci">Release</span></code> configurations build the non‐Low‐Trust version of
+      FParsec, which currently is not compatible with the .NET Core runtime.
      </p>
     </div>
     <div class="para _2">
      <p>
-      When you build FParsec with these solution files, the compiled assemblies will be put into the <span class="tt">bin/Debug</span> or <span
-      class="tt">bin/Release</span> subfolders, depending on the project configuration. For example, the VS11 solution will put the assemblies into
-      the folders <span class="tt">Build/VS11/bin/Debug</span> and <span class="tt">Build/VS11/bin/Release</span>.
+      The solution file in the root source folder does not yet properly work within the Visual Studio 2017 IDE (due to incomplete support for F# in
+      VS). However, the folder <span class="tt">Build/VS11</span> contains a solution file that works with Visual Studio 2012 and later. When you
+      build FParsec with this solution file, the compiled assemblies will be put into the <span class="tt">Build/VS11/bin/{Configuration}</span>
+      subfolder.
      </p>
     </div>
     <div class="para _3">
      <p>The <span class="tt">Test</span> project in the solution files contains the unit tests for FParsec.</p>
+    </div>
+    <div class="para _4">
+     <p>
+      The file <a href="https://github.com/stephan-tolksdorf/fparsec/blob/master/.vscode/tasks.json"><span class="tt">.vscode/tasks.json</span></a>
+      contains some convenient task definitions for Visual Studio Code.
+     </p>
+    </div>
+    <div class="para _5">
+     <p>
+      The NuGet packages are built with the <a href="https://github.com/stephan-tolksdorf/fparsec/blob/master/pack.ps1"><span
+      class="tt">pack.ps1</span></a> PowerShell script.
+     </p>
     </div>
    </div>
   </div>
@@ -341,22 +350,22 @@
     <div class="para _1">
      <p>
       For optimization reasons the normal implementation (the &#x201C;Big Data edition&#x201D;) of FParsec involves <a
-      href="https://msdn.microsoft.com/en-us/library/t2yzs44b.aspx">unverifiable code</a> using unmanaged pointers.
+      href="https://msdn.microsoft.com/en-us/library/t2yzs44b.aspx">unverifiable code</a> using unmanaged pointers and runtime code generation.
      </p>
     </div>
     <div class="para _2">
      <p>
       If you compile FParsec with the <code class="fsharp"><span class="ci">LOW_TRUST</span></code> conditional compiler symbol, the unverifiable code
       is replaced with a &#x201C;safe&#x201D; alternative. This allows FParsec to be run in environments with &#x201C;reduced trust&#x201D;, such as
-      medium trust ASP.NET applications, and it also allows FParsec to be compiled against reduced subsets of the .NET API such as PCL profile 259.
+      medium trust ASP.NET applications, and it also allows FParsec to be compiled against reduced subsets of the .NET API.
      </p>
     </div>
     <div class="para _3">
      <p>
-      The next section explains how you can set a conditional compiler symbol. If you want to use the Low‐Trust version of FParsec, you need to
-      compile each of the <code class="fsharp"><span class="ci">FParsecCS</span></code>, <code class="fsharp"><span class="ci">FParsec</span></code>
-      and <code class="fsharp"><span class="ci">Test</span></code> projects with the <code class="fsharp"><span class="ci">LOW_TRUST</span></code>
-      symbol.
+      In the <code class="fsharp"><span class="ci">Debug</span><span class="co">-</span><span class="ci">LowTrust</span></code> and <code
+      class="fsharp"><span class="ci">Release</span><span class="co">-</span><span class="ci">LowTrust</span></code> configurations of the <span
+      class="tt">FParsec.sln</span> solution file in the root source folder, <code class="fsharp"><span class="ci">LOW_TRUST</span></code> is
+      automatically defined as <code class="fsharp"><span class="cb">true</span></code>.
      </p>
     </div>
     <div class="para _4 lcinp">
@@ -384,32 +393,7 @@
       href="#low-trust-version">Low‐Trust option</a>, these symbols mostly serve tuning purposes.
      </p>
     </div>
-    <div class="para _2">
-     <p>
-      You can set conditional compilation symbols either in the Visual Studio project configuration in the &#x201C;Build&#x201D; tab (multiple symbols
-      can be separated by semicolons) or on the compiler command‐line with the <span class="tt">/define:SYMBOL</span> option (the F# compiler requires
-      a separate <span class="tt">/define:</span> option for each symbol).
-     </p>
-    </div>
-    <div class="para _3">
-     <p>
-      The <a href="https://nuget.org/packages/FParsec">basic</a> NuGet package is built with the following options:<br /><code class="fsharp"><span
-      class="ci">LOW_TRUST</span></code>, <code class="fsharp"><a href="#configuration-options.SMALL_STATETAG"><span
-      class="ci">SMALL_STATETAG</span></a></code>, <code class="fsharp"><span class="ci">CLR4</span></code>, plus <code class="fsharp"><a
-      href="#configuration-options.AGGRESSIVE_INLINING"><span class="ci">AGGRESSIVE_INLINING</span></a></code> and <code class="fsharp"><span class="ci">PCL</span></code> for the
-      PCL version.
-     </p>
-    </div>
-    <div class="para _4">
-     <p>
-      The <a href="https://nuget.org/packages/FParsec-Big-Data-Edition">&#x201C;Big Data edition&#x201D;</a> package is built with the following
-      options:<br /><code class="fsharp"><a href="#configuration-options.USE_STATIC_MAPPING_FOR_IS_ANY_OF"><span
-      class="ci">USE_STATIC_MAPPING_FOR_IS_ANY_OF</span></a></code>, <code class="fsharp"><a href="#configuration-options.UNALIGNED_READS"><span
-      class="ci">UNALIGNED_READS</span></a></code>, <code class="fsharp"><span class="ci">CLR4</span></code>, <code class="fsharp"><a
-      href="#configuration-options.AGGRESSIVE_INLINING"><span class="ci">AGGRESSIVE_INLINING</span></a></code>.
-     </p>
-    </div>
-    <div class="para _5 lcinp">
+    <div class="para _2 lcinp">
      <div class="dl multi-para">
       <div class="dl-title">Options for <span class="tt">FParsecCS.dll</span></div>
       <dl class="dl multi-para">
@@ -419,35 +403,31 @@
          <p>See <a href="#low-trust-version">above</a>.</p>
         </div>
        </dd>
-       <dt class="_2"><code class="fsharp"><span class="ci">CLR4</span></code></dt>
+       <dt class="_2">
+        <code class="fsharp"><span class="a" id="configuration-options.AGGRESSIVE_INLINING"><span class="ci">AGGRESSIVE_INLINING</span></span></code>
+       </dt>
        <dd class="_2">
         <div class="para _1">
-         <p>Compile for a CLR version ≥ 4.</p>
-        </div>
-       </dd>
-       <dt class="_3"><code class="fsharp"><span class="a" id="configuration-options.AGGRESSIVE_INLINING"><span class="ci">AGGRESSIVE_INLINING</span></span></code></dt>
-       <dd class="_3">
-        <div class="para _1">
-         <p>Compile for a CLR version ≥ 4.5.</p>
+         <p>Requires a version of NET ≥ 4.5.</p>
         </div>
         <div class="para _2">
          <p>
-          This option allows annotating methods with the new <code class="fsharp"><a
+          Annotates some functions with the <code class="fsharp"><a
           href="https://msdn.microsoft.com/en-us/library/system.runtime.compilerservices.methodimploptions(v=vs.110).aspx"><span
           class="ci">MethodImplOptions</span></a><span class="cm">.</span><span class="ci">AggressiveInlining</span></code> attribute.
          </p>
         </div>
        </dd>
-       <dt class="_4"><code class="fsharp"><span class="ci">PCL</span></code></dt>
-       <dd class="_4">
+       <dt class="_3"><code class="fsharp"><span class="ci">PCL</span></code></dt>
+       <dd class="_3">
         <div class="para _1">
          <p>Compile for a PCL subset of the .NET API.</p>
         </div>
        </dd>
-       <dt class="_5">
+       <dt class="_4">
         <code class="fsharp"><span class="a" id="configuration-options.SMALL_STATETAG"><span class="ci">SMALL_STATETAG</span></span></code>
        </dt>
-       <dd class="_5">
+       <dd class="_4">
         <div class="para _1">
          <p>
           Use a 32‐bit <code class="fsharp"><a href="reference/charstream.html#CharStream.members.StateTag"><span
@@ -462,10 +442,10 @@
          </p>
         </div>
        </dd>
-       <dt class="_6">
+       <dt class="_5">
         <code class="fsharp"><span class="a" id="configuration-options.UNALIGNED_READS"><span class="ci">UNALIGNED_READS</span></span></code>
        </dt>
-       <dd class="_6">
+       <dd class="_5">
         <div class="para _1">
          <p>
           <span class="small"><span class="i">This option does not affect the <a href="#low-trust-version">Low‐Trust version</a> of
@@ -482,7 +462,7 @@
       </dl>
      </div>
     </div>
-    <div class="para _6 lcinp">
+    <div class="para _3 lcinp">
      <div class="dl multi-para">
       <div class="dl-title">Options for <span class="tt">FParsec.dll</span></div>
       <dl class="dl multi-para">

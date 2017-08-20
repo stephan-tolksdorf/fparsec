@@ -148,7 +148,7 @@ For associative prefix operators this value is `Associativity.Right`, for associ
   member @Precedence@: int
 ``]
 [
- The operator's precedence value. The value is always greater zero. Operators with a numerically higher precedence value take precedence over operators with lower precedence values.
+ The operator's precedence value. The value is always greater than zero. Operators with a numerically higher precedence value take precedence over operators with lower precedence values.
 ]
 
 [``

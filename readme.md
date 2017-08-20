@@ -20,8 +20,9 @@ FParsec’s features include:
 ## Documentation
 
 - [FParsec vs alternatives](http://www.quanttec.com/fparsec/about/fparsec-vs-alternatives.html)
+- [NuGet packages and building FParsec from source](http://www.quanttec.com/fparsec/download-and-installation.html)
+  <br><sup>The new solution and project files in the source folders don't yet properly work within the Visual Studio 2017 IDE, but the old solution file in `Build/VS11` still works fine.</sup>
 - [Tutorial](http://www.quanttec.com/fparsec/tutorial.html)
-- [NuGet packages](http://www.quanttec.com/fparsec/download-and-installation.html#nuget-packages)
 - [User's guide](http://www.quanttec.com/fparsec/users-guide/)
 - [Parser quick reference](http://www.quanttec.com/fparsec/reference/parser-overview.html)
 - [Reference](http://www.quanttec.com/fparsec/reference/)

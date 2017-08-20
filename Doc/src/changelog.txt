@@ -1,11 +1,17 @@
 ﻿[section Changelog]
 [no-subsection-numbers]
 
-[section#v1_0_3 Version 1.0.3, 2017-mm-dd /(not yet released)/]
-- moved source repository to GitHub
-- added `stringsSepBy1` parser ([url "https://github.com/stephan-tolksdorf/fparsec/pull/4" implemented by Robin Munn] -- thanks Robin!)
-- fixed documentation typos (one was spotted by Brandon Dimperio -- thanks Brandon!)
-- Renamed `CLR45` to `AGGRESSIVE_INLINING` to better match its purpose
+[section#v1_0_3 Version 1.0.3, 2017-08-20]
+- Modern solution and project files for .NET Core and VS 2017 were added to the source folders. Huge thanks to [url "https://github.com/neoeinstein" Marcus Griep] for spearheading the effort to make FParsec .NET Standard compatible and contributing the new project and solution files!
+- The old build script for the NuGet packages was replaced by a PowerShell script that uses the new project files.
+- The FParsec NuGet package now contains assemblies for .NET Standard 1.6.
+- The non-netstandard assemblies of FParsec now reference the FSharp.Core 4.0.0.1 NuGet package, which should maximize compatibility when binding redirects aren't available.
+- A [url "https://github.com/stephan-tolksdorf/fparsec/blob/master/.vscode/tasks.json" [= .vscode/tasks.json]] file with some task definitions for Visual Studio Code was added.
+- The source repository was moved to GitHub.
+- Added a `stringsSepBy1` parser ([url "https://github.com/stephan-tolksdorf/fparsec/pull/4" contributed by Robin Munn] -- thanks Robin!).
+- Added a link to the [url "http://dmitriyvlasov.ru/publication/fparsec-tutorial/" Russian translation of the tutorial] by Dmitry Vlasov -- thanks Dmitry!
+- Fixed documentation typos. One was spotted by Brandon Dimperio, another by ZelteHonor -- thanks Brandon and ZelteHonor!
+- Renamed `CLR45` to `AGGRESSIVE_INLINING` to better match its purpose.
 [/section]
 
 [section#v1_0_2 Version 1.0.2, 2015-09-27]
