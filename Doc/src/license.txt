@@ -1,6 +1,6 @@
 ﻿[section License]
 
-Except where noted otherwise, the FParsec library in source and binary form is distributed under the @Simplified BSD License@. The Simplified BSD License (a.k.a. "2-clause BSD License") is a simple, permissive license that is [url "http://www.opensource.org/licenses/bsd-license.php" OSI-compliant] and [url "http://www.gnu.org/licenses/license-list.html" GPL 2-compatible].
+Except where noted otherwise, the FParsec library in source and binary form is distributed under the @Simplified BSD License@. The Simplified BSD License (a.k.a. "2-clause BSD License") is a simple, permissive license that is [url "http://www.opensource.org/licenses/bsd-license.php" OSI-compliant].
 
 FParsec incorporates data derived from the [url "http://unicode.org/ucd/" Unicode Character Database] v. 8.0.0, Copyright (c) 1991-2015 Unicode, Inc., which is distributed under the following terms:[br][url "http://www.unicode.org/terms_of_use.html#Exhibit1"]
 
