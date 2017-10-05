@@ -915,6 +915,30 @@ let chainr1 p op =
 
 let chainr p op x = chainr1 p op <|>% x
 
+// Parser<('a -> 'b), 'u> -> Parser<'a, 'u> -> Parser<'b, 'u>
+let apply fp xp =
+    pipe2 fp xp (fun f x -> f x)
+
+// ('a -> Parser<'b, 'u>) -> 'a list -> Parser<'b list, 'u>
+let traverse f list =
+    let (<*>) = apply
+    let retn = preturn
+    let cons head tail = head :: tail
+     
+    let init = retn []
+    let folder head tail =
+        retn cons <*> (f head) <*> tail
+
+    List.foldBack folder list init
+
+// Parser<'a, 'u> list -> Parser<'a list, 'u>
+let sequence x = traverse id x
+
+// int -> Parser<'a, 'u> -> Parser<'a, 'u> list
+let count (n : int) (p : Parser<'a, 'u>) : Parser<'a list, 'u> =
+    match n with
+    | _ when n <= 0 -> preturn []
+    | _ -> sequence (List.replicate n p)
 
 // ------------------------------
 // Computation expression syntax
