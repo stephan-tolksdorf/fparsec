@@ -307,6 +307,13 @@ val many1Till: Parser<'a,'u> -> Parser<'b,'u> -> Parser<'a list,'u>
 
 val skipMany1Till: Parser<'a,'u> -> Parser<'b,'u> -> Parser<unit,'u>
 
+val apply: Parser<('a -> 'b), 'u> -> Parser<'a, 'u> -> Parser<'b, 'u>
+
+val traverse: ('a -> Parser<'b, 'u>) -> 'a list -> Parser<'b list, 'u>
+
+val sequence: Parser<'a, 'u> list -> Parser<'a list, 'u>
+ 
+val count: int -> Parser<'a, 'u> -> Parser<'a list, 'u>
 
 [<Sealed>]
 type Inline =

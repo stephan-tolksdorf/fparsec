@@ -623,7 +623,48 @@ let testPrimitives() =
 
     testChain()
 
+    let testCount() =
+        // Assertions
+        let succ expected actual =
+             match actual with
+             | Success (res, _, _) -> Equal expected res
+             | Failure _ -> Fail ()
+        
+        let fail x =
+            match x with
+            | Success _ -> Fail ()
+            | Failure _ -> ()
+
+        // SUT
+        let pcount x p = FParsec.Primitives.count x p
+        
+        let runNums p = 
+            [1..5] 
+            |> List.map string 
+            |> List.reduce (+) 
+            |> (run <| p)
+
+        // Test if 'count' parses "12345" into [1; 2; 3; 4; 5]
+        let expected = [1..5] |> List.map (string >> char)
+        let actual = runNums <| pcount 5 digit
+        succ expected actual
+       
+        // Test if 'count' requires the given amount
+        fail (runNums <| pcount 6 digit)
+        
+        // Test if 'count' parses "AAAAAAAAAA" into ['A'; 'A'; ... ]
+        let expected = List.replicate 10 'A'
+        
+        let runAA p =
+            expected
+            |> List.map string
+            |> List.reduce (+)
+            |> (run <| p)
+
+        let actual = runAA <| pcount 10 (pchar 'A')
+        succ expected actual
+    
+    testCount()
 
 let run() =
     testPrimitives()
-
