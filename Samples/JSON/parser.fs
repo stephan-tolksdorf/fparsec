@@ -18,8 +18,14 @@ open Ast
 // instead of using the indirect approach via an intermediate AST. The parser
 // definitions below should be useful in any case.
 
-// some abbreviations
-let ws   = spaces // eats any whitespace
+let jnull  = stringReturn "null" JNull
+let jtrue  = stringReturn "true"  (JBool true)
+let jfalse = stringReturn "false" (JBool false)
+
+let jnumber = pfloat |>> JNumber // pfloat will accept a little more than specified by JSON
+                                 // as valid numbers (such as NaN or Infinity), but that makes
+                                 // it only more robust
+
 let str s = pstring s
 
 let stringLiteral =
@@ -33,32 +39,28 @@ let stringLiteral =
                       | c   -> string c // every other char is mapped to itself
 
     let unicodeEscape =
+        /// converts a hex char ([0-9a-fA-F]) to its integer number (0-15)
+        let hex2int c = (int c &&& 15) + (int c >>> 6)*9
+
         str "u" >>. pipe4 hex hex hex hex (fun h3 h2 h1 h0 ->
-            let hex2int c = (int c &&& 15) + (int c >>> 6)*9 // hex char to int
             (hex2int h3)*4096 + (hex2int h2)*256 + (hex2int h1)*16 + hex2int h0
             |> char |> string
         )
 
+    let escapedCharSnippet = str "\\" >>. (escape <|> unicodeEscape)
+    let normalCharSnippet  = manySatisfy (fun c -> c <> '"' && c <> '\\')
+
     between (str "\"") (str "\"")
-            (stringsSepBy (manySatisfy (fun c -> c <> '"' && c <> '\\'))
-                          (str "\\" >>. (escape <|> unicodeEscape)))
-
-
+            (stringsSepBy normalCharSnippet escapedCharSnippet)
 
 let jstring = stringLiteral |>> JString
-
-let jnumber = pfloat |>> JNumber // pfloat will accept a little more than specified by JSON
-                                 // as valid numbers (such as NaN or Infinity), but that makes
-                                 // it only more robust
-
-let jtrue  = stringReturn "true"  (JBool true)
-let jfalse = stringReturn "false" (JBool false)
-let jnull  = stringReturn "null" JNull
 
 // jvalue, jlist and jobject are three mutually recursive grammar productions.
 // In order to break the cyclic dependency, we make jvalue a parser that
 // forwards all calls to a parser in a reference cell.
 let jvalue, jvalueRef = createParserForwardedToRef() // initially jvalueRef holds a reference to a dummy parser
+
+let ws = spaces // skips any whitespace
 
 let listBetweenStrings sOpen sClose pElement f =
     between (str sOpen) (str sClose)

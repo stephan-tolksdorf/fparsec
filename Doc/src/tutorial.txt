@@ -652,9 +652,9 @@ Here we've chosen the F# `list` type to represent a sequence of values and the `
 
 We start the actual parser implementation by covering the simple `null` and boolean cases:
 ``
-let jnull = stringReturn "null" JNull
-let jool =      (stringReturn "true"  (JBool true))
-            <|> (stringReturn "false" (JBool false))
+let jnull  = stringReturn "null" JNull
+let jtrue  = stringReturn "true"  (JBool true)
+let jfalse = stringReturn "false" (JBool false)
 ``
 
 Handling the number case is just as simple, because the JSON number format is based on the typical floating-point number format used in many programming languages and hence can be parsed with FParsec's built-in `pfloat` parser:
@@ -668,6 +668,8 @@ If you compare the precise number format supported by `pfloat` with that in the 
 The JSON string format takes a little more effort to implement, but we've already parsed a similar format with the `stringLiteral` parsers in [^parsing-string-data], so we can just adapt one of those parsers for our purpose:
 
 ``
+let str s = pstring s
+
 let stringLiteral =
     let escape =  anyOf "\"\\/bfnrt"
                   |>> function
@@ -692,6 +694,8 @@ let stringLiteral =
 
     between (str "\"") (str "\"")
             (stringsSepBy normalCharSnippet escapedCharSnippet)
+
+let jstring = stringLiteral |>> JString
 ``
 
 `stringLiteral` parses string literals as a sequence of normal char snippets separated by escaped char snippets. A normal char snippet is any sequence of chars that does not contain the chars `'"'` and `'\\'`. An escaped char snippet consists of a backslash followed by any of the chars `'\\'`, `'\"'`, `'/'`, `'b'`, `'f'`, `'n'`, `'r'`, `'t'`, or an Unicode escape. An Unicode escape consists of an `'u'` followed by four hex chars representing an UTF-16 code point.

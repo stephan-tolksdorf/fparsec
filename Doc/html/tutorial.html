@@ -1533,9 +1533,9 @@ if you do not intend for it to be generic, add a type annotation.
      <p>
       We start the actual parser implementation by covering the simple <code class="fsharp"><span class="cnu">null</span></code> and boolean cases:
      </p>
-<pre class="code fsharp"><span class="ck">let</span> <span class="ci">jnull</span> <span class="cp">=</span> <a href="reference/charparsers.html#members.stringReturn"><span class="ci">stringReturn</span></a> <span class="cs"><span class="cld">"</span>null<span class="crd">"</span></span> <span class="ci">JNull</span>
-<span class="ck">let</span> <span class="ci">jool</span> <span class="cp">=</span>      <span class="cp">(</span><a href="reference/charparsers.html#members.stringReturn"><span class="ci">stringReturn</span></a> <span class="cs"><span class="cld">"</span>true<span class="crd">"</span></span>  <span class="cp">(</span><span class="ci">JBool</span> <span class="cb">true</span><span class="cp">)</span><span class="cp">)</span>
-            <a href="reference/primitives.html#members.:60::124::62:"><span class="co">&lt;|&gt;</span></a> <span class="cp">(</span><a href="reference/charparsers.html#members.stringReturn"><span class="ci">stringReturn</span></a> <span class="cs"><span class="cld">"</span>false<span class="crd">"</span></span> <span class="cp">(</span><span class="ci">JBool</span> <span class="cb">false</span><span class="cp">)</span><span class="cp">)</span>
+<pre class="code fsharp"><span class="ck">let</span> <span class="ci">jnull</span>  <span class="cp">=</span> <a href="reference/charparsers.html#members.stringReturn"><span class="ci">stringReturn</span></a> <span class="cs"><span class="cld">"</span>null<span class="crd">"</span></span> <span class="ci">JNull</span>
+<span class="ck">let</span> <span class="ci">jtrue</span>  <span class="cp">=</span> <a href="reference/charparsers.html#members.stringReturn"><span class="ci">stringReturn</span></a> <span class="cs"><span class="cld">"</span>true<span class="crd">"</span></span>  <span class="cp">(</span><span class="ci">JBool</span> <span class="cb">true</span><span class="cp">)</span>
+<span class="ck">let</span> <span class="ci">jfalse</span> <span class="cp">=</span> <a href="reference/charparsers.html#members.stringReturn"><span class="ci">stringReturn</span></a> <span class="cs"><span class="cld">"</span>false<span class="crd">"</span></span> <span class="cp">(</span><span class="ci">JBool</span> <span class="cb">false</span><span class="cp">)</span>
 </pre>
     </div>
     <div class="para _9">
@@ -1574,7 +1574,9 @@ if you do not intend for it to be generic, add a type annotation.
      </p>
     </div>
     <div class="para _2 lcinp">
-<pre class="code fsharp"><span class="ck">let</span> <span class="ci">stringLiteral</span> <span class="cp">=</span>
+<pre class="code fsharp"><span class="ck">let</span> <span class="ci">str</span> <span class="ci">s</span> <span class="cp">=</span> <a href="reference/charparsers.html#members.pstring"><span class="ci">pstring</span></a> <span class="ci">s</span>
+
+<span class="ck">let</span> <span class="ci">stringLiteral</span> <span class="cp">=</span>
     <span class="ck">let</span> <span class="ci">escape</span> <span class="cp">=</span>  <a href="reference/charparsers.html#members.anyOf"><span class="ci">anyOf</span></a> <span class="cs"><span class="cld">"</span><span class="ce">\"</span><span class="ce">\\</span>/bfnrt<span class="crd">"</span></span>
                   <a href="reference/primitives.html#members.:124::62::62:"><span class="co">|&gt;&gt;</span></a> <span class="ck">function</span>
                       <span class="cp">|</span> <span class="cc"><span class="cld">'</span>b<span class="crd">'</span></span> <span class="cr">-&gt;</span> <span class="cs"><span class="cld">"</span><span class="ce">\b</span><span class="crd">"</span></span>
@@ -1598,6 +1600,8 @@ if you do not intend for it to be generic, add a type annotation.
 
     <a href="reference/primitives.html#members.between"><span class="ci">between</span></a> <span class="cp">(</span><span class="ci">str</span> <span class="cs"><span class="cld">"</span><span class="ce">\"</span><span class="crd">"</span></span><span class="cp">)</span> <span class="cp">(</span><span class="ci">str</span> <span class="cs"><span class="cld">"</span><span class="ce">\"</span><span class="crd">"</span></span><span class="cp">)</span>
             <span class="cp">(</span><a href="reference/charparsers.html#members.stringsSepBy"><span class="ci">stringsSepBy</span></a> <span class="ci">normalCharSnippet</span> <span class="ci">escapedCharSnippet</span><span class="cp">)</span>
+
+<span class="ck">let</span> <span class="ci">jstring</span> <span class="cp">=</span> <span class="ci">stringLiteral</span> <a href="reference/primitives.html#members.:124::62::62:"><span class="co">|&gt;&gt;</span></a> <span class="ci">JString</span>
 </pre>
     </div>
     <div class="para _3">
