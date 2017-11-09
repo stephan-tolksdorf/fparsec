@@ -1254,7 +1254,7 @@ let str_ws str = skipString str >>. ws
 let number_ws = pfloat .>> ws
 
 let pairOfNumbers = between (str_ws "(") (str_ws ")")
-                            (tuple2 number1 number2)
+                            (tuple2 number_ws number_ws)
 ``
 
 The latter implementation is obviously more concise, but -- at least for users without prior exposure to FParsec -- the first implementation is probably a bit more intuitive and self-explanatory. What makes the first implementation so intuitive is that the syntax of the `parse {...}` expressions is a) very close to what developers are used to from their normal work with F# and b) expressive enough that it obviates the need for many of FParsec's basic combinators. Unfortunately, the intuitiveness of the monadic syntax comes at the price of a large performance penalty.
