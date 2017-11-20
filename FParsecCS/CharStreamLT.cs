@@ -215,6 +215,7 @@ public class CharStream : IDisposable {
                                        FileShare.Read, 4096, FileOptions.SequentialScan);
         try {
            StreamConstructorContinue(stream, false, encoding, detectEncodingFromByteOrderMarks, byteBufferLength);
+           _Name = path;
         } catch {
             stream.Dispose();
             throw;
