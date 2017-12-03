@@ -59,7 +59,7 @@ foreach ($config in $configs) {
 
 # The non-symbol packages built by the msbuild Pack target include some files only belonging
 # into the symbol packages, so we have to recreate the packages from the generated nuspecs.
-foreach ($nuspec in Get-ChildItem -Path ".\FParsec\obj\FParsec*.symbols.nuspec") {
+foreach ($nuspec in Get-ChildItem -Path ".\FParsec\obj\" -Recurse -Include "FParsec*.symbols.nuspec") {
     $localNuspecPath = ".\$($nuspec.Name.Replace('.symbols', [string]::Empty))"
     Copy-Item $nuspec $localNuspecPath -verbose
     invoke ".\nuget pack $localNuspecPath -Symbols"

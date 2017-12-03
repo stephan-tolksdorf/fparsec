@@ -3,8 +3,8 @@
     <PackageId>FParsec-Big-Data-Edition</PackageId>
   </PropertyGroup>
   <PropertyGroup>
-    <Version>1.0.3</Version>
-    <FileVersion>1.0.3.0</FileVersion>
+    <Version>1.0.4</Version>
+    <FileVersion>1.0.4.0</FileVersion>
     <AssemblyVersion Condition="'$(SignAssembly)' == 'true'">1.0.0.0</AssemblyVersion>
     <AssemblyVersion Condition="'$(SignAssembly)' != 'true'">$(FileVersion)</AssemblyVersion>
     <Version Condition="'$(VersionSuffix)' != ''">$(Version)-$(VersionSuffix)</Version>
