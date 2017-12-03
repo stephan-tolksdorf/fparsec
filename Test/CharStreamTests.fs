@@ -159,6 +159,7 @@ let testStreamConstructorArgumentChecking() =
     with :? System.ArgumentNullException -> ()
 
     use charStream = new CharStream<unit>(tempFilePath, System.Text.Encoding.ASCII, true)
+    charStream.Name |> Equal tempFilePath
     charStream.Read(str.Length + 1) |> Equal str
     charStream.Dispose()
 #endif

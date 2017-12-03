@@ -221,6 +221,12 @@
     <div class="para _1 lcinp">
      <ul class="l1">
       <li class="_1">
+       Fixed a bug in the Low‐Trust version of the <code class="fsharp"><a href="../reference/charstream.html#CharStream"><span
+       class="ci">CharStream</span></a></code> constructors that accept a file path argument: The stream’s <code class="fsharp"><a
+       href="../reference/charstream.html#CharStream.members.Name"><span class="ci">Name</span></a></code> property wasn’t initialized. Maxime Didier
+       reported this bug and <a href="https://github.com/stephan-tolksdorf/fparsec/pull/20">provided a fix</a> – thanks Maxime!
+      </li>
+      <li class="_2">
        Fixed missing parser definitions in the <a href="../tutorial.html#parsing-json">Parsing JSON</a> section of the tutorial spotted by Josh
        Quintus – thanks Josh!
       </li>
