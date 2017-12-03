@@ -4,6 +4,7 @@
 [section#v1_0_4 Version 1.0.4, 201Y-MM-DD]
 - Fixed a bug in the Low-Trust version of the `CharStream` constructors that accept a file path argument: The stream's `Name` property wasn't initialized. Maxime Didier reported this bug and [url "https://github.com/stephan-tolksdorf/fparsec/pull/20" provided a fix] -- thanks Maxime!
 - Fixed missing parser definitions in the @Parsing JSON@ section of the tutorial spotted by Josh Quintus -- thanks Josh!
+- [url "https://github.com/stephan-tolksdorf/fparsec/pull/18" Fixed] parser definitions in the @Where is the monad@ section of the User's Guide found by Andre Wesseling -- thanks Andre!
 [/section]
 
 [section#v1_0_3 Version 1.0.3, 2017-08-20]
