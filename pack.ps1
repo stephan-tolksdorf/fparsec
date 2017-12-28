@@ -48,7 +48,7 @@ foreach ($config in $configs) {
         }
     }
     invoke "msbuild /t:Restore $props /p:MergedFParsecPackage=true"
-    invoke "msbuild /t:Pack /p:NoBuild=true /p:IncludeSource=true $props /p:MergedFParsecPackage=true"
+    invoke "msbuild /t:Pack /p:NoBuild=true $props /p:MergedFParsecPackage=true"
     if (($config -eq 'Release-LowTrust') -and $testPCL) {
         $pclProps = "/p:TargetFramework=net45 /p:OutputPath=bin\$config\net45-pcl\ /p:TestPCLFParsec=true $props"
         invoke "msbuild Test/Test.fsproj /t:Clean $pclProps"
