@@ -2,7 +2,7 @@ version: '{build}'
 image: Visual Studio 2017
 configuration: Release
 build_script:
-  - ps: ./pack.ps1
+  - ps: .\pack.ps1
 test_script: none
 artifacts:
   - path: '**\*.nupkg'

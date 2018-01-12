@@ -15,7 +15,7 @@ $ErrorActionPreference = 'Stop'
 
 $version = '1.0.4'
 $packageVersion = $version + '-RC'
-if ($env:appveyor){ $packageVersion = packageVersion + 'pdb' + [int]::Parse($env:appveyor_build_number).ToString('000') }
+if ($env:appveyor){ $packageVersion = $packageVersion + 'pdb' + [int]::Parse($env:appveyor_build_number).ToString('000') }
 
 $configs = $('Release-LowTrust', 'Release')
 
