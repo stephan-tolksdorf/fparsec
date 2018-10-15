@@ -41,7 +41,7 @@ public class ErrorMessage : IEquatable<ErrorMessage> {
     }
 
     public class ExpectedString : ErrorMessage {
-        public new string String { get { return String; } }
+        public new string String { get { return base.String; } }
         public ExpectedString(string expectedString) : base(ErrorMessageType.ExpectedString) {
             base.String = expectedString;
         }
@@ -62,7 +62,7 @@ public class ErrorMessage : IEquatable<ErrorMessage> {
     }
 
     public class UnexpectedString : ErrorMessage {
-        public new string String { get { return String; } }
+        public new string String { get { return base.String; } }
         public UnexpectedString(string unexpectedString) : base(ErrorMessageType.UnexpectedString) {
             base.String = unexpectedString;
         }
@@ -76,7 +76,7 @@ public class ErrorMessage : IEquatable<ErrorMessage> {
     }
 
     public class Message : ErrorMessage {
-        public new string String { get { return String; } }
+        public new string String { get { return base.String; } }
         public Message(string message) : base(ErrorMessageType.Message) {
             base.String = message;
         }
