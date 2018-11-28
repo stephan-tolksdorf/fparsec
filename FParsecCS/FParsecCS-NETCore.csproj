@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AssemblyName>FParsecCS</AssemblyName>
+    <RootNamespace>FParsec</RootNamespace>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>1591</NoWarn>
+    <DefineConstants>LOW_TRUST;AGGRESSIVE_INLINING</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Properties\*.cs" />
+    <Compile Include="*.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FSharp.Core" Version="4.*" />
+    <PackageReference Include="System.Globalization.Extensions" Version="4.*" />
+  </ItemGroup>
+
+</Project>

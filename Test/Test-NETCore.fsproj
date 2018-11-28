@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Test</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <DefineConstants>LOW_TRUST;AGGRESSIVE_INLINING;NETCORE</DefineConstants>    
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Test.fs" />
+    <Compile Include="BufferTests.fs" />
+    <Compile Include="CharSetTests.fs" />
+    <Compile Include="HexFloatTests.fs" />
+    <Compile Include="TextTests.fs" />
+    <Compile Include="CloningTests.fs" />
+    <Compile Include="StringBufferTests.fs" />
+    <Compile Include="CharStreamTests.fs" />
+    <Compile Include="PrimitivesTests.fs" />
+    <Compile Include="CharParsersTests.fs" />
+    <Compile Include="IdentifierValidatorTests.fs" />
+    <Compile Include="OperatorPrecedenceParserTests.fs" />
+    <Compile Include="RangeTests.fs" />
+    <Compile Include="StaticMappingTests.fs" />
+    <Compile Include="AllTests.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Globalization.Extensions" Version="4.*" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="4.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="$(MSBuildThisFileDirectory)\..\FParsec\FParsec-NETCore.fsproj" />
+    <ProjectReference Include="$(MSBuildThisFileDirectory)\..\FParsecCS\FParsecCS-NETCore.csproj" />
+  </ItemGroup>
+</Project>
