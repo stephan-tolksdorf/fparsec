@@ -31,11 +31,23 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FParsecCS\FParsecCS.csproj" />
+    <ProjectReference Include="..\FParsecCS\FParsecCS.csproj" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Update="FSharp.Core" Version="4.3.4" />
   </ItemGroup>
+
+  <!-- HACK: p2p of type project, not package (ref https://github.com/NuGet/Home/issues/3891 ) -->
+  <PropertyGroup>
+    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);IncludeFParsecCSOutput</TargetsForTfmSpecificBuildOutput>
+  </PropertyGroup>
+  <Target Name="IncludeFParsecCSOutput">
+    <ItemGroup>
+      <BuildOutputInPackage Include="$(MSBuildProjectDirectory)/$(OutputPath)FParsecCS.dll" />
+      <BuildOutputInPackage Include="$(MSBuildProjectDirectory)/$(OutputPath)FParsecCS.pdb" />
+      <BuildOutputInPackage Include="$(MSBuildProjectDirectory)/$(OutputPath)FParsecCS.xml" />
+    </ItemGroup>
+  </Target>
 
 </Project>
