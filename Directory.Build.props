@@ -16,11 +16,10 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Version>1.0.4</Version>
+    <VersionPrefix>1.0.4</VersionPrefix>
     <FileVersion>1.0.4.0</FileVersion>
     <AssemblyVersion Condition="'$(SignAssembly)' == 'true'">1.0.0.0</AssemblyVersion>
     <AssemblyVersion Condition="'$(SignAssembly)' != 'true'">$(FileVersion)</AssemblyVersion>
-    <Version Condition="'$(VersionSuffix)' != ''">$(Version)-$(VersionSuffix)</Version>
 
     <Authors>Stephan Tolksdorf</Authors>
     <Copyright>Copyright © Stephan Tolksdorf</Copyright>
