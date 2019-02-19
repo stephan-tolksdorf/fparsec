@@ -28,6 +28,10 @@
     <ProjectReference Include="..\FParsecCS\FParsecCS.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="FSharp.Core" Version="4.3.4" />
+  </ItemGroup>
+
   <Target Name="FParsecMergedPack" BeforeTargets="_IntermediatePack">    
     <ItemGroup Condition="'$(MergedFParsecPackage)' == 'true'">
       <FParsecTargetFrameworks Include="$(TargetFrameworks.Split(';'))" />
