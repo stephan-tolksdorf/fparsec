@@ -29,9 +29,6 @@
     <TargetFrameworks Condition="'$(OutputType)' == 'Exe' and '$(CoreOnNonWin)' == 'false'">$(TargetFrameworks);net45</TargetFrameworks>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <DisableImplicitConfigurationDefines>true</DisableImplicitConfigurationDefines>
-  </PropertyGroup>
   <Choose>
     <When Condition="'$(Configuration)' == 'Debug' or '$(Configuration)' == 'Debug-LowTrust'">
       <PropertyGroup>
