@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net45;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks Condition="'$(LowTrust)' == 'false'">net45</TargetFrameworks>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>    
     <NoWarn>1591</NoWarn>
     <IsPackable>false</IsPackable>

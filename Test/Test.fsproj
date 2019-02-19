@@ -1,8 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <TargetFrameworks>net45;netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks Condition="'$(LowTrust)' == 'false'">net45</TargetFrameworks>
     <OutputType>Exe</OutputType>
     <IsPackable>false</IsPackable>
-    <TargetFrameworks>net45;netcoreapp2.0</TargetFrameworks>
   </PropertyGroup>
 
   <Import Project="..\Build\FParsec.Common.targets" />
