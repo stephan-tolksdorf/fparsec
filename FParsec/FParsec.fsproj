@@ -28,23 +28,12 @@
     <Compile Include="CharParsers.fs" />
   </ItemGroup>
 
-  <ItemGroup Condition="$(MergedFParsecPackage) != true">
+  <ItemGroup>
     <ProjectReference Include="..\FParsecCS\FParsecCS.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="FSharp.Core" Version="4.3.4" />
   </ItemGroup>
-
-  <Target Name="FParsecMergedPack" BeforeTargets="_IntermediatePack">    
-    <ItemGroup Condition="'$(MergedFParsecPackage)' == 'true'">
-      <FParsecTargetFrameworks Include="$(TargetFrameworks.Split(';'))" />
-      <None Include="$(OutputPath)\%(FParsecTargetFrameworks.Identity)\FParsecCS.*" Pack="true" PackagePath="lib\%(Identity)\"/>
-      <None Include="..\FParsecCS\Properties\*.cs" Pack="true" PackagePath="src\FParsecCS\Properties\" />
-      <None Include="..\FParsecCS\*.cs" Pack="true" PackagePath="src\FParsecCS\" />
-      <None Include="..\FParsecCS\FParsecCS.csproj" Pack="true" PackagePath="src\FParsecCS\" />
-      <None Include="..\Build\FParsec.Common.targets" Pack="true" PackagePath="src\Build\FParsec.Common.targets" />
-    </ItemGroup>
-  </Target>
 
 </Project>

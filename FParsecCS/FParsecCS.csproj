@@ -5,7 +5,7 @@
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>    
     <NoWarn>1591</NoWarn>
-    <IsPackable Condition="'$(MergedFParsecPackage)' == 'true'">false</IsPackable>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <Import Project="..\Build\FParsec.Common.targets" />
