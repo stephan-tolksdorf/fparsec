@@ -1,4 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
   <Import Project="..\FParsec.Samples.Common.targets" />
   <ItemGroup>
     <Compile Include="calculator.fs" />

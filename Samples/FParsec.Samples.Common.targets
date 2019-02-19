@@ -1,9 +1,4 @@
 <Project>
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <IsPackable>false</IsPackable>
-  </PropertyGroup>
-
   <PropertyGroup Condition="'$(LowTrust)' == 'false'">
     <TargetFrameworks>net45</TargetFrameworks>
   </PropertyGroup>
