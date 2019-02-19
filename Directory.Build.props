@@ -11,6 +11,11 @@
   </PropertyGroup>
 
   <PropertyGroup>
+    <DefineConstants Condition="'$(Configuration)' == 'Debug-LowTrust'">$(DefineConstants);DEBUG</DefineConstants>
+    <DefineConstants Condition="'$(Configuration)' == 'Release-LowTrust'">$(DefineConstants);RELEASE</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <Version>1.0.4</Version>
     <FileVersion>1.0.4.0</FileVersion>
     <AssemblyVersion Condition="'$(SignAssembly)' == 'true'">1.0.0.0</AssemblyVersion>

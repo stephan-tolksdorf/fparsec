@@ -1,18 +1,5 @@
 <Project>
 
-  <Choose>
-    <When Condition="'$(Configuration)' == 'Debug' or '$(Configuration)' == 'Debug-LowTrust'">
-      <PropertyGroup>
-        <DefineConstants>$(DefineConstants);DEBUG</DefineConstants>
-      </PropertyGroup>
-    </When>
-    <When Condition="'$(Configuration)' == 'Release' or '$(Configuration)' == 'Release-LowTrust'">
-      <PropertyGroup>
-        <DefineConstants>$(DefineConstants);RELEASE</DefineConstants>
-      </PropertyGroup>
-    </When>
-  </Choose>
-
   <PropertyGroup Condition="'$(LowTrust)' == 'true'">
     <DefineConstants>$(DefineConstants);SMALL_STATETAG</DefineConstants>
   </PropertyGroup>
