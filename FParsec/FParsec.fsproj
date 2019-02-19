@@ -8,8 +8,9 @@
     <OtherFlags>/nooptimizationdata</OtherFlags>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <PackageId Condition="'$(LowTrust)' == 'false'">FParsec-Big-Data-Edition</PackageId>
+  <PropertyGroup Condition="'$(LowTrust)' == 'false'">
+    <PackageId>FParsec-Big-Data-Edition</PackageId>
+    <DefineConstants>$(DefineConstants);USE_STATIC_MAPPING_FOR_IS_ANY_OF</DefineConstants>
   </PropertyGroup>
 
   <Import Project="..\Build\FParsec.Common.targets" />

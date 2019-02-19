@@ -8,6 +8,10 @@
 
   <Import Project="..\Build\FParsec.Common.targets" />
 
+  <PropertyGroup Condition="'$(LowTrust)' == 'false'">
+    <DefineConstants>$(DefineConstants);USE_STATIC_MAPPING_FOR_IS_ANY_OF</DefineConstants>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(TargetFrameworkIdentifier)' == '.NETCoreApp'">
     <DefineConstants>$(DefineConstants);NETCORE</DefineConstants>
   </PropertyGroup>

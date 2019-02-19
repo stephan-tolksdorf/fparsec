@@ -9,9 +9,6 @@
   <PropertyGroup Condition="'$(TargetFrameworkIdentifier)' == '.NETFramework'">
     <DefineConstants>$(DefineConstants);UNALIGNED_READS</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(LowTrust)' == 'false' and '$(AssemblyName)' != 'FParsecCS'">
-    <DefineConstants>$(DefineConstants);USE_STATIC_MAPPING_FOR_IS_ANY_OF</DefineConstants>
-  </PropertyGroup>
 
   <PropertyGroup Condition="'$(FParsecNuGet)' == 'true'">
     <SignAssembly Condition="'$(TargetFrameworkIdentifier)' == '.NETFramework'">true</SignAssembly>
