@@ -8,4 +8,9 @@
   <ItemGroup>
     <Compile Include="calculator.fs" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FSharp.Core" Update="4.3.4" />
+  </ItemGroup>
+
 </Project>

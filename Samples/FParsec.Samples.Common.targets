@@ -6,14 +6,6 @@
     <TargetFrameworks>netcoreapp2.0;net45</TargetFrameworks>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp1.1'">
-    <PackageReference Include="FSharp.Core" Version="4.*" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net45'">
-    <PackageReference Include="FSharp.Core" Version="4.0.0.1" />
-  </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="$(MSBuildThisFileDirectory)\..\FParsec\FParsec.fsproj" />
     <ProjectReference Include="$(MSBuildThisFileDirectory)\..\FParsecCS\FParsecCS.csproj" />
