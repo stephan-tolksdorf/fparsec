@@ -39,4 +39,12 @@ let run() =
 #endif
     printfn "No error was found."
 
-run()
+[<EntryPoint>]
+let main _argv = 
+    try
+        run()
+        0
+    with
+    | ex ->
+        printfn "error: %A" ex
+        1
