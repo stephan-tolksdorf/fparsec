@@ -10,23 +10,12 @@
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <CoreOnNonWin>false</CoreOnNonWin>
-    <CoreOnNonWin Condition="'$(MSBuildRuntimeType)' == 'Core' and '$(OS)' != 'Windows_NT'">true</CoreOnNonWin>
-  </PropertyGroup>
-
-  <Target Name="CheckFParsecConfiguration" BeforeTargets="BeforeBuild;_GetProjectJsonPath">
-    <Error Condition="'$(LowTrust)' == 'false' and '$(CoreOnNonWin)' == 'true'" 
-           Text="Currently, only the configurations 'Debug-LowTrust' and 'Release-LowTrust' are .NET Core compatible, but the selected configuration is: '$(Configuration)'." />
-  </Target>
-
   <PropertyGroup Condition="'$(LowTrust)' != 'true'">
     <TargetFrameworks>net45</TargetFrameworks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(LowTrust)' == 'true'">
     <TargetFrameworks Condition="'$(OutputType)' != 'Exe'">netstandard2.0</TargetFrameworks>
     <TargetFrameworks Condition="'$(OutputType)' == 'Exe'">netcoreapp2.0</TargetFrameworks>
-    <TargetFrameworks Condition="'$(OutputType)' == 'Exe' and '$(CoreOnNonWin)' == 'false'">$(TargetFrameworks);net45</TargetFrameworks>
   </PropertyGroup>
 
   <Choose>

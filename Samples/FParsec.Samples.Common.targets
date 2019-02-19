@@ -12,17 +12,11 @@
     <DefineConstants>$(DefineConstants);LOW_TRUST</DefineConstants>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <CoreOnNonWin>false</CoreOnNonWin>
-    <CoreOnNonWin Condition="'$(MSBuildRuntimeType)' == 'Core' and '$(OS)' != 'Windows_NT'">true</CoreOnNonWin>
-  </PropertyGroup>
-
   <PropertyGroup Condition="'$(LowTrust)' == 'false'">
     <TargetFrameworks>net45</TargetFrameworks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(LowTrust)' == 'true'">
-    <TargetFrameworks>netcoreapp2.0</TargetFrameworks>
-    <TargetFrameworks Condition="'$(CoreOnNonWin)' == 'false'">$(TargetFrameworks);net45</TargetFrameworks>
+    <TargetFrameworks>netcoreapp2.0;net45</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp1.1'">
