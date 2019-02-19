@@ -16,6 +16,10 @@
   </PropertyGroup>
 
   <PropertyGroup>
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <VersionPrefix>1.0.4</VersionPrefix>
     <FileVersion>1.0.4.0</FileVersion>
     <AssemblyVersion Condition="'$(SignAssembly)' == 'true'">1.0.0.0</AssemblyVersion>
