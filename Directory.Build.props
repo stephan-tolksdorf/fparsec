@@ -1,6 +1,16 @@
 <Project ToolsVersion="15.0">
 
   <PropertyGroup>
+    <LowTrust>false</LowTrust>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug-LowTrust' or '$(Configuration)' == 'Release-LowTrust'">
+    <LowTrust>true</LowTrust>
+    <DefineConstants>$(DefineConstants);LOW_TRUST</DefineConstants>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <Version>1.0.4</Version>
     <FileVersion>1.0.4.0</FileVersion>
     <AssemblyVersion Condition="'$(SignAssembly)' == 'true'">1.0.0.0</AssemblyVersion>
@@ -28,16 +38,6 @@ This package uses a configuration of FParsec that supports very large input stre
 
 This version of FParsec is currently not compatible with .NET Core. If you want to use .NET Core, please choose the other FParsec NuGet package instead (see https://nuget.org/packages/fparsec).
 </Description>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <LowTrust>false</LowTrust>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)' == 'Debug-LowTrust' or '$(Configuration)' == 'Release-LowTrust'">
-    <LowTrust>true</LowTrust>
-    <DefineConstants>$(DefineConstants);LOW_TRUST</DefineConstants>
-    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
 
 </Project>
