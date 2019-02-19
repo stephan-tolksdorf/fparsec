@@ -21,18 +21,12 @@
   </Target>
 
   <PropertyGroup Condition="'$(LowTrust)' != 'true'">
-    <TargetFrameworks>net40-client;net45</TargetFrameworks>
+    <TargetFrameworks>net45</TargetFrameworks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(LowTrust)' == 'true'">
     <TargetFrameworks Condition="'$(OutputType)' != 'Exe'">netstandard2.0</TargetFrameworks>
-    <TargetFrameworks Condition="'$(OutputType)' != 'Exe' and '$(CoreOnNonWin)' == 'false'">$(TargetFrameworks);net40-client</TargetFrameworks>
     <TargetFrameworks Condition="'$(OutputType)' == 'Exe'">netcoreapp2.0</TargetFrameworks>
     <TargetFrameworks Condition="'$(OutputType)' == 'Exe' and '$(CoreOnNonWin)' == 'false'">$(TargetFrameworks);net45</TargetFrameworks>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net40-client'">
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -54,7 +48,7 @@
   <PropertyGroup Condition="'$(LowTrust)' == 'true'">
     <DefineConstants>$(DefineConstants);SMALL_STATETAG</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)' != 'net40-client'">
+  <PropertyGroup>
     <DefineConstants>$(DefineConstants);AGGRESSIVE_INLINING</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFrameworkIdentifier)' == '.NETFramework'">
