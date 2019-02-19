@@ -14,7 +14,6 @@
     <PackageTags>$(PackageTags);parser;combinator;f#;fsharp;c#;csharp;parsec;fparsec</PackageTags>
     <PackageLicenseUrl>http://www.quanttec.com/fparsec/license.html</PackageLicenseUrl>
     <PackageProjectUrl>http://www.quanttec.com/fparsec/</PackageProjectUrl>
-    <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/stephan-tolksdorf/fparsec</RepositoryUrl>    
     <Description>$(Summary)
 
