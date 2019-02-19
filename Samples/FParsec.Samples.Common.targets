@@ -4,14 +4,6 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <LowTrust>false</LowTrust>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)' == 'Debug-LowTrust' Or '$(Configuration)' == 'Release-LowTrust'">
-    <LowTrust>true</LowTrust>
-    <DefineConstants>$(DefineConstants);LOW_TRUST</DefineConstants>
-  </PropertyGroup>
-
   <PropertyGroup Condition="'$(LowTrust)' == 'false'">
     <TargetFrameworks>net45</TargetFrameworks>
   </PropertyGroup>

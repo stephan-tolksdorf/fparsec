@@ -30,4 +30,14 @@ This version of FParsec is currently not compatible with .NET Core. If you want 
 </Description>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <LowTrust>false</LowTrust>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug-LowTrust' or '$(Configuration)' == 'Release-LowTrust'">
+    <LowTrust>true</LowTrust>
+    <DefineConstants>$(DefineConstants);LOW_TRUST</DefineConstants>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+  </PropertyGroup>
+
 </Project>

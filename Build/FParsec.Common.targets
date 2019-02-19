@@ -1,15 +1,5 @@
 <Project>
 
-  <PropertyGroup>
-    <LowTrust>false</LowTrust>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)' == 'Debug-LowTrust' or '$(Configuration)' == 'Release-LowTrust'">
-    <LowTrust>true</LowTrust>
-    <DefineConstants>$(DefineConstants);LOW_TRUST</DefineConstants>
-    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
-  </PropertyGroup>
-
   <PropertyGroup Condition="'$(LowTrust)' != 'true'">
     <TargetFrameworks>net45</TargetFrameworks>
   </PropertyGroup>
