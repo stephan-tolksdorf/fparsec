@@ -61,10 +61,6 @@
     <TargetFrameworkIdentifier Condition="'$(TargetFramework)' == 'netcoreapp2.0'">.NETCoreApp</TargetFrameworkIdentifier>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(MSBuildProjectExtension)' == '.fsproj'">
-    <PackageReference Include="FSharp.NET.Sdk" Version="1.*" PrivateAssets="All" />
-  </ItemGroup>
-
   <PropertyGroup Condition="'$(TargetFrameworkIdentifier)' == '.NETPortable'">
     <LanguageTargets Condition="'$(MSBuildProjectExtension)' == '.csproj'">$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets</LanguageTargets>
     <LanguageTargets Condition="'$(MSBuildProjectExtension)' == '.fsproj'">$(FSharpPortableLanguageTargets)</LanguageTargets>
@@ -131,32 +127,5 @@
   </PropertyGroup>
 
   <Import Project="..\Build\NuGet.props" />
-
-  <!-- See https://github.com/dotnet/netcorecli-fsc/issues/93 -->
-  <Target Name="FParsecAssemblyInfoWorkaround"
-          Condition="'$(AssemblyName)' == 'FParsec'"
-          AfterTargets="GetAssemblyVersion" BeforeTargets="GenerateAssemblyInfo">
-    <PropertyGroup>
-      <FParsecAssemblyInfoFile>$(IntermediateOutputPath)$(AssemblyName).ExtraAssemblyInfo.fs</FParsecAssemblyInfoFile>
-<FParsecAssemblyInfo><![CDATA[
-namespace FParsec
-open System.Reflection
-
-[<assembly: System.Runtime.Versioning.TargetFrameworkAttribute("$(TargetFrameworkMoniker)", FrameworkDisplayName = "$(TargetFrameworkMonikerDisplayName)")>]
-[<assembly: AssemblyConfiguration("$(Configuration)")>]
-[<assembly: AssemblyCopyright("$(Copyright)")>]
-[<assembly: AssemblyFileVersion("$(FileVersion)")>]
-[<assembly: AssemblyInformationalVersion("$(InformationalVersion)")>]
-[<assembly: AssemblyProduct("$(Product)")>]
-[<assembly: AssemblyTitle("$(AssemblyName)")>]
-[<assembly: AssemblyVersion("$(AssemblyVersion)")>]
-do ()
-]]></FParsecAssemblyInfo>
-    </PropertyGroup>
-    <WriteLinesToFile File="$(FParsecAssemblyInfoFile)" Lines="$(FParsecAssemblyInfo)" Overwrite="true" Encoding="UTF-8" />
-    <ItemGroup>
-      <Compile Include="$(FParsecAssemblyInfoFile)" />
-    </ItemGroup>
-  </Target>
 
 </Project>

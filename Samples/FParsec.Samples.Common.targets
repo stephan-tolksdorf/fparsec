@@ -33,10 +33,6 @@
     <PackageReference Include="FSharp.Core" Version="4.0.0.1" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="FSharp.NET.Sdk" Version="1.*" PrivateAssets="All" />
-  </ItemGroup>
-
   <Choose>
     <When Condition="'$(TestPCLFParsec)' == 'true' and '$(TargetFramework)' == 'net45'">
       <PropertyGroup><DefineConstants>$(DefineConstants);PCL_FPARSEC</DefineConstants></PropertyGroup>
