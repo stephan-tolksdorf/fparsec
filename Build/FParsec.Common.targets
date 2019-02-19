@@ -83,6 +83,4 @@
     <DefineConstants>$(DefineConstants);STRONG_NAME</DefineConstants>
   </PropertyGroup>
 
-  <Import Project="..\Build\NuGet.props" />
-
 </Project>

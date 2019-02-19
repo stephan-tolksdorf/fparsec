@@ -7,6 +7,10 @@
     <OtherFlags>/nooptimizationdata</OtherFlags>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <PackageId Condition="'$(LowTrust)' == 'false'">FParsec-Big-Data-Edition</PackageId>
+  </PropertyGroup>
+
   <Import Project="..\Build\FParsec.Common.targets" />
 
   <ItemGroup>
@@ -40,7 +44,6 @@
       <None Include="..\FParsecCS\*.cs" Pack="true" PackagePath="src\FParsecCS\" />
       <None Include="..\FParsecCS\FParsecCS.csproj" Pack="true" PackagePath="src\FParsecCS\" />
       <None Include="..\Build\FParsec.Common.targets" Pack="true" PackagePath="src\Build\FParsec.Common.targets" />
-      <None Include="..\Build\NuGet.props" Pack="true" PackagePath="src\Build\NuGet.props" />
     </ItemGroup>
   </Target>
 

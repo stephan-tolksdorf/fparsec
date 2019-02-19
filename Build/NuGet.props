@@ -1,7 +1,0 @@
-<Project>
-  <PropertyGroup Condition="'$(AssemblyName)' == 'FParsec' and '$(LowTrust)' == 'false'">
-    <PackageId>FParsec-Big-Data-Edition</PackageId>
-  </PropertyGroup>
-
-  <Import Condition="Exists('Version.props')" Project="Version.props" />
-</Project>
