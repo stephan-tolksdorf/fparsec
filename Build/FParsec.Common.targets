@@ -11,11 +11,6 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <FSharpPortableLanguageTargets>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.Portable.FSharp.Targets</FSharpPortableLanguageTargets>
-    <FSharpPortableLanguageTargets Condition="!Exists('$(FSharpPortableLanguageTargets)')" />
-  </PropertyGroup>
-
-  <PropertyGroup>
     <CoreOnNonWin>false</CoreOnNonWin>
     <CoreOnNonWin Condition="'$(MSBuildRuntimeType)' == 'Core' and '$(OS)' != 'Windows_NT'">true</CoreOnNonWin>
   </PropertyGroup>
@@ -31,7 +26,6 @@
   <PropertyGroup Condition="'$(LowTrust)' == 'true'">
     <TargetFrameworks Condition="'$(OutputType)' != 'Exe'">netstandard1.6</TargetFrameworks>
     <TargetFrameworks Condition="'$(OutputType)' != 'Exe' and '$(CoreOnNonWin)' == 'false'">$(TargetFrameworks);net40-client</TargetFrameworks>
-    <TargetFrameworks Condition="'$(OutputType)' != 'Exe' and '$(FSharpPortableLanguageTargets)' != ''">$(TargetFrameworks);portable-net45+win8+wp8+wpa81</TargetFrameworks>
     <TargetFrameworks Condition="'$(OutputType)' == 'Exe'">netcoreapp2.0</TargetFrameworks>
     <TargetFrameworks Condition="'$(OutputType)' == 'Exe' and '$(CoreOnNonWin)' == 'false'">$(TargetFrameworks);net45</TargetFrameworks>
   </PropertyGroup>
@@ -42,28 +36,12 @@
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)' == 'portable-net45+win8+wp8+wpa81'">
-    <TargetFrameworkIdentifier>.NETPortable</TargetFrameworkIdentifier>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Profile259</TargetFrameworkProfile>
-    <NugetTargetMoniker>.NETPortable,Version=v0.0,Profile=Profile259</NugetTargetMoniker>
-    <TargetProfile>netcore</TargetProfile>
-    <TargetFSharpCoreVersion>3.259.4.0</TargetFSharpCoreVersion>
-    <!-- https://github.com/NuGet/Home/issues/5021 -->
-    <IncludeProjectPriFile>false</IncludeProjectPriFile>
-  </PropertyGroup>
-
   <PropertyGroup Condition="'$(TargetFrameworkIdentifier)' == ''">
     <TargetFrameworkIdentifier Condition="'$(TargetFramework)' == 'net45'">.NETFramework</TargetFrameworkIdentifier>
     <TargetFrameworkIdentifier Condition="'$(TargetFramework)' == 'netstandard1.6'">.NETStandard</TargetFrameworkIdentifier>
     <TargetFrameworkIdentifier Condition="'$(TargetFramework)' == 'netstandard2.0'">.NETStandard</TargetFrameworkIdentifier>
     <TargetFrameworkIdentifier Condition="'$(TargetFramework)' == 'netcoreapp1.1'">.NETCoreApp</TargetFrameworkIdentifier>
     <TargetFrameworkIdentifier Condition="'$(TargetFramework)' == 'netcoreapp2.0'">.NETCoreApp</TargetFrameworkIdentifier>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(TargetFrameworkIdentifier)' == '.NETPortable'">
-    <LanguageTargets Condition="'$(MSBuildProjectExtension)' == '.csproj'">$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets</LanguageTargets>
-    <LanguageTargets Condition="'$(MSBuildProjectExtension)' == '.fsproj'">$(FSharpPortableLanguageTargets)</LanguageTargets>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -91,15 +69,12 @@
   <PropertyGroup Condition="'$(TargetFrameworkIdentifier)' == '.NETFramework'">
     <DefineConstants>$(DefineConstants);UNALIGNED_READS</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFrameworkIdentifier)' == '.NETPortable'">
-    <DefineConstants>$(DefineConstants);PCL</DefineConstants>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(LowTrust)' == 'false' and '$(AssemblyName)' != 'FParsecCS'">
     <DefineConstants>$(DefineConstants);USE_STATIC_MAPPING_FOR_IS_ANY_OF</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(FParsecNuGet)' == 'true'">
-    <SignAssembly Condition="'$(TargetFrameworkIdentifier)' == '.NETFramework' or '$(TargetFrameworkIdentifier)' == '.NETPortable'">true</SignAssembly>
+    <SignAssembly Condition="'$(TargetFrameworkIdentifier)' == '.NETFramework'">true</SignAssembly>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(SignAssembly)' == 'true'">

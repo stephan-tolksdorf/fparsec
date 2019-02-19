@@ -34,19 +34,8 @@
     <PackageReference Include="System.Text.Encoding.CodePages" Version="4.*" />
   </ItemGroup>
 
-  <Choose>
-    <When Condition="'$(TestPCLFParsec)' == 'true' and '$(TargetFrameworkIdentifier)' == '.NETFramework'">
-      <PropertyGroup><DefineConstants>$(DefineConstants);PCL</DefineConstants></PropertyGroup>
-      <ItemGroup>
-        <Reference Include="FParsecCS" HintPath="$(MSBuildThisFileDirectory)\..\FParsec\bin\$(Configuration)\portable-net45+win8+wp8+wpa81\FParsecCS.dll" />
-        <Reference Include="FParsec" HintPath="$(MSBuildThisFileDirectory)\..\FParsec\bin\$(Configuration)\portable-net45+win8+wp8+wpa81\FParsec.dll" />
-      </ItemGroup>
-    </When>
-    <Otherwise>
-      <ItemGroup>
-        <ProjectReference Include="$(MSBuildThisFileDirectory)\..\FParsec\FParsec.fsproj" />
-        <ProjectReference Include="$(MSBuildThisFileDirectory)\..\FParsecCS\FParsecCS.csproj" />
-      </ItemGroup>
-    </Otherwise>
-  </Choose>
+  <ItemGroup>
+    <ProjectReference Include="$(MSBuildThisFileDirectory)\..\FParsec\FParsec.fsproj" />
+    <ProjectReference Include="$(MSBuildThisFileDirectory)\..\FParsecCS\FParsecCS.csproj" />
+  </ItemGroup>
 </Project>

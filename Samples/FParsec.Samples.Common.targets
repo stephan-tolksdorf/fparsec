@@ -33,19 +33,8 @@
     <PackageReference Include="FSharp.Core" Version="4.0.0.1" />
   </ItemGroup>
 
-  <Choose>
-    <When Condition="'$(TestPCLFParsec)' == 'true' and '$(TargetFramework)' == 'net45'">
-      <PropertyGroup><DefineConstants>$(DefineConstants);PCL_FPARSEC</DefineConstants></PropertyGroup>
-      <ItemGroup>
-        <Reference Include="FParsecCS" HintPath="..\FParsec\bin\$(Configuration)\portable-net45+win8+wp8+wpa81\FParsecCS.dll" />
-        <Reference Include="FParsec" HintPath="..\FParsec\bin\$(Configuration)\portable-net45+win8+wp8+wpa81\FParsec.dll" />
-      </ItemGroup>
-    </When>
-    <Otherwise>
-      <ItemGroup>
-        <ProjectReference Include="$(MSBuildThisFileDirectory)\..\FParsec\FParsec.fsproj" />
-        <ProjectReference Include="$(MSBuildThisFileDirectory)\..\FParsecCS\FParsecCS.csproj" />
-      </ItemGroup>
-    </Otherwise>
-  </Choose>
+  <ItemGroup>
+    <ProjectReference Include="$(MSBuildThisFileDirectory)\..\FParsec\FParsec.fsproj" />
+    <ProjectReference Include="$(MSBuildThisFileDirectory)\..\FParsecCS\FParsecCS.csproj" />
+  </ItemGroup>
 </Project>
