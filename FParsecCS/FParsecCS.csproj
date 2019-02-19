@@ -14,4 +14,8 @@
     <PackageReference Include="System.Globalization.Extensions" Version="4.*" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="FSharp.Core" Version="4.3.4" />
+  </ItemGroup>
+
 </Project>
