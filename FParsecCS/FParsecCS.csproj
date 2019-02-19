@@ -2,18 +2,12 @@
 
   <PropertyGroup>
     <TargetFrameworks>net40-client;net45;netstandard2.0</TargetFrameworks>
-    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>    
     <NoWarn>1591</NoWarn>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <Import Project="..\Build\FParsec.Common.targets" />
-
-  <ItemGroup>
-    <Compile Include="Properties\*.cs" />
-    <Compile Include="*.cs" />
-  </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFrameworkIdentifier)' == '.NETStandard'">
     <PackageReference Include="System.Globalization.Extensions" Version="4.*" />
