@@ -32,9 +32,9 @@ foreach ($folder in $("FParsecCS\obj", "FParsecCS\bin", "FParsec\obj", "FParsec\
 foreach ($config in $configs) {
     $props = "-c $config -p:VersionSuffix=$versionSuffix -p:FParsecNuGet=true"
     invoke "dotnet build FParsec $props"
+    invoke "dotnet pack FParsec $props"
     invoke "dotnet build Test $props"
     foreach ($tf in $testTargetFrameworks[$config]) {
-        invoke "dotnet run --no-build -p Test -f $tf"
+        invoke "dotnet run --no-build -p Test -c $config -f $tf"
     }
-    invoke "dotnet pack FParsec $props"
 }
