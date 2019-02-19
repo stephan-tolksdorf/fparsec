@@ -40,11 +40,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="$(MSBuildThisFileDirectory)\..\FParsec\FParsec.fsproj" />
-    <ProjectReference Include="$(MSBuildThisFileDirectory)\..\FParsecCS\FParsecCS.csproj" />
     <PackageReference Include="FSharp.Core" Update="4.3.4" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\FParsec\FParsec.fsproj" />
+    <ProjectReference Include="..\FParsecCS\FParsecCS.csproj" />
   </ItemGroup>
 </Project>
