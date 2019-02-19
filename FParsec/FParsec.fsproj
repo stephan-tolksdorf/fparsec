@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net40-client;net45;netstandard1.6</TargetFrameworks>
+    <TargetFrameworks>net40-client;net45;netstandard2.0</TargetFrameworks>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Tailcalls>false</Tailcalls>
     <OtherFlags>/nooptimizationdata</OtherFlags>

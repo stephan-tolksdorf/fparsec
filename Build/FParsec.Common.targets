@@ -24,7 +24,7 @@
     <TargetFrameworks>net40-client;net45</TargetFrameworks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(LowTrust)' == 'true'">
-    <TargetFrameworks Condition="'$(OutputType)' != 'Exe'">netstandard1.6</TargetFrameworks>
+    <TargetFrameworks Condition="'$(OutputType)' != 'Exe'">netstandard2.0</TargetFrameworks>
     <TargetFrameworks Condition="'$(OutputType)' != 'Exe' and '$(CoreOnNonWin)' == 'false'">$(TargetFrameworks);net40-client</TargetFrameworks>
     <TargetFrameworks Condition="'$(OutputType)' == 'Exe'">netcoreapp2.0</TargetFrameworks>
     <TargetFrameworks Condition="'$(OutputType)' == 'Exe' and '$(CoreOnNonWin)' == 'false'">$(TargetFrameworks);net45</TargetFrameworks>
@@ -38,7 +38,6 @@
 
   <PropertyGroup Condition="'$(TargetFrameworkIdentifier)' == ''">
     <TargetFrameworkIdentifier Condition="'$(TargetFramework)' == 'net45'">.NETFramework</TargetFrameworkIdentifier>
-    <TargetFrameworkIdentifier Condition="'$(TargetFramework)' == 'netstandard1.6'">.NETStandard</TargetFrameworkIdentifier>
     <TargetFrameworkIdentifier Condition="'$(TargetFramework)' == 'netstandard2.0'">.NETStandard</TargetFrameworkIdentifier>
     <TargetFrameworkIdentifier Condition="'$(TargetFramework)' == 'netcoreapp1.1'">.NETCoreApp</TargetFrameworkIdentifier>
     <TargetFrameworkIdentifier Condition="'$(TargetFramework)' == 'netcoreapp2.0'">.NETCoreApp</TargetFrameworkIdentifier>
