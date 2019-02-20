@@ -11,13 +11,13 @@ script:
   - dotnet build FParsec.sln -c $CONFIGURATION -v n
   - dotnet run --no-build -p Test -c $CONFIGURATION -f $TFM
 
-  env:
-- CONFIGURATION=Release
-  TFM=net45
-- CONFIGURATION=Release-LowTrust
-  TFM=net45
-- CONFIGURATION=Release-LowTrust
-  TFM=netcoreapp2.1
+env:
+  - CONFIGURATION=Release
+    TFM=net45
+  - CONFIGURATION=Release-LowTrust
+    TFM=net45
+  - CONFIGURATION=Release-LowTrust
+    TFM=netcoreapp2.1
 
 matrix:
   include:
