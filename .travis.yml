@@ -9,7 +9,10 @@ install:
 
 script:
   - dotnet build FParsec.sln -c $CONFIGURATION -v n
-  - dotnet run --no-build -p Test -c $CONFIGURATION -f $TFM
+  - |
+    if [ "$RUN_TESTS" == "1" ]; then
+      dotnet run --no-build -p Test -c $CONFIGURATION -f $TFM
+    fi
 
 env:
   - CONFIGURATION=Release
@@ -18,6 +21,7 @@ env:
     TFM=net45
   - CONFIGURATION=Release-LowTrust
     TFM=netcoreapp2.1
+    RUN_TESTS=1
 
 matrix:
   include:
