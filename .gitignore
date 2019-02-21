@@ -12,3 +12,4 @@ obj/
 *.pdb
 packages/
 version.props
+/.vs/

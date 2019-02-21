@@ -1,6 +1,10 @@
 <Project ToolsVersion="15.0">
 
   <PropertyGroup>
+    <Configurations>Debug;Release;Debug-LowTrust;Release-LowTrust</Configurations>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <LowTrust>false</LowTrust>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
