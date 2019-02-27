@@ -10,7 +10,7 @@
 
   <Import Project="..\Build\FParsec.Common.targets" />
 
-  <ItemGroup Condition="'$(TargetFrameworkIdentifier)' == '.NETStandard'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
     <PackageReference Include="System.Globalization.Extensions" Version="4.*" />
   </ItemGroup>
 

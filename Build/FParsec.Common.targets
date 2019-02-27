@@ -6,12 +6,12 @@
   <PropertyGroup>
     <DefineConstants>$(DefineConstants);AGGRESSIVE_INLINING</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFrameworkIdentifier)' == '.NETFramework'">
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net45'">
     <DefineConstants>$(DefineConstants);UNALIGNED_READS</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(FParsecNuGet)' == 'true'">
-    <SignAssembly Condition="'$(TargetFrameworkIdentifier)' == '.NETFramework'">true</SignAssembly>
+    <SignAssembly Condition="'$(TargetFramework)' == 'net45'">true</SignAssembly>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(SignAssembly)' == 'true'">

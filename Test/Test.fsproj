@@ -12,7 +12,7 @@
     <DefineConstants>$(DefineConstants);USE_STATIC_MAPPING_FOR_IS_ANY_OF</DefineConstants>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(TargetFrameworkIdentifier)' == '.NETCoreApp'">
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.1'">
     <DefineConstants>$(DefineConstants);NETCORE</DefineConstants>
   </PropertyGroup>
 
@@ -34,7 +34,7 @@
     <Compile Include="AllTests.fs" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFrameworkIdentifier)' == '.NETCoreApp'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp2.1'">
     <PackageReference Include="System.Globalization.Extensions" Version="4.*" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="4.*" />
   </ItemGroup>
