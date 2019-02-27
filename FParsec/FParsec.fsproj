@@ -6,6 +6,14 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Tailcalls>false</Tailcalls>
     <OtherFlags>/nooptimizationdata</OtherFlags>
+    <Description Condition="'$(LowTrust)' == 'true'">$(Description)
+
+This package uses the basic “low-trust” configuration of FParsec, which does not use any unverifiable code and is optimized for maximum portability. If you need to parse very large files or if you employ FParsec for performance-critical jobs, consider using the alternate “Big Data Edition” NuGet package (see https://nuget.org/packages/fparsec-big-data-edition).</Description>
+    <Description Condition="'$(LowTrust)' == 'false'">$(Description)
+
+This package uses a configuration of FParsec that supports very large input streams and is optimized for maximum performance in longer running processes. See http://www.quanttec.com/fparsec/download-and-installation.html for more information.
+
+This version of FParsec is currently not compatible with .NET Core. If you want to use .NET Core, please choose the other FParsec NuGet package instead (see https://nuget.org/packages/fparsec).</Description>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(LowTrust)' == 'false'">

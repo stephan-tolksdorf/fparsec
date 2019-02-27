@@ -14,6 +14,11 @@
     <SignAssembly Condition="'$(TargetFramework)' == 'net45'">true</SignAssembly>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <AssemblyVersion Condition="'$(SignAssembly)' == 'true'">1.0.0.0</AssemblyVersion>
+    <AssemblyVersion Condition="'$(SignAssembly)' != 'true'">$(FileVersion)</AssemblyVersion>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(SignAssembly)' == 'true'">
     <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)\fparsec.snk</AssemblyOriginatorKeyFile>
     <PublicSign Condition="'$(OS)' != 'Windows_NT'">true</PublicSign>
