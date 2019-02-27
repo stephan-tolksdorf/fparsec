@@ -23,7 +23,7 @@ function invoke([string] $cmd) {
     }
 }
 
-foreach ($folder in $("FParsecCS\obj", "FParsecCS\bin", "FParsec\obj", "FParsec\bin")) {
+foreach ($folder in $("bin", "FParsecCS\obj", "FParsecCS\bin", "FParsec\obj", "FParsec\bin")) {
     try {
         Remove-Item $folder -recurse
     } catch {}
