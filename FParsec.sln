@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26430.6
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28621.142
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FParsecCS", "FParsecCS\FParsecCS.csproj", "{8521556A-F853-4456-8D20-96C42F97E15A}"
 EndProject
@@ -22,11 +22,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tutorial", "Samples\Tutoria
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test", "Test\Test.fsproj", "{5AE7C1E6-A511-41A9-9A9F-E8A0944319A2}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{1C2DDDBD-BF95-4F55-8651-6EAD5D984BD9}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{1C2DDDBD-BF95-4F55-8651-6EAD5D984BD9}"
 	ProjectSection(SolutionItems) = preProject
 		.travis.yml = .travis.yml
 		appveyor.yml = appveyor.yml
 		Directory.Build.props = Directory.Build.props
+		Build\FParsec.Common.targets = Build\FParsec.Common.targets
 		global.json = global.json
 		pack.ps1 = pack.ps1
 		readme.md = readme.md
