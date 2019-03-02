@@ -1,7 +1,7 @@
 # This PowerShell script builds the FParsec NuGet packages. 
 #
 # Run this script from the VS2017 Command Prompt, e.g. with 
-# powershell -File pack.ps1 -versionSuffix "" > pack.out.txt
+# powershell -ExecutionPolicy ByPass -File pack.ps1 -versionSuffix "" > pack.out.txt
 
 Param(
   [string]$versionSuffix = "dev"
@@ -23,7 +23,7 @@ function invoke([string] $cmd) {
     }
 }
 
-foreach ($folder in $("bin", "FParsecCS\obj", "FParsecCS\bin", "FParsec\obj", "FParsec\bin")) {
+foreach ($folder in $("nupkgs", "FParsecCS\obj", "FParsecCS\bin", "FParsec\obj", "FParsec\bin")) {
     try {
         Remove-Item $folder -recurse
     } catch {}
@@ -32,7 +32,7 @@ foreach ($folder in $("bin", "FParsecCS\obj", "FParsecCS\bin", "FParsec\obj", "F
 foreach ($config in $configs) {
     $props = "-c $config -p:VersionSuffix=$versionSuffix -p:FParsecNuGet=true"
     invoke "dotnet build FParsec $props -v n"
-    invoke "dotnet pack FParsec $props -o ""$pwd\bin\nupkg"""
+    invoke "dotnet pack FParsec $props -o ""$pwd\nupkgs"""
     invoke "dotnet build Test $props -v n"
     foreach ($tf in $testTargetFrameworks[$config]) {
         invoke "dotnet run --no-build -p Test -c $config -f $tf"

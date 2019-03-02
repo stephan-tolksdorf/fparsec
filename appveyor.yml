@@ -14,6 +14,6 @@ build_script:
   - ps: ./pack.ps1 -versionSuffix $env:VersionSuffix
 
 artifacts:
-  - path: bin\nupkg\*.nupkg
+  - path: nupkgs\*.nupkg
     name: nupkgs
     type: NuGetPackage
