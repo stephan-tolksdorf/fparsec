@@ -54,7 +54,8 @@ This version of FParsec is currently not compatible with .NET Core. If you want 
     <PackageReference Update="FSharp.Core" Version="4.3.4" />
   </ItemGroup>
 
-  <!-- HACK: p2p of type project, not package (ref https://github.com/NuGet/Home/issues/3891 ) -->
+  <!-- HACK that makes msbuild include the FParsecCS project output in the  
+       FParsec NuGet package, see https://github.com/NuGet/Home/issues/3891 -->
   <PropertyGroup>
     <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);IncludeFParsecCSOutput</TargetsForTfmSpecificBuildOutput>
   </PropertyGroup>
