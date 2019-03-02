@@ -1,4 +1,4 @@
-# 13 "..\..\Samples\FSharpParsingSample\LexYaccVersion\lex.fsl"
+# 13 "lex.fsl"
  
 
 module Lex
@@ -17,7 +17,7 @@ let lexeme = LexBuffer<char>.LexemeString
 let newline (lexbuf: LexBuffer<_>) =
   lexbuf.StartPos <- lexbuf.StartPos.NextLine
 
-# 20 "..\..\Samples\FSharpParsingSample\LexYaccVersion\lex.fs"
+# 20 "lex.fs"
 let trans : uint16[] array = 
     [| 
     (* State 0 *)
@@ -136,100 +136,100 @@ and token  (lexbuf : Microsoft.FSharp.Text.Lexing.LexBuffer<_>) = _fslex_token  
 and _fslex_token  _fslex_state lexbuf =
   match _fslex_tables.Interpret(_fslex_state,lexbuf) with
   | 0 -> ( 
-# 54 "..\..\Samples\FSharpParsingSample\LexYaccVersion\lex.fsl"
+# 54 "lex.fsl"
                               token lexbuf 
-# 141 "..\..\Samples\FSharpParsingSample\LexYaccVersion\lex.fs"
+# 141 "lex.fs"
           )
   | 1 -> ( 
-# 55 "..\..\Samples\FSharpParsingSample\LexYaccVersion\lex.fsl"
+# 55 "lex.fsl"
                               newline lexbuf; token lexbuf 
-# 146 "..\..\Samples\FSharpParsingSample\LexYaccVersion\lex.fs"
+# 146 "lex.fs"
           )
   | 2 -> ( 
-# 56 "..\..\Samples\FSharpParsingSample\LexYaccVersion\lex.fsl"
+# 56 "lex.fsl"
                               WHILE 
-# 151 "..\..\Samples\FSharpParsingSample\LexYaccVersion\lex.fs"
+# 151 "lex.fs"
           )
   | 3 -> ( 
-# 57 "..\..\Samples\FSharpParsingSample\LexYaccVersion\lex.fsl"
+# 57 "lex.fsl"
                               BEGIN 
-# 156 "..\..\Samples\FSharpParsingSample\LexYaccVersion\lex.fs"
+# 156 "lex.fs"
           )
   | 4 -> ( 
-# 58 "..\..\Samples\FSharpParsingSample\LexYaccVersion\lex.fsl"
+# 58 "lex.fsl"
                               END 
-# 161 "..\..\Samples\FSharpParsingSample\LexYaccVersion\lex.fs"
+# 161 "lex.fs"
           )
   | 5 -> ( 
-# 59 "..\..\Samples\FSharpParsingSample\LexYaccVersion\lex.fsl"
+# 59 "lex.fsl"
                               DO 
-# 166 "..\..\Samples\FSharpParsingSample\LexYaccVersion\lex.fs"
+# 166 "lex.fs"
           )
   | 6 -> ( 
-# 60 "..\..\Samples\FSharpParsingSample\LexYaccVersion\lex.fsl"
+# 60 "lex.fsl"
                               IF 
-# 171 "..\..\Samples\FSharpParsingSample\LexYaccVersion\lex.fs"
+# 171 "lex.fs"
           )
   | 7 -> ( 
-# 61 "..\..\Samples\FSharpParsingSample\LexYaccVersion\lex.fsl"
+# 61 "lex.fsl"
                              THEN 
-# 176 "..\..\Samples\FSharpParsingSample\LexYaccVersion\lex.fs"
+# 176 "lex.fs"
           )
   | 8 -> ( 
-# 62 "..\..\Samples\FSharpParsingSample\LexYaccVersion\lex.fsl"
+# 62 "lex.fsl"
                              ELSE 
-# 181 "..\..\Samples\FSharpParsingSample\LexYaccVersion\lex.fs"
+# 181 "lex.fs"
           )
   | 9 -> ( 
-# 63 "..\..\Samples\FSharpParsingSample\LexYaccVersion\lex.fsl"
+# 63 "lex.fsl"
                              PRINT 
-# 186 "..\..\Samples\FSharpParsingSample\LexYaccVersion\lex.fs"
+# 186 "lex.fs"
           )
   | 10 -> ( 
-# 64 "..\..\Samples\FSharpParsingSample\LexYaccVersion\lex.fsl"
+# 64 "lex.fsl"
                              DECR 
-# 191 "..\..\Samples\FSharpParsingSample\LexYaccVersion\lex.fs"
+# 191 "lex.fs"
           )
   | 11 -> ( 
-# 65 "..\..\Samples\FSharpParsingSample\LexYaccVersion\lex.fsl"
+# 65 "lex.fsl"
                              LPAREN 
-# 196 "..\..\Samples\FSharpParsingSample\LexYaccVersion\lex.fs"
+# 196 "lex.fs"
           )
   | 12 -> ( 
-# 66 "..\..\Samples\FSharpParsingSample\LexYaccVersion\lex.fsl"
+# 66 "lex.fsl"
                              RPAREN 
-# 201 "..\..\Samples\FSharpParsingSample\LexYaccVersion\lex.fs"
+# 201 "lex.fs"
           )
   | 13 -> ( 
-# 67 "..\..\Samples\FSharpParsingSample\LexYaccVersion\lex.fsl"
+# 67 "lex.fsl"
                              SEMI 
-# 206 "..\..\Samples\FSharpParsingSample\LexYaccVersion\lex.fs"
+# 206 "lex.fs"
           )
   | 14 -> ( 
-# 68 "..\..\Samples\FSharpParsingSample\LexYaccVersion\lex.fsl"
+# 68 "lex.fsl"
                              ASSIGN 
-# 211 "..\..\Samples\FSharpParsingSample\LexYaccVersion\lex.fs"
+# 211 "lex.fs"
           )
   | 15 -> ( 
-# 70 "..\..\Samples\FSharpParsingSample\LexYaccVersion\lex.fsl"
+# 70 "lex.fsl"
                              ID(lexeme lexbuf) 
-# 216 "..\..\Samples\FSharpParsingSample\LexYaccVersion\lex.fs"
+# 216 "lex.fs"
           )
   | 16 -> ( 
-# 72 "..\..\Samples\FSharpParsingSample\LexYaccVersion\lex.fsl"
+# 72 "lex.fsl"
                              INT (int32 (lexeme lexbuf)) 
-# 221 "..\..\Samples\FSharpParsingSample\LexYaccVersion\lex.fs"
+# 221 "lex.fs"
           )
   | 17 -> ( 
-# 74 "..\..\Samples\FSharpParsingSample\LexYaccVersion\lex.fsl"
+# 74 "lex.fsl"
                              FLOAT (float (lexeme lexbuf)) 
-# 226 "..\..\Samples\FSharpParsingSample\LexYaccVersion\lex.fs"
+# 226 "lex.fs"
           )
   | 18 -> ( 
-# 75 "..\..\Samples\FSharpParsingSample\LexYaccVersion\lex.fsl"
+# 75 "lex.fsl"
                          EOF 
-# 231 "..\..\Samples\FSharpParsingSample\LexYaccVersion\lex.fs"
+# 231 "lex.fs"
           )
   | _ -> failwith "token"
 
-# 3000000 "..\..\Samples\FSharpParsingSample\LexYaccVersion\lex.fs"
+# 3000000 "lex.fs"
