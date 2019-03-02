@@ -30,14 +30,9 @@
     <Authors>Stephan Tolksdorf</Authors>
     <Copyright>Copyright © Stephan Tolksdorf</Copyright>
     <Product>FParsec</Product>
-    <Summary>FParsec is a parser combinator library for F#.</Summary>
-    <PackageTags>$(PackageTags);parser;combinator;f#;fsharp;c#;csharp;parsec;fparsec</PackageTags>
     <PackageLicenseUrl>http://www.quanttec.com/fparsec/license.html</PackageLicenseUrl>
     <PackageProjectUrl>http://www.quanttec.com/fparsec/</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/stephan-tolksdorf/fparsec</RepositoryUrl>    
-    <Description>$(Summary)
-
-You can find comprehensive documentation for FParsec at http://www.quanttec.com/fparsec. The documentation includes a feature list, a tutorial, a user’s guide and an API reference.</Description>
+    <RepositoryUrl>https://github.com/stephan-tolksdorf/fparsec</RepositoryUrl>
   </PropertyGroup>
 
 </Project>
