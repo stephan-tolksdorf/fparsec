@@ -1,53 +1,67 @@
 {
     // See https://go.microsoft.com/fwlink/?LinkId=733558
     // for the documentation about the tasks.json format
-    "version": "0.1.0",
-    "command": "dotnet",
-    "isShellCommand": true,
-    "args": [],
+    "version": "2.0.0",
     "tasks": [
         {
-            "taskName": "Restore (Config: Debug-LowTrust)",
-            "suppressTaskName": true,
-            "args": ["restore", "/p:Configuration=Debug-LowTrust"],
-            "showOutput": "always",
+            "label": "Restore (Config: Debug-LowTrust)",
+            "command": "dotnet restore /p:Configuration=Debug-LowTrust",
+            "type": "shell",
+            "group": "build",
+            "presentation": {
+                "reveal": "always"
+            },
             "problemMatcher": "$msCompile"
         },
         {
-            "taskName": "Build .NET Core Test (Config: Debug-LowTrust)",
-            "suppressTaskName": true,
-            "args": ["build", "Test", "-c", "Debug-LowTrust", "-f", "netcoreapp2.0"],
-            "isBuildCommand": true,
-            "showOutput": "silent",
+            "label": "Build .NET Core Test (Config: Debug-LowTrust)",
+            "command": "dotnet build Test -c Debug-LowTrust -f netcoreapp2.1",
+            "type": "shell",
+            "group": "build",
+            "presentation": {
+                "reveal": "silent"
+            },
             "problemMatcher": "$msCompile"
         },
         {
-            "taskName": "Build .NET 4.5 Test (Config: Debug-LowTrust)",
-            "suppressTaskName": true,
-            "args": ["build", "Test", "-c", "Debug-LowTrust", "-f", "net45"],
-            "showOutput": "silent",
+            "label": "Build .NET 4.5 Test (Config: Debug-LowTrust)",
+            "command": "dotnet build Test -c Debug-LowTrust -f net45",
+            "type": "shell",
+            "group": "build",
+            "presentation": {
+                "reveal": "silent"
+            },
             "problemMatcher": "$msCompile"
         },
         {
-            "taskName": "Build All (Config: Debug-LowTrust)",
-            "suppressTaskName": true,
-            "args": ["build", "-c", "Debug-LowTrust"],
-            "showOutput": "silent",
+            "label": "Build All (Config: Debug-LowTrust)",
+            "command": "dotnet build -c Debug-LowTrust",
+            "type": "shell",
+            "group": "build",
+            "presentation": {
+                "reveal": "silent"
+            },
             "problemMatcher": "$msCompile"
         },
         {
-            "taskName": "Test .NET  Core (Config: Debug-LowTrust)",
-            "suppressTaskName": true,
-            "args": [ "Test/bin/Debug-LowTrust/netcoreapp2.0/Test.dll" ],
-            "isTestCommand": true,
-            "showOutput": "always"
+            "label": "Test .NET Core (Config: Debug-LowTrust)",
+            "command": "dotnet Test/bin/Debug-LowTrust/netcoreapp2.1/Test.dll",
+            "type": "shell",
+            "group": "test",
+            "presentation": {
+                "reveal": "silent"
+            },
+            "problemMatcher": "$msCompile"
         },
-        
         {
-            "taskName": "Test .NET 4.5 (Config: Debug-LowTrust)",
-            "suppressTaskName": true,
+            "label": "Test .NET 4.5 (Config: Debug-LowTrust)",
             "command": "Test/bin/Debug-LowTrust/net45/Test.exe",
-            "showOutput": "always"
+            "type": "shell",
+            "group": "test",
+            "presentation": {
+                "reveal": "silent"
+            },
+            "problemMatcher": "$msCompile"
         }
     ]
 }
