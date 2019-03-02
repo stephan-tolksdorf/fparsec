@@ -1,9 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>netcoreapp2.1;net45</TargetFrameworks>
     <TargetFrameworks Condition="'$(LowTrust)' == 'false'">net45</TargetFrameworks>
     <OutputType>Exe</OutputType>
     <IsPackable>false</IsPackable>
+    <StartArguments>$(MSBuildProjectDirectory)/../LexYaccVersion/test.lang</StartArguments>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,6 +12,7 @@
     <Compile Include="..\LexYaccVersion\interp.fs" />
     <Compile Include="parser.fs" />
     <Compile Include="main.fs" />
+    <None Include="..\LexYaccVersion\test.lang" />
   </ItemGroup>
 
   <ItemGroup>

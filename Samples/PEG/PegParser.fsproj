@@ -4,12 +4,14 @@
     <TargetFrameworks Condition="'$(LowTrust)' == 'false'">net45</TargetFrameworks>
     <OutputType>Exe</OutputType>
     <IsPackable>false</IsPackable>
+    <StartArguments>$(MSBuildProjectDirectory)/test_peg.txt</StartArguments>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Include="ast.fs" />
     <Compile Include="parser.fs" />
     <Compile Include="main.fs" />
+    <None Include="test_peg.txt" />
   </ItemGroup>
 
   <ItemGroup>
