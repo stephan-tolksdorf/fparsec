@@ -1,9 +1,27 @@
-<Project Sdk="FSharp.NET.Sdk;Microsoft.NET.Sdk" ToolsVersion="15.0">
-  <Import Project="..\..\FParsec.Samples.Common.targets" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>netcoreapp2.1;net45</TargetFrameworks>
+    <TargetFrameworks Condition="'$(LowTrust)' == 'false'">net45</TargetFrameworks>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+    <StartArguments>$(MSBuildProjectDirectory)/../LexYaccVersion/test.lang</StartArguments>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Include="..\LexYaccVersion\ast.fs" />
     <Compile Include="..\LexYaccVersion\interp.fs" />
     <Compile Include="parser.fs" />
     <Compile Include="main.fs" />
+    <None Include="..\LexYaccVersion\test.lang" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="FSharp.Core" Version="4.3.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\FParsec\FParsec.fsproj" />
+    <ProjectReference Include="..\..\..\FParsecCS\FParsecCS.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -1,23 +1,18 @@
 # This PowerShell script builds the FParsec NuGet packages. 
-# Currently, it uses msbuild and needs to be run in the VS2017 Command Prompt, 
-# so that it can build PCL assemblies. 
-# It also requires the nuget.exe, see $nuget below.
 #
 # Run this script from the VS2017 Command Prompt, e.g. with 
-# powershell -File pack.ps1 -versionSuffix "" > pack.out.txt
+# powershell -ExecutionPolicy ByPass -File pack.ps1 -versionSuffix "" > pack.out.txt
 
 Param(
-  [string]$versionSuffix = "dev",
-  [string]$nuget = ".\nuget.exe"
+  [string]$versionSuffix = "dev"
 )
 
 $ErrorActionPreference = 'Stop'
 
 $configs = $('Release-LowTrust', 'Release')
 
-$testTargetFrameworks = @{'Release'          = $('net45', 'net40-client')
-                          'Release-LowTrust' = $('netcoreapp2.0', 'net45')}
-$testPCL = $true
+$testTargetFrameworks = @{'Release'          = $('net45')
+                          'Release-LowTrust' = $('netcoreapp2.1', 'net45')}
 
 function invoke([string] $cmd) {
     echo ''
@@ -28,39 +23,18 @@ function invoke([string] $cmd) {
     }
 }
 
-foreach ($folder in $("FParsecCS\obj", "FParsecCS\bin", "FParsec\obj", "FParsec\bin")) {
+foreach ($folder in $("nupkgs", "FParsecCS\obj", "FParsecCS\bin", "FParsec\obj", "FParsec\bin")) {
     try {
         Remove-Item $folder -recurse
     } catch {}
 }
 
 foreach ($config in $configs) {
-    $props = "/p:Configuration=$config /p:VersionSuffix=$versionSuffix /p:FParsecNuGet=true"
-    invoke "msbuild /t:Restore $props"
-    invoke "msbuild /t:Clean $props"
-    invoke "msbuild FParsec /t:Build $props"
-    invoke "msbuild Test /t:Build $props"
+    $props = "-c $config -p:VersionSuffix=$versionSuffix -p:FParsecNuGet=true"
+    invoke "dotnet build FParsec $props -v n"
+    invoke "dotnet pack FParsec $props -o ""$pwd\nupkgs"""
+    invoke "dotnet build Test $props -v n"
     foreach ($tf in $testTargetFrameworks[$config]) {
-        if ($tf.StartsWith('netcoreapp')) {
-            invoke "dotnet .\Test\bin\$config\$tf\Test.dll"
-        } else {
-            invoke ".\Test\bin\$config\$tf\Test.exe"
-        }
+        invoke "dotnet run --no-build -p Test -c $config -f $tf"
     }
-    invoke "msbuild /t:Restore $props /p:MergedFParsecPackage=true"
-    invoke "msbuild /t:Pack /p:NoBuild=true /p:IncludeSource=true /p:IncludeSymbols=true $props /p:MergedFParsecPackage=true"
-    if (($config -eq 'Release-LowTrust') -and $testPCL) {
-        $pclProps = "/p:TargetFramework=net45 /p:OutputPath=bin\$config\net45-pcl\ /p:TestPCLFParsec=true $props"
-        invoke "msbuild Test/Test.fsproj /t:Clean $pclProps"
-        invoke "msbuild Test/Test.fsproj /t:Build $pclProps"
-        invoke ".\Test\bin\$config\net45-pcl\Test.exe"
-    }
-}
-
-# The non-symbol packages built by the msbuild Pack target include some files only belonging
-# into the symbol packages, so we have to recreate the packages from the generated nuspecs.
-foreach ($nuspec in Get-ChildItem -Path ".\FParsec\obj\" -Recurse -Include "FParsec*.symbols.nuspec") {
-    $localNuspecPath = ".\$($nuspec.Name.Replace('.symbols', [string]::Empty))"
-    Copy-Item $nuspec $localNuspecPath -verbose
-    invoke ".\nuget pack $localNuspecPath -Symbols"
 }

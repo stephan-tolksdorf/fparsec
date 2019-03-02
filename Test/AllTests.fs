@@ -39,4 +39,17 @@ let run() =
 #endif
     printfn "No error was found."
 
-run()
+[<EntryPoint>]
+let main _argv =
+
+#if NETCOREAPP
+    System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+#endif
+
+    try
+        run()
+        0
+    with
+    | ex ->
+        printfn "error: %A" ex
+        1

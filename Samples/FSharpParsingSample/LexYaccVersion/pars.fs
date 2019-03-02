@@ -3,7 +3,7 @@ module Parser
 #nowarn "64";; // turn off warnings that type variables used in production annotations are instantiated to concrete type
 open Microsoft.FSharp.Text.Lexing
 open Microsoft.FSharp.Text.Parsing.ParseHelpers
-# 10 "..\..\Samples\FSharpParsingSample\LexYaccVersion\pars.fsy"
+# 10 "pars.fsy"
 
 
 // This prelude is F# code that is available throughout this file. In this
@@ -11,7 +11,7 @@ open Microsoft.FSharp.Text.Parsing.ParseHelpers
 open Ast
 
 
-# 14 "..\..\Samples\FSharpParsingSample\LexYaccVersion\pars.fs"
+# 14 "pars.fs"
 // This type is the type of tokens accepted by the parser
 type token = 
   | DECR
@@ -181,7 +181,7 @@ let _fsyacc_reductionSymbolCounts = [|1us; 1us; 1us; 1us; 1us; 1us; 4us; 3us; 4u
 let _fsyacc_productionToNonTerminalTable = [|0us; 1us; 2us; 3us; 3us; 3us; 3us; 4us; 4us; 4us; 4us; 4us; 4us; 5us; 5us; |]
 let _fsyacc_immediateActions = [|65535us; 49152us; 16385us; 65535us; 16387us; 16388us; 16389us; 65535us; 65535us; 65535us; 16390us; 65535us; 65535us; 16391us; 65535us; 65535us; 65535us; 16392us; 65535us; 65535us; 16393us; 65535us; 65535us; 65535us; 65535us; 65535us; 16395us; 65535us; 16396us; 16397us; 65535us; 16398us; |]
 let _fsyacc_reductions ()  =    [| 
-# 184 "..\..\Samples\FSharpParsingSample\LexYaccVersion\pars.fs"
+# 184 "pars.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data :  Ast.Prog )) in
             Microsoft.FSharp.Core.Operators.box
@@ -190,120 +190,120 @@ let _fsyacc_reductions ()  =    [|
                       raise (Microsoft.FSharp.Text.Parsing.Accept(Microsoft.FSharp.Core.Operators.box _1))
                    )
                  : '_startstart));
-# 193 "..\..\Samples\FSharpParsingSample\LexYaccVersion\pars.fs"
+# 193 "pars.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'Prog)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 37 "..\..\Samples\FSharpParsingSample\LexYaccVersion\pars.fsy"
+# 37 "pars.fsy"
                                     _1 
                    )
-# 37 "..\..\Samples\FSharpParsingSample\LexYaccVersion\pars.fsy"
+# 37 "pars.fsy"
                  :  Ast.Prog ));
-# 204 "..\..\Samples\FSharpParsingSample\LexYaccVersion\pars.fs"
+# 204 "pars.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'StmtList)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 40 "..\..\Samples\FSharpParsingSample\LexYaccVersion\pars.fsy"
+# 40 "pars.fsy"
                                       Prog(List.rev(_1)) 
                    )
-# 40 "..\..\Samples\FSharpParsingSample\LexYaccVersion\pars.fsy"
+# 40 "pars.fsy"
                  : 'Prog));
-# 215 "..\..\Samples\FSharpParsingSample\LexYaccVersion\pars.fs"
+# 215 "pars.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 42 "..\..\Samples\FSharpParsingSample\LexYaccVersion\pars.fsy"
+# 42 "pars.fsy"
                                                      Val(_1); 
                    )
-# 42 "..\..\Samples\FSharpParsingSample\LexYaccVersion\pars.fsy"
+# 42 "pars.fsy"
                  : 'Expr));
-# 226 "..\..\Samples\FSharpParsingSample\LexYaccVersion\pars.fs"
+# 226 "pars.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : System.Int32)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 43 "..\..\Samples\FSharpParsingSample\LexYaccVersion\pars.fsy"
+# 43 "pars.fsy"
                                                      Int(_1)  
                    )
-# 43 "..\..\Samples\FSharpParsingSample\LexYaccVersion\pars.fsy"
+# 43 "pars.fsy"
                  : 'Expr));
-# 237 "..\..\Samples\FSharpParsingSample\LexYaccVersion\pars.fs"
+# 237 "pars.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : System.Double)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 44 "..\..\Samples\FSharpParsingSample\LexYaccVersion\pars.fsy"
+# 44 "pars.fsy"
                                                      Float(_1)  
                    )
-# 44 "..\..\Samples\FSharpParsingSample\LexYaccVersion\pars.fsy"
+# 44 "pars.fsy"
                  : 'Expr));
-# 248 "..\..\Samples\FSharpParsingSample\LexYaccVersion\pars.fs"
+# 248 "pars.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'Expr)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 45 "..\..\Samples\FSharpParsingSample\LexYaccVersion\pars.fsy"
+# 45 "pars.fsy"
                                                      Decr(_3)  
                    )
-# 45 "..\..\Samples\FSharpParsingSample\LexYaccVersion\pars.fsy"
+# 45 "pars.fsy"
                  : 'Expr));
-# 259 "..\..\Samples\FSharpParsingSample\LexYaccVersion\pars.fs"
+# 259 "pars.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'Expr)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 47 "..\..\Samples\FSharpParsingSample\LexYaccVersion\pars.fsy"
+# 47 "pars.fsy"
                                                          Assign(_1,_3) 
                    )
-# 47 "..\..\Samples\FSharpParsingSample\LexYaccVersion\pars.fsy"
+# 47 "pars.fsy"
                  : 'Stmt));
-# 271 "..\..\Samples\FSharpParsingSample\LexYaccVersion\pars.fs"
+# 271 "pars.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'Expr)) in
             let _4 = (let data = parseState.GetInput(4) in (Microsoft.FSharp.Core.Operators.unbox data : 'Stmt)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 48 "..\..\Samples\FSharpParsingSample\LexYaccVersion\pars.fsy"
+# 48 "pars.fsy"
                                                          While(_2,_4) 
                    )
-# 48 "..\..\Samples\FSharpParsingSample\LexYaccVersion\pars.fsy"
+# 48 "pars.fsy"
                  : 'Stmt));
-# 283 "..\..\Samples\FSharpParsingSample\LexYaccVersion\pars.fs"
+# 283 "pars.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'StmtList)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 49 "..\..\Samples\FSharpParsingSample\LexYaccVersion\pars.fsy"
+# 49 "pars.fsy"
                                                          Seq(List.rev(_2)) 
                    )
-# 49 "..\..\Samples\FSharpParsingSample\LexYaccVersion\pars.fsy"
+# 49 "pars.fsy"
                  : 'Stmt));
-# 294 "..\..\Samples\FSharpParsingSample\LexYaccVersion\pars.fs"
+# 294 "pars.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'Expr)) in
             let _4 = (let data = parseState.GetInput(4) in (Microsoft.FSharp.Core.Operators.unbox data : 'Stmt)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 50 "..\..\Samples\FSharpParsingSample\LexYaccVersion\pars.fsy"
+# 50 "pars.fsy"
                                                          IfThen(_2,_4) 
                    )
-# 50 "..\..\Samples\FSharpParsingSample\LexYaccVersion\pars.fsy"
+# 50 "pars.fsy"
                  : 'Stmt));
-# 306 "..\..\Samples\FSharpParsingSample\LexYaccVersion\pars.fs"
+# 306 "pars.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'Expr)) in
             let _4 = (let data = parseState.GetInput(4) in (Microsoft.FSharp.Core.Operators.unbox data : 'Stmt)) in
@@ -311,47 +311,47 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 51 "..\..\Samples\FSharpParsingSample\LexYaccVersion\pars.fsy"
+# 51 "pars.fsy"
                                                          IfThenElse(_2,_4,_6) 
                    )
-# 51 "..\..\Samples\FSharpParsingSample\LexYaccVersion\pars.fsy"
+# 51 "pars.fsy"
                  : 'Stmt));
-# 319 "..\..\Samples\FSharpParsingSample\LexYaccVersion\pars.fs"
+# 319 "pars.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'Expr)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 52 "..\..\Samples\FSharpParsingSample\LexYaccVersion\pars.fsy"
+# 52 "pars.fsy"
                                                          Print(_2) 
                    )
-# 52 "..\..\Samples\FSharpParsingSample\LexYaccVersion\pars.fsy"
+# 52 "pars.fsy"
                  : 'Stmt));
-# 330 "..\..\Samples\FSharpParsingSample\LexYaccVersion\pars.fs"
+# 330 "pars.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'Stmt)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 55 "..\..\Samples\FSharpParsingSample\LexYaccVersion\pars.fsy"
+# 55 "pars.fsy"
                                                 [_1] 
                    )
-# 55 "..\..\Samples\FSharpParsingSample\LexYaccVersion\pars.fsy"
+# 55 "pars.fsy"
                  : 'StmtList));
-# 341 "..\..\Samples\FSharpParsingSample\LexYaccVersion\pars.fs"
+# 341 "pars.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'StmtList)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'Stmt)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 56 "..\..\Samples\FSharpParsingSample\LexYaccVersion\pars.fsy"
+# 56 "pars.fsy"
                                                 _3 :: _1  
                    )
-# 56 "..\..\Samples\FSharpParsingSample\LexYaccVersion\pars.fsy"
+# 56 "pars.fsy"
                  : 'StmtList));
 |]
-# 354 "..\..\Samples\FSharpParsingSample\LexYaccVersion\pars.fs"
+# 354 "pars.fs"
 let tables () : Microsoft.FSharp.Text.Parsing.Tables<_> = 
   { reductions= _fsyacc_reductions ();
     endOfInputTag = _fsyacc_endOfInputTag;

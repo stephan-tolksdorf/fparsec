@@ -1,6 +1,22 @@
-<Project Sdk="FSharp.NET.Sdk;Microsoft.NET.Sdk" ToolsVersion="15.0">
-  <Import Project="..\FParsec.Samples.Common.targets" />
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>netcoreapp2.1;net45</TargetFrameworks>
+    <TargetFrameworks Condition="'$(LowTrust)' == 'false'">net45</TargetFrameworks>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Include="tutorial.fs" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="FSharp.Core" Version="4.3.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\FParsec\FParsec.fsproj" />
+    <ProjectReference Include="..\..\FParsecCS\FParsecCS.csproj" />
+  </ItemGroup>
+
 </Project>

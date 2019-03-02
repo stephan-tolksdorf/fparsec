@@ -1,10 +1,32 @@
-<Project Sdk="FSharp.NET.Sdk;Microsoft.NET.Sdk" ToolsVersion="15.0">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net40-client;net45;netstandard1.6;portable-net45+win8+wp8+wpa81</TargetFrameworks>
+    <TargetFrameworks>net45;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks Condition="'$(LowTrust)' == 'false'">net45</TargetFrameworks>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Tailcalls>false</Tailcalls>
     <OtherFlags>/nooptimizationdata</OtherFlags>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Summary>FParsec is a parser combinator library for F#.</Summary>
+    <PackageTags>$(PackageTags);parser;combinator;f#;fsharp;c#;csharp;parsec;fparsec</PackageTags>
+    <Description>$(Summary)
+
+You can find comprehensive documentation for FParsec at http://www.quanttec.com/fparsec. The documentation includes a feature list, a tutorial, a user’s guide and an API reference.</Description>
+    <Description Condition="'$(LowTrust)' == 'true'">$(Description)
+
+This package uses the basic “low-trust” configuration of FParsec, which does not use any unverifiable code and is optimized for maximum portability. If you need to parse very large files or if you employ FParsec for performance-critical jobs, consider using the alternate “Big Data Edition” NuGet package (see https://nuget.org/packages/fparsec-big-data-edition).</Description>
+    <Description Condition="'$(LowTrust)' == 'false'">$(Description)
+
+This package uses a configuration of FParsec that supports very large input streams and is optimized for maximum performance in longer running processes. See http://www.quanttec.com/fparsec/download-and-installation.html for more information.
+
+This version of FParsec is currently not compatible with .NET Core. If you want to use .NET Core, please choose the other FParsec NuGet package instead (see https://nuget.org/packages/fparsec).</Description>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(LowTrust)' == 'false'">
+    <PackageId>FParsec-Big-Data-Edition</PackageId>
+    <DefineConstants>$(DefineConstants);USE_STATIC_MAPPING_FOR_IS_ANY_OF</DefineConstants>
   </PropertyGroup>
 
   <Import Project="..\Build\FParsec.Common.targets" />
@@ -24,19 +46,24 @@
     <Compile Include="CharParsers.fs" />
   </ItemGroup>
 
-  <ItemGroup Condition="$(MergedFParsecPackage) != true">
-    <ProjectReference Include="..\FParsecCS\FParsecCS.csproj" />
+  <ItemGroup>
+    <ProjectReference Include="..\FParsecCS\FParsecCS.csproj" PrivateAssets="All" />
   </ItemGroup>
 
-  <Target Name="FParsecMergedPack" BeforeTargets="_IntermediatePack">    
-    <ItemGroup Condition="'$(MergedFParsecPackage)' == 'true'">
-      <FParsecTargetFrameworks Include="$(TargetFrameworks.Split(';'))" />
-      <None Include="$(OutputPath)\%(FParsecTargetFrameworks.Identity)\FParsecCS.*" Pack="true" PackagePath="lib\%(Identity)\"/>
-      <None Include="..\FParsecCS\Properties\*.cs" Pack="true" PackagePath="src\FParsecCS\Properties\" />
-      <None Include="..\FParsecCS\*.cs" Pack="true" PackagePath="src\FParsecCS\" />
-      <None Include="..\FParsecCS\FParsecCS.csproj" Pack="true" PackagePath="src\FParsecCS\" />
-      <None Include="..\Build\FParsec.Common.targets" Pack="true" PackagePath="src\Build\FParsec.Common.targets" />
-      <None Include="..\Build\NuGet.props" Pack="true" PackagePath="src\Build\NuGet.props" />
+  <ItemGroup>
+    <PackageReference Update="FSharp.Core" Version="4.3.4" />
+  </ItemGroup>
+
+  <!-- HACK that makes msbuild include the FParsecCS project output in the  
+       FParsec NuGet package, see https://github.com/NuGet/Home/issues/3891 -->
+  <PropertyGroup>
+    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);IncludeFParsecCSOutput</TargetsForTfmSpecificBuildOutput>
+  </PropertyGroup>
+  <Target Name="IncludeFParsecCSOutput">
+    <ItemGroup>
+      <BuildOutputInPackage Include="$(MSBuildProjectDirectory)/$(OutputPath)FParsecCS.dll" />
+      <BuildOutputInPackage Include="$(MSBuildProjectDirectory)/$(OutputPath)FParsecCS.pdb" />
+      <BuildOutputInPackage Include="$(MSBuildProjectDirectory)/$(OutputPath)FParsecCS.xml" />
     </ItemGroup>
   </Target>
 
