@@ -15,8 +15,15 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <DefineConstants Condition="'$(Configuration)' == 'Debug-LowTrust'">$(DefineConstants);DEBUG</DefineConstants>
-    <DefineConstants Condition="'$(Configuration)' == 'Release-LowTrust'">$(DefineConstants);RELEASE</DefineConstants>
+    <DisableImplicitConfigurationDefines>true</DisableImplicitConfigurationDefines>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug' or '$(Configuration)' == 'Debug-LowTrust'">
+    <Optimize>false</Optimize>
+    <DefineConstants>$(DefineConstants);DEBUG</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release' or '$(Configuration)' == 'Release-LowTrust'">
+    <Optimize>true</Optimize>
+    <DefineConstants>$(DefineConstants);RELEASE</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup>
