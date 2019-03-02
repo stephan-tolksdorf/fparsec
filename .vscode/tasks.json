@@ -49,7 +49,7 @@
             "type": "shell",
             "group": "test",
             "presentation": {
-                "reveal": "silent"
+                "reveal": "always"
             },
             "problemMatcher": "$msCompile"
         },
@@ -59,7 +59,7 @@
             "type": "shell",
             "group": "test",
             "presentation": {
-                "reveal": "silent"
+                "reveal": "always"
             },
             "problemMatcher": "$msCompile"
         }
