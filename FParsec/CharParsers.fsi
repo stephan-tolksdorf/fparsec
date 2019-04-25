@@ -238,7 +238,7 @@ val spaces: Parser<unit,'u>
 /// or newline ("\n", "\r\n" or "\r")).
 val spaces1: Parser<unit,'u>
 
-/// Skips over any sequence of *one* or more unicode whitespaces and
+/// Skips over any sequence of *zero* or more unicode whitespaces and
 /// registers any unicode newline ("\n", "\r\n", "\r", "\u0085, "\u000C",
 /// "\u2028"or "\u2029") as a newline.
 val unicodeSpaces: Parser<unit,'u>
