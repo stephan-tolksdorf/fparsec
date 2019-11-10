@@ -13,3 +13,4 @@ obj/
 packages/
 version.props
 /.vs/
+.idea
