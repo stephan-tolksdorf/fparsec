@@ -229,20 +229,37 @@
        behaviour change of <code class="fsharp"><span class="ci">System</span><span class="cm">.</span><span class="ci">Double</span><span
        class="cm">.</span><span class="ci">Parse</span></code> on .NET Core 3</a>.
       </li>
-      <li class="_2">Enrico Sada modernized the F# and C# project files and the build script for the NuGet packages – thanks Enrico!</li>
-      <li class="_3">
-       Fixed a bug in the Low‐Trust version of the <code class="fsharp"><a href="../reference/charstream.html#CharStream"><span
-       class="ci">CharStream</span></a></code> constructors that accept a file path argument: The stream’s <code class="fsharp"><a
-       href="../reference/charstream.html#CharStream.members.Name"><span class="ci">Name</span></a></code> property wasn’t initialized. Maxime Didier
-       reported this bug and <a href="https://github.com/stephan-tolksdorf/fparsec/pull/20">provided a fix</a> – thanks Maxime!
+      <li class="_2">
+       Enrico Sada <a href="https://github.com/stephan-tolksdorf/fparsec/pull/38">modernized</a> the F# and C# project files and the build script for
+       the NuGet packages – thanks Enrico!
       </li>
+      <li class="_3">Added SourceLink support, which was prepared and championed by Cameron Taggart – thank Cameron!</li>
       <li class="_4">
+       Maxime Didier <a href="https://github.com/stephan-tolksdorf/fparsec/pull/20">fixed</a> a bug in the Low‐Trust version of the <code
+       class="fsharp"><a href="../reference/charstream.html#CharStream"><span class="ci">CharStream</span></a></code> constructors that accept a file
+       path argument: The stream’s <code class="fsharp"><a href="../reference/charstream.html#CharStream.members.Name"><span
+       class="ci">Name</span></a></code> property wasn’t initialized. Thanks Maxime!
+      </li>
+      <li class="_5">
        Fixed missing parser definitions in the <a href="../tutorial.html#parsing-json">Parsing JSON</a> section of the tutorial spotted by Josh
        Quintus – thanks Josh!
       </li>
-      <li class="_5">
-       <a href="https://github.com/stephan-tolksdorf/fparsec/pull/18">Fixed</a> a parser definition in the <a
-       href="../users-guide/where-is-the-monad.html">Where is the monad</a> section of the User’s Guide found by Andre Wesseling – thanks Andre!
+      <li class="_6">
+       Andre Wesseling <a href="https://github.com/stephan-tolksdorf/fparsec/pull/18">fixed</a> a parser definition in the <a
+       href="../users-guide/where-is-the-monad.html">Where is the monad</a> section of the User’s Guide – thanks Andre!
+      </li>
+      <li class="_7">
+       Frederik K. <a href="https://github.com/stephan-tolksdorf/fparsec/pull/28">fixed</a> an error in the <code class="fsharp"><a
+       href="../reference/errormessage.html#members.ErrorMessage"><span class="ci">ErrorMessage</span></a></code> documentation – thanks Frederik!
+      </li>
+      <li class="_8">
+       Jonathan Roeber <a href="https://github.com/stephan-tolksdorf/fparsec/pull/40">fixed</a> an error in the <code class="fsharp"><a
+       href="../reference/charparsers.html#members.previousCharSatisfiesNot"><span class="ci">previousCharSatisfiesNot</span></a></code> – thanks
+       Jonathan!
+      </li>
+      <li class="_9">
+       Vegard Løkken <a href="https://github.com/stephan-tolksdorf/fparsec/pull/42">fixed</a> an error in the <code class="fsharp"><a
+       href="../reference/charparsers.html#members.unicodeSpaces"><span class="ci">unicodeSpaces</span></a></code> documentation – thanks Vegard!
       </li>
      </ul>
     </div>

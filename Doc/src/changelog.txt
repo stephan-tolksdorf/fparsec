@@ -3,10 +3,15 @@
 
 [section#v1_1 Version 1.1.0, 2019-11-DD]
 - **Behaviour change**: `pfloat` now parses out-of-range finite values as plus or minus infinity instead of returning an error. This unifies the `pfloat` behaviour on all platforms after [url "https://docs.microsoft.com/en-us/dotnet/core/compatibility/2.2-3.0#floating-point-parsing-operations-no-longer-fail-or-throw-an-overflowexception" the behaviour change of `System.Double.Parse` on .NET Core 3].  
-- Enrico Sada modernized the F# and C# project files and the build script for the NuGet packages -- thanks Enrico!
-- Fixed a bug in the Low-Trust version of the `CharStream` constructors that accept a file path argument: The stream's `Name` property wasn't initialized. Maxime Didier reported this bug and [url "https://github.com/stephan-tolksdorf/fparsec/pull/20" provided a fix] -- thanks Maxime!
+- Enrico Sada [url "https://github.com/stephan-tolksdorf/fparsec/pull/38" modernized] the F# and C# project files and the build script for the NuGet packages -- thanks Enrico!
+- Added SourceLink support, which was prepared and championed by Cameron Taggart -- thank Cameron!
+- Maxime Didier [url "https://github.com/stephan-tolksdorf/fparsec/pull/20" fixed] a bug in the Low-Trust version of the `CharStream` constructors that accept a file path argument: The stream's `Name` property wasn't initialized. Thanks Maxime!
 - Fixed missing parser definitions in the @Parsing JSON@ section of the tutorial spotted by Josh Quintus -- thanks Josh!
-- [url "https://github.com/stephan-tolksdorf/fparsec/pull/18" Fixed] a parser definition in the @Where is the monad@ section of the User's Guide found by Andre Wesseling -- thanks Andre!
+- Andre Wesseling [url "https://github.com/stephan-tolksdorf/fparsec/pull/18" fixed] a parser definition in the @Where is the monad@ section of the User's Guide  -- thanks Andre!
+- Frederik K. [url "https://github.com/stephan-tolksdorf/fparsec/pull/28" fixed] an error in the `ErrorMessage` documentation  -- thanks Frederik!
+- Jonathan Roeber [url "https://github.com/stephan-tolksdorf/fparsec/pull/40" fixed] an error in the `previousCharSatisfiesNot` -- thanks Jonathan!
+- Vegard Løkken [url "https://github.com/stephan-tolksdorf/fparsec/pull/42" fixed] an error in the `unicodeSpaces` documentation -- thanks Vegard!
+
 [/section]
 
 [section#v1_0_3 Version 1.0.3, 2017-08-20]
