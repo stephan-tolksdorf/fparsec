@@ -1,18 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
+    <AssemblyName>Calculator</AssemblyName>
+    <RootNamespace>Calculator</RootNamespace>
     <TargetFrameworks>netcoreapp2.1;net45</TargetFrameworks>
     <TargetFrameworks Condition="'$(LowTrust)' == 'false'">net45</TargetFrameworks>
-    <OutputType>Exe</OutputType>
-    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Include="calculator.fs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Update="FSharp.Core" Version="4.3.4" />
-  </ItemGroup>
+  <Import Project="Calculator.targets" />
 
   <ItemGroup>
     <ProjectReference Include="..\..\FParsec\FParsec.fsproj" />

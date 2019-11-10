@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net45;netcoreapp2.1</TargetFrameworks>
+  </PropertyGroup>
+
+  <Import Project="Test.targets" />
+
+  <ItemGroup>
+    <PackageReference Update="FSharp.Core" Version="4.3.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FParsec\FParsec-LowTrust.fsproj" />
+    <ProjectReference Include="..\FParsecCS\FParsecCS-LowTrust.csproj" />
+  </ItemGroup>
+</Project>

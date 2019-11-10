@@ -5,7 +5,7 @@
     "tasks": [
         {
             "label": "Restore (Config: Debug-LowTrust)",
-            "command": "dotnet restore /p:Configuration=Debug-LowTrust",
+            "command": "dotnet restore FParsec.sln /p:Configuration=Debug-LowTrust",
             "type": "shell",
             "group": "build",
             "presentation": {
@@ -15,7 +15,7 @@
         },
         {
             "label": "Build .NET Core Test (Config: Debug-LowTrust)",
-            "command": "dotnet build Test -c Debug-LowTrust -f netcoreapp2.1",
+            "command": "dotnet build Test/Test.fsproj -c Debug-LowTrust -f netcoreapp2.1",
             "type": "shell",
             "group": "build",
             "presentation": {
@@ -25,7 +25,7 @@
         },
         {
             "label": "Build .NET 4.5 Test (Config: Debug-LowTrust)",
-            "command": "dotnet build Test -c Debug-LowTrust -f net45",
+            "command": "dotnet build Test/Test.fsproj -c Debug-LowTrust -f net45",
             "type": "shell",
             "group": "build",
             "presentation": {
@@ -35,7 +35,7 @@
         },
         {
             "label": "Build All (Config: Debug-LowTrust)",
-            "command": "dotnet build -c Debug-LowTrust",
+            "command": "dotnet build FParsec.sln -c Debug-LowTrust",
             "type": "shell",
             "group": "build",
             "presentation": {

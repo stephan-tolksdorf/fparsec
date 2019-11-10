@@ -1,0 +1,17 @@
+<Project>
+
+  <PropertyGroup>
+    <AssemblyName>FParsecCS</AssemblyName>
+    <RootNamespace>FParsec</RootNamespace>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>    
+    <NoWarn>1591</NoWarn>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <Import Project="..\Build\FParsec.Common.targets" />
+
+  <ItemGroup>
+    <PackageReference Include="FSharp.Core" Version="4.3.4" />
+  </ItemGroup>
+
+</Project>

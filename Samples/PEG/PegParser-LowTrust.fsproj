@@ -1,14 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>netcoreapp2.1;net45</TargetFrameworks>
-    <TargetFrameworks Condition="'$(LowTrust)' == 'false'">net45</TargetFrameworks>
   </PropertyGroup>
 
   <Import Project="PegParser.targets" />
 
   <ItemGroup>
-    <ProjectReference Include="..\..\FParsec\FParsec.fsproj" />
-    <ProjectReference Include="..\..\FParsecCS\FParsecCS.csproj" />
+    <ProjectReference Include="..\..\FParsec\FParsec-LowTrust.fsproj" />
+    <ProjectReference Include="..\..\FParsecCS\FParsecCS-LowTrust.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,23 @@
+<Project>
+
+  <PropertyGroup>
+    <AssemblyName>JsonParser</AssemblyName>
+    <RootNamespace>JsonParser</RootNamespace>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+    <StartArguments>$(MSBuildProjectDirectory)/test_json.txt</StartArguments>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="JsonParser.targets" />
+    <Compile Include="ast.fs" />
+    <Compile Include="parser.fs" />
+    <Compile Include="main.fs" />
+    <None Include="test_json.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="FSharp.Core" Version="4.3.4" />
+  </ItemGroup>
+
+</Project>
