@@ -1,4 +1,4 @@
-﻿// Copyright (c) Stephan Tolksdorf 2007-2015
+﻿// Copyright (c) Stephan Tolksdorf 2007-2019
 // License: Simplified BSD License. See accompanying documentation.
 
 [<AutoOpen>]
