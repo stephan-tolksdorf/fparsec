@@ -4,23 +4,23 @@ VisualStudioVersion = 16.0.28621.142
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FParsecCS", "FParsecCS\FParsecCS.csproj", "{8521556A-F853-4456-8D20-96C42F97E15A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FParsec", "FParsec\FParsec.fsproj", "{019F9A66-F105-43C7-841D-E4D312659B61}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FParsec", "FParsec\FParsec.fsproj", "{019F9A66-F105-43C7-841D-E4D312659B61}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{01D1CDB5-2645-4929-865F-79B755DBC5B8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Calculator", "Samples\Calculator\Calculator.fsproj", "{A9B15BCE-C37B-4BA6-BC72-6E8A438F205D}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Calculator", "Samples\Calculator\Calculator.fsproj", "{A9B15BCE-C37B-4BA6-BC72-6E8A438F205D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FSharpParsingSample", "FSharpParsingSample", "{20AE5602-B9B6-434D-A41D-CB988AC49E79}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InterpFParsec", "Samples\FSharpParsingSample\FParsecVersion\InterpFParsec.fsproj", "{B56A16AD-5BFE-4D99-932C-9073CAFF3D80}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "InterpFParsec", "Samples\FSharpParsingSample\FParsecVersion\InterpFParsec.fsproj", "{B56A16AD-5BFE-4D99-932C-9073CAFF3D80}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonParser", "Samples\JSON\JsonParser.fsproj", "{3889AFB4-60BC-46CB-9747-4BD2F413B351}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "JsonParser", "Samples\JSON\JsonParser.fsproj", "{3889AFB4-60BC-46CB-9747-4BD2F413B351}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PegParser", "Samples\PEG\PegParser.fsproj", "{2E8F33E4-77F0-4954-9486-239D7124EB86}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "PegParser", "Samples\PEG\PegParser.fsproj", "{2E8F33E4-77F0-4954-9486-239D7124EB86}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tutorial", "Samples\Tutorial\Tutorial.fsproj", "{CEDA985E-30D3-400E-9869-4A22D5F9ADA5}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Tutorial", "Samples\Tutorial\Tutorial.fsproj", "{CEDA985E-30D3-400E-9869-4A22D5F9ADA5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test", "Test\Test.fsproj", "{5AE7C1E6-A511-41A9-9A9F-E8A0944319A2}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Test", "Test\Test.fsproj", "{5AE7C1E6-A511-41A9-9A9F-E8A0944319A2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{1C2DDDBD-BF95-4F55-8651-6EAD5D984BD9}"
 	ProjectSection(SolutionItems) = preProject
