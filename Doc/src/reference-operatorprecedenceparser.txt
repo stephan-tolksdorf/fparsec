@@ -40,7 +40,7 @@ type Operator<'TTerm, 'TAfterString, 'TUserState> =
   member IsAssociative: bool
   member IsTernary: bool
 
-  member String: string
+  member @String@: string
   member TernaryRightString: string // null for non-ternary operators
 ``
 

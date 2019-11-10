@@ -201,12 +201,12 @@
 <span class="ck">type</span> <a id="interface.ErrorMessage..ExpectedString:B:" href="#members.ErrorMessage..ExpectedString"><span class="interface-member-marker"><span class="ci">ErrorMessage</span><span class="cm">.</span><span class="ci">ExpectedString</span></span></a> <span class="cp">=</span>
   <span class="ck">inherit</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a>
   <span class="ck">new</span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="#members.ErrorMessage..ExpectedString"><span class="ci">ErrorMessage</span><span class="cm">.</span><span class="ci">ExpectedString</span></a>
-  <span class="ck">member</span> <a href="operatorprecedenceparser.html#members.String"><span class="ci">String</span></a><span class="cp">:</span> <span class="ci">string</span>
+  <span class="ck">member</span> <span class="ci">String</span><span class="cp">:</span> <span class="ci">string</span>
 
 <span class="ck">type</span> <a id="interface.ErrorMessage..ExpectedCaseInsensitiveString:B:" href="#members.ErrorMessage..ExpectedCaseInsensitiveString"><span class="interface-member-marker"><span class="ci">ErrorMessage</span><span class="cm">.</span><span class="ci">ExpectedCaseInsensitiveString</span></span></a> <span class="cp">=</span>
   <span class="ck">inherit</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a>
   <span class="ck">new</span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="#members.ErrorMessage..ExpectedCaseInsensitiveString"><span class="ci">ErrorMessage</span><span class="cm">.</span><span class="ci">ExpectedCaseInsensitiveString</span></a>
-  <span class="ck">member</span> <a href="operatorprecedenceparser.html#members.String"><span class="ci">String</span></a><span class="cp">:</span> <span class="ci">string</span>
+  <span class="ck">member</span> <span class="ci">String</span><span class="cp">:</span> <span class="ci">string</span>
 
 <span class="ck">type</span> <a id="interface.ErrorMessage..Unexpected:B:" href="#members.ErrorMessage..Unexpected"><span class="interface-member-marker"><span class="ci">ErrorMessage</span><span class="cm">.</span><span class="ci">Unexpected</span></span></a> <span class="cp">=</span>
   <span class="ck">inherit</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a>
@@ -216,17 +216,17 @@
 <span class="ck">type</span> <a id="interface.ErrorMessage..UnexpectedString:B:" href="#members.ErrorMessage..UnexpectedString"><span class="interface-member-marker"><span class="ci">ErrorMessage</span><span class="cm">.</span><span class="ci">UnexpectedString</span></span></a> <span class="cp">=</span>
   <span class="ck">inherit</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a>
   <span class="ck">new</span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="#members.ErrorMessage..UnexpectedString"><span class="ci">ErrorMessage</span><span class="cm">.</span><span class="ci">UnexpectedString</span></a>
-  <span class="ck">member</span> <a href="operatorprecedenceparser.html#members.String"><span class="ci">String</span></a><span class="cp">:</span> <span class="ci">string</span>
+  <span class="ck">member</span> <span class="ci">String</span><span class="cp">:</span> <span class="ci">string</span>
 
 <span class="ck">type</span> <a id="interface.ErrorMessage..UnexpectedCaseInsensitiveString:B:" href="#members.ErrorMessage..UnexpectedCaseInsensitiveString"><span class="interface-member-marker"><span class="ci">ErrorMessage</span><span class="cm">.</span><span class="ci">UnexpectedCaseInsensitiveString</span></span></a> <span class="cp">=</span>
   <span class="ck">inherit</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a>
   <span class="ck">new</span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="#members.ErrorMessage..UnexpectedCaseInsensitiveString"><span class="ci">ErrorMessage</span><span class="cm">.</span><span class="ci">UnexpectedCaseInsensitiveString</span></a>
-  <span class="ck">member</span> <a href="operatorprecedenceparser.html#members.String"><span class="ci">String</span></a><span class="cp">:</span> <span class="ci">string</span>
+  <span class="ck">member</span> <span class="ci">String</span><span class="cp">:</span> <span class="ci">string</span>
 
 <span class="ck">type</span> <a id="interface.ErrorMessage..Message:B:" href="#members.ErrorMessage..Message"><span class="interface-member-marker"><span class="ci">ErrorMessage</span><span class="cm">.</span><span class="ci">Message</span></span></a> <span class="cp">=</span>
   <span class="ck">inherit</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a>
   <span class="ck">new</span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="#members.ErrorMessage..Message"><span class="ci">ErrorMessage</span><span class="cm">.</span><span class="ci">Message</span></a>
-  <span class="ck">member</span> <a href="operatorprecedenceparser.html#members.String"><span class="ci">String</span></a><span class="cp">:</span> <span class="ci">string</span>
+  <span class="ck">member</span> <span class="ci">String</span><span class="cp">:</span> <span class="ci">string</span>
 
 <span class="ck">type</span> <a id="interface.ErrorMessage..NestedError:B:" href="#members.ErrorMessage..NestedError"><span class="interface-member-marker"><span class="ci">ErrorMessage</span><span class="cm">.</span><span class="ci">NestedError</span></span></a> <span class="cp">=</span>
   <span class="ck">inherit</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a>
@@ -363,7 +363,7 @@
 <pre class="code fsharp"><span class="ck">type</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a><span class="cm">.</span><a href="error.html#interface.ExpectedString"><span class="ci">ExpectedString</span></a> <span class="cp">=</span>
   <span class="ck">inherit</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a>
   <span class="ck">new</span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a><span class="cm">.</span><a href="error.html#interface.ExpectedString"><span class="ci">ExpectedString</span></a>
-  <span class="ck">member</span> <a href="operatorprecedenceparser.html#members.String"><span class="ci">String</span></a><span class="cp">:</span> <span class="ci">string</span>
+  <span class="ck">member</span> <span class="ci">String</span><span class="cp">:</span> <span class="ci">string</span>
 </pre>
         </div>
         <div class="para _3">
@@ -390,7 +390,7 @@
 <pre class="code fsharp"><span class="ck">type</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a><span class="cm">.</span><span class="ci">ExpectedCaseInsensitiveString</span> <span class="cp">=</span>
   <span class="ck">inherit</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a>
   <span class="ck">new</span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a><span class="cm">.</span><span class="ci">ExpectedCaseInsensitiveString</span>
-  <span class="ck">member</span> <a href="operatorprecedenceparser.html#members.String"><span class="ci">String</span></a><span class="cp">:</span> <span class="ci">string</span>
+  <span class="ck">member</span> <span class="ci">CaseInsensitiveString</span><span class="cp">:</span> <span class="ci">string</span>
 </pre>
         </div>
         <div class="para _3">
@@ -447,7 +447,7 @@
 <pre class="code fsharp"><span class="ck">type</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a><span class="cm">.</span><a href="error.html#interface.UnexpectedString"><span class="ci">UnexpectedString</span></a> <span class="cp">=</span>
   <span class="ck">inherit</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a>
   <span class="ck">new</span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a><span class="cm">.</span><a href="error.html#interface.UnexpectedString"><span class="ci">UnexpectedString</span></a>
-  <span class="ck">member</span> <a href="operatorprecedenceparser.html#members.String"><span class="ci">String</span></a><span class="cp">:</span> <span class="ci">string</span>
+  <span class="ck">member</span> <span class="ci">String</span><span class="cp">:</span> <span class="ci">string</span>
 </pre>
         </div>
         <div class="para _3">
@@ -474,7 +474,7 @@
 <pre class="code fsharp"><span class="ck">type</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a><span class="cm">.</span><span class="ci">UnexpectedCaseInsensitiveString</span> <span class="cp">=</span>
   <span class="ck">inherit</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a>
   <span class="ck">new</span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a><span class="cm">.</span><span class="ci">UnexpectedCaseInsensitiveString</span>
-  <span class="ck">member</span> <a href="operatorprecedenceparser.html#members.String"><span class="ci">String</span></a><span class="cp">:</span> <span class="ci">string</span>
+  <span class="ck">member</span> <span class="ci">CaseInsensitiveString</span><span class="cp">:</span> <span class="ci">string</span>
 </pre>
         </div>
         <div class="para _3">
@@ -501,7 +501,7 @@
 <pre class="code fsharp"><span class="ck">type</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a><span class="cm">.</span><a href="error.html#interface.Message"><span class="ci">Message</span></a> <span class="cp">=</span>
   <span class="ck">inherit</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a>
   <span class="ck">new</span><span class="cp">:</span> <span class="ci">string</span> <span class="cr">-&gt;</span> <a href="#members.ErrorMessage"><span class="ci">ErrorMessage</span></a><span class="cm">.</span><a href="error.html#interface.Message"><span class="ci">Message</span></a>
-  <span class="ck">member</span> <a href="operatorprecedenceparser.html#members.String"><span class="ci">String</span></a><span class="cp">:</span> <span class="ci">string</span>
+  <span class="ck">member</span> <span class="ci">String</span><span class="cp">:</span> <span class="ci">string</span>
 </pre>
         </div>
         <div class="para _3">

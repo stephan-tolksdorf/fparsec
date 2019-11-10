@@ -1984,8 +1984,8 @@ An error formatter that prints the full operator names could look like the follo
 opp.OperatorConflictErrorFormatter <-
   fun (pos1, op1, afterString1) (pos2, op2, afterString2) ->
     let msg = sprintf "The operator '%s' conflicts with the previous operator '%s' at %A."
-                       (op2.String + afterString2)
-                       (op1.String + afterString1) pos1
+                       (op2.[@ String] + afterString2)
+                       (op1.[@ String] + afterString1) pos1
     messageError msg
 ``
 ``{fsi}

@@ -3715,7 +3715,7 @@ Expecting: end of input
              <p>
               Instructs the <code class="fsharp"><a href="#members.numberLiteral"><span class="ci">numberLiteral</span></a></code> parser to include
               any parsed suffix chars in the <code class="fsharp"><a href="#members.NumberLiteral"><span class="ci">NumberLiteral</span></a><span
-              class="cm">.</span><a href="operatorprecedenceparser.html#members.String"><span class="ci">String</span></a></code> member.
+              class="cm">.</span><span class="ci">String</span></code> member.
              </p>
             </div>
            </dd>
@@ -3733,18 +3733,18 @@ Expecting: end of input
         <div class="para _1">
          <p>
           The return type of the <code class="fsharp"><a href="#members.numberLiteral"><span class="ci">numberLiteral</span></a></code> parser. An
-          instance contains the parsed number literal and various bits of information about it. Note that the <code class="fsharp"><a
-          href="operatorprecedenceparser.html#members.String"><span class="ci">String</span></a></code> member contains the string literal
-          <em>without</em> the suffix chars, except if the <code class="fsharp"><a href="#members.NumberLiteralOptions"><span
-          class="ci">NumberLiteralOptions</span></a></code> passed to the <code class="fsharp"><a href="#members.numberLiteral"><span
-          class="ci">numberLiteral</span></a></code> parser have the <code class="fsharp"><span class="ci">IncludeSuffixCharsInString</span></code>
-          flag set. Any parsed suffix chars are always available through the <code class="fsharp"><a href="#members.SuffixChar1"><span
-          class="ci">SuffixChar1</span></a></code> ‐ <code class="fsharp"><span class="cn">4</span></code> members.
+          instance contains the parsed number literal and various bits of information about it. Note that the <code class="fsharp"><span
+          class="ci">String</span></code> member contains the string literal <em>without</em> the suffix chars, except if the <code class="fsharp"><a
+          href="#members.NumberLiteralOptions"><span class="ci">NumberLiteralOptions</span></a></code> passed to the <code class="fsharp"><a
+          href="#members.numberLiteral"><span class="ci">numberLiteral</span></a></code> parser have the <code class="fsharp"><span
+          class="ci">IncludeSuffixCharsInString</span></code> flag set. Any parsed suffix chars are always available through the <code
+          class="fsharp"><a href="#members.SuffixChar1"><span class="ci">SuffixChar1</span></a></code> ‐ <code class="fsharp"><span
+          class="cn">4</span></code> members.
          </p>
         </div>
         <div class="para _2 lcinp">
 <pre class="code fsharp"><span class="ck">type</span> <span class="ci">NumberLiteral</span> <span class="cp">=</span>
-    <span class="ck">member</span> <a href="operatorprecedenceparser.html#members.String"><span class="ci">String</span></a><span class="cp">:</span> <span class="ci">string</span>
+    <span class="ck">member</span> <span class="ci">String</span><span class="cp">:</span> <span class="ci">string</span>
 
     <span class="ck">member</span> <span class="a" id="members.SuffixLength"><span class="ci">SuffixLength</span></span><span class="cp">:</span> <span class="ci">int</span>
     <span class="ck">member</span> <span class="a" id="members.SuffixChar1"><span class="ci">SuffixChar1</span></span><span class="cp">:</span> <span class="ci">char</span> <span class="clc"><span class="cld">//</span> EOS if no suffix char was parsed</span>
@@ -3829,8 +3829,8 @@ Expecting: end of input
 <span class="ck">let</span> <span class="ci">pnumber</span> <span class="cp">:</span> <a href="primitives.html#members.Parser"><span class="ci">Parser</span></a><span class="cp">&lt;</span><span class="ci">Number</span><span class="cp">,</span> <span class="ci">unit</span><span class="cp">&gt;</span> <span class="cp">=</span>
     <span class="ci">numberLiteral</span> <span class="ci">numberFormat</span> <span class="cs"><span class="cld">"</span>number<span class="crd">"</span></span>
     <a href="primitives.html#members.:124::62::62:"><span class="co">|&gt;&gt;</span></a> <span class="ck">fun</span> <span class="ci">nl</span> <span class="cr">-&gt;</span>
-            <span class="ck">if</span> <span class="ci">nl</span><span class="cm">.</span><a href="#members.IsInteger"><span class="ci">IsInteger</span></a> <span class="ck">then</span> <span class="ci">Int</span> <span class="cp">(</span><span class="ci">int64</span> <span class="ci">nl</span><span class="cm">.</span><a href="operatorprecedenceparser.html#members.String"><span class="ci">String</span></a><span class="cp">)</span>
-            <span class="ck">else</span> <span class="ci">Float</span> <span class="cp">(</span><span class="ci">float</span> <span class="ci">nl</span><span class="cm">.</span><a href="operatorprecedenceparser.html#members.String"><span class="ci">String</span></a><span class="cp">)</span>
+            <span class="ck">if</span> <span class="ci">nl</span><span class="cm">.</span><a href="#members.IsInteger"><span class="ci">IsInteger</span></a> <span class="ck">then</span> <span class="ci">Int</span> <span class="cp">(</span><span class="ci">int64</span> <span class="ci">nl</span><span class="cm">.</span><span class="ci">String</span><span class="cp">)</span>
+            <span class="ck">else</span> <span class="ci">Float</span> <span class="cp">(</span><span class="ci">float</span> <span class="ci">nl</span><span class="cm">.</span><span class="ci">String</span><span class="cp">)</span>
 </pre>
         </div>
         <div class="para _4 lcinp">
@@ -3898,18 +3898,18 @@ stopped due to error
                 <span class="ck">try</span>
                     <span class="ck">let</span> <span class="ci">result</span> <span class="cp">=</span> <span class="ck">if</span> <span class="ci">nl</span><span class="cm">.</span><a href="#members.IsInteger"><span class="ci">IsInteger</span></a> <span class="ck">then</span>
                                      <span class="ck">if</span> <span class="ci">nl</span><span class="cm">.</span><a href="#members.SuffixLength"><span class="ci">SuffixLength</span></a> <span class="co">=</span> <span class="cn">0</span> <span class="ck">then</span>
-                                         <span class="ci">Int32</span> <span class="cp">(</span><span class="ci">int32</span> <span class="ci">nl</span><span class="cm">.</span><a href="operatorprecedenceparser.html#members.String"><span class="ci">String</span></a><span class="cp">)</span>
+                                         <span class="ci">Int32</span> <span class="cp">(</span><span class="ci">int32</span> <span class="ci">nl</span><span class="cm">.</span><span class="ci">String</span><span class="cp">)</span>
                                      <span class="ck">else</span>
-                                         <span class="ci">Int64</span> <span class="cp">(</span><span class="ci">int64</span> <span class="ci">nl</span><span class="cm">.</span><a href="operatorprecedenceparser.html#members.String"><span class="ci">String</span></a><span class="cp">)</span>
+                                         <span class="ci">Int64</span> <span class="cp">(</span><span class="ci">int64</span> <span class="ci">nl</span><span class="cm">.</span><span class="ci">String</span><span class="cp">)</span>
                                  <span class="ck">else</span>
                                      <span class="ck">if</span> <span class="ci">nl</span><span class="cm">.</span><a href="#members.IsHexadecimal"><span class="ci">IsHexadecimal</span></a> <span class="ck">then</span>
-                                         <span class="ci">Float</span> <span class="cp">(</span><a href="#members.floatOfHexString"><span class="ci">floatOfHexString</span></a> <span class="ci">nl</span><span class="cm">.</span><a href="operatorprecedenceparser.html#members.String"><span class="ci">String</span></a><span class="cp">)</span>
+                                         <span class="ci">Float</span> <span class="cp">(</span><a href="#members.floatOfHexString"><span class="ci">floatOfHexString</span></a> <span class="ci">nl</span><span class="cm">.</span><span class="ci">String</span><span class="cp">)</span>
                                      <span class="ck">else</span>
-                                         <span class="ci">Float</span> <span class="cp">(</span><span class="ci">float</span> <span class="ci">nl</span><span class="cm">.</span><a href="operatorprecedenceparser.html#members.String"><span class="ci">String</span></a><span class="cp">)</span>
+                                         <span class="ci">Float</span> <span class="cp">(</span><span class="ci">float</span> <span class="ci">nl</span><span class="cm">.</span><span class="ci">String</span><span class="cp">)</span>
                     <a href="reply.html"><span class="ci">Reply</span></a><span class="cp">(</span><span class="ci">result</span><span class="cp">)</span>
                 <span class="ck">with</span>
                 <span class="cp">|</span> <span class="cp">:?</span> <span class="ci">System</span><span class="cm">.</span><span class="ci">OverflowException</span> <span class="ck">as</span> <span class="ci">e</span> <span class="cr">-&gt;</span>
-                    <span class="ci">stream</span><span class="cm">.</span><a href="charstream.html#CharStream.members.Skip"><span class="ci">Skip</span></a><span class="cp">(</span><span class="co">-</span><span class="ci">nl</span><span class="cm">.</span><a href="operatorprecedenceparser.html#members.String"><span class="ci">String</span></a><span class="cm">.</span><span class="ci">Length</span><span class="cp">)</span>
+                    <span class="ci">stream</span><span class="cm">.</span><a href="charstream.html#CharStream.members.Skip"><span class="ci">Skip</span></a><span class="cp">(</span><span class="co">-</span><span class="ci">nl</span><span class="cm">.</span><span class="ci">String</span><span class="cm">.</span><span class="ci">Length</span><span class="cp">)</span>
                     <a href="reply.html"><span class="ci">Reply</span></a><span class="cp">(</span><a href="primitives.html#members.FatalError"><span class="ci">FatalError</span></a><span class="cp">,</span> <a href="error.html#members.messageError"><span class="ci">messageError</span></a> <span class="ci">e</span><span class="cm">.</span><a href="error.html#interface.Message"><span class="ci">Message</span></a><span class="cp">)</span>
             <span class="ck">else</span>
                 <span class="ci">stream</span><span class="cm">.</span><a href="charstream.html#CharStream.members.Skip"><span class="ci">Skip</span></a><span class="cp">(</span><span class="co">-</span><span class="ci">nl</span><span class="cm">.</span><a href="#members.SuffixLength"><span class="ci">SuffixLength</span></a><span class="cp">)</span>
@@ -4506,17 +4506,16 @@ Value was either too large or too small for a Double.
        <div class="interface-member-description">
         <div class="para _1">
          <p>
-          <code class="fsharp"><a href="#members.previousCharSatisfiesNot"><span class="ci">previousCharSatisfiesNot</span></a> <span
-          class="ci">f</span></code> succeeds if the predicate function <code class="fsharp"><span class="ci">f</span></code> returns <code
-          class="fsharp"><span class="cb">false</span></code> when applied to the previous char in the stream, otherwise it fails. If there is no
-          previous char (because the stream is at the beginning),If this parser fails, it returns no descriptive error message; hence it should only
-          be used this parser succeeds (as opposed to <code class="fsharp"><a href="#members.previousCharSatisfies"><span
-          class="ci">previousCharSatisfies</span></a></code>). This parser never changes the parser state. Any newline (<code class="fsharp"><span
-          class="cs"><span class="cld">"</span><span class="ce">\n</span><span class="crd">"</span></span></code>, <code class="fsharp"><span
-          class="cs"><span class="cld">"</span><span class="ce">\r</span><span class="ce">\n</span><span class="crd">"</span></span></code> or <code
-          class="fsharp"><span class="cs"><span class="cld">"</span><span class="ce">\r</span><span class="crd">"</span></span></code>) in the input
-          is interpreted as a single char <code class="fsharp"><span class="cc"><span class="cld">'</span><span class="ce">\n</span><span
-          class="crd">'</span></span></code>.
+          <code class="fsharp"><span class="ci">previousCharSatisfiesNot</span> <span class="ci">f</span></code> succeeds if the predicate function
+          <code class="fsharp"><span class="ci">f</span></code> returns <code class="fsharp"><span class="cb">false</span></code> when applied to the
+          previous char in the stream, otherwise it fails. If there is no previous char (because the stream is at the beginning),If this parser fails,
+          it returns no descriptive error message; hence it should only be used this parser succeeds (as opposed to <code class="fsharp"><a
+          href="#members.previousCharSatisfies"><span class="ci">previousCharSatisfies</span></a></code>). This parser never changes the parser state.
+          Any newline (<code class="fsharp"><span class="cs"><span class="cld">"</span><span class="ce">\n</span><span
+          class="crd">"</span></span></code>, <code class="fsharp"><span class="cs"><span class="cld">"</span><span class="ce">\r</span><span
+          class="ce">\n</span><span class="crd">"</span></span></code> or <code class="fsharp"><span class="cs"><span class="cld">"</span><span
+          class="ce">\r</span><span class="crd">"</span></span></code>) in the input is interpreted as a single char <code class="fsharp"><span
+          class="cc"><span class="cld">'</span><span class="ce">\n</span><span class="crd">'</span></span></code>.
          </p>
         </div>
         <div class="para _2 lcinp">
