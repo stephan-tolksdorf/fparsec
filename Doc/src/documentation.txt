@@ -1,7 +1,7 @@
 ﻿[section FParsec Documentation]
 
 [html-template "template.html"]
-[(* [html-template "template-web.html"] [link-to-dir-for-index] *)]
+[(* [link-to-dir-for-index] *)]
 
 [default-code-language "f#"]
 [split-section]

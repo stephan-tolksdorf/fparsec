@@ -2,7 +2,7 @@
 
 FParsec is distributed in source code form and as NuGet packages.
 
-If you're new to FParsec, I'd recommend to start by downloading the [url "https://github.com/stephan-tolksdorf/fparsec/archive/master.zip" source code package] and experimenting a bit with the included sample projects. With the Visual Studio project and solution files (e.g. in the [=Build/VS11] subfolder) building the library and the samples is as easy as clicking a button.
+If you're new to FParsec, I'd recommend to start by downloading the [url "https://github.com/stephan-tolksdorf/fparsec/archive/master.zip" source code package] and experimenting a bit with the included sample projects. With the project and solution files building the library and the samples is as easy as clicking a button.
 
 The source package also includes a complete copy of the HTML documentation for offline viewing.
 
@@ -12,7 +12,7 @@ The source package also includes a complete copy of the HTML documentation for o
 
 There are two NuGet packages of FParsec, which are built with different configuration options.
 
-The [url "https://nuget.org/packages/FParsec" basic package] uses the @Low-Trust version@ of FParsec, which uses no [url "https://msdn.microsoft.com/en-us/library/t2yzs44b.aspx" unverifiable code] and is optimized for maximum portability. The main limitation of this version is that any input stream is completely read into a string before parsing, which limits the maximum practical input size. This package also contains assemblies for .NET Standard 1.6.
+The [url "https://nuget.org/packages/FParsec" basic package] uses the @Low-Trust version@ of FParsec, which uses no [url "https://msdn.microsoft.com/en-us/library/t2yzs44b.aspx" unverifiable code] and is optimized for maximum portability. The main limitation of this version is that any input stream is completely read into a string before parsing, which limits the maximum practical input size. This package also contains assemblies for .NET Standard 2.0.
 
 The [url "https://nuget.org/packages/FParsec-Big-Data-Edition/" "Big Data edition" package] uses the non-Low-Trust version of FParsec that is optimized for maximum performance and supports extremely large input streams. Since this configuration is also the default configuration of the solution files included with the source code, it is sometimes referred to as the "normal" version of FParsec. This version of FParsec does use "unsafe" (i.e. unverifiable) code involving unmanaged pointers. It also uses code generation in the implementation of `isAnyOf`, `isNoneOf`, `anyOf`, `skipAnyOf`, `noneOf` and `skipNoneOf`. [* Unfortunately, this version is currently not compatible with .NET Standard/.NET Core.]
 
@@ -20,7 +20,7 @@ Should you measure a significant performance /degradation/ when switching to the
 
 The .NET Framework assemblies in the NuGet packages are strongly signed. Their assembly version numbers will only be incremented for breaking changes. The .NET Standard assembly in the `FParsec` package is not signed.
 
-For every published FParsec NuGet package a corresponding [url "https://docs.nuget.org/docs/creating-packages/creating-and-publishing-a-symbol-package" symbol package] with PDBs and source files is uploaded to [url "http://www.symbolsource.org/" SymbolSource.org]. So, if you enable source server support in the Visual Studio debugging options and add https://nuget.smbsrc.net as a symbol source, you can step into the FParsec code in the debugger.
+The NuGet packages include PDBs and SourceLink support, which should allow you to step through FParsec code in the debugger of your IDE.
 
 [/section]
 
@@ -33,7 +33,7 @@ You can clone the source code using Git or you can [url "https://github.com/step
 It's an FParsec project policy to check only stable and tested code into the master branch of the GitHub repository, so you can normally just work with the master version of FParsec.
 
 [tip
-[url "https://www.sourcetreeapp.com/" SourceTree] is a great free GUI for Git for Windows and MacOS.
+[url "https://git-fork.com/" Fork] is a great free GUI for Git for Windows and MacOS.
 ]
 
 [/section]
@@ -57,9 +57,11 @@ Unfortunately, the same option cannot be used to merge =FParsecCS.dll= into the 
 
 [section Building FParsec from source]
 
-The .NET Core solution file [= FParsec.sln] in the root source folder and the associated project files in the subfolders can be used to build FParsec from the command line. To build the Low-Trust version of FParsec, you have to specifiy either `Debug-LowTrust` or `Release-LowTrust` as the configuration. The `Debug` and `Release` configurations build the non-Low-Trust version of FParsec, which currently is not compatible with the .NET Core runtime. 
+The solution file [= FParsec.sln] in the root source folder and the associated project files in the subfolders can be used to build FParsec from the command line or with IDEs such as Visual Studio 2019 or JetBrains Rider. 
 
-The solution file in the root source folder does not yet properly work within the Visual Studio 2017 IDE (due to incomplete support for F# in VS). However, the folder [= Build/VS11] contains a solution file that works with Visual Studio 2012 and later. When you build FParsec with this solution file, the compiled assemblies will be put into the [= Build/VS11/bin/{Configuration}] subfolder.
+To build the Low-Trust version of FParsec, you have to specifiy either `Debug-LowTrust` or `Release-LowTrust` as the configuration. The `Debug` and `Release` configurations build the non-Low-Trust version of FParsec, which currently is not compatible with the .NET Core runtime. 
+
+[note In contrast to JetBrains Rider, Visual Studio 2019 currently does not support setting the supported target frameworks depending on the configuration. Due to this issue one currently has to use the separate `FParsec-LowTrust.sln` solution for building the Low-Trust version of FParsec in VS 2019.]
 
 The =Test= project in the solution files contains the unit tests for FParsec.
 

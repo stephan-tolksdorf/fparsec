@@ -1,5 +1,3 @@
-<sup><i>This repository was recently moved from [BitBucket](https://bitbucket.org/fparsec/main/overview).</i></sup>
-
 # FParsec
 
 FParsec is a [parser combinator](https://en.wikipedia.org/wiki/Parser_combinator) library for [F#](http://fsharp.org/).

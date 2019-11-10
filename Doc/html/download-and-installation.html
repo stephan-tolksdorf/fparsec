@@ -126,8 +126,7 @@
     <p>
      If you’re new to FParsec, I’d recommend to start by downloading the <a
      href="https://github.com/stephan-tolksdorf/fparsec/archive/master.zip">source code package</a> and experimenting a bit with the included sample
-     projects. With the Visual Studio project and solution files (e.g. in the <span class="tt">Build/VS11</span> subfolder) building the library and
-     the samples is as easy as clicking a button.
+     projects. With the project and solution files building the library and the samples is as easy as clicking a button.
     </p>
    </div>
    <div class="para _3">
@@ -178,7 +177,7 @@
       The <a href="https://nuget.org/packages/FParsec">basic package</a> uses the <a href="#low-trust-version">Low‐Trust version</a> of FParsec, which
       uses no <a href="https://msdn.microsoft.com/en-us/library/t2yzs44b.aspx">unverifiable code</a> and is optimized for maximum portability. The
       main limitation of this version is that any input stream is completely read into a string before parsing, which limits the maximum practical
-      input size. This package also contains assemblies for .NET Standard 1.6.
+      input size. This package also contains assemblies for .NET Standard 2.0.
      </p>
     </div>
     <div class="para _3">
@@ -213,12 +212,7 @@
      </p>
     </div>
     <div class="para _6">
-     <p>
-      For every published FParsec NuGet package a corresponding <a
-      href="https://docs.nuget.org/docs/creating-packages/creating-and-publishing-a-symbol-package">symbol package</a> with PDBs and source files is
-      uploaded to <a href="http://www.symbolsource.org/">SymbolSource.org</a>. So, if you enable source server support in the Visual Studio debugging
-      options and add https://nuget.smbsrc.net as a symbol source, you can step into the FParsec code in the debugger.
-     </p>
+     <p>The NuGet packages include PDBs and SourceLink support, which should allow you to step through FParsec code in the debugger of your IDE.</p>
     </div>
    </div>
   </div>
@@ -248,7 +242,7 @@
       <div class="admonition-title">Tip</div>
       <div class="admonition-body">
        <div class="para _1">
-        <p><a href="https://www.sourcetreeapp.com/">SourceTree</a> is a great free GUI for Git for Windows and MacOS.</p>
+        <p><a href="https://git-fork.com/">Fork</a> is a great free GUI for Git for Windows and MacOS.</p>
        </div>
       </div>
      </div>
@@ -311,32 +305,44 @@
    <div class="intro i2">
     <div class="para _1">
      <p>
-      The .NET Core solution file <span class="tt">FParsec.sln</span> in the root source folder and the associated project files in the subfolders can
-      be used to build FParsec from the command line. To build the Low‐Trust version of FParsec, you have to specifiy either <code
-      class="fsharp"><span class="ci">Debug</span><span class="co">-</span><span class="ci">LowTrust</span></code> or <code class="fsharp"><span
-      class="ci">Release</span><span class="co">-</span><span class="ci">LowTrust</span></code> as the configuration. The <code class="fsharp"><span
-      class="ci">Debug</span></code> and <code class="fsharp"><span class="ci">Release</span></code> configurations build the non‐Low‐Trust version of
-      FParsec, which currently is not compatible with the .NET Core runtime.
+      The solution file <span class="tt">FParsec.sln</span> in the root source folder and the associated project files in the subfolders can be used
+      to build FParsec from the command line or with IDEs such as Visual Studio 2019 or JetBrains Rider.
      </p>
     </div>
     <div class="para _2">
      <p>
-      The solution file in the root source folder does not yet properly work within the Visual Studio 2017 IDE (due to incomplete support for F# in
-      VS). However, the folder <span class="tt">Build/VS11</span> contains a solution file that works with Visual Studio 2012 and later. When you
-      build FParsec with this solution file, the compiled assemblies will be put into the <span class="tt">Build/VS11/bin/{Configuration}</span>
-      subfolder.
+      To build the Low‐Trust version of FParsec, you have to specifiy either <code class="fsharp"><span class="ci">Debug</span><span
+      class="co">-</span><span class="ci">LowTrust</span></code> or <code class="fsharp"><span class="ci">Release</span><span class="co">-</span><span
+      class="ci">LowTrust</span></code> as the configuration. The <code class="fsharp"><span class="ci">Debug</span></code> and <code
+      class="fsharp"><span class="ci">Release</span></code> configurations build the non‐Low‐Trust version of FParsec, which currently is not
+      compatible with the .NET Core runtime.
      </p>
     </div>
-    <div class="para _3">
-     <p>The <span class="tt">Test</span> project in the solution files contains the unit tests for FParsec.</p>
+    <div class="para _3 lcinp">
+     <div class="admonition">
+      <div class="admonition-title">Note</div>
+      <div class="admonition-body">
+       <div class="para _1">
+        <p>
+         In contrast to JetBrains Rider, Visual Studio 2019 currently does not support setting the supported target frameworks depending on the
+         configuration. Due to this issue one currently has to use the separate <code class="fsharp"><span class="ci">FParsec</span><span
+         class="co">-</span><span class="ci">LowTrust</span><span class="cm">.</span><span class="ci">sln</span></code> solution for building the
+         Low‐Trust version of FParsec in VS 2019.
+        </p>
+       </div>
+      </div>
+     </div>
     </div>
     <div class="para _4">
+     <p>The <span class="tt">Test</span> project in the solution files contains the unit tests for FParsec.</p>
+    </div>
+    <div class="para _5">
      <p>
       The file <a href="https://github.com/stephan-tolksdorf/fparsec/blob/master/.vscode/tasks.json"><span class="tt">.vscode/tasks.json</span></a>
       contains some convenient task definitions for Visual Studio Code.
      </p>
     </div>
-    <div class="para _5">
+    <div class="para _6">
      <p>
       The NuGet packages are built with the <a href="https://github.com/stephan-tolksdorf/fparsec/blob/master/pack.ps1"><span
       class="tt">pack.ps1</span></a> PowerShell script.
