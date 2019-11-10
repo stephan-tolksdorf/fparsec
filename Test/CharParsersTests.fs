@@ -799,11 +799,15 @@ let testNumberParsers() =
         pfloat |> ROk "+123e2|" 123e2
         pfloat |> ROk "+0x123p2|" (floatOfHexString "0x123p2")
         pfloat |> ROk "-123.456e123|" -123.456e123
-        pfloat |> RFatalError "1e99999|" 0 Errors.NumberOutsideOfDoubleRange
-        pfloat |> RFatalError "0x1p99999|" 0 Errors.NumberOutsideOfDoubleRange
+
+        pfloat |> ROk "1e99999|" System.Double.PositiveInfinity
+        pfloat |> ROk "0x1p99999|" System.Double.PositiveInfinity
+        pfloat |> ROk "-1e99999|" System.Double.NegativeInfinity
+        pfloat |> ROk "-0x1p99999|" System.Double.NegativeInfinity
+
         pfloat |> ROk "-0x123cde.123afAcEp123|" (floatOfHexString "-0x123cde.123afAcEp123")
         pfloat |> ROk "-0x1.fffffffffffffp1023|"  -System.Double.MaxValue
-        pfloat |> RFatalError "0x1.fffffffffffffp1024|" 0 Errors.NumberOutsideOfDoubleRange
+        pfloat |> ROk "-0x1.fffffffffffffp1024|" System.Double.NegativeInfinity
         pfloat |> ROk "Inf|" System.Double.PositiveInfinity
         pfloat |> ROk "-Infinity|" System.Double.NegativeInfinity
         pfloat >>% 1 |> ROk  "NaN|" 1

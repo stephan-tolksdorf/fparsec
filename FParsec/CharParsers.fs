@@ -1194,12 +1194,12 @@ let pfloat : Parser<float,'u> =
                         else
                             System.Double.NaN
                 Reply(d)
-            with e ->
-                let error = if   (e :? System.OverflowException) then Errors.NumberOutsideOfDoubleRange
-                            elif (e :? System.FormatException) then messageError "The floating-point number has an invalid format (this error is unexpected, please report this error message to fparsec@quanttec.com)."
-                            else reraise()
+            with 
+            | :? System.OverflowException ->
+                Reply(if nl.HasMinusSign then System.Double.NegativeInfinity else System.Double.PositiveInfinity)
+            | :? System.FormatException ->
                 stream.Skip(-nl.String.Length)
-                Reply(FatalError, error)
+                Reply(FatalError, messageError "The floating-point number has an invalid format (this error is unexpected, please report this error message to fparsec@quanttec.com).")
         else
             Reply(reply.Status, reply.Error)
 

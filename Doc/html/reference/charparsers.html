@@ -4008,17 +4008,27 @@ Value was either too large or too small for a Double.
            parsed,
           </li>
           <li class="_2">
-           after consuming input, if no digit comes after an exponent marker or no hex digit comes after <code class="other">0x</code>,
-          </li>
-          <li class="_3">
-           after consuming input, if the value represented by the input string (after rounding) is greater than <code class="fsharp"><span
-           class="ci">System</span><span class="cm">.</span><span class="ci">Double</span><span class="cm">.</span><span
-           class="ci">MaxValue</span></code> or less than <code class="fsharp"><span class="ci">System</span><span class="cm">.</span><span
-           class="ci">Double</span><span class="cm">.</span><span class="ci">MinValue</span></code>.
+           after consuming input, if no digit comes after an exponent marker or no hex digit comes after <code class="other">0x</code>.
           </li>
          </ul>
         </div>
         <div class="para _5 lcinp">
+         <div class="admonition">
+          <div class="admonition-title">Note</div>
+          <div class="admonition-body">
+           <div class="para _1">
+            <p>
+             Values that can’t be represented as a finite <code class="fsharp"><span class="ci">float</span></code> after rounding are parsed as plus
+             or minus infinity. This behaviour changed between FParsec versions 1.0.3 and 1.0.10, following the <a
+             href="https://docs.microsoft.com/en-us/dotnet/core/compatibility/2.2-3.0#floating-point-parsing-operations-no-longer-fail-or-throw-an-overflowexception">respective
+             behaviour change of <code class="fsharp"><span class="ci">System</span><span class="cm">.</span><span class="ci">Double</span><span
+             class="cm">.</span><span class="ci">Parse</span></code> on .NET Core 3</a>.
+            </p>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div class="para _6 lcinp">
          <div class="admonition">
           <div class="admonition-title">Note</div>
           <div class="admonition-body">

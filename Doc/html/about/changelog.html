@@ -64,7 +64,7 @@
                 <tbody class="nav-before-open n4">
                  <tr class="nav-entry n4 _1">
                   <td class="nav-number n4"></td>
-                  <td class="nav-title n4"><a href="#v1_0_4">Version 1.0.4, 2017‒12‐DD</a></td>
+                  <td class="nav-title n4"><a href="#v1_1">Version 1.1.0, 2019‒11‐DD</a></td>
                  </tr>
                  <tr class="nav-entry n4 _2">
                   <td class="nav-number n4"></td>
@@ -215,22 +215,31 @@
  </div>
  <div class="section s2">
   <h1 class="title h2"><span>Changelog</span></h1>
-  <div id="v1_0_4" class="section s3">
-   <h2 class="title h3"><span>Version 1.0.4, 2017‒12‐DD</span></h2>
+  <div id="v1_1" class="section s3">
+   <h2 class="title h3"><span>Version 1.1.0, 2019‒11‐DD</span></h2>
    <div class="intro i3">
     <div class="para _1 lcinp">
      <ul class="l1">
       <li class="_1">
+       <strong>Behaviour change</strong>: <code class="fsharp"><a href="../reference/charparsers.html#members.pfloat"><span
+       class="ci">pfloat</span></a></code> now parses out‐of‐range finite values as plus or minus infinity instead of returning an error. This unifies
+       the <code class="fsharp"><a href="../reference/charparsers.html#members.pfloat"><span class="ci">pfloat</span></a></code> behaviour on all
+       platforms after <a
+       href="https://docs.microsoft.com/en-us/dotnet/core/compatibility/2.2-3.0#floating-point-parsing-operations-no-longer-fail-or-throw-an-overflowexception">the
+       behaviour change of <code class="fsharp"><span class="ci">System</span><span class="cm">.</span><span class="ci">Double</span><span
+       class="cm">.</span><span class="ci">Parse</span></code> on .NET Core 3</a>.
+      </li>
+      <li class="_2">
        Fixed a bug in the Low‐Trust version of the <code class="fsharp"><a href="../reference/charstream.html#CharStream"><span
        class="ci">CharStream</span></a></code> constructors that accept a file path argument: The stream’s <code class="fsharp"><a
        href="../reference/charstream.html#CharStream.members.Name"><span class="ci">Name</span></a></code> property wasn’t initialized. Maxime Didier
        reported this bug and <a href="https://github.com/stephan-tolksdorf/fparsec/pull/20">provided a fix</a> – thanks Maxime!
       </li>
-      <li class="_2">
+      <li class="_3">
        Fixed missing parser definitions in the <a href="../tutorial.html#parsing-json">Parsing JSON</a> section of the tutorial spotted by Josh
        Quintus – thanks Josh!
       </li>
-      <li class="_3">
+      <li class="_4">
        <a href="https://github.com/stephan-tolksdorf/fparsec/pull/18">Fixed</a> a parser definition in the <a
        href="../users-guide/where-is-the-monad.html">Where is the monad</a> section of the User’s Guide found by Andre Wesseling – thanks Andre!
       </li>

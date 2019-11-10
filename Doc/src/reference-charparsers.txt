@@ -1527,8 +1527,9 @@ Fractions without a leading digit, as for example ".5", are *not* supported.
 
 The parser fails
 - without consuming input, if not at least one digit (including the `{regex}0` in `{regex}0x`) can be parsed,
-- after consuming input, if no digit comes after an exponent marker or no hex digit comes after `{regex}0x`,
-- after consuming input, if the value represented by the input string (after rounding) is greater than `System.Double.MaxValue` or less than `System.Double.MinValue`.
+- after consuming input, if no digit comes after an exponent marker or no hex digit comes after `{regex}0x`.
+
+[note Values that can't be represented as a finite `float` after rounding are parsed as plus or minus infinity. This behaviour changed between FParsec versions 1.0.3 and 1.0.10, following the [url "https://docs.microsoft.com/en-us/dotnet/core/compatibility/2.2-3.0#floating-point-parsing-operations-no-longer-fail-or-throw-an-overflowexception" respective behaviour change of `System.Double.Parse` on .NET Core 3]. ]
 
 [note The `pfloat` parser is based on the configurable `numberLiteral` parser. If you'd like to support a  different floating-point format, there's a good chance you can implement a parser for that format by some simple changes to a copy of the `pfloat` source.]
 
