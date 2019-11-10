@@ -1,6 +1,6 @@
 # This PowerShell script builds the FParsec NuGet packages. 
 #
-# Run this script from the VS2017 Command Prompt, e.g. with 
+# Run this script from the VS2019 Command Prompt, e.g. with 
 # powershell -ExecutionPolicy ByPass -File pack.ps1 -versionSuffix "" > pack.out.txt
 
 Param(
@@ -12,7 +12,7 @@ $ErrorActionPreference = 'Stop'
 $configs = $('Release-LowTrust', 'Release')
 
 $testTargetFrameworks = @{'Release'          = $('net45')
-                          'Release-LowTrust' = $('netcoreapp2.1', 'net45')}
+                          'Release-LowTrust' = $('netcoreapp3.0', 'net45')}
 
 function invoke([string] $cmd) {
     echo ''

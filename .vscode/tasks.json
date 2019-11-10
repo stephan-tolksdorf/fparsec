@@ -15,7 +15,7 @@
         },
         {
             "label": "Build .NET Core Test (Config: Debug-LowTrust)",
-            "command": "dotnet build Test/Test.fsproj -c Debug-LowTrust -f netcoreapp2.1",
+            "command": "dotnet build Test/Test.fsproj -c Debug-LowTrust -f netcoreapp3.0",
             "type": "shell",
             "group": "build",
             "presentation": {
@@ -45,7 +45,7 @@
         },
         {
             "label": "Test .NET Core (Config: Debug-LowTrust)",
-            "command": "dotnet Test/bin/Debug-LowTrust/netcoreapp2.1/Test.dll",
+            "command": "dotnet Test/bin/Debug-LowTrust/netcoreapp3.0/Test.dll",
             "type": "shell",
             "group": "test",
             "presentation": {

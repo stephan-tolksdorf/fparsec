@@ -3,7 +3,7 @@
   <PropertyGroup>
     <AssemblyName>Calculator</AssemblyName>
     <RootNamespace>Calculator</RootNamespace>
-    <TargetFrameworks>netcoreapp2.1;net45</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.0;net45</TargetFrameworks>
     <TargetFrameworks Condition="'$(LowTrust)' == 'false'">net45</TargetFrameworks>
   </PropertyGroup>
 

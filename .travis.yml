@@ -1,7 +1,7 @@
 language: csharp
 
 mono: 5.18.0
-dotnet: 2.1.500
+dotnet: 3.0.100
 
 install:
   # workaround for missing .net 4.5 targing pack
@@ -20,7 +20,7 @@ env:
   - CONFIGURATION=Release-LowTrust
     TFM=net45
   - CONFIGURATION=Release-LowTrust
-    TFM=netcoreapp2.1
+    TFM=netcoreapp3.0
     RUN_TESTS=1
 
 matrix:
