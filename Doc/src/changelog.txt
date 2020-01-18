@@ -1,6 +1,10 @@
 ﻿[section Changelog]
 [no-subsection-numbers]
 
+[section#v1_1_1 Version 1.1.1, 2020-01-18]
+- Fixed NuGet build to target the AnyCPU platform instead of the default platform of the build machine. 
+[/section]
+
 [section#v1_1 Version 1.1.0, 2020-01-05]
 - **Behaviour change**: `pfloat` now parses out-of-range finite values as plus or minus infinity instead of returning an error. This unifies the `pfloat` behaviour on all platforms after [url "https://docs.microsoft.com/en-us/dotnet/core/compatibility/2.2-3.0#floating-point-parsing-operations-no-longer-fail-or-throw-an-overflowexception" the behaviour change of `System.Double.Parse` on .NET Core 3].  
 - Enrico Sada [url "https://github.com/stephan-tolksdorf/fparsec/pull/38" modernized] the F# and C# project files and the build script for the NuGet packages -- thanks Enrico!

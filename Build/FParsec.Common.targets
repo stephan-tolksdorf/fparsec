@@ -1,5 +1,9 @@
 <Project>
 
+  <PropertyGroup Condition="'$(PlatformTarget)' == ''">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(LowTrust)' == 'true'">
     <DefineConstants>$(DefineConstants);SMALL_STATETAG</DefineConstants>
   </PropertyGroup>
