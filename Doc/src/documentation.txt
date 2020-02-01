@@ -23,7 +23,7 @@ FParsec's features include:
 
 FParsec is an F# adaptation of [url "https://www.haskell.org/haskellwiki/Parsec" Parsec], the popular parser combinator library for Haskell by [url "https://www.microsoft.com/en-us/research/people/daan" Daan Leijen]. While the implementations of Parsec and FParsec are completely different, they share a similar top-level API.
 
-[/ **Latest release:**] FParsec 1.1.0, 2020-01-05, [url "https://github.com/stephan-tolksdorf/fparsec/archive/master.zip" Download], [^download-and-installation.nuget-packages NuGet packages], [^about.changelog Changes]
+[/ **Latest release:**] FParsec 1.1.1, 2020-02-01, [url "https://github.com/stephan-tolksdorf/fparsec/archive/master.zip" Download], [^download-and-installation.nuget-packages NuGet packages], [^about.changelog Changes]
 
 [auto-link{
     do-not-pick-up-as-link-targets = [ "ToString"],
