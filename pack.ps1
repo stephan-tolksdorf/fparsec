@@ -30,7 +30,7 @@ foreach ($folder in $("nupkgs", "FParsecCS\obj", "FParsecCS\bin", "FParsec\obj",
 }
 
 foreach ($config in $configs) {
-    $props = "-c $config -p:VersionSuffix=$versionSuffix -p:FParsecNuGet=true"
+    $props = "-c $config -p:VersionSuffix=$versionSuffix -p:FParsecNuGet=true -p:Platform='Any CPU'"
     invoke "dotnet build FParsec/FParsec.fsproj $props -v n"
     invoke "dotnet pack FParsec/FParsec.fsproj $props -o ""$pwd\nupkgs"""
     invoke "dotnet build Test/Test.fsproj $props -v n"
