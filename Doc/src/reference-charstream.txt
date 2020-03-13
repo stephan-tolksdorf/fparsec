@@ -796,7 +796,7 @@ This method may throw any of the [^exceptions I/O related exceptions] detailed a
 [#Skip_int
 Advances the position within the stream by `utf16Offset` chars.
 
-The new position within the stream will be `max(Index + utf16Offset, IndexOfLastCharPlus1)`. This means you can't move past the end of the stream, because any position beyond the last char in the stream is interpreted as precisely one char beyond the last char.
+The new position within the stream will be `min(Index + utf16Offset, IndexOfLastCharPlus1)`. This means you can't move past the end of the stream, because any position beyond the last char in the stream is interpreted as precisely one char beyond the last char.
 
 An `ArgumentOutOfRangeException` is thrown if the new position would lie before the beginning of the `CharStream`, i.e. if the new index would be less than `IndexOfFirstChar`. This method may also throw any of the [^exceptions I/O related exceptions] detailed above.
 
