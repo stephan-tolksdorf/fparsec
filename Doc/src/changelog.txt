@@ -1,6 +1,10 @@
 ﻿[section Changelog]
 [no-subsection-numbers]
 
+[section#v1_1_2 Version 1.1.2, 2020-mm-dd]
+- Norman Krämer [url "https://github.com/stephan-tolksdorf/fparsec/pull/54" fixed] an error in the `CharStream.Skip` documentation -- thanks Norman! 
+[/section]
+
 [section#v1_1_1 Version 1.1.1, 2020-02-01]
 - Fixed NuGet build to target the AnyCPU platform instead of the default platform of the build machine. Vadim Slynko and tpisciotta reported this issue -- thanks Vadim and tpisciotta! 
 [/section]
