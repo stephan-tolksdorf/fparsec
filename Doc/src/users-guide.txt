@@ -710,7 +710,7 @@ val notFollowedBy: Parser<'a,'u> -> Parser<unit,'u>
 
 The parser `followedBy p` (`notFollowedBy p`) succeeds *without changing the parser state* if `p` succeeds (fails) when applied at the current position.
 
-For example, both the following parser definitions only parse positive integer literals without a leeding zero:
+For example, both the following parser definitions only parse positive integer literals without a leading zero:
 ``
 let p1 = followedBy    (satisfy ((<>) '0')) >>. pint32
 let p2 = notFollowedBy (pstring "0")        >>. pint32
