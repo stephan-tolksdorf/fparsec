@@ -554,7 +554,7 @@ The `attempt` combinator
 ``
 val attempt: Parser<'a,'u> -> Parser<'a,'u>
 ``
-takes a parser as the argument and returns a wrapped parser that behaves exactly like the argument, except that if the argument parser fails with an output state different from the input state or with a fatal error, the wrapped parser will backtrack to the original input state and report a non-fatal error.
+takes a parser as the argument and returns a wrapped parser that behaves exactly like the argument, except that if the argument parser fails with an output state that is not different from the input state or with a fatal error, the wrapped parser will backtrack to the original input state and report a non-fatal error.
 
 You can observe the effect of the `attempt` combinator in the following error message:
 ``{fsi}
