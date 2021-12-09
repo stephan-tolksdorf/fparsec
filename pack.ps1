@@ -12,7 +12,7 @@ $ErrorActionPreference = 'Stop'
 $configs = $('Release-LowTrust', 'Release')
 
 $testTargetFrameworks = @{'Release'          = $('net45')
-                          'Release-LowTrust' = $('netcoreapp3.0', 'net45')}
+                          'Release-LowTrust' = $('net6.0')}
 
 function invoke([string] $cmd) {
     echo ''

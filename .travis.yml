@@ -20,7 +20,7 @@ env:
   - CONFIGURATION=Release-LowTrust
     TFM=net45
   - CONFIGURATION=Release-LowTrust
-    TFM=netcoreapp3.0
+    TFM=net6.0
     RUN_TESTS=1
 
 matrix:
