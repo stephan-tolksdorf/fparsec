@@ -37,7 +37,7 @@
     <Authors>Stephan Tolksdorf</Authors>
     <Copyright>Copyright © Stephan Tolksdorf</Copyright>
     <Product>FParsec</Product>
-    <PackageLicenseUrl>http://www.quanttec.com/fparsec/license.html</PackageLicenseUrl>
+    <PackageLicenseExpression>BSD-2-Clause</PackageLicenseExpression>
     <PackageProjectUrl>http://www.quanttec.com/fparsec/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/stephan-tolksdorf/fparsec</RepositoryUrl>
   </PropertyGroup>
