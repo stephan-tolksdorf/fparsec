@@ -20,7 +20,7 @@ type Text =
     static member @CountTextElements@: string -> int
 ``]
 [
-`FParsec.Text.CountTextElements(str)` is a faster implementation of `System.Globalization.StringInfo(str).LengthInTextElements`.
+`FParsec.Text.CountTextElements(str)` is equivalent to `System.Globalization.StringInfo(str).LengthInTextElements`.
 ]
 
 
