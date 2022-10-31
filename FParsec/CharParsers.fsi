@@ -537,7 +537,7 @@ type NumberLiteralOptions =
 /// Any parsed suffix chars are always available through the `SuffixChar1` - `4` members.
 type NumberLiteral =
     new: string:string * info:NumberLiteralResultFlags
-         * suffixChar0: char * suffixChar1: char * suffixChar2: char * suffixChar3: char -> NumberLiteral
+         * suffixChar1: char * suffixChar2: char * suffixChar3: char * suffixChar4: char -> NumberLiteral
 
     /// The parsed number literal string. Only includes the parsed suffix chars if the
     /// `NumberLiteralOptions` passed to the `numberLiteral` parser have the `IncludeSuffixCharsInString` flag set.

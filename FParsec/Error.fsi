@@ -104,7 +104,7 @@ type ParserError =
                     * streamWhereErrorOccurred: CharStream<'u>
                     * ?tabSize: int
                     * ?columnWidth: int 
-                    * ?initialIndention: string * ?indentionIncrement: string
+                    * ?initialIndentation: string * ?indentationIncrement: string
                     -> unit
 
     /// Writes a string representation of the `ParserError` to the given `TextWriter` value.
@@ -120,7 +120,7 @@ type ParserError =
                     * getStream: (Position -> CharStream<'u>)
                     * ?tabSize: int
                     * ?columnWidth: int 
-                    * ?initialIndention: string * ?indentionIncrement: string                    
+                    * ?initialIndentation: string * ?indentationIncrement: string                    
                     -> unit
 
     /// Writes a string representation of the `ParserError` to the given `TextWriter` value.
@@ -128,11 +128,11 @@ type ParserError =
     /// The format of the position information can be customized by specifying the `positionPrinter`
     /// argument. The given function is expected to print a representation of the passed `Position` value
     /// to the passed `TextWriter` value. If possible, it should indent text lines with the passed string
-    /// and take into account the maximum column count (including indention) passed as the last argument.
+    /// and take into account the maximum column count (including indentation) passed as the last argument.
     member WriteTo:   textWriter: System.IO.TextWriter
                     * ?positionPrinter: (System.IO.TextWriter -> Position -> string -> int -> unit)
                     * ?columnWidth: int 
-                    * ?initialIndention: string * ?indentionIncrement: string
+                    * ?initialIndentation: string * ?indentationIncrement: string
                     -> unit
 
     override Equals: obj -> bool

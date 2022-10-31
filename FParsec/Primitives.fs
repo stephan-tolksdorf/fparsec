@@ -781,7 +781,7 @@ type Inline =
 #endif
                        ManyTill(stateFromFirstElement,
                                 foldState,
-                                resultFromStateAndEndParserResult,
+                                resultFromStateAndEnd,
                                 elementParser: Parser<_,_>,
                                 endParser: Parser<_,_>,
                                 ?firstElementParser: Parser<_,_>,
@@ -813,7 +813,7 @@ type Inline =
                     if endReply.Status = Ok then
                         error <- if stateTag <> stream.StateTag then endReply.Error
                                  else mergeErrors error endReply.Error
-                        Reply(Ok, resultFromStateAndEndParserResult xs endReply.Result, error)
+                        Reply(Ok, resultFromStateAndEnd xs endReply.Result, error)
                     elif endReply.Status = enum System.Int32.MinValue then
                         error <- if stateTag <> stream.StateTag then reply.Error
                                  else mergeErrors (mergeErrors error endReply.Error) reply.Error
@@ -850,7 +850,7 @@ type Inline =
                     if endReply.Status = Ok then
                         error <- if stateTag <> stream.StateTag then endReply.Error
                                  else mergeErrors error endReply.Error
-                        Reply(Ok, resultFromStateAndEndParserResult xs endReply.Result, error)
+                        Reply(Ok, resultFromStateAndEnd xs endReply.Result, error)
                     elif endReply.Status = enum System.Int32.MinValue then
                         error <- if stateTag <> stream.StateTag then reply.Error
                                  else mergeErrors (mergeErrors error endReply.Error) reply.Error
