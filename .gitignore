@@ -14,3 +14,4 @@ packages/
 version.props
 /.vs/
 .idea
+.DS_Store
