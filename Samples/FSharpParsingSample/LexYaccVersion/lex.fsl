@@ -14,7 +14,7 @@
 
 module Lex
 
-open Microsoft.FSharp.Text.Lexing
+open FSharp.Text.Lexing
 open Parser
 
 let lexeme = LexBuffer<char>.LexemeString

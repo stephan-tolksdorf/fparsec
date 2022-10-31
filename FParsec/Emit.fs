@@ -26,25 +26,10 @@ let createTypeBuilder name args parent (interfaces : System.Type[]) =
     lock createTypeBuilderSyncRoot (fun _ ->
         if isNull moduleBuilder then
             let assemblyName = new AssemblyName("FParsec.Emitted")
-            let access =
-                        #if DEBUG
-                            AssemblyBuilderAccess.RunAndSave
-                        #else
-                            AssemblyBuilderAccess.Run
-                        #endif
-            assemblyBuilder <- System.Threading.Thread.GetDomain().DefineDynamicAssembly(assemblyName, access)
-            moduleBuilder <- assemblyBuilder.DefineDynamicModule("FParsec.Emitted"
-                                                                 #if DEBUG
-                                                                     , "FParsec.Emitted.dll"
-                                                                 #else
-                                                                 #endif
-                                                                 )
+            assemblyBuilder <- AssemblyBuilder.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.Run)
+            moduleBuilder <- assemblyBuilder.DefineDynamicModule("FParsec.Emitted")
         moduleBuilder.DefineType("FParsec.Emitted." + name, args, parent, interfaces)
     )
-
-#if DEBUG
-let saveEmitAssembly fileName = assemblyBuilder.Save(fileName)
-#endif
 
 // Does anyone have an idea why the .NET System.Reflection.Emit.OpCode
 // is implemented as a gigantic struct? (It has a size of ~36 bytes!)

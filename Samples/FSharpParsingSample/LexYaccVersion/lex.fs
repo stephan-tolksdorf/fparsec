@@ -3,7 +3,7 @@
 
 module Lex
 
-open Microsoft.FSharp.Text.Lexing
+open FSharp.Text.Lexing
 open Parser
 
 let lexeme = LexBuffer<char>.LexemeString
@@ -128,107 +128,105 @@ let trans : uint16[] array =
      [| 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 26us; 26us; 26us; 26us; 26us; 26us; 26us; 26us; 26us; 26us; 26us; 26us; 26us; 26us; 26us; 26us; 26us; 26us; 26us; 26us; 26us; 26us; 26us; 26us; 26us; 26us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; |];
     |] 
 let actions : uint16[] = [|65535us; 0us; 1us; 65535us; 15us; 15us; 15us; 15us; 15us; 15us; 15us; 11us; 12us; 13us; 65535us; 15us; 16us; 65535us; 18us; 16us; 65535us; 65535us; 17us; 17us; 17us; 17us; 15us; 14us; 15us; 15us; 15us; 9us; 15us; 15us; 7us; 6us; 5us; 15us; 15us; 10us; 15us; 15us; 15us; 8us; 4us; 15us; 15us; 15us; 3us; 15us; 15us; 15us; 2us; |]
-let _fslex_tables = Microsoft.FSharp.Text.Lexing.UnicodeTables.Create(trans,actions)
+let _fslex_tables = FSharp.Text.Lexing.UnicodeTables.Create(trans,actions)
 let rec _fslex_dummy () = _fslex_dummy() 
-(* Rule token *)
-and token  (lexbuf : Microsoft.FSharp.Text.Lexing.LexBuffer<_>) = _fslex_token  0 lexbuf
-(* Rule token *)
-and _fslex_token  _fslex_state lexbuf =
-  match _fslex_tables.Interpret(_fslex_state,lexbuf) with
+// Rule token
+and token  lexbuf =
+  match _fslex_tables.Interpret(0,lexbuf) with
   | 0 -> ( 
 # 54 "lex.fsl"
                               token lexbuf 
-# 141 "lex.fs"
+# 139 "lex.fs"
           )
   | 1 -> ( 
 # 55 "lex.fsl"
                               newline lexbuf; token lexbuf 
-# 146 "lex.fs"
+# 144 "lex.fs"
           )
   | 2 -> ( 
 # 56 "lex.fsl"
                               WHILE 
-# 151 "lex.fs"
+# 149 "lex.fs"
           )
   | 3 -> ( 
 # 57 "lex.fsl"
                               BEGIN 
-# 156 "lex.fs"
+# 154 "lex.fs"
           )
   | 4 -> ( 
 # 58 "lex.fsl"
                               END 
-# 161 "lex.fs"
+# 159 "lex.fs"
           )
   | 5 -> ( 
 # 59 "lex.fsl"
                               DO 
-# 166 "lex.fs"
+# 164 "lex.fs"
           )
   | 6 -> ( 
 # 60 "lex.fsl"
                               IF 
-# 171 "lex.fs"
+# 169 "lex.fs"
           )
   | 7 -> ( 
 # 61 "lex.fsl"
                              THEN 
-# 176 "lex.fs"
+# 174 "lex.fs"
           )
   | 8 -> ( 
 # 62 "lex.fsl"
                              ELSE 
-# 181 "lex.fs"
+# 179 "lex.fs"
           )
   | 9 -> ( 
 # 63 "lex.fsl"
                              PRINT 
-# 186 "lex.fs"
+# 184 "lex.fs"
           )
   | 10 -> ( 
 # 64 "lex.fsl"
                              DECR 
-# 191 "lex.fs"
+# 189 "lex.fs"
           )
   | 11 -> ( 
 # 65 "lex.fsl"
                              LPAREN 
-# 196 "lex.fs"
+# 194 "lex.fs"
           )
   | 12 -> ( 
 # 66 "lex.fsl"
                              RPAREN 
-# 201 "lex.fs"
+# 199 "lex.fs"
           )
   | 13 -> ( 
 # 67 "lex.fsl"
                              SEMI 
-# 206 "lex.fs"
+# 204 "lex.fs"
           )
   | 14 -> ( 
 # 68 "lex.fsl"
                              ASSIGN 
-# 211 "lex.fs"
+# 209 "lex.fs"
           )
   | 15 -> ( 
 # 70 "lex.fsl"
                              ID(lexeme lexbuf) 
-# 216 "lex.fs"
+# 214 "lex.fs"
           )
   | 16 -> ( 
 # 72 "lex.fsl"
                              INT (int32 (lexeme lexbuf)) 
-# 221 "lex.fs"
+# 219 "lex.fs"
           )
   | 17 -> ( 
 # 74 "lex.fsl"
                              FLOAT (float (lexeme lexbuf)) 
-# 226 "lex.fs"
+# 224 "lex.fs"
           )
   | 18 -> ( 
 # 75 "lex.fsl"
                          EOF 
-# 231 "lex.fs"
+# 229 "lex.fs"
           )
   | _ -> failwith "token"
 

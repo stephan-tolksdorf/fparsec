@@ -15,7 +15,7 @@
 open Ast
 open Printf
 
-open Microsoft.FSharp.Text.Lexing
+open FSharp.Text.Lexing
 
 [<EntryPoint>]
 let main(argv: string[]) =

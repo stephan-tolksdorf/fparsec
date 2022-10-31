@@ -1,7 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net45;netcoreapp3.0</TargetFrameworks>
-    <TargetFrameworks Condition="'$(LowTrust)' == 'false'">net45</TargetFrameworks>
+    <TargetFramework>net6</TargetFramework>
   </PropertyGroup>
 
   <Import Project="Test.targets" />
