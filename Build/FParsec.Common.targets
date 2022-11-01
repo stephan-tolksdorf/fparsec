@@ -25,7 +25,6 @@
 
   <PropertyGroup Condition="'$(SignAssembly)' == 'true'">
     <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)\fparsec.snk</AssemblyOriginatorKeyFile>
-    <PublicSign Condition="'$(OS)' != 'Windows_NT'">true</PublicSign>
     <DefineConstants>$(DefineConstants);STRONG_NAME</DefineConstants>
   </PropertyGroup>
 
