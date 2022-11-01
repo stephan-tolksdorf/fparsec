@@ -1,10 +1,11 @@
-﻿// Copyright (c) Stephan Tolksdorf 2009-2010
+// Copyright (c) Stephan Tolksdorf 2009-2010
 // License: Simplified BSD License. See accompanying documentation.
 
 using System;
 using System.Globalization;
 using System.Text;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 using Microsoft.FSharp.Core;
@@ -435,7 +436,7 @@ internal unsafe struct IsWhitespaceHelper {
     private static readonly uint* Table3 = (uint*)(Data + Table3Offset);
 
     private static byte* LoadDataArrayIntoFixedBuffer() {
-        var buffer = UnmanagedMemoryPool.Allocate(DataArray.Length);
+        var buffer = RuntimeHelpers.AllocateTypeAssociatedMemory(typeof(Text), DataArray.Length);
         Marshal.Copy(DataArray, 0, buffer, DataArray.Length);
         Debug.Assert(Table3Size%sizeof(uint) == 0);
         if (!System.BitConverter.IsLittleEndian)

@@ -11,6 +11,7 @@ open System.Reflection
 open System.Reflection.Emit
 open System.Collections.Generic
 
+open System.Runtime.CompilerServices
 open Microsoft.FSharp.NativeInterop
 
 open FParsec.Internals
@@ -285,7 +286,7 @@ let emitSetMembershipTest (ilg: ILGenerator)
 
         let mutable stackVar = 0un
         let ptr = if length = 1 then NativePtr.ofNativeInt (NativePtr.toNativeInt &&stackVar)
-                  else NativePtr.ofNativeInt (UnmanagedMemoryPool.Allocate(length*sizeof<unativeint>))
+                  else NativePtr.ofNativeInt (RuntimeHelpers.AllocateTypeAssociatedMemory(typeof<TempLocals>, length*sizeof<unativeint>))
 
         // fill bit vector ptr.[0..length - 1]
         let r = ranges.[iBegin]
