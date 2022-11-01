@@ -17,6 +17,7 @@ open FParsec.Internals
 open FParsec.Range
 
 #nowarn "9" // "Uses of this construct may result in the generation of unverifiable .NET IL code."
+#nowarn "51" // "The use of native pointers may result in unverifiable .NET IL code"
 
 let mutable private assemblyBuilder = null
 let mutable private moduleBuilder = null
