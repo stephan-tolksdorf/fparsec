@@ -15,12 +15,15 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(FParsecNuGet)' == 'true'">
-    <SignAssembly>true</SignAssembly>
+    <PackageLicenseUrl></PackageLicenseUrl>
+    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
   </PropertyGroup>
+  <ItemGroup Condition="'$(FParsecNuGet)' == 'true'">
+    <None Include="$(MSBuildThisFileDirectory)\fparsec-license.txt" Pack="true" PackagePath="LICENSE.txt" />
+  </ItemGroup>
 
-  <PropertyGroup>
-    <AssemblyVersion Condition="'$(SignAssembly)' == 'true'">1.0.0.0</AssemblyVersion>
-    <AssemblyVersion Condition="'$(SignAssembly)' != 'true'">$(FileVersion)</AssemblyVersion>
+  <PropertyGroup Condition="'$(FParsecNuGet)' == 'true'">
+    <SignAssembly>true</SignAssembly>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(SignAssembly)' == 'true'">
