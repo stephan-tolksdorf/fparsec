@@ -15,7 +15,6 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(FParsecNuGet)' == 'true'">
-    <PackageLicenseUrl></PackageLicenseUrl>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
   </PropertyGroup>
   <ItemGroup Condition="'$(FParsecNuGet)' == 'true'">
