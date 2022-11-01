@@ -64,7 +64,7 @@
                 <tbody class="nav-before-open n4">
                  <tr class="nav-entry n4 _1">
                   <td class="nav-number n4"></td>
-                  <td class="nav-title n4"><a href="#v1_1_2">Version 1.1.2, 2020‐mm‐dd</a></td>
+                  <td class="nav-title n4"><a href="#v2_0">Version 2.0, 2022‒11‒01</a></td>
                  </tr>
                  <tr class="nav-entry n4 _2">
                   <td class="nav-number n4"></td>
@@ -208,7 +208,7 @@
    </table>
   </div>
   <div id="copyright">
-    <span>Copyright © 2020 <a href="../about/contact.html">Stephan Tolksdorf</a></span>
+    <span>Copyright © 2022 <a href="../about/contact.html">Stephan Tolksdorf</a></span>
   </div>
  </div>
  </div>
@@ -223,15 +223,23 @@
  </div>
  <div class="section s2">
   <h1 class="title h2"><span>Changelog</span></h1>
-  <div id="v1_1_2" class="section s3">
-   <h2 class="title h3"><span>Version 1.1.2, 2020‐mm‐dd</span></h2>
+  <div id="v2_0" class="section s3">
+   <h2 class="title h3"><span>Version 2.0, 2022‒11‒01</span></h2>
    <div class="intro i3">
     <div class="para _1 lcinp">
      <ul class="l1">
-      <li class="_1">
+      <li class="_1">Dropped .NET Framework 4.5 support and switched to using .NET 6.</li>
+      <li class="_2">
+       Changed NuGet build to always enable code signing. <a href="https://github.com/stephan-tolksdorf/fparsec/pull/55">Contributed</a> by Radek
+       Krahl – thanks Radek!
+      </li>
+      <li class="_3">
        Norman Krämer <a href="https://github.com/stephan-tolksdorf/fparsec/pull/54">fixed</a> an error in the <code class="fsharp"><a
        href="../reference/charstream.html#CharStream"><span class="ci">CharStream</span></a><span class="cm">.</span><a
        href="../reference/charstream.html#CharStream.members.Skip"><span class="ci">Skip</span></a></code> documentation – thanks Norman!
+      </li>
+      <li class="_4">
+       Nathan Adams <a href="https://github.com/stephan-tolksdorf/fparsec/pull/56">fixed</a> a typo in the User’s Guide – thanks Nathan!
       </li>
      </ul>
     </div>
@@ -268,7 +276,7 @@
        Enrico Sada <a href="https://github.com/stephan-tolksdorf/fparsec/pull/38">modernized</a> the F# and C# project files and the build script for
        the NuGet packages – thanks Enrico!
       </li>
-      <li class="_3">Added SourceLink support, which was prepared and championed by Cameron Taggart – thank Cameron!</li>
+      <li class="_3">Added SourceLink support, which was prepared and championed by Cameron Taggart – thanks Cameron!</li>
       <li class="_4">
        Maxime Didier <a href="https://github.com/stephan-tolksdorf/fparsec/pull/20">fixed</a> a bug in the Low‐Trust version of the <code
        class="fsharp"><a href="../reference/charstream.html#CharStream"><span class="ci">CharStream</span></a></code> constructors that accept a file

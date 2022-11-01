@@ -171,7 +171,7 @@
    </table>
   </div>
   <div id="copyright">
-    <span>Copyright © 2020 <a href="../about/contact.html">Stephan Tolksdorf</a></span>
+    <span>Copyright © 2022 <a href="../about/contact.html">Stephan Tolksdorf</a></span>
   </div>
  </div>
  </div>
@@ -483,7 +483,7 @@ Expecting: integer number (32-bit, signed)
      </p>
     </div>
     <div class="para _4 lcinp">
-     <p>For example, both the following parser definitions only parse positive integer literals without a leeding zero:</p>
+     <p>For example, both the following parser definitions only parse positive integer literals without a leading zero:</p>
 <pre class="code fsharp"><span class="ck">let</span> <span class="ci">p1</span> <span class="cp">=</span> <a href="../reference/primitives.html#members.followedBy"><span class="ci">followedBy</span></a>    <span class="cp">(</span><a href="../reference/charparsers.html#members.satisfy"><span class="ci">satisfy</span></a> <span class="cp">(</span><span class="cp">(</span><span class="co">&lt;&gt;</span><span class="cp">)</span> <span class="cc"><span class="cld">'</span>0<span class="crd">'</span></span><span class="cp">)</span><span class="cp">)</span> <a href="../reference/primitives.html#members.:62::62:.."><span class="co">&gt;&gt;.</span></a> <a href="../reference/charparsers.html#members.pint32"><span class="ci">pint32</span></a>
 <span class="ck">let</span> <span class="ci">p2</span> <span class="cp">=</span> <a href="../reference/primitives.html#members.notFollowedBy"><span class="ci">notFollowedBy</span></a> <span class="cp">(</span><a href="../reference/charparsers.html#members.pstring"><span class="ci">pstring</span></a> <span class="cs"><span class="cld">"</span>0<span class="crd">"</span></span><span class="cp">)</span>        <a href="../reference/primitives.html#members.:62::62:.."><span class="co">&gt;&gt;.</span></a> <a href="../reference/charparsers.html#members.pint32"><span class="ci">pint32</span></a>
 </pre>

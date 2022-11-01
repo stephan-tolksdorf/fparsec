@@ -1,8 +1,12 @@
 ﻿[section Changelog]
 [no-subsection-numbers]
 
-[section#v1_1_2 Version 1.1.2, 2020-mm-dd]
+[section#v2_0 Version 2.0, 2022-11-01]
+- Dropped .NET Framework 4.5 support and switched to using .NET 6.
+- Changed NuGet build to always enable code signing. [url "https://github.com/stephan-tolksdorf/fparsec/pull/55" Contributed] by Radek Krahl -- thanks Radek!
 - Norman Krämer [url "https://github.com/stephan-tolksdorf/fparsec/pull/54" fixed] an error in the `CharStream.Skip` documentation -- thanks Norman! 
+- Nathan Adams [url "https://github.com/stephan-tolksdorf/fparsec/pull/56" fixed] a typo in the User's Guide -- thanks Nathan!
+
 [/section]
 
 [section#v1_1_1 Version 1.1.1, 2020-02-01]
@@ -12,7 +16,7 @@
 [section#v1_1 Version 1.1.0, 2020-01-05]
 - **Behaviour change**: `pfloat` now parses out-of-range finite values as plus or minus infinity instead of returning an error. This unifies the `pfloat` behaviour on all platforms after [url "https://docs.microsoft.com/en-us/dotnet/core/compatibility/2.2-3.0#floating-point-parsing-operations-no-longer-fail-or-throw-an-overflowexception" the behaviour change of `System.Double.Parse` on .NET Core 3].  
 - Enrico Sada [url "https://github.com/stephan-tolksdorf/fparsec/pull/38" modernized] the F# and C# project files and the build script for the NuGet packages -- thanks Enrico!
-- Added SourceLink support, which was prepared and championed by Cameron Taggart -- thank Cameron!
+- Added SourceLink support, which was prepared and championed by Cameron Taggart -- thanks Cameron!
 - Maxime Didier [url "https://github.com/stephan-tolksdorf/fparsec/pull/20" fixed] a bug in the Low-Trust version of the `CharStream` constructors that accept a file path argument: The stream's `Name` property wasn't initialized. Thanks Maxime!
 - Fixed missing parser definitions in the @Parsing JSON@ section of the tutorial spotted by Josh Quintus -- thanks Josh!
 - Andre Wesseling [url "https://github.com/stephan-tolksdorf/fparsec/pull/18" fixed] a parser definition in the @Where is the monad@ section of the User's Guide  -- thanks Andre!

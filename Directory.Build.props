@@ -31,8 +31,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <VersionPrefix>1.1.1</VersionPrefix>
-    <FileVersion>1.1.1.0</FileVersion>
+    <VersionPrefix>2.0.0</VersionPrefix>
 
     <Authors>Stephan Tolksdorf</Authors>
     <Copyright>Copyright © Stephan Tolksdorf</Copyright>
