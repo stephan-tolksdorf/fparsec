@@ -33,10 +33,6 @@ let createTypeBuilder name args parent (interfaces : System.Type[]) =
         moduleBuilder.DefineType("FParsec.Emitted." + name, args, parent, interfaces)
     )
 
-// Does anyone have an idea why the .NET System.Reflection.Emit.OpCode
-// is implemented as a gigantic struct? (It has a size of ~36 bytes!)
-
-
 let loadI4 (ilg: ILGenerator) (i: int32) =
     // For run-time-only code generation it probably makes little difference
     // whether we optimize the size of the IL, but we do it anyway.
