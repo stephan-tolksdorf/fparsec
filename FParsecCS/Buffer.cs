@@ -1,9 +1,10 @@
-// Copyright (c) Stephan Tolksdorf 2007-2010
+﻿// Copyright (c) Stephan Tolksdorf 2007-2010
 // License: Simplified BSD License. See accompanying documentation.
 
 using System;
 using System.Buffers.Binary;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace FParsec {
 
@@ -43,17 +44,10 @@ internal static void SwapByteOrder(Span<uint> array) {
 }
 
 #if LOW_TRUST
-
-internal static byte[] CopySubarray(byte[] array, int index, int length) {
-    var subArray = new byte[length];
-    System.Buffer.BlockCopy(array, index, subArray, 0, length);
-    return subArray;
-}
-
-internal static uint[] CopyUIntsStoredInLittleEndianByteArray(byte[] src, int srcIndex, int srcLength) {
+internal static uint[] CopyUIntsStoredInLittleEndianByteArray(ReadOnlySpan<byte> src, int srcIndex, int srcLength) {
     Debug.Assert(srcLength%sizeof(uint) == 0);
     var subArray = new uint[srcLength/sizeof(uint)];
-    System.Buffer.BlockCopy(src, srcIndex, subArray, 0, srcLength);
+    src.Slice(srcIndex, srcLength).CopyTo(MemoryMarshal.AsBytes(new Span<uint>(subArray)));
     if (!BitConverter.IsLittleEndian) SwapByteOrder(subArray);
     return subArray;
 }

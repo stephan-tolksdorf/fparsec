@@ -262,70 +262,70 @@ public sealed class IdentifierValidator {
         return (IsXIdStartOrSurrogate_(bmpCodePoint) & 1u) != 0;
     }
     private static uint IsXIdStartOrSurrogate_(char bmpCodePoint) {
-        uint cp = (uint)bmpCodePoint;
-        uint idx1 = cp >> XIdBmpTable2Log2BitBlockLength;
-        const uint f2 = 1u << (XIdBmpTable2Log2BitBlockLength - 5);
-        const uint m2 = f2 - 1;
-        uint idx2 = XIdStartBmpTable1[idx1]*f2 + ((cp >> 5) & m2);
-        return XIdBmpTable2[idx2] >> (int)(cp /* & 0x1fu */); // C#'s operator>> masks with 0x1fu, no matter whether we do too
+        int cp = bmpCodePoint;
+        int idx1 = cp >> XIdBmpTable2Log2BitBlockLength;
+        const int f2 = 1 << (XIdBmpTable2Log2BitBlockLength - 5);
+        const int m2 = f2 - 1;
+        int idx2 = XIdStartBmpTable1[idx1]*f2 + ((cp >> 5) & m2);
+        return XIdBmpTable2[idx2] >> (cp /* & 0x1fu */); // C#'s operator>> masks with 0x1fu, no matter whether we do too
     }
 
     public static bool IsXIdContinueOrSurrogate(char bmpCodePoint) { // should get inlined
          return (IsXIdContinueOrSurrogate_(bmpCodePoint) & 1u) != 0u;
     }
     private static uint IsXIdContinueOrSurrogate_(char bmpCodePoint) {
-        uint cp = (uint)bmpCodePoint;
-        uint idx1 = cp >> XIdBmpTable2Log2BitBlockLength;
-        const uint f2 = 1u << (XIdBmpTable2Log2BitBlockLength - 5);
-        const uint m2 = f2 - 1;
-        uint idx2 = XIdContinueBmpTable1[idx1]*f2 + ((cp >> 5) & m2);
-        return XIdBmpTable2[idx2] >> (int)(cp /* & 0x1fu */); // C#'s operator>> masks with 0x1fu, no matter whether we do too
+        int cp = bmpCodePoint;
+        int idx1 = cp >> XIdBmpTable2Log2BitBlockLength;
+        const int f2 = 1 << (XIdBmpTable2Log2BitBlockLength - 5);
+        const int m2 = f2 - 1;
+        int idx2 = XIdContinueBmpTable1[idx1]*f2 + ((cp >> 5) & m2);
+        return XIdBmpTable2[idx2] >> (cp /* & 0x1fu */); // C#'s operator>> masks with 0x1fu, no matter whether we do too
     }
 
     public static bool IsXIdContinueOrJoinControlOrSurrogate(char bmpCodePoint) { // should get inlined
          return (IsXIdContinueOrJoinControlOrSurrogate_(bmpCodePoint) & 1u) != 0u;
     }
     private static uint IsXIdContinueOrJoinControlOrSurrogate_(char bmpCodePoint) {
-        uint cp = (uint)bmpCodePoint;
-        uint idx1 = cp >> XIdBmpTable2Log2BitBlockLength;
-        const uint f2 = 1u << (XIdBmpTable2Log2BitBlockLength - 5);
-        const uint m2 = f2 - 1;
-        uint idx2 = XIdContinueOrJoinerBmpTable1[idx1]*f2 + ((cp >> 5) & m2);
-        return XIdBmpTable2[idx2] >> (int)(cp /* & 0x1fu */); // C#'s operator>> masks with 0x1fu, no matter whether we do too
+        int cp = bmpCodePoint;
+        int idx1 = cp >> XIdBmpTable2Log2BitBlockLength;
+        const int f2 = 1 << (XIdBmpTable2Log2BitBlockLength - 5);
+        const int m2 = f2 - 1;
+        int idx2 = XIdContinueOrJoinerBmpTable1[idx1]*f2 + ((cp >> 5) & m2);
+        return XIdBmpTable2[idx2] >> (cp /* & 0x1fu */); // C#'s operator>> masks with 0x1fu, no matter whether we do too
     }
 
     public static bool IsXIdStartSmp(int smpCodePointMinus0x10000) { // should get inlined
         return (IsXIdStartSmp_(smpCodePointMinus0x10000) & 1u) != 0;
     }
     private static uint IsXIdStartSmp_(int smpCodePointMinus0x10000) {
-        uint cp = unchecked((uint)smpCodePointMinus0x10000);
-        uint idx1 = cp >> (XIdSmpTable2Log2BlockLength + XIdSmpTable3Log2BlockLength);
-        const uint f2 = 1u << XIdSmpTable2Log2BlockLength,
-                   f3 = 1u << (XIdSmpTable3Log2BlockLength - 5);
-        const uint m2 = f2 - 1, m3 = f3 - 1;
+        int cp = smpCodePointMinus0x10000;
+        int idx1 = cp >> (XIdSmpTable2Log2BlockLength + XIdSmpTable3Log2BlockLength);
+        const int f2 = 1 << XIdSmpTable2Log2BlockLength,
+                   f3 = 1 << (XIdSmpTable3Log2BlockLength - 5);
+        const int m2 = f2 - 1, m3 = f3 - 1;
     #if !LOW_TRUST
         if ((idx1 & (0xffffffffu << XIdSmpTable1Log2Length)) != 0) throw new IndexOutOfRangeException();
     #endif
-        uint idx2 = XIdStartSmpTable1[idx1]*f2 + ((cp >> XIdSmpTable3Log2BlockLength) & m2);
-        uint idx3 = XIdSmpTable2[idx2]*f3 + ((cp >> 5) & m3);
-        return XIdSmpTable3[idx3] >> (int)(cp /* & 0x1fu */); // C#'s operator>> masks with 0x1fu, no matter whether we do too
+        int idx2 = XIdStartSmpTable1[idx1]*f2 + ((cp >> XIdSmpTable3Log2BlockLength) & m2);
+        int idx3 = XIdSmpTable2[idx2]*f3 + ((cp >> 5) & m3);
+        return XIdSmpTable3[idx3] >> (cp /* & 0x1fu */); // C#'s operator>> masks with 0x1fu, no matter whether we do too
     }
 
     public static bool IsXIdContinueSmp(int smpCodePointMinus0x10000) { // should get inlined
         return (IsXIdContinueSmp_(smpCodePointMinus0x10000) & 1u) != 0;
     }
     private static uint IsXIdContinueSmp_(int smpCodePointMinus0x10000) {
-        uint cp = unchecked((uint)smpCodePointMinus0x10000);
-        uint idx1 = cp >> (XIdSmpTable2Log2BlockLength + XIdSmpTable3Log2BlockLength);
-        const uint f2 = 1u << XIdSmpTable2Log2BlockLength,
-                   f3 = 1u << (XIdSmpTable3Log2BlockLength - 5);
-        const uint m2 = f2 - 1, m3 = f3 - 1;
+        int cp = smpCodePointMinus0x10000;
+        int idx1 = cp >> (XIdSmpTable2Log2BlockLength + XIdSmpTable3Log2BlockLength);
+        const int f2 = 1 << XIdSmpTable2Log2BlockLength,
+                   f3 = 1 << (XIdSmpTable3Log2BlockLength - 5);
+        const int m2 = f2 - 1, m3 = f3 - 1;
     #if !LOW_TRUST
         if ((idx1 & (0xffffffffu << XIdSmpTable1Log2Length)) != 0) throw new IndexOutOfRangeException();
     #endif
-        uint idx2 = XIdContinueSmpTable1[idx1]*f2 + ((cp >> XIdSmpTable3Log2BlockLength) & m2);
-        uint idx3 = XIdSmpTable2[idx2]*f3 + ((cp >> 5) & m3);
-        return XIdSmpTable3[idx3] >> (int)(cp /* & 0x1fu */); // C#'s operator>> masks with 0x1fu, no matter whether we do too
+        int idx2 = XIdContinueSmpTable1[idx1]*f2 + ((cp >> XIdSmpTable3Log2BlockLength) & m2);
+        int idx3 = XIdSmpTable2[idx2]*f3 + ((cp >> 5) & m3);
+        return XIdSmpTable3[idx3] >> (cp /* & 0x1fu */); // C#'s operator>> masks with 0x1fu, no matter whether we do too
     }
 
     // tables for Unicode 8.0.0
@@ -350,7 +350,7 @@ public sealed class IdentifierValidator {
     private const int XIdSmpTable3Size = 1504;
     private const int XIdSmpTable3Log2BlockLength = 7;
 
-    private static readonly byte[] DataArray = new byte[] {
+    private static ReadOnlySpan<byte> DataArray => new byte[] {
         0,2,3,4,6,8,10,12,14,16,18,20,22,24,26,28,30,2,32,33,
         35,2,36,37,39,41,43,45,47,49,2,51,52,55,56,56,56,56,56,56,
         56,56,56,56,57,59,56,56,61,63,56,56,2,2,2,2,2,2,2,2,
@@ -671,38 +671,40 @@ public sealed class IdentifierValidator {
     };
 
 #if LOW_TRUST
-    private static readonly byte[] XIdStartBmpTable1 = Buffer.CopySubarray(DataArray, XIdStartBmpTable1Offset, XIdBmpTable1Size);
-    private static readonly byte[] XIdContinueBmpTable1 = Buffer.CopySubarray(DataArray, XIdContinueBmpTable1Offset, XIdBmpTable1Size);
-    private static readonly byte[] XIdContinueOrJoinerBmpTable1 = Buffer.CopySubarray(DataArray, XIdContinueOrJoinerBmpTable1Offset, XIdBmpTable1Size);
+    private static ReadOnlySpan<byte> XIdStartBmpTable1 => DataArray.Slice(XIdStartBmpTable1Offset, XIdBmpTable1Size);
+    private static ReadOnlySpan<byte> XIdContinueBmpTable1 => DataArray.Slice(XIdContinueBmpTable1Offset, XIdBmpTable1Size);
+    private static ReadOnlySpan<byte> XIdContinueOrJoinerBmpTable1 => DataArray.Slice(XIdContinueOrJoinerBmpTable1Offset, XIdBmpTable1Size);
     private static readonly uint[] XIdBmpTable2 = Buffer.CopyUIntsStoredInLittleEndianByteArray(DataArray, XIdBmpTable2Offset, XIdBmpTable2Size);
 
-    private static readonly byte[] XIdStartSmpTable1 = Buffer.CopySubarray(DataArray, XIdStartSmpTable1Offset, XIdSmpTable1Size);
-    private static readonly byte[] XIdContinueSmpTable1 = Buffer.CopySubarray(DataArray, XIdContinueSmpTable1Offset, XIdSmpTable1Size);
-    private static readonly byte[] XIdSmpTable2 = Buffer.CopySubarray(DataArray, XIdSmpTable2Offset, XIdSmpTable2Size);
+    private static ReadOnlySpan<byte> XIdStartSmpTable1 => DataArray.Slice(XIdStartSmpTable1Offset, XIdSmpTable1Size);
+    private static ReadOnlySpan<byte> XIdContinueSmpTable1 => DataArray.Slice(XIdContinueSmpTable1Offset, XIdSmpTable1Size);
+    private static ReadOnlySpan<byte> XIdSmpTable2 => DataArray.Slice(XIdSmpTable2Offset, XIdSmpTable2Size);
     private static readonly uint[] XIdSmpTable3 = Buffer.CopyUIntsStoredInLittleEndianByteArray(DataArray, XIdSmpTable3Offset, XIdSmpTable3Size);
 #else
-    private static byte* Data = LoadDataArrayIntoFixedBuffer();
+    private static byte* Data => (byte*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(DataArray));
 
-    private static readonly byte* XIdStartBmpTable1 = Data + XIdStartBmpTable1Offset;
-    private static readonly byte* XIdContinueBmpTable1 = Data + XIdContinueBmpTable1Offset;
-    private static readonly byte* XIdContinueOrJoinerBmpTable1 = Data + XIdContinueOrJoinerBmpTable1Offset;
-    private static readonly uint* XIdBmpTable2 = (uint*)(Data + XIdBmpTable2Offset);
+    private static byte* XIdStartBmpTable1 => Data + XIdStartBmpTable1Offset;
+    private static byte* XIdContinueBmpTable1 => Data + XIdContinueBmpTable1Offset;
+    private static byte* XIdContinueOrJoinerBmpTable1 => Data + XIdContinueOrJoinerBmpTable1Offset;
+    private static readonly uint* XIdBmpTable2 = LoadLittleEndianUInt32Data(XIdBmpTable2Offset, XIdBmpTable2Size);
 
-    private static readonly byte* XIdStartSmpTable1 = Data + XIdStartSmpTable1Offset;
-    private static readonly byte* XIdContinueSmpTable1 = Data + XIdContinueSmpTable1Offset;
-    private static readonly byte* XIdSmpTable2 = Data + XIdSmpTable2Offset;
-    private static readonly uint* XIdSmpTable3 = (uint*)(Data + XIdSmpTable3Offset);
+    private static byte* XIdStartSmpTable1 => Data + XIdStartSmpTable1Offset;
+    private static byte* XIdContinueSmpTable1 => Data + XIdContinueSmpTable1Offset;
+    private static byte* XIdSmpTable2 => Data + XIdSmpTable2Offset;
+    private static readonly uint* XIdSmpTable3 = LoadLittleEndianUInt32Data(XIdSmpTable3Offset, XIdSmpTable3Size);
 
-    private static byte* LoadDataArrayIntoFixedBuffer() {
-        IntPtr buffer = RuntimeHelpers.AllocateTypeAssociatedMemory(typeof(IdentifierValidator), DataArray.Length);
-        Marshal.Copy(DataArray, 0, buffer, DataArray.Length);
-        Debug.Assert(XIdBmpTable2Size%sizeof(uint) == 0);
-        Debug.Assert(XIdSmpTable3Size%sizeof(uint) == 0);
-        if (!System.BitConverter.IsLittleEndian) {
-            Buffer.SwapByteOrder((uint*)((byte*)buffer + XIdBmpTable2Offset), XIdBmpTable2Size/sizeof(uint));
-            Buffer.SwapByteOrder((uint*)((byte*)buffer + XIdSmpTable3Offset), XIdSmpTable3Size/sizeof(uint));
+    private static uint* LoadLittleEndianUInt32Data(int offset, int length)
+    {
+        if (BitConverter.IsLittleEndian)
+        {
+            return (uint*)(Data + offset);
         }
-        return (byte*)buffer;
+
+        void* buffer = (void*)RuntimeHelpers.AllocateTypeAssociatedMemory(typeof(IdentifierValidator), length);
+        
+        DataArray.Slice(offset, length).CopyTo(new Span<byte>(buffer, length));
+        Buffer.SwapByteOrder(new Span<uint>(buffer, length / sizeof(uint)));
+        return (uint*)buffer;
     }
 #endif
 
