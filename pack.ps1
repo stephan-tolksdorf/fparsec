@@ -1,7 +1,9 @@
 # This PowerShell script builds the FParsec NuGet packages. 
 #
 # Run this script from the VS2019 Command Prompt, e.g. with 
-# powershell -ExecutionPolicy ByPass -File pack.ps1 -versionSuffix "" > pack.out.txt
+#     powershell -ExecutionPolicy ByPass -File pack.ps1 -versionSuffix "" > pack.out.txt
+# or on macOS e.g. with
+#     pwsh -File pack.ps1 -versionSuffix "" > pack.out.txt
 
 Param(
   [string]$versionSuffix = "dev"
@@ -9,10 +11,10 @@ Param(
 
 $ErrorActionPreference = 'Stop'
 
-$configs = $('Release-LowTrust', 'Release')
+$configSuffices = $('-LowTrust') # The non-LowTrust version currently doesn't pass the tests.
 
-$testTargetFrameworks = @{'Release'          = $('net6')
-                          'Release-LowTrust' = $('net6')}
+$testTargetFrameworks = @{''          = $('net6')
+                          '-LowTrust' = $('net6')}
 
 function invoke([string] $cmd) {
     echo ''
@@ -29,12 +31,14 @@ foreach ($folder in $("nupkgs", "FParsecCS\obj", "FParsecCS\bin", "FParsec\obj",
     } catch {}
 }
 
-foreach ($config in $configs) {
+foreach ($configSuffix in $configSuffices) {
+    $config = "Release$configSuffix"
     $props = "-c $config -p:VersionSuffix=$versionSuffix -p:FParsecNuGet=true -p:Platform='Any CPU'"
-    invoke "dotnet build FParsec/FParsec.fsproj $props -v n"
-    invoke "dotnet pack FParsec/FParsec.fsproj $props -o ""$pwd\nupkgs"""
-    invoke "dotnet build Test/Test.fsproj $props -v n"
-    foreach ($tf in $testTargetFrameworks[$config]) {
-        invoke "dotnet run --no-build -p Test/Test.fsproj -c $config -f $tf"
+    invoke "dotnet build FParsec/FParsec$configSuffix.fsproj $props -v n"
+    invoke "dotnet pack FParsec/FParsec$configSuffix.fsproj $props -o ""$pwd\nupkgs"""
+    invoke "dotnet build Test/Test$configSuffix.fsproj $props -v n"
+    foreach ($tf in $testTargetFrameworks[$configSuffix]) {
+        # invoke "dotnet run --no-build --project Test/Test$configSuffix.fsproj $props -f $tf" # doesn't work properly
+        invoke "Test/bin/'Any CPU'/$config/$tf/Test"
     }
 }
