@@ -4,28 +4,8 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Restore (Config: Debug-LowTrust)",
-            "command": "dotnet restore FParsec.sln /p:Configuration=Debug-LowTrust",
-            "type": "shell",
-            "group": "build",
-            "presentation": {
-                "reveal": "always"
-            },
-            "problemMatcher": "$msCompile"
-        },
-        {
-            "label": "Build .NET Core Test (Config: Debug-LowTrust)",
-            "command": "dotnet build Test/Test.fsproj -c Debug-LowTrust -f netcoreapp3.0",
-            "type": "shell",
-            "group": "build",
-            "presentation": {
-                "reveal": "silent"
-            },
-            "problemMatcher": "$msCompile"
-        },
-        {
-            "label": "Build .NET 4.5 Test (Config: Debug-LowTrust)",
-            "command": "dotnet build Test/Test.fsproj -c Debug-LowTrust -f net45",
+            "label": "Build Test (Config: Debug-LowTrust)",
+            "command": "dotnet build Test/Test.fsproj -c Debug-LowTrust -p:Platform='Any CPU'",
             "type": "shell",
             "group": "build",
             "presentation": {
@@ -35,7 +15,7 @@
         },
         {
             "label": "Build All (Config: Debug-LowTrust)",
-            "command": "dotnet build FParsec.sln -c Debug-LowTrust",
+            "command": "dotnet build FParsec.sln -c Debug-LowTrust -p:Platform='Any CPU'",
             "type": "shell",
             "group": "build",
             "presentation": {
@@ -44,18 +24,9 @@
             "problemMatcher": "$msCompile"
         },
         {
-            "label": "Test .NET Core (Config: Debug-LowTrust)",
-            "command": "dotnet Test/bin/Debug-LowTrust/netcoreapp3.0/Test.dll",
-            "type": "shell",
-            "group": "test",
-            "presentation": {
-                "reveal": "always"
-            },
-            "problemMatcher": "$msCompile"
-        },
-        {
-            "label": "Test .NET 4.5 (Config: Debug-LowTrust)",
-            "command": "Test/bin/Debug-LowTrust/net45/Test.exe",
+            "label": "Test (Config: Debug-LowTrust)",
+            "dependsOn": ["Build Test (Config: Debug-LowTrust)"],
+            "command": "'Test/bin/Any CPU/Debug-LowTrust/net6/Test'",
             "type": "shell",
             "group": "test",
             "presentation": {
