@@ -10,8 +10,4 @@
     <ProjectReference Include="..\FParsecCS\FParsecCS.csproj" PrivateAssets="All" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="System.Reflection.Emit" Version="4.7.0" />
-  </ItemGroup>
-
 </Project>
