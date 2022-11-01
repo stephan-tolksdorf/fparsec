@@ -1,9 +1,10 @@
-﻿// Copyright (c) Stephan Tolksdorf 2010-2012
+// Copyright (c) Stephan Tolksdorf 2010-2012
 // License: Simplified BSD License. See accompanying documentation.
 
 using System;
 using System.Text;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 using Microsoft.FSharp.Core;
@@ -693,7 +694,7 @@ public sealed class IdentifierValidator {
     private static readonly uint* XIdSmpTable3 = (uint*)(Data + XIdSmpTable3Offset);
 
     private static byte* LoadDataArrayIntoFixedBuffer() {
-        IntPtr buffer = UnmanagedMemoryPool.Allocate(DataArray.Length);
+        IntPtr buffer = RuntimeHelpers.AllocateTypeAssociatedMemory(typeof(IdentifierValidator), DataArray.Length);
         Marshal.Copy(DataArray, 0, buffer, DataArray.Length);
         Debug.Assert(XIdBmpTable2Size%sizeof(uint) == 0);
         Debug.Assert(XIdSmpTable3Size%sizeof(uint) == 0);
