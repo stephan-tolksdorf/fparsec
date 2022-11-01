@@ -16,6 +16,7 @@ namespace FParsec {
 #endif
 public sealed class IdentifierValidator {
 
+    [Flags]
     internal enum IdentifierCharFlags : byte {
         None                = 0,
 
