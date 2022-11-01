@@ -944,4 +944,4 @@ let parse = ParserCombinator()
 let createParserForwardedToRef() =
     let dummyParser = fun stream -> failwith "a parser created with createParserForwardedToRef was not initialized"
     let r = ref dummyParser
-    (fun stream -> !r stream), r : Parser<_,'u> * Parser<_,'u> ref
+    (fun stream -> r.Value stream), r : Parser<_,'u> * Parser<_,'u> ref
