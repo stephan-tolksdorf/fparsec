@@ -30,23 +30,7 @@ let createTypeBuilder name args parent (interfaces : System.Type[]) =
     moduleBuilder.Value.DefineType("FParsec.Emitted." + name, args, parent, interfaces)
 
 let loadI4 (ilg: ILGenerator) (i: int32) =
-    // For run-time-only code generation it probably makes little difference
-    // whether we optimize the size of the IL, but we do it anyway.
-    match i with
-    | -1 -> ilg.Emit(OpCodes.Ldc_I4_M1)
-    | 0  -> ilg.Emit(OpCodes.Ldc_I4_0)
-    | 1  -> ilg.Emit(OpCodes.Ldc_I4_1)
-    | 2  -> ilg.Emit(OpCodes.Ldc_I4_2)
-    | 3  -> ilg.Emit(OpCodes.Ldc_I4_3)
-    | 4  -> ilg.Emit(OpCodes.Ldc_I4_4)
-    | 5  -> ilg.Emit(OpCodes.Ldc_I4_5)
-    | 6  -> ilg.Emit(OpCodes.Ldc_I4_6)
-    | 7  -> ilg.Emit(OpCodes.Ldc_I4_7)
-    | 8  -> ilg.Emit(OpCodes.Ldc_I4_8)
-    | _  ->
-        let i1 = int8 i
-        if i <> int32 i1 then ilg.Emit(OpCodes.Ldc_I4, i)
-        else ilg.Emit(OpCodes.Ldc_I4_S, i1)
+    ilg.Emit(OpCodes.Ldc_I4, i)
 
 let loadI8 (ilg: ILGenerator) (i: int64) =
     let i4 = int32 i
