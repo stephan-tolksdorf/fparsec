@@ -448,23 +448,17 @@ public static bool IsWhitespace(char ch) { // should get inlined
 }
 #endif
 
-#if !LOW_TRUST
-    unsafe
-#endif
-internal static string HexEscape(char c) {
-#if LOW_TRUST
-    char[] cs = new char[6];
-#else
-    char* cs = stackalloc char[6];
-#endif
+internal static string HexEscape(char c)
+{
+    Span<char> cs = stackalloc char[6];
     cs[0] = '\\';
     cs[1] = 'u';
     int n = c;
-    for (int j = 0; j < 4; ++j) {
-        cs[5 - j] = "0123456789abcdef"[n & 0xf];
+    for (int j = 5; j > 1; --j) {
+        cs[j] = "0123456789abcdef"[n & 0xf];
         n >>= 4;
     }
-    return new string(cs, 0, 6);
+    return cs.ToString();
 }
 
 internal static string EscapeChar(char c) {
