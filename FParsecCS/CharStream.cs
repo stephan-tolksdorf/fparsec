@@ -45,8 +45,7 @@ public unsafe struct CharStreamIndexToken {
         BlockPlus1 = unchecked(block + 1);
     }
 
-    [MethodImplAttribute(MethodImplOptions.NoInlining)]
-    private void ThrowInvalidIndexToken() {
+    private static void ThrowInvalidIndexToken() {
         throw new InvalidOperationException("The CharStreamIndexToken is invalid.");
     }
 
@@ -1066,8 +1065,7 @@ public unsafe class CharStream : IDisposable {
                );
     } }
 
-    [MethodImplAttribute(MethodImplOptions.NoInlining)]
-    private void ThrowInvalidIndexToken() {
+    private static void ThrowInvalidIndexToken() {
         throw new ArgumentException("The CharStreamIndexToken is invalid.");
     }
 

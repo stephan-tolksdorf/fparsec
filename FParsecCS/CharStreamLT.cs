@@ -36,8 +36,7 @@ public struct CharStreamIndexToken {
         IdxPlus1 = unchecked(idx + 1);
     }
 
-    [MethodImplAttribute(MethodImplOptions.NoInlining)]
-    private void ThrowInvalidIndexToken() {
+    private static void ThrowInvalidIndexToken() {
         throw new InvalidOperationException("The CharStreamIndexToken is invalid.");
     }
 
@@ -356,8 +355,7 @@ public class CharStream : IDisposable {
                    );
     } }
 
-    [MethodImplAttribute(MethodImplOptions.NoInlining)]
-    private void ThrowInvalidIndexToken() {
+    private static void ThrowInvalidIndexToken() {
         throw new ArgumentException("The CharStreamIndexToken is invalid.");
     }
 
@@ -1809,8 +1807,7 @@ public struct CharStreamState<TUserState> {
         Name      = charStream._Name;
     }
 
-    [MethodImplAttribute(MethodImplOptions.NoInlining)]
-    private void ThrowInvalidState() {
+    private static void ThrowInvalidState() {
         throw new InvalidOperationException("The CharStreamState is invalid.");
     }
 
@@ -1885,8 +1882,7 @@ public sealed class CharStream<TUserState> : CharStream {
         return new CharStreamState<TUserState>(this);
     } }
 
-    [MethodImplAttribute(MethodImplOptions.NoInlining)]
-    private void ThrowInvalidState() {
+    private static void ThrowInvalidState() {
         throw new ArgumentException("The CharStreamState is invalid.");
     }
 
