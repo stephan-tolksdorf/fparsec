@@ -90,7 +90,11 @@ internal static int DetectPreamble(byte[] buffer, int count, ref Encoding encodi
         break;
         }
     }
+#if NETSTANDARD2_0
     byte[] preamble = encoding.GetPreamble();
+#else
+    ReadOnlySpan<byte> preamble = encoding.Preamble;
+#endif
     if (preamble.Length > 0 && count >= preamble.Length) {
         int i = 0;
         while (buffer[i] == preamble[i]) {
