@@ -2,15 +2,10 @@
 // License: Simplified BSD License. See accompanying documentation.
 
 using System;
-using System.Globalization;
 using System.Text;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-
-using Microsoft.FSharp.Core;
-
-using FParsec;
 
 namespace FParsec {
 
@@ -199,7 +194,7 @@ internal static int FindNewlineOrEOSChar(string str) {
     for (i = 0; i < str.Length; ++i) {
         char c = str[i];
         // '\n' = '\u000A', '\r' = '\u000D'
-        if (unchecked((uint)c - 0xEu) < 0xFFFFu - 0xEu) continue;
+        if (unchecked(c - 0xEu) < 0xFFFFu - 0xEu) continue;
         if (c == '\n' || c == '\r' || c == '\uffff') goto Return;
     }
     i = -1;
@@ -301,7 +296,7 @@ static unsafe internal string CopyWithNormalizedNewlines(char* src, int length, 
                     } else {
                         ++src; // skip over the '\n' in "\r\n"
                         *dst = '\n';
-                        ++dst;;
+                        ++dst;
                         if (--nn == 0) break;
                     }
                 }
@@ -451,7 +446,6 @@ internal unsafe struct IsWhitespaceHelper {
 public static bool IsWhitespace(char ch) { // should get inlined
     return (IsWhitespaceHelper.IsWhitespace_(ch) & 1u) != 0;
 }
-
 #endif
 
 #if !LOW_TRUST
@@ -489,24 +483,24 @@ internal static string EscapeChar(char c) {
     }
 }
 
-#if !LOW_TRUST
-    unsafe
-#endif
 internal static string Concat(string str0, string str1, string str2, string str3, string str4) {
-#if LOW_TRUST
+#if !NET
     return str0 + str1 + str2 + str3 + str4;
 #else
     int length = str0.Length + str1.Length + str2.Length + str3.Length + str4.Length;
-    var str = new string('\u0000', length);
-    fixed (char* pStr = str) {
+    return string.Create(length, (str0, str1, str2, str3, str4), static (span, x) =>
+    {
         int i = 0;
-        for (int j = 0; j < str0.Length; ++i, ++j) pStr[i] = str0[j];
-        for (int j = 0; j < str1.Length; ++i, ++j) pStr[i] = str1[j];
-        for (int j = 0; j < str2.Length; ++i, ++j) pStr[i] = str2[j];
-        for (int j = 0; j < str3.Length; ++i, ++j) pStr[i] = str3[j];
-        for (int j = 0; j < str4.Length; ++i, ++j) pStr[i] = str4[j];
-    }
-    return str;
+        x.str0.CopyTo(span[i..]);
+        i += x.str0.Length;
+        x.str1.CopyTo(span[i..]);
+        i += x.str1.Length;
+        x.str2.CopyTo(span[i..]);
+        i += x.str2.Length;
+        x.str3.CopyTo(span[i..]);
+        i += x.str3.Length;
+        x.str4.CopyTo(span[i..]);
+    });
 #endif
 }
 
@@ -523,7 +517,7 @@ internal static string Escape(string str, string prefix1, string prefix2, string
             if (c != '\\') continue;
         } else if (c == ' ' || (   !Char.IsControl(c) && c != escapedQuoteChar
                                 && (c < '\u2028' || c > '\u2029'))) continue;
-        if ((object)sb == null) {
+        if (sb is null) {
             sb = new StringBuilder(str.Length + prefix1.Length + prefix2.Length + postfix1.Length + postfix2.Length + 8);
             sb.Append(prefix1).Append(prefix2);
         }
@@ -532,7 +526,7 @@ internal static string Escape(string str, string prefix1, string prefix2, string
         i0 = i;
         sb.Append(EscapeChar(c));
     }
-    if ((object)sb == null) return Concat(prefix1, prefix2, str, postfix1, postfix2);
+    if (sb is null) return Concat(prefix1, prefix2, str, postfix1, postfix2);
     if (i0 != i) sb.Append(str, i0, i - i0);
     return sb.Append(postfix1).Append(postfix2).ToString();
 }
@@ -549,7 +543,7 @@ internal static string AsciiEscape(string str, string prefix1, string prefix2, s
         if (c > '\'' && c < '\u007f') {
             if (c != '\\') continue;
         } else if (c == ' ' || (c >= ' ' &&  c <= '\'' && c != escapedQuoteChar)) continue;
-        if ((object)sb == null) {
+        if (sb is null) {
             sb = new StringBuilder(str.Length + prefix1.Length + prefix2.Length + postfix1.Length + postfix2.Length + 8);
             sb.Append(prefix1).Append(prefix2);
         }
@@ -558,7 +552,7 @@ internal static string AsciiEscape(string str, string prefix1, string prefix2, s
         i0 = i;
         sb.Append(EscapeChar(c));
     }
-    if ((object)sb == null) return Concat(prefix1, prefix2, str, postfix1, postfix2);
+    if (sb is null) return Concat(prefix1, prefix2, str, postfix1, postfix2);
     if (i0 != i) sb.Append(str, i0, i - i0);
     return sb.Append(postfix1).Append(postfix2).ToString();
 }
