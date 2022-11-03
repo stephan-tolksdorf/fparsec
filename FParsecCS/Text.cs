@@ -377,11 +377,12 @@ public static int CountTextElements(string str)
     return new System.Globalization.StringInfo(str).LengthInTextElements;
 }
 
-// Apparently System.Char.Is(High|Low)Surrogate is not safe for consumption by Silverlight developers
-
-public static bool IsSurrogate(char ch)     { return (ch & 0xF800) == 0xD800; }
-public static bool IsHighSurrogate(char ch) { return (ch & 0xFC00) == 0xD800; }
-public static bool IsLowSurrogate(char ch)  { return (ch & 0xFC00) == 0xDC00; }
+[Obsolete("Use System.Char.IsSurrogate instead.")]
+public static bool IsSurrogate(char ch) => char.IsSurrogate(ch);
+[Obsolete("Use System.Char.IsHighSurrogate instead.")]
+public static bool IsHighSurrogate(char ch) => char.IsHighSurrogate(ch);
+[Obsolete("Use System.Char.IsLowSurrogate instead.")]
+public static bool IsLowSurrogate(char ch) => char.IsLowSurrogate(ch);
 
 #if LOW_TRUST
 
