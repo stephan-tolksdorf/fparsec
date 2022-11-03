@@ -99,12 +99,12 @@ public sealed class IdentifierValidator {
             if ((asciiOptions[c] & IdentifierCharFlags.NonContinue) == 0) goto Error;
         } else {
             isOnlyAscii = false;
-            if (!Text.IsSurrogate(c)) {
+            if (!char.IsSurrogate(c)) {
                 if (!IsXIdStartOrSurrogate(c)) goto Error;
             } else {
                 if (i == length) goto Error; // check could be avoided for null-terminated buffer
                 char c1 = str[1];
-                if (c > 0xDBFF || !Text.IsLowSurrogate(c1)) goto ReturnWithError;
+                if (c > 0xDBFF || !char.IsLowSurrogate(c1)) goto ReturnWithError;
                 int cp = (c - 0xD800)*0x400 + c1 - 0xDC00; // codepoint minus 0x10000
                 if (!IsXIdStartSmp(cp)) goto Error;
                 ++i;
@@ -120,13 +120,13 @@ public sealed class IdentifierValidator {
                         if (i == length) break;
                     } else {
                         isOnlyAscii = false;
-                        if (!Text.IsSurrogate(c)) {
+                        if (!char.IsSurrogate(c)) {
                             if (!IsXIdContinueOrSurrogate(c)) goto Error;
                             if (i == length) break;
                         } else {
                             if (i == length) goto Error; // check could be avoided for null-terminated buffer
                             char c1 = str[i];
-                            if (c > 0xDBFF || !Text.IsLowSurrogate(c1)) goto ReturnWithError;
+                            if (c > 0xDBFF || !char.IsLowSurrogate(c1)) goto ReturnWithError;
                             int cp = (c - 0xD800)*0x400 + c1 - 0xDC00; // codepoint minus 0x10000
                             if (!IsXIdContinueSmp(cp)) goto Error;
                             if (++i >= length) break;
@@ -142,13 +142,13 @@ public sealed class IdentifierValidator {
                         if (i == length) break;
                     } else {
                         isOnlyAscii = false;
-                        if (!Text.IsSurrogate(c)) {
+                        if (!char.IsSurrogate(c)) {
                             if (!IsXIdContinueOrJoinControlOrSurrogate(c)) goto Error; // (*)
                             if (i == length) break;
                         } else {
                             if (i == length) goto Error; // check could be avoided for null-terminated buffer
                             char c1 = str[i];
-                            if (c > 0xDBFF || !Text.IsLowSurrogate(c1)) goto ReturnWithError;
+                            if (c > 0xDBFF || !char.IsLowSurrogate(c1)) goto ReturnWithError;
                             int cp = (c - 0xD800)*0x400 + c1 - 0xDC00; // codepoint minus 0x10000
                             if (!IsXIdContinueSmp(cp)) goto Error;
                             if (++i >= length) break;

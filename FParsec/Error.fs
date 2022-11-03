@@ -172,21 +172,21 @@ let internal printErrorPosition (tabSize: int) (lw: LineWrapper) (stream: CharSt
         let i = sn.Index
         let c = str.[i]
         if System.Char.IsSurrogate(c) then
-            if Text.IsHighSurrogate(c) then
-                if i + 1 < str.Length && Text.IsLowSurrogate(str.[i + 1]) then
+            if System.Char.IsHighSurrogate(c) then
+                if i + 1 < str.Length && System.Char.IsLowSurrogate(str.[i + 1]) then
                     msgs.Add(Strings.ErrorOccurredAtBeginningOfSurrogatePair(str.Substring(i, 2)))
                 else
                     msgs.Add(Strings.CharAtErrorPositionIsIsolatedHighSurrogate(c))
             else // low surrogate
-                if i > 0 && Text.IsHighSurrogate(str.[i - 1]) then
+                if i > 0 && System.Char.IsHighSurrogate(str.[i - 1]) then
                     msgs.Add(Strings.ErrorOccurredAtSecondCharInSurrogatePair(str.Substring(i - 1, 2)))
                 else
                     msgs.Add(Strings.CharAtErrorPositionIsIsolatedLowSurrogate(c))
         elif i > 0 then
             let c1 = str.[i - 1]
-            if Text.IsHighSurrogate(c1) then
+            if System.Char.IsHighSurrogate(c1) then
                 msgs.Add(Strings.CharBeforeErrorPositionIsIsolatedHighSurrogate(c1))
-            elif Text.IsLowSurrogate(c1) then
+            elif System.Char.IsLowSurrogate(c1) then
                 msgs.Add(Strings.CharBeforeErrorPositionIsIsolatedLowSurrogate(c1))
     else
         if p.Index = stream.IndexOfLastCharPlus1 then msgs.Add(Strings.ErrorOccurredAtEndOfInputStream)
