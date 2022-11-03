@@ -378,7 +378,17 @@ static unsafe internal string CopyWithNormalizedNewlines(char* src, int length, 
 /// <summary>Returns System.Globalization.StringInfo(str).LengthInTextElements</summary>
 public static int CountTextElements(string str)
 {
+#if NET
+    int count = 0, index = 0;
+    while (index < str.Length)
+    {
+        index += System.Globalization.StringInfo.GetNextTextElementLength(str, index);
+        count++;
+    }
+    return count;
+#else
     return new System.Globalization.StringInfo(str).LengthInTextElements;
+#endif
 }
 
 [Obsolete("Use System.Char.IsSurrogate instead.")]
