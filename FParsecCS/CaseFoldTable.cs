@@ -2,9 +2,8 @@
 // License: Simplified BSD License. See accompanying documentation.
 
 using System;
-using System.Runtime.InteropServices;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 namespace FParsec {
 
@@ -22,16 +21,13 @@ internal static class CaseFoldTable {
         return table;
     }
 #else
-    public static readonly char[] FoldedCharsArray = new char[0x10000];
-
     public static readonly unsafe char* FoldedChars = Initialize();
-    internal static GCHandle FoldedCharsHandle; // assigned by Initialize
 
     private static unsafe char* Initialize() {
         // initialize FoldedCharsArray
         int n = oneToOneMappings.Length;
         Debug.Assert(n%2 == 0);
-        fixed (char* chars = FoldedCharsArray)
+        char* chars = (char*)RuntimeHelpers.AllocateTypeAssociatedMemory(typeof(CaseFoldTable), 0x10000 * sizeof(char));
         fixed (char* mappings = oneToOneMappings) {
             var uints = (uint*) chars;
             uint c0 = BitConverter.IsLittleEndian ? 0x10000u : 0x1u;
@@ -46,13 +42,7 @@ internal static class CaseFoldTable {
                 chars[mappings[i]] = mappings[i + 1];
         }
 
-        // We pin an array on the managed heap instead of using Marshal.AllocHGlobal
-        // because we normally want it to be alive for as long as the AppDomain exists
-        // but not necessarily as long as the process lives.
-        // The table is large enough to be allocated on the large object heap,
-        // so pinning it is a no-op and the GC is not affected.
-        FoldedCharsHandle = GCHandle.Alloc(FoldedCharsArray, GCHandleType.Pinned);
-        return (char*)FoldedCharsHandle.AddrOfPinnedObject();
+        return chars;
     }
 #endif
 
