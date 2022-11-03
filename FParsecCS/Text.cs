@@ -406,7 +406,7 @@ public static bool IsWhitespace(char ch) {
 
 #else
 
-internal unsafe struct IsWhitespaceHelper {
+internal unsafe static class IsWhitespaceHelper {
 
     // we use the same data structure and algorithm as for IdentifierValidator
 
