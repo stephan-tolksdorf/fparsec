@@ -432,8 +432,7 @@ let createStaticStringMapping (defaultValue: 'T) (keyValues: #seq<string*'T>) : 
         let loadLength() = ilg.Emit(OpCodes.Ldloc, lengthLocal)
         let storeLength() = ilg.Emit(OpCodes.Stloc, lengthLocal)
 
-        let charPointerType = typeof<char>.MakePointerType()
-        let charPointerLocal = ilg.DeclareLocal(charPointerType)
+        let charPointerLocal = ilg.DeclareLocal(typeof<ilsigptr<char>>)
         let loadPtr() = ilg.Emit(OpCodes.Ldloc, charPointerLocal)
         let storePtr() = ilg.Emit(OpCodes.Stloc, charPointerLocal)
 
@@ -508,8 +507,7 @@ let createStaticStringMapping (defaultValue: 'T) (keyValues: #seq<string*'T>) : 
             let mutable f, m, pdl = fieldBuilder, methodInfo, pinnedDataLocal
             if isNull f then
                 f <- tb.DefineField("longKeyData", typeof<uint32[]>, FieldAttributes.Public)
-                let ptrType = typeof<uint32>.MakePointerType()
-                m <- typeof<FParsec.Buffer>.GetMethod("Equals", [|ptrType; ptrType; typeof<int32>|])
+                m <- typeof<FParsec.Buffer>.GetMethod("Equals", [|typeof<ilsigptr<uint32>>; typeof<ilsigptr<uint32>>; typeof<int32>|])
                 pdl <- ilg.DeclareLocal(typeof<uint32[]>, true)
                 longKeyData:= (data, f, m, pdl)
 
