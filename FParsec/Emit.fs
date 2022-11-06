@@ -9,7 +9,6 @@ module internal FParsec.Emit
 open System.Diagnostics
 open System.Reflection
 open System.Reflection.Emit
-open System.Collections.Generic
 
 open System.Runtime.CompilerServices
 open Microsoft.FSharp.NativeInterop
@@ -20,11 +19,24 @@ open FParsec.Range
 #nowarn "9" // "Uses of this construct may result in the generation of unverifiable .NET IL code."
 #nowarn "51" // "The use of native pointers may result in unverifiable .NET IL code"
 
-let private moduleBuilder = lazy (
+let nativeMemoryAssociatedType = "NativeMemoryAssociatedType"
+
+let moduleBuilder = lazy (
     let assemblyName = AssemblyName("FParsec.Emitted")
     let assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.Run)
-    assemblyBuilder.DefineDynamicModule("FParsec.Emitted")
+    let moduleBuilder = assemblyBuilder.DefineDynamicModule("FParsec.Emitted")
+    // We create a dummy static class that will be used to associate the native memory with this dynamic assembly.
+    moduleBuilder
+        .DefineType(nativeMemoryAssociatedType, TypeAttributes.Abstract ||| TypeAttributes.Sealed ||| TypeAttributes.Public)
+        .CreateType()
+    |> ignore
+    moduleBuilder
 )
+
+// Allocates memory that can be used by the generated code.
+let allocTemporaryMem size =
+    let associatedType = moduleBuilder.Value.GetType(nativeMemoryAssociatedType, true, false)
+    RuntimeHelpers.AllocateTypeAssociatedMemory(associatedType, size)
 
 let createTypeBuilder name args parent (interfaces : System.Type[]) =
     moduleBuilder.Value.DefineType("FParsec.Emitted." + name, args, parent, interfaces)
@@ -262,7 +274,7 @@ let emitSetMembershipTest (ilg: ILGenerator)
 
         let mutable stackVar = 0un
         let ptr = if length = 1 then NativePtr.ofNativeInt (NativePtr.toNativeInt &&stackVar)
-                  else NativePtr.ofNativeInt (RuntimeHelpers.AllocateTypeAssociatedMemory(typeof<TempLocals>, length*sizeof<unativeint>))
+                  else NativePtr.ofNativeInt (allocTemporaryMem (length*sizeof<unativeint>))
 
         // fill bit vector ptr.[0..length - 1]
         let r = ranges.[iBegin]
