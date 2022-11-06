@@ -66,15 +66,15 @@ let internal createStaticIntIndicatorFunctionImpl<'TInt when 'TInt : struct>
 
     let tb, ilg = createStaticMappingTypeBuilder<'TInt, bool>()
 
-    let resultLocal = ilg.DeclareLocal(typeof<bool>) // local 0
+    let resultLocal = ilg.DeclareLocal(typeof<bool>)
     emitSetMembershipTest ilg
                           (fun ilg -> ilg.Emit(OpCodes.Ldarg_1)) // loads var
-                          (fun ilg -> ilg.Emit(OpCodes.Stloc_0)) // stores result
+                          (fun ilg -> ilg.Emit(OpCodes.Stloc, resultLocal)) // stores result
                           (TempLocals(ilg))
                           lengthCap densityThreshold
                           minValue maxValue
                           invert ranges
-    ilg.Emit(OpCodes.Ldloc_0)
+    ilg.Emit(OpCodes.Ldloc, resultLocal)
     ilg.Emit(OpCodes.Ret)
 
     let t = tb.CreateType()
@@ -162,7 +162,6 @@ let internal createStaticIntMappingImpl
             let isPrimitive = T.IsPrimitive || T.IsEnum
             let loadConstant = if isPrimitive then createLoaderForPrimitiveConstants ilg
                                else Unchecked.defaultof<_>
-            // local 0
             let resultOrIndexLocal = ilg.DeclareLocal(if isPrimitive then T else typeof<int>)
 
             let defaultLabel = ilg.DefineLabel()
@@ -214,7 +213,7 @@ let internal createStaticIntMappingImpl
                             returnedValues.[returnedValuesCount] <- values.[i]
                         loadI4 ilg returnedValuesCount
                         returnedValuesCount <- returnedValuesCount + 1
-                    ilg.Emit(OpCodes.Stloc_0)
+                    ilg.Emit(OpCodes.Stloc, resultOrIndexLocal)
                     ilg.Emit(OpCodes.Br, returnLabel)
 
             // return default value
@@ -222,7 +221,7 @@ let internal createStaticIntMappingImpl
             ilg.MarkLabel(defaultLabel)
             if isPrimitive then
                 loadConstant defaultValue
-                ilg.Emit(OpCodes.Stloc_0)
+                ilg.Emit(OpCodes.Stloc, resultOrIndexLocal)
             else
                 if defaultValueIsNull then
                     ilg.Emit(OpCodes.Ldnull)
@@ -234,14 +233,14 @@ let internal createStaticIntMappingImpl
             // return result
             ilg.MarkLabel(returnLabel)
             if isPrimitive then
-                ilg.Emit(OpCodes.Ldloc_0)
+                ilg.Emit(OpCodes.Ldloc, resultOrIndexLocal)
             else
                 // We could store all the values in individual fields to avoid the bounds check
                 // and indirect load, but that probably wouldn't be worth the additional
                 // code generation (and garbage collection?) costs (except for tiny mappings).
                 ilg.Emit(OpCodes.Ldarg_0)
                 ilg.Emit(OpCodes.Ldfld, tb.DefineField("Values", values.GetType(), FieldAttributes.Public))
-                ilg.Emit(OpCodes.Ldloc_0)
+                ilg.Emit(OpCodes.Ldloc, resultOrIndexLocal)
                 ilg.Emit(OpCodes.Ldelem, T)
             ilg.Emit(OpCodes.Ret)
 
@@ -430,26 +429,26 @@ let createStaticStringMapping (defaultValue: 'T) (keyValues: #seq<string*'T>) : 
                             else Unchecked.defaultof<_>
 
         let lengthLocal = ilg.DeclareLocal(typeof<int>)
-        let loadLength() = ilg.Emit(OpCodes.Ldloc_0)
-        let storeLength() = ilg.Emit(OpCodes.Stloc_0)
+        let loadLength() = ilg.Emit(OpCodes.Ldloc, lengthLocal)
+        let storeLength() = ilg.Emit(OpCodes.Stloc, lengthLocal)
 
         let charPointerType = typeof<char>.MakePointerType()
         let charPointerLocal = ilg.DeclareLocal(charPointerType)
-        let loadPtr() = ilg.Emit(OpCodes.Ldloc_1)
-        let storePtr() = ilg.Emit(OpCodes.Stloc_1)
+        let loadPtr() = ilg.Emit(OpCodes.Ldloc, charPointerLocal)
+        let storePtr() = ilg.Emit(OpCodes.Stloc, charPointerLocal)
 
         // Declaring the following local as int instead of char improves
         // code generation on the 64-bit JIT.
         let chLocal = ilg.DeclareLocal(typeof<int (*char*)>)
-        let loadCh = fun (_: ILGenerator) -> ilg.Emit(OpCodes.Ldloc_2)
-        let storeCh() = ilg.Emit(OpCodes.Stloc_2)
+        let loadCh = fun (_: ILGenerator) -> ilg.Emit(OpCodes.Ldloc, chLocal)
+        let storeCh() = ilg.Emit(OpCodes.Stloc, chLocal)
 
         let resultOrIndexLocal = ilg.DeclareLocal(if isPrimitive then T else typeof<int>)
-        let loadResult() = ilg.Emit(OpCodes.Ldloc_3)
-        let storeResult() = ilg.Emit(OpCodes.Stloc_3)
+        let loadResult() = ilg.Emit(OpCodes.Ldloc, resultOrIndexLocal)
+        let storeResult() = ilg.Emit(OpCodes.Stloc, resultOrIndexLocal)
 
         let stringLocal = ilg.DeclareLocal(typeof<string>, true) // pinned string
-        let storeString() = ilg.Emit(OpCodes.Stloc_S, 4uy)
+        let storeString() = ilg.Emit(OpCodes.Stloc, stringLocal)
 
         // set up local variables
         ilg.Emit(OpCodes.Ldarg_1) // load string argument
@@ -517,7 +516,7 @@ let createStaticStringMapping (defaultValue: 'T) (keyValues: #seq<string*'T>) : 
             ilg.Emit(OpCodes.Ldarg_0)
             ilg.Emit(OpCodes.Ldfld, f)
             ilg.Emit(OpCodes.Dup)
-            ilg.Emit(OpCodes.Stloc_S, pdl) // pin data array
+            ilg.Emit(OpCodes.Stloc, pdl) // pin data array
             loadI4 ilg dataIndex
             ilg.Emit(OpCodes.Ldelema, typeof<uint32>)
             ilg.Emit(OpCodes.Conv_I)
@@ -528,7 +527,7 @@ let createStaticStringMapping (defaultValue: 'T) (keyValues: #seq<string*'T>) : 
             loadI4 ilg dataLength
             ilg.EmitCall(OpCodes.Call, m, null)
             ilg.Emit(OpCodes.Ldnull)
-            ilg.Emit(OpCodes.Stloc_S, pdl) // unpin data array
+            ilg.Emit(OpCodes.Stloc, pdl) // unpin data array
             ilg.Emit(OpCodes.Brfalse, defaultLabel)
 
         let emitStringComparison (key: string) idx length isFinal =
