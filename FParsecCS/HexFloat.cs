@@ -21,7 +21,7 @@ public static class HexFloat {
 // In the unlikely event anyone ever runs this code on a platform where
 // this is not the case the unit tests will detect the problem.
 
-    private static readonly byte[] asciiHexValuePlus1s = {
+    private static ReadOnlySpan<byte> AsciiHexValuePlus1s => new byte[] {
         0,  0,  0,  0,  0,  0,  0, 0, 0,  0, 0, 0, 0, 0, 0, 0,
         0,  0,  0,  0,  0,  0,  0, 0, 0,  0, 0, 0, 0, 0, 0, 0,
         0,  0,  0,  0,  0,  0,  0, 0, 0,  0, 0, 0, 0, 0, 0, 0,
@@ -32,23 +32,10 @@ public static class HexFloat {
         0,  0,  0,  0,  0,  0,  0, 0, 0,  0, 0, 0, 0, 0, 0, 0
     };
 
-#if !LOW_TRUST
-    private unsafe struct _24CharsBuffer {
-        public fixed char chars[24];
-    }
-#endif
-
-#if !LOW_TRUST
-    unsafe
-#endif
 public static string DoubleToHexString(double x) {
     const int expBits = 11;  // bits for biased exponent
     const int maxBits = 53;  // significant bits (including implicit bit)
-#if LOW_TRUST
     const int maxChars = 24; // "-0x1.fffffffffffffp-1022"
-#else
-    _24CharsBuffer buffer;
-#endif
     const int maxBiasedExp = (1 << expBits) - 1;
     const int maxExp       = 1 << (expBits - 1); // max n for which 0.5*2^n is a double
     const int bias = maxExp - 1;
@@ -56,21 +43,13 @@ public static string DoubleToHexString(double x) {
     const int maxFractNibbles = (maxBits - 1 + 3)/4;
     const ulong mask  = (1UL << (maxBits - 1)) - 1; // mask for lower (maxBits - 1) bits
 
-#if LOW_TRUST
     ulong xn = unchecked((ulong)BitConverter.DoubleToInt64Bits(x));
-#else
-    ulong xn  = *((ulong*)(&x)); // reinterpret double as ulong
-#endif
     int sign = (int)(xn >> (maxBits - 1 + expBits));
     int e = (int)((xn >> (maxBits - 1)) & maxBiasedExp); // the biased exponent
     ulong s  = xn & mask; // the significand (without the implicit bit)
     if (e < maxBiasedExp) {
         if (e == 0 && s == 0) return sign == 0 ? "0x0.0p0" : "-0x0.0p0";
-    #if LOW_TRUST
-        char[] str = new char[maxChars];
-    #else
-        char* str = buffer.chars;
-    #endif
+        Span<char> str = stackalloc char[maxChars];
         int i = 0;
         if (sign != 0) str[i++] = '-';
         str[i++] = '0'; str[i++] = 'x';
@@ -100,30 +79,17 @@ public static string DoubleToHexString(double x) {
             str[--i] = (char) (48 + r);
         } while (e > 0);
         i += li;
-        return new String(str, 0, i);
+        return str.Slice(0, i).ToString();
     } else {
         if (s == 0) return sign == 0 ? "Infinity" : "-Infinity";
         else return "NaN";
     }
 }
 
-#if !LOW_TRUST
-    private unsafe struct _16CharsBuffer {
-        public fixed char chars[16];
-    }
-#endif
-
-#if !LOW_TRUST
-    unsafe
-#endif
 public static string SingleToHexString(float x) {
     const int expBits = 8;   // bits for biased exponent
     const int maxBits = 24;  // significant bits (including implicit bit)
-#if LOW_TRUST
     const int maxChars = 16; // "-0x1.fffffep-126"
-#else
-    _16CharsBuffer buffer;
-#endif
     const int maxBiasedExp = (1 << expBits) - 1;
     const int maxExp       = 1 << (expBits - 1); // max n for which 0.5*2^n is a double
     const int bias = maxExp - 1;
@@ -131,21 +97,17 @@ public static string SingleToHexString(float x) {
     const int maxFractNibbles = (maxBits - 1 + 3)/4;
     const uint mask = (1U << (maxBits - 1)) - 1; // mask for lower (maxBits - 1) bits
 
-#if LOW_TRUST
+    #if NETSTANDARD2_0
     uint xn = BitConverter.ToUInt32(BitConverter.GetBytes(x), 0);
-#else
-    uint xn = *((uint*)(&x)); // reinterpret float as ulong
-#endif
+    #else
+    uint xn = (uint)BitConverter.SingleToInt32Bits(x);
+    #endif
     int sign = (int)(xn >> (maxBits - 1 + expBits));
     int e = (int)((xn >> (maxBits - 1)) & maxBiasedExp); // the biased exponent
     uint s = xn & mask; // the significand (without the implicit bit)
     if (e < maxBiasedExp) {
         if (e == 0 && s == 0) return sign == 0 ? "0x0.0p0" : "-0x0.0p0";
-    #if LOW_TRUST
-        char[] str = new char[maxChars];
-    #else
-        char* str = buffer.chars;
-    #endif
+        Span<char> str = stackalloc char[maxChars];
         int i = 0;
         if (sign != 0) str[i++] = '-';
         str[i++] = '0'; str[i++] = 'x';
@@ -175,7 +137,7 @@ public static string SingleToHexString(float x) {
             str[--i] = (char)(48 + r);
         } while (e > 0);
         i += li;
-        return new String(str, 0, i);
+        return str.Slice(0, i).ToString();
     } else {
         if (s == 0) return sign == 0 ? "Infinity" : "-Infinity";
         else return "NaN";
@@ -239,7 +201,7 @@ public static double DoubleFromHexString(string str) {
             }
             char c = s[i++];
             int h;
-            if (c < 128 && (h = asciiHexValuePlus1s[c]) != 0) {
+            if (c < 128 && (h = AsciiHexValuePlus1s[c]) != 0) {
                 --h;
                 if (nBits <= 0 ) {
                     xn |= (uint)h;
@@ -442,7 +404,7 @@ public static float SingleFromHexString(string str) {
             }
             char c = s[i++];
             int h;
-            if (c < 128 && (h = asciiHexValuePlus1s[c]) != 0) {
+            if (c < 128 && (h = AsciiHexValuePlus1s[c]) != 0) {
                 --h;
                 if (nBits <= 0 ) {
                     xn |= h;
