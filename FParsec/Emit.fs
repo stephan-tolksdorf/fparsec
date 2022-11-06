@@ -20,18 +20,14 @@ open FParsec.Range
 #nowarn "9" // "Uses of this construct may result in the generation of unverifiable .NET IL code."
 #nowarn "51" // "The use of native pointers may result in unverifiable .NET IL code"
 
-let mutable private assemblyBuilder = null
-let mutable private moduleBuilder = null
-let private createTypeBuilderSyncRoot = new obj()
+let private moduleBuilder = lazy (
+    let assemblyName = AssemblyName("FParsec.Emitted")
+    let assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.Run)
+    assemblyBuilder.DefineDynamicModule("FParsec.Emitted")
+)
 
 let createTypeBuilder name args parent (interfaces : System.Type[]) =
-    lock createTypeBuilderSyncRoot (fun _ ->
-        if isNull moduleBuilder then
-            let assemblyName = new AssemblyName("FParsec.Emitted")
-            assemblyBuilder <- AssemblyBuilder.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.Run)
-            moduleBuilder <- assemblyBuilder.DefineDynamicModule("FParsec.Emitted")
-        moduleBuilder.DefineType("FParsec.Emitted." + name, args, parent, interfaces)
-    )
+    moduleBuilder.Value.DefineType("FParsec.Emitted." + name, args, parent, interfaces)
 
 let loadI4 (ilg: ILGenerator) (i: int32) =
     // For run-time-only code generation it probably makes little difference
