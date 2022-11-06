@@ -3,6 +3,7 @@
 
 module FParsec.Test.BufferTests
 
+open System
 open System.Runtime.InteropServices
 open Microsoft.FSharp.NativeInterop
 open FParsec.Test.Test
@@ -27,7 +28,7 @@ let testSwapByteOrder() =
     NativePtr.set p 0 0x12345678u
     NativePtr.set p 1 0x9abcdef0u
     NativePtr.set p 2 0x12345678u
-    Buffer.SwapByteOrder(p, 3u)
+    Buffer.SwapByteOrder(Span<_>(NativePtr.toVoidPtr p, 3))
     NativePtr.get p 0 |> Equal 0x78563412u
     NativePtr.get p 1 |> Equal 0xf0debc9au
     NativePtr.get p 2 |> Equal 0x78563412u
