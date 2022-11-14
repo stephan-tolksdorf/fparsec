@@ -1858,7 +1858,7 @@ let testSkipRestOfLine() =
     testSlowPath()
 
 let testSkipCharsOrNewlines() =
-    let counter = ref 0
+    let mutable counter = 0
 
     let check (stream: CharStream<_>) (cs: char[]) iBegin nMax =
         let state0 = stream.State
@@ -1870,10 +1870,10 @@ let testSkipCharsOrNewlines() =
         let lineOffset = int32 state0.Line - 1
         let alwaysTrue  = fun (c: char) -> true
         let alwaysFalse = fun (c: char) -> false
-        let nTrueN = ref 0
-        let nTrue = fun (c: char) -> if !nTrueN > 0 then decr nTrueN; true else false
+        let mutable nTrueN = 0
+        let nTrue = fun (c: char) -> if nTrueN > 0 then nTrueN <- nTrueN - 1; true else false
         for n = 0 to nMax do
-            incr counter
+            counter <- counter + 1
             let mutable line = 1
             let mutable lineBegin = 0
             let mutable i = iBegin
@@ -1950,38 +1950,38 @@ let testSkipCharsOrNewlines() =
             checkStreamAndReset()
 
             try
-                nTrueN:= n
+                nTrueN <- n
                 stream.SkipCharsOrNewlinesWhile(nTrue) |> Equal c
                 checkStreamAndReset()
             with TestFailed _ ->
                 stream.Seek(stream.IndexOfFirstChar); stream.BacktrackTo(state0)
-                nTrueN:= n
+                nTrueN <- n
                 stream.SkipCharsOrNewlinesWhile(nTrue) |> Equal c
 
-            nTrueN:= n
+            nTrueN <- n
             stream.ReadCharsOrNewlinesWhile(nTrue, false) |> Equal str
             checkStreamAndReset()
-            nTrueN:= n
+            nTrueN <- n
             stream.ReadCharsOrNewlinesWhile(nTrue, true) |> Equal normalizedStr
             checkStreamAndReset()
 
-            nTrueN:= n
+            nTrueN <- n
             stream.SkipCharsOrNewlinesWhile(nTrue, 0, System.Int32.MaxValue) |> Equal c
             checkStreamAndReset()
-            nTrueN:= n
+            nTrueN <- n
             stream.ReadCharsOrNewlinesWhile(nTrue, 0, System.Int32.MaxValue, false) |> Equal str
             checkStreamAndReset()
-            nTrueN:= n
+            nTrueN <- n
             stream.ReadCharsOrNewlinesWhile(nTrue, 0, System.Int32.MaxValue, true) |> Equal normalizedStr
             checkStreamAndReset()
 
-            nTrueN:= n
+            nTrueN <- n
             stream.SkipCharsOrNewlinesWhile(alwaysTrue, 0, n) |> Equal c
             checkStreamAndReset()
-            nTrueN:= n
+            nTrueN <- n
             stream.ReadCharsOrNewlinesWhile(alwaysTrue, 0, n, false) |> Equal str
             checkStreamAndReset()
-            nTrueN:= n
+            nTrueN <- n
             stream.ReadCharsOrNewlinesWhile(alwaysTrue, 0, n, true) |> Equal normalizedStr
             checkStreamAndReset()
 
