@@ -239,8 +239,8 @@ let testCollectSortAndMergeRanges() =
         rangeValues |> Array.forall ((=) 0) |> True
 
         if n <> 0 then
-            set.Add(keys.[rand.Next(keys.Length)])
-            set.Add(keys.[rand.Next(keys.Length)])
+            set.Add(keys[rand.Next(keys.Length)])
+            set.Add(keys[rand.Next(keys.Length)])
             let keys2 = set.ToArray()
             shuffleArray rand keys2
             let mergedRanges3 = collectSortAndMergeRanges keys2

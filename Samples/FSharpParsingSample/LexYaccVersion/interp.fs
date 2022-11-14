@@ -33,7 +33,7 @@ and stmts s l =
 and stmt (s: State) st =
     match st with
     | Assign (a,b) ->
-        s.[a] <- expr s b
+        s[a] <- expr s b
     | While (a,b) ->
         while expr s a <> INT 0 do
             stmt s b

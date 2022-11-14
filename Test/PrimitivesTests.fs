@@ -489,9 +489,9 @@ let testPrimitives() =
 
     let testMany() =
         let manySeq3 = // parserSeq4 without parsers that return Ok without changing the state
-            seq {for p1 in ps1.[1..] do
-                 for p2 in ps1b.[1..] do
-                 for p3 in ps1c.[1..] do
+            seq {for p1 in ps1[1..] do
+                 for p2 in ps1b[1..] do
+                 for p3 in ps1c[1..] do
                     yield [p1;p2;p3]}
 
         let f = foldTestF
@@ -519,16 +519,16 @@ let testPrimitives() =
         let ps2 = constantTestParsers r2 e2
         // all parser combinations except "ok without state change", "ok without state change"
         seq {
-            for p2 in ps2.[1..] do
-                yield ps1.[0], p2
-            for p1 in ps1.[1..] do
+            for p2 in ps2[1..] do
+                yield ps1[0], p2
+            for p1 in ps1[1..] do
                 for p2 in ps2 do
                     yield p1, p2
         }
 
     let testSeqEndBy() =
         let sepEndSeq3 =
-            seq {for p1       in (constantTestParsers 1 (expected "p1")).[1..] do
+            seq {for p1       in (constantTestParsers 1 (expected "p1"))[1..] do
                  for sep1, p2 in sepByTestParsers 'a' (expected "sep1") 2 (expected "p2") do
                  for sep2, p3 in sepByTestParsers 'b' (expected "sep2") 3 (expected "p3") do
                  yield [p1; p2; p3;], [sep1; sep2;]}
@@ -572,12 +572,12 @@ let testPrimitives() =
 
         let manyTillSeq3 =
             seq {for endp1 in ps2 do
-                 for p1    in ps1.[1..] do
+                 for p1    in ps1[1..] do
                  for endp2 in ps2b do
-                 for p2    in ps1b.[1..] do
+                 for p2    in ps1b[1..] do
                  for endp3 in ps2c do
-                 for p3    in ps1c.[1..] do
-                 yield [p1; p2; p3], [endp1; endp2; endp3; ps2c.[0]]}
+                 for p3    in ps1c[1..] do
+                 yield [p1; p2; p3], [endp1; endp2; endp3; ps2c[0]]}
 
         let f = foldTestF
 

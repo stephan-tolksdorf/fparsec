@@ -387,7 +387,7 @@ let eof : Parser<unit,'u>=
 // ------------------------
 
 let internal newlineOrEOSCharInStringArg name (arg: string) i =
-    let msg2 = match arg.[i] with
+    let msg2 = match arg[i] with
                |'\r'|'\n' -> " may not contain newline chars ('\r' or '\n')."
                | EOS      -> " may not contain the char '\uffff' (EOS)"
                | _        -> failwith "newlineOrEOSCharInStringArg"
@@ -408,11 +408,11 @@ let stringReturn s result : Parser<'a,'u> =
     match s.Length with
     | 0 -> preturn result
     | 1 ->
-        let c = s.[0]
+        let c = s[0]
         checkNoNewlineOrEOSChar c 0
         charReturnE c result error
     | 2 ->
-        let c0, c1 = s.[0], s.[1]
+        let c0, c1 = s[0], s[1]
         checkNoNewlineOrEOSChar c0 0
         checkNoNewlineOrEOSChar c1 1
         let cs = TwoChars(c0, c1)
@@ -441,7 +441,7 @@ let pstringCI s : Parser<string,'u> =
 let stringCIReturn (s: string) result : Parser<'a,'u> =
     let error = expectedStringCI s
     if s.Length = 1 then
-        let c = s.[0]
+        let c = s[0]
         if not (isCertainlyNoNLOrEOS c) then
             match c with '\r'|'\n'|EOS -> newlineOrEOSCharInStringArg "skipStringCI/stringCIReturn"  s 0 | _ -> ()
         let cfc = Text.FoldCase(c)
@@ -670,7 +670,7 @@ type IdentifierOptions(?isAsciiIdStart, ?isAsciiIdContinue,
           if allowAllNonAsciiCharsInPreCheck then
              if preCheckStart c then v <- v ||| IdFlags.PreCheckNonContinue
              if preCheckContinue c then v <- v ||| IdFlags.PreCheckContinue
-          asciiOptions.[i] <- v
+          asciiOptions[i] <- v
 
     let iv = new IdentifierValidator(asciiOptions)
     do
@@ -686,7 +686,7 @@ type IdentifierOptions(?isAsciiIdStart, ?isAsciiIdContinue,
             fun c -> let i = int c
                      if i <= 0x7f then
                          // not (x = y) currently yields better code here than (x <> y)
-                         not (asciiOptions.[int c] &&& IdFlags.PreCheckNonContinue = IdFlags.None)
+                         not (asciiOptions[int c] &&& IdFlags.PreCheckNonContinue = IdFlags.None)
                      else true
         elif isNotNull preCheckStart then preCheckStart
         else iv.IsIdStartOrSurrogateFunc
@@ -695,7 +695,7 @@ type IdentifierOptions(?isAsciiIdStart, ?isAsciiIdContinue,
         if allowAllNonAsciiCharsInPreCheck then
             fun c -> let i = int c
                      if i <= 0x7f then
-                         not (asciiOptions.[i] &&& IdFlags.PreCheckContinue = IdFlags.None)
+                         not (asciiOptions[i] &&& IdFlags.PreCheckContinue = IdFlags.None)
                      else true
         elif isNotNull preCheckContinue then preCheckContinue
         else iv.IsIdContinueOrJoinControlOrSurrogateFunc
@@ -1491,7 +1491,7 @@ let followedByString (str: string) : Parser<unit,'u> =
     checkStringContainsNoNewlineOrEOSChar str "followedByString"
     let error = expectedString str
     if str.Length = 1 then
-        let chr = str.[0]
+        let chr = str[0]
         fun stream ->
             if stream.Match(chr) then Reply(())
             else Reply(Error, error)
@@ -1504,7 +1504,7 @@ let followedByStringCI str : Parser<unit,'u> =
     checkStringContainsNoNewlineOrEOSChar str "followedByStringCI"
     let error = expectedStringCI str
     if str.Length = 1 then
-        let cfChr = Text.FoldCase(str.[0])
+        let cfChr = Text.FoldCase(str[0])
         fun stream ->
             if stream.MatchCaseFolded(cfChr) then Reply(())
             else Reply(Error, error)
@@ -1518,7 +1518,7 @@ let notFollowedByString str : Parser<unit,'u> =
     checkStringContainsNoNewlineOrEOSChar str "notFollowedByString"
     let error = unexpectedString str
     if str.Length = 1 then
-        let chr = str.[0]
+        let chr = str[0]
         fun stream ->
             if not (stream.Match(chr)) then Reply(())
             else Reply(Error, error)
@@ -1531,7 +1531,7 @@ let notFollowedByStringCI str : Parser<unit,'u> =
     checkStringContainsNoNewlineOrEOSChar str "notFollowedByStringCI"
     let error = unexpectedStringCI str
     if str.Length = 1 then
-        let cfChr = Text.FoldCase(str.[0])
+        let cfChr = Text.FoldCase(str[0])
         fun stream ->
             if not (stream.MatchCaseFolded(cfChr)) then Reply(())
             else Reply(Error, error)

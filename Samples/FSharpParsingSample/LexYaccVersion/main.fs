@@ -24,7 +24,7 @@ let main(argv: string[]) =
         printf "usage: interp.exe <file>\n"
         exit 1
 
-    let stream = new System.IO.StreamReader(argv.[0], System.Text.Encoding.UTF8)
+    let stream = new System.IO.StreamReader(argv[0], System.Text.Encoding.UTF8)
     let myProg =
 
         // Create the lexer, presenting the bytes to the lexer as ASCII regardless of the original

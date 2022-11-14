@@ -28,10 +28,10 @@ let testFoldCase() =
 
     let mutable j = 0
     for i in 0..2..(oneToOneMappings.Length - 2) do
-        let c = int oneToOneMappings.[i]
+        let c = int oneToOneMappings[i]
         for k = j to c - 1 do
-            Text.FoldCase((char k).ToString()).[0] |> Equal (char k)
-        Text.FoldCase((char c).ToString()).[0] |> Equal oneToOneMappings.[i + 1]
+            Text.FoldCase((char k).ToString())[0] |> Equal (char k)
+        Text.FoldCase((char c).ToString())[0] |> Equal oneToOneMappings[i + 1]
         j <- c + 1
     j |> Equal 0xff3b
 
@@ -48,11 +48,11 @@ let testNormalizeNewlines() =
 
     let rec test (cs: char[]) n i =
         if i < n then
-            cs.[i] <- '\r'
+            cs[i] <- '\r'
             test cs n (i + 1)
-            cs.[i] <- '\n'
+            cs[i] <- '\n'
             test cs n (i + 1)
-            cs.[i] <- '_'
+            cs[i] <- '_'
             test cs n (i + 1)
         else
             check cs n
@@ -100,7 +100,7 @@ let testCountTextElements() =
     let strings = Array.zeroCreate 5
     for i = 0 to 100000 do
         for j = 0 to strings.Length - 1 do
-           strings.[j] <- chars.[rand.Next()%chars.Length]
+           strings[j] <- chars[rand.Next()%chars.Length]
            let s = System.String.Concat(strings)
            Text.CountTextElements(s) |> Equal (countTextElementsRef s)
 

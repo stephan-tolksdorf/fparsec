@@ -52,20 +52,20 @@ let findStronglyConnectedComponents (states: Cloner.State[]) =
     let lowlinks = Array.zeroCreate states.Length
 
     let rec tarjan (v: int) =
-        indices.[v] <- index
-        lowlinks.[v] <- index
+        indices[v] <- index
+        lowlinks[v] <- index
         index <- index + 1
         stack.Push(v)
-        let objectIndices = states.[v].ObjectIndices
+        let objectIndices = states[v].ObjectIndices
         if objectIndices <> null then
             for w in objectIndices do
                 if w <> 0 then
-                    if indices.[w] = 0 then
+                    if indices[w] = 0 then
                         tarjan w
-                        lowlinks.[v] <- min lowlinks.[v] lowlinks.[w]
+                        lowlinks[v] <- min lowlinks[v] lowlinks[w]
                     else if stack.Contains(w) then
-                        lowlinks.[v] <- min lowlinks.[v] indices.[w]
-        if lowlinks.[v] = indices.[v] then
+                        lowlinks[v] <- min lowlinks[v] indices[w]
+        if lowlinks[v] = indices[v] then
             let mutable last = stack.Pop()
             if last <> v then
                 let scc = new System.Collections.Generic.List<int>()
@@ -75,7 +75,7 @@ let findStronglyConnectedComponents (states: Cloner.State[]) =
                     scc.Add(last)
                 let scc = scc.ToArray()
                 for i in scc do
-                    states.[i].StronglyConnectedComponent <- scc
+                    states[i].StronglyConnectedComponent <- scc
     tarjan 1
 
 
@@ -93,12 +93,12 @@ let createRandomTestStateGraph (rand: System.Random) n =
         for j = 1 to n do
             if rand.NextDouble() < p then indices.Add(j)
         if indices.Count = 0 && rand.NextDouble() < 0.5 then
-            states.[i] <- new TestState(null)
+            states[i] <- new TestState(null)
         else
             if rand.NextDouble() < 0.5 then indices.Add(0) // 0 values should be ignored
             let indices = indices.ToArray()
             shuffleArray rand indices
-            states.[i] <- new TestState(indices)
+            states[i] <- new TestState(indices)
 
     // find all roots
     let visited = Array.zeroCreate (n + 1)
@@ -108,62 +108,62 @@ let createRandomTestStateGraph (rand: System.Random) n =
     while unvisitedCount <> 0 do
         let oldUnvisitedCount = unvisitedCount
         let rec mark index =
-            visited.[index] <- 1uy
+            visited[index] <- 1uy
             unvisitedCount <- unvisitedCount - 1
-            let indices = states.[index].ObjectIndices
+            let indices = states[index].ObjectIndices
             if indices <> null then
                 for idx in indices do
-                    if idx > 1 && visited.[idx] = 0uy then
+                    if idx > 1 && visited[idx] = 0uy then
                         mark idx
-        let index = unvisitedIndices.[rand.Next(oldUnvisitedCount)]
+        let index = unvisitedIndices[rand.Next(oldUnvisitedCount)]
         roots.Add(index)
         mark index
         // remove newly marked indices from unvisitedIndices
         let mutable lag = 0
         for i = 0 to oldUnvisitedCount - 1 do
-            if visited.[unvisitedIndices.[i]] <> 0uy then lag <- lag + 1
+            if visited[unvisitedIndices[i]] <> 0uy then lag <- lag + 1
             elif lag <> 0 then
-                unvisitedIndices.[i - lag] <- unvisitedIndices.[i]
+                unvisitedIndices[i - lag] <- unvisitedIndices[i]
 
     if rand.NextDouble() < p then roots.Add(1)
-    states.[1] <- TestState(roots.ToArray())
+    states[1] <- TestState(roots.ToArray())
     states
 
 
 
 let testStronglyConnectedComponents() =
     let test (states: TestState[]) =
-        states.[0] |> Equal null
+        states[0] |> Equal null
 
         let states2 = upcastTestStates (copyTestStates states)
         let states = upcastTestStates states
         let components = Cloner.FindStronglyConnectedComponents(states)
 
-        components.[0] |> Equal 0
-        components.[0] <- System.Int32.MaxValue
+        components[0] |> Equal 0
+        components[0] <- System.Int32.MaxValue
         (components |> Array.tryFind (fun c -> c <= 0)).IsNone |> True
         // basic consistency checks
         for i = 1 to states.Length - 1 do
-            let c = components.[i]
+            let c = components[i]
             if c <> 0 then
-                let state = states.[i]
+                let state = states[i]
                 let scc = state.StronglyConnectedComponent
                 if scc = null then
-                    components.[i] <- 0
+                    components[i] <- 0
                 else
                     for j in scc do
-                        states.[j].StronglyConnectedComponent |> ReferenceEqual scc
-                        components.[j] |> Equal c
-                        components.[j] <- 0
+                        states[j].StronglyConnectedComponent |> ReferenceEqual scc
+                        components[j] |> Equal c
+                        components[j] <- 0
                 System.Array.IndexOf(components, c) |> Equal -1
         for i = 1 to states.Length - 1 do
-            components.[i] |> Equal 0
+            components[i] |> Equal 0
 
         // compare result with reference implementation
         findStronglyConnectedComponents states2
         for i = 1 to states.Length - 1 do
-            let state1 = states.[i]
-            let state2 = states2.[i]
+            let state1 = states[i]
+            let state2 = states2[i]
             let scc1 = state1.StronglyConnectedComponent
             let scc2 = state2.StronglyConnectedComponent
             if scc2 = null then
@@ -174,7 +174,7 @@ let testStronglyConnectedComponents() =
                 scc1 |> Equal scc2
                 // speed up future comparisons
                 for j in state2.StronglyConnectedComponent do
-                    states2.[j].StronglyConnectedComponent <- scc1
+                    states2[j].StronglyConnectedComponent <- scc1
 
     test [|null; TestState(null)|]
     test [|null; TestState([|1|])|]
@@ -194,30 +194,30 @@ let testComputeTopologicalOrder() =
 
         // check that each index only occurs once
         for index in order do
-            marked.[index] |> Equal 0uy
-            marked.[index] <- 1uy
+            marked[index] |> Equal 0uy
+            marked[index] <- 1uy
         System.Array.IndexOf(marked, 0uy) |> Equal -1
         System.Array.Clear(marked, 0, marked.Length)
 
         // check dependency order
-        marked.[0] <- 1uy // states.[0] is ignored
+        marked[0] <- 1uy // states[0] is ignored
         for i = order.Length - 1 downto 1 do
-            let index = order.[i]
-            if marked.[index] = 0uy then
-                let state = states.[index]
+            let index = order[i]
+            if marked[index] = 0uy then
+                let state = states[index]
                 if state.StronglyConnectedComponent = null then
-                    marked.[index] <- 1uy
+                    marked[index] <- 1uy
                     // all dependencies must be marked
                     if state.ObjectIndices <> null then
                         for j in state.ObjectIndices do
-                            marked.[j] |> Equal 1uy
+                            marked[j] |> Equal 1uy
                 else
                     // objects within a strongly connected components have no defined order
                     for j in state.StronglyConnectedComponent do
-                        marked.[j] <- 1uy
+                        marked[j] <- 1uy
                     for j in state.StronglyConnectedComponent do
-                        for k in states.[j].ObjectIndices do
-                            marked.[k] |> Equal 1uy
+                        for k in states[j].ObjectIndices do
+                            marked[k] |> Equal 1uy
 
 
     test [|null; TestState(null)|]
@@ -507,8 +507,8 @@ type BlittableTypeWithNonBlittableBase4 =
 let getFieldValues (fields: System.Reflection.FieldInfo[]) (instance: obj) =
     let values = Array.zeroCreate fields.Length
     for i = 0 to fields.Length - 1 do
-        let f = fields.[i]
-        values.[i] <- f.GetValue(instance)
+        let f = fields[i]
+        values[i] <- f.GetValue(instance)
     values
 
 let testGetSerializedFields() =
@@ -536,7 +536,7 @@ let testGetSerializedFields() =
         let isBlittable2 = fields2 |> Array.forall isBlittableField
         fields.Length |> Equal fields2.Length
         for i = 0 to fields2.Length - 1 do
-            let f1, f2 = fields.[i], fields2.[i]
+            let f1, f2 = fields[i], fields2[i]
             f1.Name |> Equal f2.Name
             f1.FieldType |> Equal f2.FieldType
             f1.DeclaringType |> Equal f2.DeclaringType
@@ -657,7 +657,7 @@ let recEquals (value1: obj) (value2: obj) =
     else
         equalityCache.Add(vv, true)
         b <- value1 = value2
-        equalityCache.[vv] <- b
+        equalityCache[vv] <- b
         b
 
 let mutable onDeserializedList = [] : int list
@@ -1079,9 +1079,9 @@ let testCloners() =
         let v7 = [|box (Some 1); null; box [|Some 2; Some 3|]|]
         let cloner = Cloner.Create(v7.GetType())
         cloner.Clone(v7) |> Equal (box v7)
-        v7.[0] <- box [|Some 4; Some 5|]
-        v7.[1] <- box (Some 6)
-        v7.[2] <- null
+        v7[0] <- box [|Some 4; Some 5|]
+        v7[1] <- box (Some 6)
+        v7[2] <- null
         cloner.Clone(v7) |> Equal (box v7)
 
         let v8 = Array3D.zeroCreate<obj> 0 0 0
@@ -1091,7 +1091,7 @@ let testCloners() =
         for i = 0 to 2 do
             for j = 0 to 3 do
                 for k = 0 to 4 do
-                    v9.[i,j,k] <- i*3*4 + j*5 + k
+                    v9[i,j,k] <- i*3*4 + j*5 + k
         Cloner.Create(v9.GetType()).Clone(v9) |> Equal (box v9)
 
         let v10 = System.Array.CreateInstance(typeof<obj>, [|3; 5; 7|], [|1; 2; 3|])
@@ -1429,7 +1429,7 @@ let testCloning() =
         let os = [|o8; o7; o5_2; o1_1; o0|] : obj[]
         let cloner = Cloner.Create(os.GetType())
         let os2 = cloner.Clone(os) :?> obj[]
-        os2.[4] |> Equal os.[4]
+        os2[4] |> Equal os[4]
         onDeserializedList |> Equal [0;1;2;3;5;6;4] // the order within the strongly connected components
                                                     // is implementation defined
 
@@ -1447,7 +1447,7 @@ let testCloning() =
 
         reset()
         let os3 = cloner.Clone(os) :?> obj[]
-        os3.[4] |> Equal os.[4]
+        os3[4] |> Equal os[4]
         onDeserializedList |> Equal [0;1;2;3;5;6;4]
 
         reset()

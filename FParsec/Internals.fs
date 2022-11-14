@@ -29,10 +29,10 @@ let getSortedUniqueValues (s: seq<_>) =
      if a.Length = 0 then a
      else
         Array.sortInPlace a
-        let mutable previous = a.[0]
+        let mutable previous = a[0]
         let mutable n = 1
         for i = 1 to a.Length - 1 do
-            let c = a.[i]
+            let c = a[i]
             if c <> previous then n <- n + 1
             previous <- c
         if n = a.Length then a
@@ -40,10 +40,10 @@ let getSortedUniqueValues (s: seq<_>) =
             let b = Array.zeroCreate n
             let mutable i = 0
             for j = 0 to b.Length - 1 do
-                let c = a.[i]
-                b.[j] <- c
+                let c = a[i]
+                b[j] <- c
                 i <- i + 1
-                while i < a.Length && a.[i] = c do i <- i + 1
+                while i < a.Length && a[i] = c do i <- i + 1
             b
 
 /// A primitive pretty printer.
@@ -90,7 +90,7 @@ type LineWrapper(tw: System.IO.TextWriter, columnWidth: int, writerIsMultiCharGr
         if isNotNull s then
             let mutable start = 0
             for i = 0 to s.Length - 1 do
-                let c = s.[i]
+                let c = s[i]
                 if (if   c <= ' ' then c = ' ' || (c >= '\t' && c <= '\r')
                     else c >= '\u0085' && (c = '\u0085' || c = '\u2028' || c = '\u2029'))
                 then // any ' ', tab or newlines
@@ -293,13 +293,13 @@ let getLineSnippet (stream: CharStream<'u>) (p: Position) (space: int) (tabSize:
     let mutable nTabs = 0
 
     for i = 0 to str.Length - 1 do
-        let c = str.[i]
+        let c = str[i]
         if c >= ' ' then
             if c >= '\u0300' then
                 mayContainMultiCharGraphemes <- true
         elif c = '\t' then
             nTabs <- nTabs + 1
-        elif c = '\n' || (c = '\r' && (i + 1 >= str.Length || str.[i + 1] <> '\n')) then
+        elif c = '\n' || (c = '\r' && (i + 1 >= str.Length || str[i + 1] <> '\n')) then
             // there can be no newline after idx
             lastLineBeginIdx <- i + 1
             unaccountedNLs <- unaccountedNLs + 1
@@ -320,7 +320,7 @@ let getLineSnippet (stream: CharStream<'u>) (p: Position) (space: int) (tabSize:
         let mutable i0 = 0
         let mutable idxIncr = 0
         for i = 0 to str.Length - 1 do
-            if str.[i] = '\t' then
+            if str[i] = '\t' then
                 if i > i0 then sb.Append(str, i0, i - i0) |> ignore
                 let n = tabSize - (off + i)%tabSize
                 sb.Append(' ', n) |> ignore
@@ -370,22 +370,22 @@ let getLineSnippet (stream: CharStream<'u>) (p: Position) (space: int) (tabSize:
     else
         let indices = System.Globalization.StringInfo.ParseCombiningCharacters(str)
         let mutable idxIdx = 0 // the indices index of the text element containing the str char at idx
-        while idxIdx < indices.Length && indices.[idxIdx] < idx do idxIdx <- idxIdx + 1
-        if (if idxIdx < indices.Length then indices.[idxIdx] > idx else idx < str.Length) then idxIdx <- idxIdx - 1
+        while idxIdx < indices.Length && indices[idxIdx] < idx do idxIdx <- idxIdx + 1
+        if (if idxIdx < indices.Length then indices[idxIdx] > idx else idx < str.Length) then idxIdx <- idxIdx - 1
         let col = columnOffset + int64 (idxIdx + 1)
-        let teIdx    =  if idxIdx     < indices.Length then indices.[idxIdx]     else str.Length
-        let teLength = (if idxIdx + 1 < indices.Length then indices.[idxIdx + 1] else str.Length) - teIdx
+        let teIdx    =  if idxIdx     < indices.Length then indices[idxIdx]     else str.Length
+        let teLength = (if idxIdx + 1 < indices.Length then indices[idxIdx + 1] else str.Length) - teIdx
         let mutable nBefore, nAfter = clip idxIdx (if idxIdx = indices.Length then 0 else indices.Length - idxIdx - 1)
-        let mutable strBegin = let ii = idxIdx - nBefore    in if ii < indices.Length then indices.[ii] else str.Length
-        let mutable strEnd   = let ii = idxIdx + nAfter + 1 in if ii < indices.Length then indices.[ii] else str.Length
+        let mutable strBegin = let ii = idxIdx - nBefore    in if ii < indices.Length then indices[ii] else str.Length
+        let mutable strEnd   = let ii = idxIdx + nAfter + 1 in if ii < indices.Length then indices[ii] else str.Length
         if not multiCharGraphemeSafe then
             while strEnd - strBegin > space && (nBefore > 0 || nAfter > 0) do
                 if nBefore > nAfter then
                     nBefore  <- nBefore - 1
-                    strBegin <- indices.[idxIdx - nBefore]
+                    strBegin <- indices[idxIdx - nBefore]
                 else
                     nAfter <- nAfter - 1
-                    strEnd <- indices.[idxIdx + nAfter + 1]
+                    strEnd <- indices[idxIdx + nAfter + 1]
         {String = str.Substring(strBegin, strEnd - strBegin)
          Index = idx - strBegin
          TextElementIndex = nBefore

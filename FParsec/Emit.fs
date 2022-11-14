@@ -256,7 +256,7 @@ let emitSetMembershipTest (ilg: ILGenerator)
     let outOfRangeLabel = ilg.DefineLabel()
 
     let emitBitVectorTest minValue maxValue iBegin iEnd =
-        let first, last = ranges.[iBegin].Min, ranges.[iEnd - 1].Max
+        let first, last = ranges[iBegin].Min, ranges[iEnd - 1].Max
         // set up bit vector in unmanaged memory
         let w = sizeof<unativeint>*8
         // save a subtraction if it doesn't cost too much memory
@@ -275,8 +275,8 @@ let emitSetMembershipTest (ilg: ILGenerator)
         let ptr = if length = 1 then NativePtr.ofNativeInt (NativePtr.toNativeInt &&stackVar)
                   else NativePtr.ofNativeInt (allocTemporaryMem (length*sizeof<unativeint>))
 
-        // fill bit vector ptr.[0..length - 1]
-        let r = ranges.[iBegin]
+        // fill bit vector ptr[0..length - 1]
+        let r = ranges[iBegin]
         let mutable rMin, rMax = r.Min - off, r.Max - off
         let mutable i = iBegin + 1
         if not inverse then
@@ -287,7 +287,7 @@ let emitSetMembershipTest (ilg: ILGenerator)
                     n <- n ||| (1un <<< rMin%w)
                     if rMin < rMax then rMin <- rMin + 1
                     elif i < iEnd then
-                        let r = ranges.[i]
+                        let r = ranges[i]
                         rMin <- r.Min - off; rMax <- r.Max - off
                         i <- i + 1
                     else rMin <- System.Int32.MaxValue // break
@@ -300,7 +300,7 @@ let emitSetMembershipTest (ilg: ILGenerator)
                     n <- n ^^^ (1un <<< rMin%w)
                     if rMin < rMax then rMin <- rMin + 1
                     elif i < iEnd then
-                        let r = ranges.[i]
+                        let r = ranges[i]
                         rMin <- r.Min - off; rMax <- r.Max - off
                         i <- i + 1
                     else rMin <- System.Int32.MaxValue // break
@@ -358,12 +358,12 @@ let emitSetMembershipTest (ilg: ILGenerator)
         ilg.Emit(OpCodes.Br, endLabel)
 
     let rec emitRegion minValue maxValue iBegin iEnd =
-        Debug.Assert(iBegin < iEnd && minValue <= ranges.[iBegin].Min && ranges.[iEnd - 1].Max <= maxValue)
+        Debug.Assert(iBegin < iEnd && minValue <= ranges[iBegin].Min && ranges[iEnd - 1].Max <= maxValue)
 
         match iEnd - iBegin with
         | 0 -> failwith "emitSetMembershipTest.emitRegion"
-        | 1 -> emitRangeTest inverse minValue maxValue ranges.[iBegin]
-        | 2 -> emitTwoRangeTest inverse minValue maxValue ranges.[iBegin] ranges.[iBegin + 1]
+        | 1 -> emitRangeTest inverse minValue maxValue ranges[iBegin]
+        | 2 -> emitTwoRangeTest inverse minValue maxValue ranges[iBegin] ranges[iBegin + 1]
         | _ -> // at least 3 ranges
             if not noBitVectorTests
                && density lengthCap ranges iBegin iEnd >= densityThreshold
@@ -372,7 +372,7 @@ let emitSetMembershipTest (ilg: ILGenerator)
             else
                 let i, pivotAroundRangeMax = findPivot ranges iBegin iEnd
                 let label = ilg.DefineLabel()
-                let r = ranges.[i]
+                let r = ranges[i]
                 loadVar ilg
                 if pivotAroundRangeMax then
                     loadI4 ilg r.Max
@@ -412,10 +412,10 @@ let emitSwitch (ilg: ILGenerator) (loadVar: ILGenerator -> unit) (temps: TempLoc
         // so we have no use for minValue and maxValue arguments.
         // (In LLVM we could use the 'unreachable' instruction for optimizing the range check.)
         Debug.Assert(iBegin + 2 <= iEnd)
-        let first = ranges.[iBegin].Min
+        let first = ranges[iBegin].Min
         let off = first
         let length =
-            let last = ranges.[iEnd - 1].Max
+            let last = ranges[iEnd - 1].Max
             let lastMinusOff = last - off
             if uint32 lastMinusOff >= uint32 System.Int32.MaxValue then
                 raise (System.ArgumentException("The ranges span width is too large."))
@@ -424,14 +424,14 @@ let emitSwitch (ilg: ILGenerator) (loadVar: ILGenerator -> unit) (temps: TempLoc
         let jt = Array.zeroCreate length
         let mutable j = 0
         for i = iBegin to iEnd - 1 do
-            let r = ranges.[i]
+            let r = ranges[i]
             let rMin, rMax = r.Min - off, r.Max - off
             while j < rMin do
-                jt.[j] <- defaultLabel
+                jt[j] <- defaultLabel
                 j <- j + 1
-            let label = labels.[i]
+            let label = labels[i]
             while j <= rMax do
-                jt.[j] <- label
+                jt[j] <- label
                 j <- j + 1
 
         loadVar ilg
@@ -459,11 +459,11 @@ let emitSwitch (ilg: ILGenerator) (loadVar: ILGenerator -> unit) (temps: TempLoc
             emitBranchIfOutOfRange ilg label minValue maxValue range
 
     let rec emitRegion minValue maxValue iBegin iEnd =
-        Debug.Assert(iBegin < iEnd && minValue <= ranges.[iBegin].Min && ranges.[iEnd - 1].Max <= maxValue)
+        Debug.Assert(iBegin < iEnd && minValue <= ranges[iBegin].Min && ranges[iEnd - 1].Max <= maxValue)
 
         let pivotAroundRange i pivotAroundRangeMax =
             let label = ilg.DefineLabel()
-            let r = ranges.[i]
+            let r = ranges[i]
             loadVar ilg
             if pivotAroundRangeMax then
                 loadI4 ilg r.Max
@@ -482,10 +482,10 @@ let emitSwitch (ilg: ILGenerator) (loadVar: ILGenerator -> unit) (temps: TempLoc
         | 0 ->
             failwith "emitSwitch.emitRegion"
         | 1 ->
-            emitBranchIfInRange2 labels.[iBegin] defaultLabel minValue maxValue ranges.[iBegin]
+            emitBranchIfInRange2 labels[iBegin] defaultLabel minValue maxValue ranges[iBegin]
         | 2 ->
-            let r1, r2 = ranges.[iBegin], ranges.[iBegin + 1]
-            let l1, l2 = labels.[iBegin], labels.[iBegin + 1]
+            let r1, r2 = ranges[iBegin], ranges[iBegin + 1]
+            let l1, l2 = labels[iBegin], labels[iBegin + 1]
             if l1 = l2 then
                 Debug.Assert(r1.Max + 1 < r2.Min)
                 //emitBranchIfOutOfRange defaultLabel minValue maxValue (Range(r1.Min, r2.Max))
@@ -521,9 +521,9 @@ let emitSwitch (ilg: ILGenerator) (loadVar: ILGenerator -> unit) (temps: TempLoc
                         emitBranchIfInRange2 l1 defaultLabel minValue maxLeftValue r1
         | _ -> // at least 3 ranges
             let allLabelsAreIdentical =
-                let label = labels.[iBegin]
+                let label = labels[iBegin]
                 let mutable i = iBegin + 1
-                while i < iEnd && label.Equals(labels.[i]) do i <- i + 1
+                while i < iEnd && label.Equals(labels[i]) do i <- i + 1
                 i = iEnd
             if allLabelsAreIdentical then
                 let bl = temps.GetBoolLocal()
@@ -531,9 +531,9 @@ let emitSwitch (ilg: ILGenerator) (loadVar: ILGenerator -> unit) (temps: TempLoc
                 emitSetMembershipTest ilg loadVar (fun ilg -> ilg.Emit(OpCodes.Stloc, bl)) temps
                                       (lengthCap*8) (densityThreshold/32.)
                                       minValue maxValue
-                                      false ranges.[iBegin..(iEnd - 1)]
+                                      false ranges[iBegin..(iEnd - 1)]
                 ilg.Emit(OpCodes.Ldloc, bl)
-                ilg.Emit(OpCodes.Brtrue, labels.[iBegin])
+                ilg.Emit(OpCodes.Brtrue, labels[iBegin])
                 ilg.Emit(OpCodes.Br, defaultLabel)
             elif density lengthCap ranges iBegin iEnd >= densityThreshold then
                 emitJumpTable iBegin iEnd

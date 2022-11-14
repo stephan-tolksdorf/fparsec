@@ -31,7 +31,7 @@ let testNonStreamConstructors() =
         stream.Encoding |> Equal System.Text.Encoding.Unicode
 
         if length > 0 then
-            stream.Peek() |> Equal s.[index]
+            stream.Peek() |> Equal s[index]
             stream.Skip(s.Substring(index, length)) |> True
             stream.Index |> Equal (indexOffset + int64 length)
             stream.IsEndOfStream |> Equal true
@@ -179,7 +179,7 @@ let testEncodingDetection() =
         use cs0 = new CharStream<unit>(new System.IO.MemoryStream(bs0, false), iso8859_1);
         cs0.Encoding.CodePage |> Equal (e.CodePage)
 
-        bs0.[1] <- 33uy
+        bs0[1] <- 33uy
         use cs0 = new CharStream<unit>(new System.IO.MemoryStream(bs0, false), iso8859_1);
         cs0.Encoding|> ReferenceEqual iso8859_1
 
@@ -268,9 +268,9 @@ let testNonSeekableCharStreamHandling() =
             Fail()
         with :? System.NotSupportedException as e -> ()
 
-        use byteStream2 = new NonSeekableMemoryStream(streamBytes.[..(6 + 3)])
+        use byteStream2 = new NonSeekableMemoryStream(streamBytes[..(6 + 3)])
         use stream2 = createMultiBlockTestStream byteStream2 System.Text.Encoding.Unicode
-        stream2.Read(7) |> Equal str.[..6]
+        stream2.Read(7) |> Equal str[..6]
         stream2.IsEndOfStream |> True
 
     testNonSeekableByteStream()
@@ -283,9 +283,9 @@ let testNonSeekableCharStreamHandling() =
         stream.Read(str.Length) |> Equal str
         stream.IsEndOfStream |> True
         // ... and backtracking to the first block should work too
-        stream.SkipAndPeek(-str.Length) |> Equal str.[0]
+        stream.SkipAndPeek(-str.Length) |> Equal str[0]
         stream.Seek(int64 str.Length - 1L)
-        stream.Read() |> Equal str.[str.Length - 1]
+        stream.Read() |> Equal str[str.Length - 1]
         stream.IsEndOfStream |> True
         // ... but backtracking to a block other than the first should fail
         try
@@ -310,10 +310,10 @@ let testDecoderFallbackExceptionHandling() =
             stream.Read(int position + 4) |> ignore
             Fail()
         with :? System.Text.DecoderFallbackException as e ->
-            unbox (e.Data.["Stream.Position"]) |> Equal position
+            unbox (e.Data["Stream.Position"]) |> Equal position
 
     let shortStreamBytes = getStreamBytes (encoding.GetBytes("123\u00005"))
-    shortStreamBytes.[1 + 4 + 3*4 + 1] <- 0xd8uy
+    shortStreamBytes[1 + 4 + 3*4 + 1] <- 0xd8uy
 
     use shortByteStream = new System.IO.MemoryStream(shortStreamBytes)
     shortByteStream.ReadByte() |> ignore
@@ -323,7 +323,7 @@ let testDecoderFallbackExceptionHandling() =
     test nsShortByteStream false (int64 (    4 + 3*4))
 
     let longStreamBytes = getStreamBytes (encoding.GetBytes("12345678901\u00003"))
-    longStreamBytes.[1 + 4 + 11*4 + 1] <- 0xd8uy
+    longStreamBytes[1 + 4 + 11*4 + 1] <- 0xd8uy
 
     use longByteStream = new System.IO.MemoryStream(longStreamBytes)
     longByteStream.ReadByte() |> ignore
@@ -360,14 +360,14 @@ let testEmptyStream (stream: CharStream<_>) =
     stream.PeekString(System.Int32.MaxValue) |> Equal ""
     let array = [|'x'|]
     stream.PeekString(array, 0, 1) |> Equal 0
-    array.[0] |> Equal 'x'
+    array[0] |> Equal 'x'
     #if LOW_TRUST
     #else
     let handle = System.Runtime.InteropServices.GCHandle.Alloc(array, System.Runtime.InteropServices.GCHandleType.Pinned)
     let arrayPtr = NativePtr.ofNativeInt (handle.AddrOfPinnedObject())
 
     stream.PeekString(arrayPtr, 1) |> Equal 0
-    array.[0] |> Equal 'x'
+    array[0] |> Equal 'x'
     #endif
 
     stream.Read() |> Equal EOS;                     stream.Index |> Equal index0
@@ -378,7 +378,7 @@ let testEmptyStream (stream: CharStream<_>) =
     #if LOW_TRUST
     #else
     stream.Read(arrayPtr, 1) |> Equal 0
-    array.[0] |> Equal 'x';                            stream.Index |> Equal index0
+    array[0] |> Equal 'x';                            stream.Index |> Equal index0
     #endif
 
     stream.Match(EOS) |> False
@@ -595,8 +595,8 @@ let testBasicCharStreamMethods (stream: CharStream<int>) (refString: string) blo
         let index1 = index0 + int64 (min i1 N)
         let index2 = index0 + int64 (min i2 N)
 
-        let c1 = if i1 < N then refString.[i1] else EOS
-        let c2 = if i2 < N then refString.[i2] else EOS
+        let c1 = if i1 < N then refString[i1] else EOS
+        let c2 = if i2 < N then refString[i2] else EOS
 
         let d = i2 - min i1 N
 
@@ -832,31 +832,31 @@ let testBasicCharStreamMethods (stream: CharStream<int>) (refString: string) blo
 
             if n = 1 then
                 seekStreamTo i
-                stream.Match(str.[0]) |> Equal result
+                stream.Match(str[0]) |> Equal result
                 checkStream false
 
                 seekStreamTo i
-                stream.Skip(str.[0]) |> Equal result
+                stream.Skip(str[0]) |> Equal result
                 checkStream result
 
                 seekStreamTo i
-                stream.MatchCaseFolded(cfStr.[0]) |> Equal result
+                stream.MatchCaseFolded(cfStr[0]) |> Equal result
                 checkStream false
 
                 seekStreamTo i
-                stream.SkipCaseFolded(cfStr.[0]) |> Equal result
+                stream.SkipCaseFolded(cfStr[0]) |> Equal result
                 checkStream result
 
             elif n = 2 then
                 seekStreamTo i
-                if stream.Skip(FParsec.TwoChars(str.[0], str.[1])) <> result then
-                    stream.Skip(FParsec.TwoChars(str.[0], str.[1])) |> Equal result
-                //stream.Skip(FParsec.TwoChars(str.[0], str.[1])) |> Equal result
+                if stream.Skip(FParsec.TwoChars(str[0], str[1])) <> result then
+                    stream.Skip(FParsec.TwoChars(str[0], str[1])) |> Equal result
+                //stream.Skip(FParsec.TwoChars(str[0], str[1])) |> Equal result
                 checkStream result
 
             elif n > 1 then
                 seekStreamTo i
-                let restIsEqual = stream.Peek(n - 1) = str.[n - 1] // str only differs in first or last char
+                let restIsEqual = stream.Peek(n - 1) = str[n - 1] // str only differs in first or last char
                 seekStreamTo (i + 1)
                 let index11 = stream.Index
                 stream.Match(strA, 1, n - 1) |> Equal restIsEqual
@@ -922,16 +922,16 @@ let testBasicCharStreamMethods (stream: CharStream<int>) (refString: string) blo
         if n = 0 then
             test "" true
         elif i < N then
-            let ci1 = char (int refString.[i] + 1)
+            let ci1 = char (int refString[i] + 1)
             if n > 0 && i + n <= N then
                 test (refString.Substring(i, n)) true
                 if n = 1 then
                     test (ci1.ToString()) false
                 else
                     test (ci1.ToString() + refString.Substring(i + 1, n - 1)) false
-                    test (refString.Substring(i, n - 1) + ((char (int (refString.[i + n - 1]) + 1)).ToString())) false
+                    test (refString.Substring(i, n - 1) + ((char (int (refString[i + n - 1]) + 1)).ToString())) false
             else
-                test (refString.Substring(i, N - i) + (new string(refString.[N - 1], n - (N - i)))) false
+                test (refString.Substring(i, N - i) + (new string(refString[N - 1], n - (N - i)))) false
 
             seekStreamTo i
             let index = stream.Index
@@ -943,7 +943,7 @@ let testBasicCharStreamMethods (stream: CharStream<int>) (refString: string) blo
             (mstr.Length >= minLength) |> True
             mstr |> Equal (refString.Substring(i, mstr.Length))
         else
-            let str = new string(refString.[N - 1], n)
+            let str = new string(refString[N - 1], n)
             test str false
 
             seekStreamTo i
@@ -1061,16 +1061,16 @@ let testBasicCharStreamMethods (stream: CharStream<int>) (refString: string) blo
         stream.Read(cs, i%3, min n N) |> Equal str.Length
         checkStream true
         new string(cs, i%3, str.Length) |> Equal str
-        for j = 0 to i%3 - 1 do cs.[j] |> Equal '$'
-        for j = i%3 + str.Length to N - 2 do cs.[j] |> Equal '$'
+        for j = 0 to i%3 - 1 do cs[j] |> Equal '$'
+        for j = i%3 + str.Length to N - 2 do cs[j] |> Equal '$'
 
         Array.fill cs 0 (N + 3) '$'
         seekStreamTo i
         stream.PeekString(cs, i%3, min n N) |> Equal str.Length
         checkStream false
         new string(cs, i%3, str.Length) |> Equal str
-        for j = 0 to i%3 - 1 do cs.[j] |> Equal '$'
-        for j = i%3 + str.Length to N - 2 do cs.[j] |> Equal '$'
+        for j = 0 to i%3 - 1 do cs[j] |> Equal '$'
+        for j = i%3 + str.Length to N - 2 do cs[j] |> Equal '$'
 
     #if LOW_TRUST
     #else
@@ -1081,25 +1081,25 @@ let testBasicCharStreamMethods (stream: CharStream<int>) (refString: string) blo
         stream.Read(NativePtr.add ptr (i%3), min n N) |> Equal str.Length
         checkStream true
         new string(cs, i%3, str.Length) |> Equal str
-        for j = 0 to i%3 - 1 do cs.[j] |> Equal '$'
-        for j = i%3 + str.Length to N - 2 do cs.[j] |> Equal '$'
+        for j = 0 to i%3 - 1 do cs[j] |> Equal '$'
+        for j = i%3 + str.Length to N - 2 do cs[j] |> Equal '$'
 
         Array.fill cs 0 (N + 3) '$'
         seekStreamTo i
         stream.PeekString(NativePtr.add ptr (i%3), min n N) |> Equal str.Length
         new string(cs, i%3, str.Length) |> Equal str
-        for j = 0 to i%3 - 1 do cs.[j] |> Equal '$'
-        for j = i%3 + str.Length to N - 2 do cs.[j] |> Equal '$'
+        for j = 0 to i%3 - 1 do cs[j] |> Equal '$'
+        for j = i%3 + str.Length to N - 2 do cs[j] |> Equal '$'
 
         handle.Free()
     #endif
 
         if n = 1 then
             seekStreamTo i
-            stream.Read() |> Equal (if str.Length > 0 then str.[0] else EOS)
+            stream.Read() |> Equal (if str.Length > 0 then str[0] else EOS)
             checkStream true
         elif n = 2 then
-            let c2 = new FParsec.TwoChars((if str.Length > 0 then str.[0] else EOS), (if str.Length = 2 then str.[1] else EOS))
+            let c2 = new FParsec.TwoChars((if str.Length > 0 then str[0] else EOS), (if str.Length = 2 then str[1] else EOS))
             seekStreamTo i
             stream.Peek2() |> Equal c2
             checkStream false
@@ -1128,7 +1128,7 @@ let testBasicCharStreamMethods (stream: CharStream<int>) (refString: string) blo
         for i in [0; 1; N - 1; N] do
             seekStreamTo i
 
-            let str2 = if i < N then refString.[i..] else ""
+            let str2 = if i < N then refString[i..] else ""
             try
                 let str = stream.Read(System.Int32.MaxValue)
                 str |> Equal str2
@@ -1225,7 +1225,7 @@ let xTest() =
                     // generate a char from the BMP with about a prob. of 2/3
                     let c = r % 0xffff
                     if (c < 0xd800 || c > 0xdfff) then
-                        cs.[i] <- char c
+                        cs[i] <- char c
                         i <- i + 1
                 else
                     let c_ = 0x10000 + (r % 0x25000)
@@ -1235,8 +1235,8 @@ let xTest() =
                     let h = char (0xd800 ||| (c >>> 10))
                     let l = char (0xdc00 ||| (c &&& 0x3ff))
                     if i + 1 < cs.Length then
-                        cs.[i]     <- h
-                        cs.[i + 1] <- l
+                        cs[i]     <- h
+                        cs[i + 1] <- l
                         i <- i + 2
         cs
 
@@ -1378,7 +1378,7 @@ let testSkipWhitespace() =
 
         let tabStopDistance = 8
         while i < cs.Length
-              && (match cs.[i] with
+              && (match cs[i] with
                   | ' '  ->
                        indentation <- indentation + 1
                        true
@@ -1390,7 +1390,7 @@ let testSkipWhitespace() =
                       indentation <- 0
                       true
                   | '\n' ->
-                      if i = iBegin || cs.[i - 1] <> '\r' then
+                      if i = iBegin || cs[i - 1] <> '\r' then
                           line <- line + 1
                       lineBegin <- i + 1
                       indentation <- 0
@@ -1446,7 +1446,7 @@ let testSkipWhitespace() =
         stream.Seek(stream.IndexOfFirstChar); stream.BacktrackTo(state0)
 
         let mutable ind = -3
-        if cs.[iBegin] = '\r' || cs.[iBegin] = '\n' then
+        if cs[iBegin] = '\r' || cs[iBegin] = '\n' then
             stream.SkipNewlineThenWhitespace(tabStopDistance, false) |> Equal fIndentation
             stream.StateTag |> Equal fTag
             stream.Index |> Equal fIndex
@@ -1476,19 +1476,19 @@ let testSkipWhitespace() =
         use stream = new CharStream<unit>(cs, 1, 10, 100L)
     #endif
         for c1 in testChars do
-            cs.[1] <- c1
+            cs[1] <- c1
             for c2 in testChars do
-                cs.[2] <- c2
+                cs[2] <- c2
                 for c3 in testChars do
-                    cs.[3] <- c3
+                    cs[3] <- c3
                     for c4 in testChars do
-                        cs.[4] <- c4
+                        cs[4] <- c4
                         for c5 in testChars do
-                            cs.[5] <- c5
+                            cs[5] <- c5
                             for c6 in testChars do
-                                cs.[6] <- c6
+                                cs[6] <- c6
                                 for c7 in testChars do
-                                    cs.[7] <- c7
+                                    cs[7] <- c7
                                 #if LOW_TRUST
                                     let stream = new CharStream<unit>(new string(cs), 1, 10, 100L)
                                 #endif
@@ -1496,13 +1496,13 @@ let testSkipWhitespace() =
 
         // check end of block/stream handling
         for c7 in testChars do
-            cs.[7] <- c7
+            cs[7] <- c7
             for c8 in testChars do
-                cs.[8] <- c8
+                cs[8] <- c8
                 for c9 in testChars do
-                    cs.[9] <- c9
+                    cs[9] <- c9
                     for c10 in testChars do
-                        cs.[10] <- c10
+                        cs[10] <- c10
                     #if LOW_TRUST
                         let stream = new CharStream<unit>(new string(cs), 1, 10, 100L)
                     #else
@@ -1535,15 +1535,15 @@ let testSkipWhitespace() =
         let cs =  Array.create 17 '_'
         // check end of block handling with multi-block CharStream (blockSize = 8, blockOverlap = 3)
         for c6 in testChars do
-            cs.[6] <- c6
+            cs[6] <- c6
             for c7 in testChars do
-                cs.[7] <- c7
+                cs[7] <- c7
                 for c8 in testChars do
-                    cs.[8] <- c8
+                    cs[8] <- c8
                     for c9 in testChars do
-                        cs.[9] <- c9
+                        cs[9] <- c9
                         for c10 in testChars do
-                            cs.[10] <- c10
+                            cs[10] <- c10
                             use stream = createMultiBlockUtf8TestStream cs
                             stream.Skip(6)
                             checkSkipWhitespace cs 6 stream // will start in the fast path
@@ -1566,11 +1566,11 @@ let testSkipUnicodeWhitespace() =
         let mutable lineBegin = 0
         let mutable i = iBegin
         while i < cs.Length
-              && (match cs.[i] with
+              && (match cs[i] with
                   | '\r' | '\u0085' | '\u2028' | '\u2029' ->
                       line <- line + 1; lineBegin <- i + 1; true
                   | '\n' ->
-                      if i = iBegin || cs.[i - 1] <> '\r' then
+                      if i = iBegin || cs[i - 1] <> '\r' then
                           line <- line + 1
                       lineBegin <- i + 1
                       true
@@ -1599,8 +1599,8 @@ let testSkipUnicodeWhitespace() =
                           | _ -> false
 
         if iBegin + 2 >= i then
-            if iBegin < cs.Length && isNewline cs.[iBegin] then
-                let index = if cs.[iBegin] = '\r' && iBegin + 1 < cs.Length && cs.[iBegin + 1] = '\n' then
+            if iBegin < cs.Length && isNewline cs[iBegin] then
+                let index = if cs[iBegin] = '\r' && iBegin + 1 < cs.Length && cs[iBegin + 1] = '\n' then
                                 index0 + 2L
                             else
                                 index0 + 1L
@@ -1624,15 +1624,15 @@ let testSkipUnicodeWhitespace() =
         use stream = new CharStream<unit>(cs, 1, 10, 100L)
     #endif
         for c1 in testChars do
-            cs.[1] <- c1
+            cs[1] <- c1
             for c2 in testChars do
-                cs.[2] <- c2
+                cs[2] <- c2
                 for c3 in testChars do
-                    cs.[3] <- c3
+                    cs[3] <- c3
                     for c4 in testChars do
-                        cs.[4] <- c4
+                        cs[4] <- c4
                         for c5 in testChars do
-                            cs.[5] <- c5
+                            cs[5] <- c5
                         #if LOW_TRUST
                             let stream = new CharStream<unit>(new string(cs), 1, 10, 100L)
                         #endif
@@ -1641,13 +1641,13 @@ let testSkipUnicodeWhitespace() =
     let testSlowPath() =
         let cs =  Array.create 17 '_'
         for c7 in testChars do
-            cs.[7] <- c7
+            cs[7] <- c7
             for c8 in testChars do
-                cs.[8] <- c8
+                cs[8] <- c8
                 for c9 in testChars do
-                    cs.[9] <- c9
+                    cs[9] <- c9
                     for c10 in testChars do
-                        cs.[10] <- c10
+                        cs[10] <- c10
                         use stream = createMultiBlockUtf8TestStream cs
                         stream.Skip(7)
                         checkSkipUnicodeWhitespace cs 7 stream
@@ -1702,12 +1702,12 @@ let testSkipNewlineWhitespace() =
         test "\r\n\t \t " (1 <<< 30) 4 ((1 <<< 30) + 1)
 
         let cs = Array.zeroCreate (1 + (1 <<< 15) + (1 <<< 16)) // 1 + 2^15 + 2^16
-        cs.[0] <- '\n'
+        cs[0] <- '\n'
         // (2^15 - 1)*2^16 + 2^16 = 2^31
         for i = 1 to (1 <<< 15) - 1 do
-            cs.[i] <- '\t'
+            cs[i] <- '\t'
         for i = (1 <<< 15) to ((1 <<< 15)) + (1 <<< 16) do
-            cs.[i] <- ' '
+            cs[i] <- ' '
 
         use stream = new CharStream<unit>(new string(cs))
         stream.SkipNewlineThenWhitespace((1 <<< 16), true) |> Equal System.Int32.MaxValue
@@ -1739,7 +1739,7 @@ let testSkipRestOfLine() =
 
         let indexOffset = stream.Index - int64 iBegin
         let mutable i = iBegin
-        while i < cs.Length  && (cs.[i] <> '\r' && cs.[i] <> '\n') do i <- i + 1
+        while i < cs.Length  && (cs[i] <> '\r' && cs[i] <> '\n') do i <- i + 1
 
         let index = indexOffset + int64 i
         let tag = if i <> iBegin then state0.Tag + _1 else state0.Tag
@@ -1761,9 +1761,9 @@ let testSkipRestOfLine() =
 
         let mutable line2 = state0.Line
         if i < cs.Length then
-            let c = cs.[i]
+            let c = cs[i]
             if c = '\r' || c = '\n' then
-                i <- i + if c = '\r' && i + 1 < cs.Length && cs.[i + 1] = '\n' then 2 else 1
+                i <- i + if c = '\r' && i + 1 < cs.Length && cs[i + 1] = '\n' then 2 else 1
                 line2 <- line2 + 1L
 
         let index2 = indexOffset + int64 i
@@ -1796,15 +1796,15 @@ let testSkipRestOfLine() =
         use stream = new CharStream<unit>(cs, 1, 7, 100L)
     #endif
         for c1 in testChars do
-            cs.[1] <- c1
+            cs[1] <- c1
             for c2 in testChars do
-                cs.[2] <- c2
+                cs[2] <- c2
                 for c3 in testChars do
-                    cs.[3] <- c3
+                    cs[3] <- c3
                     for c4 in testChars do
-                        cs.[4] <- c4
+                        cs[4] <- c4
                         for c5 in testChars do
-                            cs.[5] <- c5
+                            cs[5] <- c5
                         #if LOW_TRUST
                             use stream = new CharStream<unit>(new string(cs), 1, 7, 100L)
                         #endif
@@ -1812,11 +1812,11 @@ let testSkipRestOfLine() =
 
         // check end of block/stream handling
         for c5 in testChars do
-            cs.[5] <- c5
+            cs[5] <- c5
             for c6 in testChars do
-                cs.[6] <- c6
+                cs[6] <- c6
                 for c7 in testChars do
-                    cs.[7] <- c7
+                    cs[7] <- c7
                 #if LOW_TRUST
                     use stream = new CharStream<unit>(new string(cs), 1, 7, 100L)
                 #else
@@ -1841,13 +1841,13 @@ let testSkipRestOfLine() =
         let cs =  Array.create 17 '_'
         // check end of block handling with multi-block CharStream (blockSize = 8, blockOverlap = 3)
         for c5 in testChars do
-            cs.[5] <- c5
+            cs[5] <- c5
             for c6 in testChars do
-                cs.[6] <- c6
+                cs[6] <- c6
                 for c7 in testChars do
-                    cs.[7] <- c7
+                    cs[7] <- c7
                     for c8 in testChars do
-                        cs.[8] <- c8
+                        cs[8] <- c8
                         use stream = createMultiBlockUtf8TestStream cs
                         let s5 = stream.Skip(5)
                         checkSkipRestOfLine cs 5 stream // will start in the fast path
@@ -1879,9 +1879,9 @@ let testSkipCharsOrNewlines() =
             let mutable i = iBegin
             let mutable c = 0
             while c < n && i < cs.Length do
-                match cs.[i] with
+                match cs[i] with
                 | '\r' | '\n' ->
-                    i <- i + if cs.[i] = '\r' && i + 1 < cs.Length && cs.[i + 1] = '\n' then 2 else 1
+                    i <- i + if cs[i] = '\r' && i + 1 < cs.Length && cs[i + 1] = '\n' then 2 else 1
                     line <- line + 1
                     lineBegin <- i
                 | _ -> i <- i + 1
@@ -1905,7 +1905,7 @@ let testSkipCharsOrNewlines() =
             let normalizedStr = FParsec.Text.NormalizeNewlines(str)
 
             if n = 1 then
-                stream.ReadCharOrNewline() |> Equal (if c = 0 then EOS else normalizedStr.[0])
+                stream.ReadCharOrNewline() |> Equal (if c = 0 then EOS else normalizedStr[0])
                 checkStreamAndReset()
 
                 stream.SkipNewline() |> Equal containsNewline
@@ -2011,8 +2011,8 @@ let testSkipCharsOrNewlines() =
             str2 |> IsNull
             checkStreamAndReset()
 
-            if i < cs.Length && str.IndexOf(cs.[i]) = -1 then
-                let cis = string cs.[i]
+            if i < cs.Length && str.IndexOf(cs[i]) = -1 then
+                let cis = string cs[i]
 
                 stream.SkipCharsOrNewlinesUntilString(cis, n, &foundString) |> Equal c // the stream contains no '\u0000'
                 foundString |> Equal true
@@ -2048,19 +2048,19 @@ let testSkipCharsOrNewlines() =
         use stream = new CharStream<unit>(cs, 1, 10, 100L)
     #endif
         for c1 in testChars do
-            cs.[1] <- c1
+            cs[1] <- c1
             for c2 in testChars do
-                cs.[2] <- c2
+                cs[2] <- c2
                 for c3 in testChars do
-                    cs.[3] <- c3
+                    cs[3] <- c3
                     for c4 in testChars do
-                        cs.[4] <- c4
+                        cs[4] <- c4
                         for c5 in testChars do
-                            cs.[5] <- c5
+                            cs[5] <- c5
                             for c6 in testChars do
-                                cs.[6] <- c6
+                                cs[6] <- c6
                                 for c7 in testChars do
-                                    cs.[7] <- c7
+                                    cs[7] <- c7
                                 #if LOW_TRUST
                                     use stream = new CharStream<unit>(new string(cs), 1, 10, 100L)
                                 #endif
@@ -2068,13 +2068,13 @@ let testSkipCharsOrNewlines() =
 
         // check end of block/stream handling
         for c7 in testChars do
-            cs.[7] <- c7
+            cs[7] <- c7
             for c8 in testChars do
-                cs.[8] <- c8
+                cs[8] <- c8
                 for c9 in testChars do
-                    cs.[9] <- c9
+                    cs[9] <- c9
                     for c10 in testChars do
-                        cs.[10] <- c10
+                        cs[10] <- c10
                     #if LOW_TRUST
                         use stream = new CharStream<unit>(new string(cs), 1, 10, 100L)
                     #else
@@ -2101,15 +2101,15 @@ let testSkipCharsOrNewlines() =
         let cs =  Array.create 17 '_'
         // check end of block handling with multi-block CharStream (blockSize = 8, blockOverlap = 3)
         for c6 in testChars do
-            cs.[6] <- c6
+            cs[6] <- c6
             for c7 in testChars do
-                cs.[7] <- c7
+                cs[7] <- c7
                 for c8 in testChars do
-                    cs.[8] <- c8
+                    cs[8] <- c8
                     for c9 in testChars do
-                        cs.[9] <- c9
+                        cs[9] <- c9
                         for c10 in testChars do
-                            cs.[10] <- c10
+                            cs[10] <- c10
                             use stream = createMultiBlockUtf8TestStream cs
                             stream.Skip(6)
                             check stream cs 6 4
@@ -2127,7 +2127,7 @@ let testSkipCharsOrNewlines() =
         let alwaysTrue = fun c -> true
 
         for i in [0; 1; N - 1; N] do
-            let str = if i < N then css.[i..] else ""
+            let str = if i < N then css[i..] else ""
             let n = N - i
             stream.Seek(int64 i)
             stream.SkipCharsOrNewlines(System.Int32.MaxValue) |> Equal n
@@ -2263,7 +2263,7 @@ let SkipCharsOrNewlinesUntilString() =
                               else cs.Length
 
                    let skippedString = if not isPresent then null
-                                       else new string(cs.[i0..i1 - 1])
+                                       else new string(cs[i0..i1 - 1])
 
                    let state0 = stream.State
                    let mutable found = false
@@ -2296,9 +2296,9 @@ let SkipCharsOrNewlinesUntilString() =
                if i1 - i0 > 0 then
                    check strToFind (i1 - i0 - 1) false
                if n > 1 then
-                   let strToNotFind = string (char (int strToFind.[0] + 1)) + (if n > 1 then strToFind.Substring(1) else "")
+                   let strToNotFind = string (char (int strToFind[0] + 1)) + (if n > 1 then strToFind.Substring(1) else "")
                    check strToNotFind System.Int32.MaxValue false
-                   let strToNotFind2 = strToFind.Substring(0, n - 1) + string (char (int strToFind.[n - 1] + 1))
+                   let strToNotFind2 = strToFind.Substring(0, n - 1) + string (char (int strToFind[n - 1] + 1))
                    check strToNotFind2 System.Int32.MaxValue false
 
 
