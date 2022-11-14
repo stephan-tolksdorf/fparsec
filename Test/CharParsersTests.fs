@@ -297,8 +297,7 @@ let testIdentifier() =
 
     identifier defaultOpts |> ROk "ϒ\u0308" 2 "ϒ\u0308"
     identifier defaultOpts |> ROk mc2 2 "MC"
-#if PCL
-#else
+#if !PCL
     let normOpts = IdentifierOptions(normalization=System.Text.NormalizationForm.FormKC)
     let preNormOpts = IdentifierOptions(normalization=System.Text.NormalizationForm.FormKC,
                                         normalizeBeforeValidation=true,

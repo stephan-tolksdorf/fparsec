@@ -2044,8 +2044,7 @@ let testIdentifierValidator() =
         iv.AllowJoinControlCharsAsIdContinueChars <- false
 
     let mutable errorPos = 0
-#if PCL
-#else
+#if !PCL
     iv.NormalizationForm <- System.Text.NormalizationForm.FormC
     iv.ValidateAndNormalize("ϒ\u0308", &errorPos) |> Equal "\u03D4"
     iv.NormalizationForm <- System.Text.NormalizationForm.FormKC

@@ -35,8 +35,7 @@ let testSwapByteOrder() =
 #endif
     Buffer.SwapByteOrder(0x01020304u) |> Equal 0x04030201u
 
-#if LOW_TRUST
-#else
+#if !LOW_TRUST
 
 let testCopy() =
     let n = 64
@@ -81,8 +80,7 @@ let testEqual() =
 
 let run() =
     testSwapByteOrder()
-#if LOW_TRUST
-#else
+#if !LOW_TRUST
     testCopy()
     testEqual()
 #endif

@@ -11,8 +11,7 @@ let run() =
     FParsec.Test.HexFloatTests.run()
     printfn "Testing FParsec.Text ..."
     FParsec.Test.TextTests.run()
-#if LOW_TRUST
-#else
+#if !LOW_TRUST
   #if !DISABLE_STREAM_BACKTRACKING_TESTS
     // In .NET Core System.Text.Decoder no longer support serialization, see https://github.com/stephan-tolksdorf/fparsec/issues/95
     printfn "Testing FParsec.Cloning ..."
@@ -31,8 +30,7 @@ let run() =
     FParsec.Test.OperatorPrecedenceParserTests.run()
     printfn "Testing FParsec.IdentifierValidator ..."
     FParsec.Test.IdentifierValidatorTests.run()
-#if LOW_TRUST
-#else
+#if !LOW_TRUST
     printfn "Testing FParsec.StaticMapping ... "
     printfn "(this can take a while)"
     if System.Diagnostics.Debugger.IsAttached then

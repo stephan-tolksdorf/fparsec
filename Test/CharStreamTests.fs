@@ -151,8 +151,7 @@ let testStreamConstructorArgumentChecking() =
     nonReadableStream.Write(streamBytes, 0, streamBytes.Length)
     nonReadableStream.Dispose()
 
-#if PCL
-#else
+#if !PCL
     try new CharStream<unit>((null: string), encoding) |> ignore; Fail()
     with :? System.ArgumentNullException -> ()
     try new CharStream<unit>("", (null: System.Text.Encoding)) |> ignore; Fail()
@@ -234,8 +233,7 @@ type NonSeekableMemoryStream(bytes: byte[]) =
      override t.Seek(offset, origin) = raise (System.NotSupportedException())
      override t.CanSeek = false
 
-#if LOW_TRUST
-#else
+#if !LOW_TRUST
 
 [<AutoSerializable(false)>]
 type NonSerializableUTF8Decoder() =
@@ -2413,8 +2411,7 @@ let testCreateSubstream() =
     use stream1 = new CharStream<unit>("!" + str + "!", 1, str.Length, 100L)
     test stream1
 
-#if LOW_TRUST
-#else
+#if !LOW_TRUST
   #if DEBUG
     let state = stream1.State
     use substream = stream1.CreateSubstream(state)
@@ -2424,8 +2421,7 @@ let testCreateSubstream() =
   #endif
 #endif
 
-#if LOW_TRUST
-#else
+#if !LOW_TRUST
     use stream2 = new CharStream<unit>(("!" + str + "!").ToCharArray(), 1, str.Length, 100L)
     test stream2
 #endif
@@ -2448,8 +2444,7 @@ let testTwoChars() =
 
 
 let run() =
-#if LOW_TRUST
-#else
+#if !LOW_TRUST
     setStaticField typeof<FParsec.CharStream> "MinimumByteBufferLength" 10
     setStaticField typeof<FParsec.CharStream> "DoNotRoundUpBlockSizeToSimplifyTesting" true
 #endif
@@ -2458,7 +2453,7 @@ let run() =
     testStreamConstructorArgumentChecking()
     testEncodingDetection()
 
-#if LOW_TRUST
+#if !LOW_TRUST
 #else
   #if !DISABLE_STREAM_BACKTRACKING_TESTS
     testNonSeekableCharStreamHandling()

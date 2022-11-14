@@ -9,8 +9,7 @@ open System.Text
 open System.Text.RegularExpressions
 open System.Runtime.CompilerServices // for MethodImplAttribute
 
-#if LOW_TRUST
-#else
+#if !LOW_TRUST
 open Microsoft.FSharp.NativeInterop
 #endif
 
@@ -80,8 +79,7 @@ let runParserOnStream (parser: Parser<'Result,'UserState>) (ustate: 'UserState) 
     stream.Name <- streamName
     applyParser parser stream
 
-#if PCL
-#else
+#if !PCL
 let runParserOnFile (parser: Parser<'Result,'UserState>) (ustate: 'UserState) (path: string) (encoding: System.Text.Encoding) =
 #if LOW_TRUST
     let
@@ -179,8 +177,7 @@ let skipAnyChar : Parser<unit,'u> =
 
 // doesn't check for newlines or EOS
 let
-#if NOINLINE
-#else
+#if !NOINLINE
     inline
 #endif
            internal fastInlineSatisfyE f error : Parser<char,'u> =
@@ -545,8 +542,7 @@ let skipCharsTillStringCI (s: string) skipString maxCount : Parser<unit,'u> =
             Reply(Error, error)
 
 let
-#if NOINLINE
-#else
+#if !NOINLINE
     inline
 #endif
            internal manySatisfyImpl require1 (f1: char -> bool) (f: char -> bool) error : Parser<string,'u> =
@@ -556,8 +552,7 @@ let
         else Reply(Error, error)
 
 let
-#if NOINLINE
-#else
+#if !NOINLINE
     inline
 #endif
            internal skipManySatisfyImpl require1 (f1: char -> bool) (f: char -> bool) error : Parser<unit,'u> =
@@ -650,8 +645,7 @@ type IdentifierOptions(?isAsciiIdStart, ?isAsciiIdContinue,
     // we use match instead of defaultArg here, so that the function wrapper objects only get constructed when needed
     let isAsciiIdStart    = match isAsciiIdStart    with Some v -> v | _ -> IdentifierValidator.IsXIdStartOrSurrogate
     let isAsciiIdContinue = match isAsciiIdContinue with Some v -> v | _ -> IdentifierValidator.IsXIdContinueOrSurrogate
-#if PCL
-#else
+#if !PCL
     let normalizationForm = defaultArg normalization (enum<NormalizationForm> 0)
     let normalizeBeforeValidation = defaultArg normalizeBeforeValidation false
 #endif
@@ -753,8 +747,7 @@ let many1CharsTill          p endp   = many1CharsTill2 p p endp
 
 
 let
-#if NOINLINE
-#else
+#if !NOINLINE
     inline
 #endif
            internal manyStringsImpl require1 (p1: Parser<string,'u>) (p: Parser<string,'u>) : Parser<string,'u> =
@@ -818,8 +811,7 @@ let many1Strings2 p1 p = manyStringsImpl true p1 p
 let many1Strings p = many1Strings2 p p
 
 let
-#if NOINLINE
-#else
+#if !NOINLINE
     inline
 #endif
            internal stringsSepByImpl require1 (p: Parser<string,'u>) (sep: Parser<string,'u>) : Parser<string,'u> =

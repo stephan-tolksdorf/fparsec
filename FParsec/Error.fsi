@@ -64,8 +64,7 @@ val compoundError:   string -> CharStream<'u> -> ErrorMessageList -> ErrorMessag
 
 /// `mergeErrors error1 error2` is equivalent to `ErrorMessageList.Merge(error1, error2)`.
 val
-#if NOINLINE
-#else
+#if !NOINLINE
     inline
 #endif
            mergeErrors: ErrorMessageList -> ErrorMessageList -> ErrorMessageList

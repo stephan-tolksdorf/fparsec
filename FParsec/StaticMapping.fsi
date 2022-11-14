@@ -3,8 +3,7 @@
 
 module FParsec.StaticMapping
 
-#if LOW_TRUST
-#else
+#if !LOW_TRUST
 
 /// `createStaticCharIndicatorFunction invert charsInSet`
 /// creates an optimized indicator function for the chars specified by the `charsInSet` sequence.
