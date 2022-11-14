@@ -11,7 +11,7 @@ namespace FParsec {
 
 internal static class FastGenericEqualityERComparer<T> {
     // if T is a reference type, accessing the field requires a hash table lookup
-    public static EqualityComparer<T> Instance = FastGenericEqualityERComparer.Create<T>();
+    public static readonly EqualityComparer<T> Instance = FastGenericEqualityERComparer.Create<T>();
 
     /// <summary>For reference types it's faster to call Instance.Equals directly
     /// (due to limitations of the inliner of the .NET JIT.)</summary>
