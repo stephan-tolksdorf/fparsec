@@ -400,7 +400,7 @@ internal unsafe struct IsWhitespaceHelper {
 
     // we use the same data structure and algorithm as for IdentifierValidator
 
-    private static readonly byte[] DataArray = {
+    private static ReadOnlySpan<byte> DataArray => new byte[] {
         0,1,1,1,1,1,1,1,1,1,1,2,1,1,1,1,3,1,1,1,
         1,1,1,1,4,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
         1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
@@ -426,33 +426,24 @@ internal unsafe struct IsWhitespaceHelper {
     private const int Table3Log2BlockLength = 5;
 
 #if LOW_TRUST
-    private static readonly byte[] Table1 = BufferHelpers.CopySubarray(DataArray, 0, Table2Offset);
-    private static readonly byte[] Table2 = BufferHelpers.CopySubarray(DataArray, Table2Offset, Table2Size);
-    private static readonly uint[] Table3 = BufferHelpers.CopyUIntsStoredInLittleEndianByteArray(DataArray, Table3Offset, Table3Size);
+    private static ReadOnlySpan<byte> Table1 => DataArray.Slice(0, Table2Offset);
+    private static ReadOnlySpan<byte> Table2 => DataArray.Slice(Table2Offset, Table2Size);
+    private static readonly uint[] Table3 = Buffer.CopyUIntsStoredInLittleEndianByteArray(DataArray, Table3Offset, Table3Size);
 #else
-    private static readonly byte* Data   = LoadDataArrayIntoFixedBuffer();
-    private static readonly byte* Table1 = Data + Table1Offset;
-    private static readonly byte* Table2 = Data + Table2Offset;
-    private static readonly uint* Table3 = (uint*)(Data + Table3Offset);
-
-    private static byte* LoadDataArrayIntoFixedBuffer() {
-        var buffer = RuntimeHelpers.AllocateTypeAssociatedMemory(typeof(Text), DataArray.Length);
-        Marshal.Copy(DataArray, 0, buffer, DataArray.Length);
-        Debug.Assert(Table3Size%sizeof(uint) == 0);
-        if (!System.BitConverter.IsLittleEndian)
-            Buffer.SwapByteOrder((uint*)((byte*)buffer + Table3Offset), Table3Size/sizeof(uint));
-        return (byte*)buffer;
-    }
+    private static byte* Data   => (byte*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(DataArray));
+    private static byte* Table1 => Data + Table1Offset;
+    private static byte* Table2 => Data + Table2Offset;
+    private static readonly uint* Table3 = Buffer.LoadLittleEndianUInt32Data(Data, Table3Offset, Table3Size);
 #endif
 
     public static uint IsWhitespace_(char ch) {
-        uint cp = (uint)ch;
-        uint idx1 = cp >> (Table2Log2BlockLength + Table3Log2BlockLength);
-        const uint f2 = 1u << Table2Log2BlockLength;
-        const uint m2 = f2 - 1;
-        uint idx2 = Table1[idx1]*f2 + ((cp >> Table3Log2BlockLength) & m2);
-        uint idx3 = Table2[idx2];
-        return Table3[idx3] >> (int)(cp /* & 0x1fu */); // C#'s operator>> masks with 0x1fu, no matter whether we do too
+        int cp = ch;
+        int idx1 = cp >> (Table2Log2BlockLength + Table3Log2BlockLength);
+        const int f2 = 1 << Table2Log2BlockLength;
+        const int m2 = f2 - 1;
+        int idx2 = Table1[idx1]*f2 + ((cp >> Table3Log2BlockLength) & m2);
+        int idx3 = Table2[idx2];
+        return Table3[idx3] >> (cp /* & 0x1fu */); // C#'s operator>> masks with 0x1fu, no matter whether we do too
     }
 }
 

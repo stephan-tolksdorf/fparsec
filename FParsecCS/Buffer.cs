@@ -4,6 +4,7 @@
 using System;
 using System.Buffers.Binary;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace FParsec {
@@ -56,7 +57,6 @@ internal static uint[] CopyUIntsStoredInLittleEndianByteArray(ReadOnlySpan<byte>
 #if !LOW_TRUST
 // used by StaticMapping.createStaticStringMapping
 public static unsafe bool Equals(uint* ptr1, uint* ptr2, uint length) {
-    Debug.Assert(length >= 0);
     for (; length >= 4; length -= 4) {
         if (   ptr1[0] != ptr2[0]
             || ptr1[1] != ptr2[1]
@@ -77,6 +77,20 @@ public static unsafe bool Equals(uint* ptr1, uint* ptr2, uint length) {
     return true;
 ReturnFalse:
     return false;
+}
+
+internal static unsafe uint* LoadLittleEndianUInt32Data(byte* data, int offset, int length)
+{
+    if (BitConverter.IsLittleEndian)
+    {
+        return (uint*)(data + offset);
+    }
+
+    void* buffer = (void*)RuntimeHelpers.AllocateTypeAssociatedMemory(typeof(Buffer), length);
+        
+    new ReadOnlySpan<byte>(data + offset, length).CopyTo(new Span<byte>(buffer, length));
+    Buffer.SwapByteOrder(new Span<uint>(buffer, length / sizeof(uint)));
+    return (uint*)buffer;
 }
 #endif
 
