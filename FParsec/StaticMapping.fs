@@ -497,18 +497,18 @@ let createStaticStringMapping (defaultValue: 'T) (keyValues: #seq<string*'T>) : 
             storeResult()
             ilg.Emit(OpCodes.Br, returnLabel)
 
-        let longKeyData = ref (new ResizeArray<_>(), null, null, null)
+        let mutable longKeyData = new ResizeArray<_>(), null, null, null
 
         /// Emit a call to FParsec.Buffer.Equal helper function to compare
         /// a long segment of the input string.
         let emitLongStringComparison dataIndex dataLength isFinal =
-            let data, fieldBuilder, methodInfo, pinnedDataLocal = !longKeyData
+            let data, fieldBuilder, methodInfo, pinnedDataLocal = longKeyData
             let mutable f, m, pdl = fieldBuilder, methodInfo, pinnedDataLocal
             if isNull f then
                 f <- tb.DefineField("longKeyData", typeof<uint32[]>, FieldAttributes.Public)
                 m <- typeof<FParsec.Buffer>.GetMethod("Equals", [|typeof<ilsigptr<uint32>>; typeof<ilsigptr<uint32>>; typeof<int32>|])
                 pdl <- ilg.DeclareLocal(typeof<uint32[]>, true)
-                longKeyData:= (data, f, m, pdl)
+                longKeyData <- (data, f, m, pdl)
 
             ilg.Emit(OpCodes.Ldarg_0)
             ilg.Emit(OpCodes.Ldfld, f)
@@ -541,7 +541,7 @@ let createStaticStringMapping (defaultValue: 'T) (keyValues: #seq<string*'T>) : 
 
                 if length > sizeof<unativeint>*4 then
                     // store string data into longStringData
-                    let data, _, _, _ = !longKeyData
+                    let data, _, _, _ = longKeyData
                     let dataIndex = data.Count
                     while length >= 2 do
                         // if necessary we will swap the byte order of the whole data array
@@ -799,7 +799,7 @@ let createStaticStringMapping (defaultValue: 'T) (keyValues: #seq<string*'T>) : 
                 j <- j + 1
             t.GetField("Values").SetValue(mapping, values)
 
-        let data, _, _, _ = !longKeyData
+        let data, _, _, _ = longKeyData
         if data.Count <> 0 then
             let dataArray = data.ToArray()
             if not (System.BitConverter.IsLittleEndian) then

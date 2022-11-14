@@ -47,14 +47,14 @@ type TestState(objectIndices: int[]) =
 // a reference implementation
 let findStronglyConnectedComponents (states: Cloner.State[]) =
     let stack = new System.Collections.Generic.Stack<int>()
-    let index = ref 1
+    let mutable index = 1
     let indices  = Array.zeroCreate states.Length
     let lowlinks = Array.zeroCreate states.Length
 
     let rec tarjan (v: int) =
-        indices.[v] <- !index
-        lowlinks.[v] <- !index
-        incr index
+        indices.[v] <- index
+        lowlinks.[v] <- index
+        index <- index + 1
         stack.Push(v)
         let objectIndices = states.[v].ObjectIndices
         if objectIndices <> null then
@@ -103,13 +103,13 @@ let createRandomTestStateGraph (rand: System.Random) n =
     // find all roots
     let visited = Array.zeroCreate (n + 1)
     let unvisitedIndices = [|2..n|]
-    let unvisitedCount = ref (n - 1)
+    let mutable unvisitedCount = n - 1
     let roots = ResizeArray()
-    while !unvisitedCount <> 0 do
-        let oldUnvisitedCount = !unvisitedCount
+    while unvisitedCount <> 0 do
+        let oldUnvisitedCount = unvisitedCount
         let rec mark index =
             visited.[index] <- 1uy
-            decr unvisitedCount
+            unvisitedCount <- unvisitedCount - 1
             let indices = states.[index].ObjectIndices
             if indices <> null then
                 for idx in indices do
@@ -238,7 +238,7 @@ let callStreamingContextCallback (context: StreamingContext) =
 
 let addToContextList (context: StreamingContext) s =
     let r = context.Context :?> string list ref
-    r:= s::!r
+    r.Value <- s::r.Value
 
 [<AutoSerializable(false)>]
 type NonSerializableBase() = class end
@@ -329,52 +329,52 @@ let testCloningEventHandlers() =
         CloneEventHandlers.Create(typeof<unit>) |> IsNull
 
     let () =
-        contextList:= []
+        contextList.Value <- []
         let instance = ClassWithSingleOnSerializingHandler()
         let handlers = CloneEventHandlers.Create(instance.GetType())
         handlers.Events |> Equal CloneEvents.OnSerializing
         handlers.InvokeOnSerializing(instance, context)
-        !contextList |> Equal ["OnSerializing"]
+        contextList.Value |> Equal ["OnSerializing"]
 
     let () =
-        contextList:= []
+        contextList.Value <- []
         let instance = ClassWithSingleOnSerializingHandlerInBase()
         let handlers = CloneEventHandlers.Create(instance.GetType())
         handlers.Events |> Equal CloneEvents.OnSerializing
         handlers.InvokeOnSerializing(instance, context)
-        !contextList |> Equal ["OnSerializing"]
+        contextList.Value |> Equal ["OnSerializing"]
 
     let () =
-        contextList:= []
+        contextList.Value <- []
         let instance = ClassWithSingleOnSerializingHandlerInBaseBase()
         let handlers = CloneEventHandlers.Create(instance.GetType())
         handlers.Events |> Equal CloneEvents.OnSerializing
         handlers.InvokeOnSerializing(instance, context)
-        !contextList |> Equal ["OnSerializing"]
+        contextList.Value |> Equal ["OnSerializing"]
 
     let () =
-        contextList:= []
+        contextList.Value <- []
         let instance = ClassWithSingleOnSerializedHandler()
         let handlers = CloneEventHandlers.Create(instance.GetType())
         handlers.Events |> Equal CloneEvents.OnSerialized
         handlers.InvokeOnSerialized(instance, context)
-        !contextList |> Equal ["OnSerialized"]
+        contextList.Value |> Equal ["OnSerialized"]
 
     let () =
-        contextList:= []
+        contextList.Value <- []
         let instance = ClassWithSingleOnDeserializingHandler()
         let handlers = CloneEventHandlers.Create(instance.GetType())
         handlers.Events |> Equal CloneEvents.OnDeserializing
         handlers.InvokeOnDeserializing(instance, context)
-        !contextList |> Equal ["OnDeserializing"]
+        contextList.Value |> Equal ["OnDeserializing"]
 
     let () =
-        contextList:= []
+        contextList.Value <- []
         let instance = ClassWithSingleOnDeserializedHandler()
         let handlers = CloneEventHandlers.Create(instance.GetType())
         handlers.Events |> Equal CloneEvents.OnDeserialized
         handlers.InvokeOnDeserialized(instance, context)
-        !contextList |> Equal ["OnDeserialized"]
+        contextList.Value |> Equal ["OnDeserialized"]
 
     let () =
         let instance = {new ISerializable with
@@ -412,18 +412,18 @@ let testCloningEventHandlers() =
                                   ||| CloneEvents.ISerializable
                                   ||| CloneEvents.IDeserializationCallback
                                   ||| CloneEvents.IObjectReference)
-        contextList:= []
+        contextList.Value <- []
         handlers.InvokeOnSerializing(instance, context)
-        !contextList |> Equal ["OnSerializing"; "OnSerializingBase"; "OnSerializingBaseBase"]
-        contextList:= []
+        contextList.Value |> Equal ["OnSerializing"; "OnSerializingBase"; "OnSerializingBaseBase"]
+        contextList.Value <- []
         handlers.InvokeOnSerialized(instance, context)
-        !contextList |> Equal ["OnSerialized"]
-        contextList:= []
+        contextList.Value |> Equal ["OnSerialized"]
+        contextList.Value <- []
         handlers.InvokeOnDeserializing(instance, context)
-        !contextList |> Equal ["OnDeserializing"; "OnDeserializingBase"; "OnDeserializingBaseBase"]
-        contextList:= []
+        contextList.Value |> Equal ["OnDeserializing"; "OnDeserializingBase"; "OnDeserializingBaseBase"]
+        contextList.Value <- []
         handlers.InvokeOnDeserialized(instance, context)
-        !contextList |> Equal ["OnDeserialized"]
+        contextList.Value |> Equal ["OnDeserialized"]
 
     try
         CloneEventHandlers.Create(typeof<ClassWithNonSerializableBase>) |> ignore

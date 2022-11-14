@@ -168,16 +168,16 @@ let constantTestParsers r e : Parser<'a, int>[] = [| // we rely on the order of 
 /// will be used for the first invocation, the second for the next
 /// invocation, and so on. The reset function can be used to reset the aggregate parser.
 let seqParserAndReset ps =
-    let psr        = ref ps
-    let inRepeat   = ref false
+    let mutable psr        = ps
+    let mutable inRepeat   = false
     (fun stream ->
-         if checkParserRepeat && not !inRepeat then
-            inRepeat:= true
-            psr:= ps
-         match !psr with
-         | hd::tl -> psr:= tl; hd stream
+         if checkParserRepeat && not inRepeat then
+            inRepeat <- true
+            psr <- ps
+         match psr with
+         | hd::tl -> psr <- tl; hd stream
          | [] -> Reply(Error, NoErrorMessages)),
-    (fun () -> psr:= ps)
+    (fun () -> psr <- ps)
 
 let seqParserAndReset2 ps =
     let p1, p1r = seqParserAndReset ps
