@@ -297,7 +297,6 @@ let testIdentifier() =
 
     identifier defaultOpts |> ROk "ϒ\u0308" 2 "ϒ\u0308"
     identifier defaultOpts |> ROk mc2 2 "MC"
-#if !PCL
     let normOpts = IdentifierOptions(normalization=System.Text.NormalizationForm.FormKC)
     let preNormOpts = IdentifierOptions(normalization=System.Text.NormalizationForm.FormKC,
                                         normalizeBeforeValidation=true,
@@ -307,7 +306,6 @@ let testIdentifier() =
 
     identifier normOpts    |> ROk mc2 2 "MC"
     identifier preNormOpts |> ROk mc2 3 "MC2"
-#endif
 
     let abOpts = IdentifierOptions(isAsciiIdStart=((=) 'a'), isAsciiIdContinue=((=) 'b'))
 

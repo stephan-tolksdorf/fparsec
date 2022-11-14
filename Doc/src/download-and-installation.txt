@@ -103,7 +103,7 @@ Annotates some functions with the `MethodImplOptions.AggressiveInlining` attribu
 ]
 
 [`PCL`]
-[Compile for a PCL subset of the .NET API.]
+[Compile for a PCL subset of the .NET API. Removed in version 2.0.0.]
 
 [`#SMALL_STATETAG#`]
 [

@@ -151,7 +151,6 @@ let testStreamConstructorArgumentChecking() =
     nonReadableStream.Write(streamBytes, 0, streamBytes.Length)
     nonReadableStream.Dispose()
 
-#if !PCL
     try new CharStream<unit>((null: string), encoding) |> ignore; Fail()
     with :? System.ArgumentNullException -> ()
     try new CharStream<unit>("", (null: System.Text.Encoding)) |> ignore; Fail()
@@ -161,7 +160,6 @@ let testStreamConstructorArgumentChecking() =
     charStream.Name |> Equal tempFilePath
     charStream.Read(str.Length + 1) |> Equal str
     charStream.Dispose()
-#endif
 
     System.IO.File.Delete(tempFilePath)
 

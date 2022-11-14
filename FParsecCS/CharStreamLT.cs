@@ -201,7 +201,6 @@ public class CharStream : IDisposable {
         StringToStreamIndexOffset = streamBeginIndex - index;
     }
 
-#if !PCL
     public CharStream(string path, Encoding encoding)
            : this(path, encoding, true, DefaultByteBufferLength) { }
 
@@ -220,7 +219,6 @@ public class CharStream : IDisposable {
             throw;
         }
     }
-#endif
 
     public CharStream(Stream stream, Encoding encoding)
            : this(stream, false, encoding, true, DefaultByteBufferLength) { }
@@ -1849,7 +1847,6 @@ public sealed class CharStream<TUserState> : CharStream {
     public CharStream(string chars, int index, int length, long streamBeginIndex)
            : base(chars, index, length, streamBeginIndex) {}
 
-#if !PCL
     public CharStream(string path, Encoding encoding) : base(path, encoding) {}
 
     public CharStream(string path, Encoding encoding, bool detectEncodingFromByteOrderMarks)
@@ -1857,7 +1854,6 @@ public sealed class CharStream<TUserState> : CharStream {
 
     public CharStream(string path, Encoding encoding, bool detectEncodingFromByteOrderMarks, int byteBufferLength)
            : base(path, encoding, detectEncodingFromByteOrderMarks, byteBufferLength) {}
-#endif
 
     public CharStream(Stream stream, Encoding encoding) : base(stream, encoding) {}
 

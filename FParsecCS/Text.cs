@@ -24,22 +24,14 @@ internal static int DetectPreamble(byte[] buffer, int count, ref Encoding encodi
         switch (buffer[0]) {
         case 0xEF:
             if (buffer[1] == 0xBB && count > 2 && buffer[2] == 0xBF) {
-            #if !PCL
                 if (encoding.CodePage != 65001)
-            #else
-                if (encoding.WebName != "utf-8")
-            #endif
                     encoding = Encoding.UTF8;
                 return 3;
             }
         break;
         case 0xFE:
             if (buffer[1] == 0xFF) {
-            #if !PCL
                 if (encoding.CodePage != 1201)
-            #else
-                if (encoding.WebName != "utf-16BE")
-            #endif
                     encoding = Encoding.BigEndianUnicode;
                 return 2;
             }
@@ -47,25 +39,11 @@ internal static int DetectPreamble(byte[] buffer, int count, ref Encoding encodi
         case 0xFF:
             if (buffer[1] == 0xFE) {
                 if (count >= 4 && buffer[2] == 0x00 && buffer[3] == 0x00) {
-                #if !PCL
                     if (encoding.CodePage != 12000)
                         encoding = Encoding.UTF32; // UTF-32 little endian
-                #else
-                    if (encoding.WebName != "utf-32") {
-                        try {
-                          encoding = Encoding.GetEncoding("utf-32");
-                        } catch {
-                          throw new NotSupportedException("An UTF-32 input encoding was detected, which is not supported on this system.");
-                        }
-                    }
-                #endif
                     return 4;
                 } else {
-                #if !PCL
                     if (encoding.CodePage != 1200)
-                #else
-                    if (encoding.WebName != "utf-16")
-                #endif
                         encoding = Encoding.Unicode; // UTF-16 little endian
                     return 2;
                 }
@@ -73,18 +51,8 @@ internal static int DetectPreamble(byte[] buffer, int count, ref Encoding encodi
         break;
         case 0x00:
             if (buffer[1] == 0x00 && count >= 4 && buffer[2] == 0xFE && buffer[3] == 0xFF) {
-            #if !PCL
                 if (encoding.CodePage != 12001)
                     encoding = new UTF32Encoding(true, true); // UTF-32 big endian
-            #else
-                if (encoding.WebName != "utf-32BE") {
-                    try {
-                        encoding = Encoding.GetEncoding("utf-32BE");
-                    } catch {
-                        throw new NotSupportedException("An UTF-32 (big endian) input encoding was detected, which is not supported on this system.");
-                    }
-                }
-            #endif
                 return 4;
             }
         break;
