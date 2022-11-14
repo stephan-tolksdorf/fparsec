@@ -71,9 +71,9 @@ let testEqual() =
 
     for length = 0 to n do
         for i = 0 to length - 1 do
-            Buffer.Equals(buffer1, buffer2, uint32 length) |> True
+            Buffer.Equals(buffer1, buffer2, length) |> True
             NativePtr.set buffer2 i 0xffffffffu
-            Buffer.Equals(buffer1, buffer2, uint32 length) |> False
+            Buffer.Equals(buffer1, buffer2, length) |> False
             NativePtr.set buffer2 i (uint32 i)
 
 
