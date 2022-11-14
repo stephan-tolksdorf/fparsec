@@ -5,10 +5,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-#if PCL || NETSTANDARD1_6
-using System.Reflection;
-#endif
-
 using Microsoft.FSharp.Core;
 
 namespace FParsec {

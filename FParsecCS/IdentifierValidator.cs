@@ -29,10 +29,8 @@ public sealed class IdentifierValidator {
         PreCheckNonContinue = 8,
     }
 
-#if !PCL
     public NormalizationForm NormalizationForm { get; set; }
     public bool NormalizeBeforeValidation { get; set; }
-#endif
     public bool AllowJoinControlCharsAsIdContinueChars { get; set; }
     private readonly IdentifierCharFlags[] AsciiCharOptions;
 
@@ -60,10 +58,6 @@ public sealed class IdentifierValidator {
         Debug.Assert(asciiCharOptions.Length == 128);
         AsciiCharOptions = asciiCharOptions;
     }
-
-#if PCL
-    #pragma warning disable 164, 219 // label not referenced, variable not used
-#endif
 
     /// <summary>Returns the normalized string, or null in case an invalid identifier
     /// character is found. If an invalid character is found, the string index of the
@@ -158,10 +152,6 @@ public sealed class IdentifierValidator {
             }
         }
         errorPosition = -1;
-#if PCL
-        return str; // The PCL API subset does not support Unicode normalization.
-    Error:
-#else
         if (NormalizationForm == 0 || (isOnlyAscii | isSecondRound)) return str;
         return str.Normalize(NormalizationForm);
     Error:
@@ -177,15 +167,10 @@ public sealed class IdentifierValidator {
                 goto IdStart;
             }
         }
-#endif
     ReturnWithError:
         errorPosition = i - 1;
         return null;
     }
-
-#if PCL
-    #pragma warning restore 164, 219
-#endif
 
     private class IsIdStartCharOrSurrogateFSharpFunc : FSharpFunc<char, bool> {
         private IdentifierCharFlags[] AsciiCharOptions;

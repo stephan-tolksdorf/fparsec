@@ -79,7 +79,6 @@ let runParserOnStream (parser: Parser<'Result,'UserState>) (ustate: 'UserState) 
     stream.Name <- streamName
     applyParser parser stream
 
-#if !PCL
 let runParserOnFile (parser: Parser<'Result,'UserState>) (ustate: 'UserState) (path: string) (encoding: System.Text.Encoding) =
 #if LOW_TRUST
     let
@@ -89,7 +88,6 @@ let runParserOnFile (parser: Parser<'Result,'UserState>) (ustate: 'UserState) (p
         stream = new CharStream<'UserState>(path, encoding)
     stream.UserState <- ustate
     applyParser parser stream
-#endif
 
 let run parser (string: string) =
     runParserOnString parser () "" string
@@ -248,23 +246,9 @@ let skipSatisfyL f label = skipSatisfyE f (expected label)
 
 
 let private charsToString (chars: seq<char>) =
-#if PCL
-    match box chars with
-#else
     match chars with
-#endif
     | :? string as str -> str
     | _ -> new string(Array.ofSeq chars)
-
-let private stringToChars (str: string) =
-#if PCL
-    match box str with
-    | :? seq<char> as chars -> chars
-    | _ -> seq { for i = 0 to str.Length - 1 do yield str.[i] }
-#else
-    str
-#endif
-
 
 let isAnyOf (chars: seq<char>) =
 #if LOW_TRUST
@@ -294,23 +278,19 @@ let isNoneOf (chars: seq<char>) =
 
 let anyOf (chars: seq<char>) =
     let str = charsToString chars
-    let chars = stringToChars str // PCL workaround
-    satisfyE (isAnyOf chars) (Errors.ExpectedAnyCharIn(str))
+    satisfyE (isAnyOf str) (Errors.ExpectedAnyCharIn(str))
 
 let skipAnyOf (chars: seq<char>) =
     let str = charsToString chars
-    let chars = stringToChars str // PCL workaround
-    skipSatisfyE (isAnyOf chars) (Errors.ExpectedAnyCharIn(str))
+    skipSatisfyE (isAnyOf str) (Errors.ExpectedAnyCharIn(str))
 
 let noneOf (chars: seq<char>) =
     let str = charsToString chars
-    let chars = stringToChars str // PCL workaround
-    satisfyE (isNoneOf chars) (Errors.ExpectedAnyCharNotIn(str))
+    satisfyE (isNoneOf str) (Errors.ExpectedAnyCharNotIn(str))
 
 let skipNoneOf (chars: seq<char>) =
     let str = charsToString chars
-    let chars = stringToChars str // PCL workaround
-    skipSatisfyE (isNoneOf chars) (Errors.ExpectedAnyCharNotIn(str))
+    skipSatisfyE (isNoneOf str) (Errors.ExpectedAnyCharNotIn(str))
 
 let inline isAsciiUpper (c: char) =
     uint32 c - uint32 'A' <= uint32 'Z' - uint32 'A'
@@ -636,19 +616,14 @@ let regexL pattern label = regexE pattern (expected label)
 type private IdFlags = IdentifierValidator.IdentifierCharFlags
 
 type IdentifierOptions(?isAsciiIdStart, ?isAsciiIdContinue,
-                   #if PCL
-                   #else
                        ?normalization,
                        ?normalizeBeforeValidation,
-                   #endif
                        ?allowJoinControlChars, ?preCheckStart, ?preCheckContinue, ?allowAllNonAsciiCharsInPreCheck, ?label, ?invalidCharMessage) =
     // we use match instead of defaultArg here, so that the function wrapper objects only get constructed when needed
     let isAsciiIdStart    = match isAsciiIdStart    with Some v -> v | _ -> IdentifierValidator.IsXIdStartOrSurrogate
     let isAsciiIdContinue = match isAsciiIdContinue with Some v -> v | _ -> IdentifierValidator.IsXIdContinueOrSurrogate
-#if !PCL
     let normalizationForm = defaultArg normalization (enum<NormalizationForm> 0)
     let normalizeBeforeValidation = defaultArg normalizeBeforeValidation false
-#endif
     let allowJoinControlChars = defaultArg allowJoinControlChars false
     let expectedIdentifierError = expected (defaultArg label Strings.Identifier)
     let invalidCharError = messageError (defaultArg invalidCharMessage Strings.IdentifierContainsInvalidCharacterAtIndicatedPosition)
@@ -674,11 +649,8 @@ type IdentifierOptions(?isAsciiIdStart, ?isAsciiIdContinue,
 
     let iv = new IdentifierValidator(asciiOptions)
     do
-    #if PCL
-    #else
        iv.NormalizationForm <- normalizationForm
        iv.NormalizeBeforeValidation <- normalizeBeforeValidation
-    #endif
        iv.AllowJoinControlCharsAsIdContinueChars <- allowJoinControlChars
 
     let preCheck1 =
