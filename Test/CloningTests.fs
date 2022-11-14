@@ -3,8 +3,7 @@
 
 module FParsec.Test.CloningTests
 
-#if LOW_TRUST
-#else
+#if !LOW_TRUST
 open FParsec.Test.Test
 
 open FParsec.Cloning

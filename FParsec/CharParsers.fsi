@@ -42,8 +42,7 @@ val runParserOnSubstring: Parser<'a,'u> -> 'u -> streamName: string -> string ->
 /// The parser's `Reply` is captured and returned as a `ParserResult` value.
 val runParserOnStream:    Parser<'a,'u> -> 'u -> streamName: string -> System.IO.Stream -> System.Text.Encoding -> ParserResult<'a,'u>
 
-#if PCL
-#else
+#if !PCL
 /// `runParserOnFile p ustate path encoding` runs the parser `p` on the content of the file
 /// at the given `path`, starting with the initial user state `ustate`.
 /// In case no unicode byte order mark is found, the file data is assumed to be encoded with the given `encoding`.

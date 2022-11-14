@@ -113,8 +113,7 @@ let compoundError label (stream: CharStream<'u>) (error: ErrorMessageList) =
         ErrorMessageList(ErrorMessage.CompoundError(label, stream.Position, stream.UserState, error))
 
 let
-#if NOINLINE
-#else
+#if !NOINLINE
     inline
 #endif
            mergeErrors errorMessages1 errorMessages2 = ErrorMessageList.Merge(errorMessages1, errorMessages2)

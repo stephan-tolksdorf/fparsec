@@ -3,8 +3,7 @@
 
 module FParsec.StaticMapping
 
-#if LOW_TRUST
-#else
+#if !LOW_TRUST
 open System.Reflection
 open System.Reflection.Emit
 open System.Runtime.Serialization

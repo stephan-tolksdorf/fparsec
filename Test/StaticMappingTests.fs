@@ -3,8 +3,7 @@
 
 module FParsec.Test.StaticMappingTests
 
-#if LOW_TRUST
-#else
+#if !LOW_TRUST
 
 open FParsec
 open FParsec.Range

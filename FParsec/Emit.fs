@@ -3,8 +3,7 @@
 
 module internal FParsec.Emit
 
-#if LOW_TRUST
-#else
+#if !LOW_TRUST
 
 open System.Diagnostics
 open System.Reflection
