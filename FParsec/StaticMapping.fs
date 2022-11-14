@@ -509,7 +509,7 @@ let createStaticStringMapping (defaultValue: 'T) (keyValues: #seq<string*'T>) : 
             if isNull f then
                 f <- tb.DefineField("longKeyData", typeof<uint32[]>, FieldAttributes.Public)
                 let ptrType = typeof<uint32>.MakePointerType()
-                m <- typeof<FParsec.Buffer>.GetMethod("Equals", [|ptrType; ptrType; typeof<uint32>|])
+                m <- typeof<FParsec.Buffer>.GetMethod("Equals", [|ptrType; ptrType; typeof<int32>|])
                 pdl <- ilg.DeclareLocal(typeof<uint32[]>, true)
                 longKeyData:= (data, f, m, pdl)
 
@@ -525,7 +525,7 @@ let createStaticStringMapping (defaultValue: 'T) (keyValues: #seq<string*'T>) : 
             if not isFinal then
                 incrementPtrByNumberOfChars (dataLength*2)
             loadI4 ilg dataLength
-            ilg.EmitCall(OpCodes.Call, m, null)
+            ilg.Emit(OpCodes.Call, m)
             ilg.Emit(OpCodes.Ldnull)
             ilg.Emit(OpCodes.Stloc, pdl) // unpin data array
             ilg.Emit(OpCodes.Brfalse, defaultLabel)

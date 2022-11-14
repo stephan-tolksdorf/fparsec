@@ -56,28 +56,8 @@ internal static uint[] CopyUIntsStoredInLittleEndianByteArray(ReadOnlySpan<byte>
 
 #if !LOW_TRUST
 // used by StaticMapping.createStaticStringMapping
-public static unsafe bool Equals(uint* ptr1, uint* ptr2, uint length) {
-    for (; length >= 4; length -= 4) {
-        if (   ptr1[0] != ptr2[0]
-            || ptr1[1] != ptr2[1]
-            || ptr1[2] != ptr2[2]
-            || ptr1[3] != ptr2[3]) goto ReturnFalse;
-        ptr1 += 4;
-        ptr2 += 4;
-    }
-    if ((length & 2) != 0) {
-        if (   ptr1[0] != ptr2[0]
-            || ptr1[1] != ptr2[1]) goto ReturnFalse;
-        ptr1 += 2;
-        ptr2 += 2;
-    }
-    if ((length & 1) != 0) {
-        if (ptr1[0] != ptr2[0]) goto ReturnFalse;
-    }
-    return true;
-ReturnFalse:
-    return false;
-}
+public static unsafe bool Equals(uint* ptr1, uint* ptr2, int length) =>
+    new ReadOnlySpan<uint>(ptr1, length).SequenceEqual(new ReadOnlySpan<uint>(ptr2, length));
 
 internal static unsafe uint* LoadLittleEndianUInt32Data(byte* data, int offset, int length)
 {
