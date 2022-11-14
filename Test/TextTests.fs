@@ -23,12 +23,7 @@ let testFoldCase() =
 
 
     let oneToOneMappings =
-        let charStreamType = typeof<FParsec.CharStream>
-#if NETCORE
-        let a = charStreamType.GetTypeInfo().Assembly
-#else
-        let a = charStreamType.Assembly
-#endif
+        let a = typeof<FParsec.CharStream>.Assembly
         getStaticField (a.GetType("FParsec.CaseFoldTable")) "oneToOneMappings" : string
 
     let mutable j = 0
