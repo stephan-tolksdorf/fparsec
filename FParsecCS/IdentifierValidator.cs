@@ -687,26 +687,13 @@ public sealed class IdentifierValidator {
     private static byte* XIdStartBmpTable1 => Data + XIdStartBmpTable1Offset;
     private static byte* XIdContinueBmpTable1 => Data + XIdContinueBmpTable1Offset;
     private static byte* XIdContinueOrJoinerBmpTable1 => Data + XIdContinueOrJoinerBmpTable1Offset;
-    private static readonly uint* XIdBmpTable2 = LoadLittleEndianUInt32Data(XIdBmpTable2Offset, XIdBmpTable2Size);
+    private static readonly uint* XIdBmpTable2 = Buffer.LoadLittleEndianUInt32Data(Data, XIdBmpTable2Offset, XIdBmpTable2Size);
 
     private static byte* XIdStartSmpTable1 => Data + XIdStartSmpTable1Offset;
     private static byte* XIdContinueSmpTable1 => Data + XIdContinueSmpTable1Offset;
     private static byte* XIdSmpTable2 => Data + XIdSmpTable2Offset;
-    private static readonly uint* XIdSmpTable3 = LoadLittleEndianUInt32Data(XIdSmpTable3Offset, XIdSmpTable3Size);
+    private static readonly uint* XIdSmpTable3 = Buffer.LoadLittleEndianUInt32Data(Data, XIdSmpTable3Offset, XIdSmpTable3Size);
 
-    private static uint* LoadLittleEndianUInt32Data(int offset, int length)
-    {
-        if (BitConverter.IsLittleEndian)
-        {
-            return (uint*)(Data + offset);
-        }
-
-        void* buffer = (void*)RuntimeHelpers.AllocateTypeAssociatedMemory(typeof(IdentifierValidator), length);
-        
-        DataArray.Slice(offset, length).CopyTo(new Span<byte>(buffer, length));
-        Buffer.SwapByteOrder(new Span<uint>(buffer, length / sizeof(uint)));
-        return (uint*)buffer;
-    }
 #endif
 
 }
