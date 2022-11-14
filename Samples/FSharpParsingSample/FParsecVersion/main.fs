@@ -14,10 +14,10 @@ let main(argv: string[]) =
         printf "usage: interp.exe <file>\n"
         exit 1
 
-    // Run the parser prog on the file path in argv.[0]
+    // Run the parser prog on the file path in argv[0]
     // If the file has no byte order marks, System.Text.Encoding.Default
     // is assumed to be the encoding.
-    let fileName = argv.[0]
+    let fileName = argv[0]
     let result =
         runParserOnFile Parser.prog () fileName System.Text.Encoding.UTF8
 

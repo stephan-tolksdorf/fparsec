@@ -84,9 +84,9 @@ let internal createStaticIntIndicatorFunctionImpl<'TInt when 'TInt : struct>
 
     let raiseException key : unit =
         let e = createStaticMappingAssertException()
-        e.Data.["Argument"]   <- key
-        e.Data.["IsInverted"] <- invert
-        e.Data.["Ranges"]     <- ranges
+        e.Data["Argument"]   <- key
+        e.Data["IsInverted"] <- invert
+        e.Data["Ranges"]     <- ranges
         raise e
 
     let findKeyinRanges =
@@ -115,7 +115,7 @@ let createStaticCharIndicatorFunction invert (charsInSet: seq<char>) =
 
 let createStaticCharRangeIndicatorFunction invert (rangesInSet: seq<Range>) =
     let ranges = sortAndMergeRanges true (Array.ofSeq rangesInSet)
-    if ranges.Length <> 0 && ranges.[0].Min < 0 || ranges.[ranges.Length - 1].Max > 0xffff then
+    if ranges.Length <> 0 && ranges[0].Min < 0 || ranges[ranges.Length - 1].Max > 0xffff then
         invalidArg "charRanges" "A range contains values outside the range of valid UTF-16 char values (0 - 0xffff)."
     createStaticIntIndicatorFunctionImpl<char>
         defaultIndicatorLengthCap defaultIndicatorDensityThreshold
@@ -174,19 +174,19 @@ let internal createStaticIntMappingImpl
 
             if isNull physicalEqualityComparer then
                 for i = 0 to labels.Length - 1 do
-                    labels.[i] <- ilg.DefineLabel()
+                    labels[i] <- ilg.DefineLabel()
             else
                 // we don't need to emit multiple case handlers for identical values
                 needToEmit <- Array.zeroCreate values.Length
                 let valueLabels = Dictionary<'T,Label>(values.Length, physicalEqualityComparer)
                 for i = 0 to values.Length - 1 do
-                    let value = values.[i]
+                    let value = values[i]
                     let mutable label = Unchecked.defaultof<_>
                     if not (valueLabels.TryGetValue(value, &label)) then
-                        needToEmit.[i] <- true
+                        needToEmit[i] <- true
                         label <- ilg.DefineLabel()
                         valueLabels.Add(value, label)
-                    labels.[i] <- label
+                    labels[i] <- label
                 needToEmitCount <- valueLabels.Count
                 if needToEmitCount = values.Length then
                     needToEmit <- null
@@ -203,13 +203,13 @@ let internal createStaticIntMappingImpl
             let mutable returnedValuesCount = 0
 
             for i = 0 to labels.Length - 1 do
-                if isNull needToEmit || needToEmit.[i] then
-                    ilg.MarkLabel(labels.[i])
+                if isNull needToEmit || needToEmit[i] then
+                    ilg.MarkLabel(labels[i])
                     if isPrimitive then
-                        loadConstant (values.[i])
+                        loadConstant (values[i])
                     else
                         if isNotNull returnedValues then
-                            returnedValues.[returnedValuesCount] <- values.[i]
+                            returnedValues[returnedValuesCount] <- values[i]
                         loadI4 ilg returnedValuesCount
                         returnedValuesCount <- returnedValuesCount + 1
                     ilg.Emit(OpCodes.Stloc, resultOrIndexLocal)
@@ -257,17 +257,17 @@ let internal createStaticIntMappingImpl
             else
                 let raiseException key : unit =
                     let e = createStaticMappingAssertException()
-                    e.Data.["Argument"]     <- key
-                    e.Data.["Ranges"]       <- ranges
-                    e.Data.["Values"]       <- values
-                    e.Data.["DefaultValue"] <- defaultValue
+                    e.Data["Argument"]     <- key
+                    e.Data["Ranges"]       <- ranges
+                    e.Data["Values"]       <- values
+                    e.Data["DefaultValue"] <- defaultValue
                     raise e
 
                 fun key ->
                     let value = mapping key
                     let index = findInSortedNonOverlappingRanges ranges key
                     if index >= 0 then
-                        if not (physicalEqualityComparer.Equals(value, values.[index])) then raiseException key
+                        if not (physicalEqualityComparer.Equals(value, values[index])) then raiseException key
                     else
                         if not (physicalEqualityComparer.Equals(value, defaultValue)) then raiseException key
                     value
@@ -288,10 +288,10 @@ let internal filterOutDefaultValueRanges (comparer: EqualityComparer<_>) (ranges
             let newRanges, newValues = Array.zeroCreate N, Array.zeroCreate N
             let mutable j = 0
             for i = 0 to values.Length - 1 do
-                let v = values.[i]
+                let v = values[i]
                 if not (comparer.Equals(v, defaultValue)) then
-                    newValues.[j] <- v
-                    newRanges.[j] <- ranges.[i]
+                    newValues[j] <- v
+                    newRanges[j] <- ranges[i]
                     j <- j + 1
             newRanges, newValues
 
@@ -336,8 +336,8 @@ type SubtreeEqualityComparer<'T>(stringValues: (string*'T)[], valueComparer: Equ
         count = subtree2.Count
         && (let mutable i = 0
             while uint32 i < uint32 count do
-                let string1, value1 = stringValues.[subtree1.Index + i]
-                let string2, value2 = stringValues.[subtree2.Index + i]
+                let string1, value1 = stringValues[subtree1.Index + i]
+                let string2, value2 = stringValues[subtree2.Index + i]
                 let remaining = string1.Length - subtree1.StringIndex
                 if  remaining = string2.Length - subtree2.StringIndex
                     && (aligned || remaining <= 1)
@@ -349,7 +349,7 @@ type SubtreeEqualityComparer<'T>(stringValues: (string*'T)[], valueComparer: Equ
             i = count)
 
     override t.GetHashCode(subtree: Subtree) =
-        subtree.Count ^^^ valueComparer.GetHashCode(snd stringValues.[subtree.Index])
+        subtree.Count ^^^ valueComparer.GetHashCode(snd stringValues[subtree.Index])
 
 let createStaticStringMapping (defaultValue: 'T) (keyValues: #seq<string*'T>) : (string -> 'T) =
     let T = typeof<'T>
@@ -370,20 +370,20 @@ let createStaticStringMapping (defaultValue: 'T) (keyValues: #seq<string*'T>) : 
     | 0 -> fun str ->
                let throwIfStringIsNull = str.Length
                defaultValue
-    | 1 -> let key, value = kvs.[0]
+    | 1 -> let key, value = kvs[0]
            fun str ->
                let throwIfStringIsNull = str.Length
                if str = key then value else defaultValue
     | _ ->
-        let mutable i0 = if fst kvs.[0] = "" then 1 else 0
+        let mutable i0 = if fst kvs[0] = "" then 1 else 0
 
         let getMinMaxLength iBegin iEnd =
             assert (iBegin < iEnd)
-            let firstKey, _ = kvs.[iBegin]
+            let firstKey, _ = kvs[iBegin]
             let mutable minLength = firstKey.Length
             let mutable maxLength = minLength
             for i = iBegin + 1 to iEnd - 1 do
-                let key, _ = kvs.[i]
+                let key, _ = kvs[i]
                 let length = key.Length
                 minLength <- min length minLength
                 maxLength <- max length maxLength
@@ -395,10 +395,10 @@ let createStaticStringMapping (defaultValue: 'T) (keyValues: #seq<string*'T>) : 
             let rec loop index =
                 if index = minKeyLength then index
                 else
-                    let c = (fst kvs.[iBegin]).[index]
+                    let c = (fst kvs[iBegin])[index]
                     let rec keysEqualAtX i =
                         if i = iEnd then true
-                        elif (fst kvs.[i]).[index] <> c then false
+                        elif (fst kvs[i])[index] <> c then false
                         else keysEqualAtX (i + 1)
                     if not (keysEqualAtX (iBegin + 1)) then index
                     else loop (index + 1)
@@ -410,7 +410,7 @@ let createStaticStringMapping (defaultValue: 'T) (keyValues: #seq<string*'T>) : 
         System.Array.Sort(kvs, {new Comparer<string*'T>() with
                                     member t.Compare((k1, _), (k2, _)) =
                                         if k1.Length > prefixLength && k2.Length > prefixLength then
-                                            let d = int k1.[prefixLength] - int k2.[prefixLength]
+                                            let d = int k1[prefixLength] - int k2[prefixLength]
                                             if d <> 0 then d
                                             else
                                                 let d = k1.Length - k2.Length
@@ -490,7 +490,7 @@ let createStaticStringMapping (defaultValue: 'T) (keyValues: #seq<string*'T>) : 
         let returnedValueIndices = if isPrimitive then null else ResizeArray<_>(kvs.Length)
         let returnValue i =
             if isPrimitive then
-                loadConstant (snd kvs.[i])
+                loadConstant (snd kvs[i])
             else
                 loadI4 ilg (returnedValueIndices.Count)
                 returnedValueIndices.Add(i)
@@ -534,7 +534,7 @@ let createStaticStringMapping (defaultValue: 'T) (keyValues: #seq<string*'T>) : 
                     // align ptr to 4-byte boundary
                     // (this assumes that the first char in a string is aligned)
                     dereferenceAndIncrementPtr U2 (not isFinal || length > 1)
-                    loadI4 ilg (int key.[idx])
+                    loadI4 ilg (int key[idx])
                     ilg.Emit(OpCodes.Bne_Un, defaultLabel)
                     idx <- idx + 1
                     length <- length - 1
@@ -546,12 +546,12 @@ let createStaticStringMapping (defaultValue: 'T) (keyValues: #seq<string*'T>) : 
                     while length >= 2 do
                         // if necessary we will swap the byte order of the whole data array
                         // when we assign it to the longKeyData field
-                        let v = uint32 key.[idx] ||| (uint32 key.[idx + 1] <<< 16)
+                        let v = uint32 key[idx] ||| (uint32 key[idx + 1] <<< 16)
                         data.Add(v)
                         idx <- idx + 2
                         length <- length - 2
                     if isFinal && length = 1 then
-                        data.Add(uint32 key.[idx])
+                        data.Add(uint32 key[idx])
                         length <- 0
                     // emit call to string comparison function
                     emitLongStringComparison dataIndex (data.Count - dataIndex) isFinal
@@ -560,10 +560,10 @@ let createStaticStringMapping (defaultValue: 'T) (keyValues: #seq<string*'T>) : 
                     if sizeof<unativeint> = 8 then
                         while length >= 4 || (isFinal && length = 3) do
                             dereferenceAndIncrementPtr U8 (not isFinal || length > 4)
-                            let v =    (uint64 key.[idx]           )
-                                   ||| (uint64 key.[idx + 1] <<< 16)
-                                   ||| (uint64 key.[idx + 2] <<< 32)
-                                   ||| (if length > 3 then uint64 key.[idx + 3] <<< 48 else 0UL)
+                            let v =    (uint64 key[idx]           )
+                                   ||| (uint64 key[idx + 1] <<< 16)
+                                   ||| (uint64 key[idx + 2] <<< 32)
+                                   ||| (if length > 3 then uint64 key[idx + 3] <<< 48 else 0UL)
                             let v = if System.BitConverter.IsLittleEndian then v
                                     else Buffer.SwapByteOrder(v)
                             loadU8 ilg v
@@ -573,8 +573,8 @@ let createStaticStringMapping (defaultValue: 'T) (keyValues: #seq<string*'T>) : 
                 #endif
                     while length >= 2 || (isFinal && length = 1) do
                         dereferenceAndIncrementPtr U4 (not isFinal || length > 2)
-                        let v = if length = 1 then int key.[idx]
-                                else int key.[idx] ||| (int key.[idx + 1] <<< 16)
+                        let v = if length = 1 then int key[idx]
+                                else int key[idx] ||| (int key[idx + 1] <<< 16)
                         let v = if System.BitConverter.IsLittleEndian then v
                                 else int (Buffer.SwapByteOrder(uint32 v))
                         loadI4 ilg v
@@ -584,23 +584,23 @@ let createStaticStringMapping (defaultValue: 'T) (keyValues: #seq<string*'T>) : 
                 if length > 0 then
                     Debug.Assert(not isFinal)
                     dereferenceAndIncrementPtr U2 true
-                    loadI4 ilg (int key.[idx])
+                    loadI4 ilg (int key[idx])
                     ilg.Emit(OpCodes.Bne_Un, defaultLabel)
 
         let subtreeLabels = if isNull physicalEqualityComparer then null
                             else System.Collections.Generic.Dictionary<Subtree, Label>(SubtreeEqualityComparer<'T>(kvs, physicalEqualityComparer))
 
         // Partitions the key pairs iBegin..(iEnd - 1) into branches with identical "branch-key".
-        // Returns [|iBegin, i2, ..., iN, iEnd], [|fst kvs.[iBegin], fst kvs.[i2], ..., fst kvs.[iN]|]
+        // Returns [|iBegin, i2, ..., iN, iEnd], [|fst kvs[iBegin], fst kvs[i2], ..., fst kvs[iN]|]
         // where iBegin .. indexN are the indices where the branches start.
         let getBranchIndicesAndKeys (iBegin: int) iEnd getBranchKey =
             let mutable n = 0
             let indices, keys = new ResizeArray<int>(iEnd - iBegin), new ResizeArray<int>(iEnd - iBegin)
             indices.Add(iBegin)
-            let mutable prevKey : int = getBranchKey (fst kvs.[iBegin])
+            let mutable prevKey : int = getBranchKey (fst kvs[iBegin])
             keys.Add(prevKey)
             for i = iBegin + 1 to iEnd - 1 do
-                let key = getBranchKey (fst kvs.[i])
+                let key = getBranchKey (fst kvs[i])
                 if key <> prevKey then
                     prevKey <- key
                     indices.Add(i)
@@ -613,29 +613,29 @@ let createStaticStringMapping (defaultValue: 'T) (keyValues: #seq<string*'T>) : 
         // If the dictionary already contains a label for an equivalent subtree, that label is returned;
         // otherwise, a new label is created.
         let getBranchLabels (subtreeLabels: Dictionary<Subtree, Label>) subtreeStringIndex (branchIndices: int[]) =
-            assert (branchIndices.Length >= 2 && branchIndices.[0] < branchIndices.[1])
+            assert (branchIndices.Length >= 2 && branchIndices[0] < branchIndices[1])
             let n = branchIndices.Length - 1
             let isNewLabel = Array.zeroCreate n
             let labels = Array.zeroCreate n
             if isNull subtreeLabels then
                 for i = 0 to n - 1 do
-                    isNewLabel.[i] <- true
-                    labels.[i] <- ilg.DefineLabel()
+                    isNewLabel[i] <- true
+                    labels[i] <- ilg.DefineLabel()
             else
-                let mutable iBegin = branchIndices.[0]
+                let mutable iBegin = branchIndices[0]
                 for j = 1 to branchIndices.Length - 1 do
-                    let iEnd = branchIndices.[j]
+                    let iEnd = branchIndices[j]
                     let subtree = Subtree(subtreeStringIndex, iBegin, iEnd - iBegin)
                     iBegin <- iEnd
 
                     let b = j - 1
                     let mutable label = Unchecked.defaultof<_>
                     if subtreeLabels.TryGetValue(subtree, &label) then
-                        labels.[b] <- label
+                        labels[b] <- label
                     else
-                        isNewLabel.[b] <- true
+                        isNewLabel[b] <- true
                         let label = ilg.DefineLabel()
-                        labels.[b] <- label
+                        labels[b] <- label
                         subtreeLabels.Add(subtree, label)
             labels, isNewLabel
 
@@ -651,9 +651,9 @@ let createStaticStringMapping (defaultValue: 'T) (keyValues: #seq<string*'T>) : 
                        minVarValue maxVarValue
                        defaultLabel switchRanges switchLabels
             for i = 0 to isNewLabel.Length - 1 do
-                if isNewLabel.[i] then
-                    ilg.MarkLabel(branchLabels.[i])
-                    emitBranchIter branchIndices.[i] branchIndices.[i + 1]
+                if isNewLabel[i] then
+                    ilg.MarkLabel(branchLabels[i])
+                    emitBranchIter branchIndices[i] branchIndices[i + 1]
 
         let subtreeEqualityComparer = if isNull physicalEqualityComparer then Unchecked.defaultof<_>
                                       else SubtreeEqualityComparer<'T>(kvs, physicalEqualityComparer)
@@ -662,12 +662,12 @@ let createStaticStringMapping (defaultValue: 'T) (keyValues: #seq<string*'T>) : 
 
         let rec emitSubtree length idx iBegin iEnd =
             assert (   iBegin < iEnd
-                    && kvs.[iBegin..(iEnd - 1)]
+                    && kvs[iBegin..(iEnd - 1)]
                        |> Array.map (fun (k,_) -> k.Length)
                        |> Array.forall ((=) length))
             let idx1 = findIndexOfFirstCharAfterCommonPrefix idx iBegin iEnd length
             if idx <> idx1 then
-                emitStringComparison (fst kvs.[iBegin]) idx (idx1 - idx) (idx1 = length)
+                emitStringComparison (fst kvs[iBegin]) idx (idx1 - idx) (idx1 = length)
             if idx1 = length then
                 assert (iBegin + 1 = iEnd)
                 returnValue iBegin
@@ -688,7 +688,7 @@ let createStaticStringMapping (defaultValue: 'T) (keyValues: #seq<string*'T>) : 
                 if emit then
                     dereferenceAndIncrementPtr U2 (idx1 + 1 < length)
                     storeCh()
-                    switch (fun str -> int str.[idx1]) loadCh 0 0xffff
+                    switch (fun str -> int str[idx1]) loadCh 0 0xffff
                            (if idx1 + 1 < length || isNull subtreeLabels then subtreeLabels // we want to keep the switch branches local
                             else Dictionary<Subtree, Label>(subtreeEqualityComparer))       // when they only contain a return statement
                            iBegin iEnd
@@ -719,7 +719,7 @@ let createStaticStringMapping (defaultValue: 'T) (keyValues: #seq<string*'T>) : 
 
             if prefixLength <> 0 then
                 checkMinLength()
-                emitStringComparison (fst kvs.[i0]) 0 prefixLength false
+                emitStringComparison (fst kvs[i0]) 0 prefixLength false
                 if prefixLength = minLength then
                     let label = ilg.DefineLabel()
                     loadLength()
@@ -730,7 +730,7 @@ let createStaticStringMapping (defaultValue: 'T) (keyValues: #seq<string*'T>) : 
                     i0 <- i0 + 1
 
             else // prefixLength = 0
-                if i0 = 0 && (fst kvs.[0]).[0] = '\u0000' then
+                if i0 = 0 && (fst kvs[0])[0] = '\u0000' then
                     // If a key contains a zero as the first char, we can't avoid
                     // the following length check (which we otherwise don't need for
                     // the switch because of the null termination of strings).
@@ -744,7 +744,7 @@ let createStaticStringMapping (defaultValue: 'T) (keyValues: #seq<string*'T>) : 
                 // switch over char after prefix
                 dereferenceAndIncrementPtr U2 (prefixLength + 1 < maxLength)
                 storeCh()
-                switch (fun str -> int str.[prefixLength]) loadCh 0 0xffff
+                switch (fun str -> int str[prefixLength]) loadCh 0 0xffff
                         topLevelTreeLabels
                         i0 kvs.Length
                         (prefixLength + 1)
@@ -755,7 +755,7 @@ let createStaticStringMapping (defaultValue: 'T) (keyValues: #seq<string*'T>) : 
                                     iBegin iEnd
                                     (prefixLength + 1)
                                     (fun iBegin iEnd ->
-                                        emitSubtree (fst kvs.[iBegin]).Length (prefixLength + 1) iBegin iEnd))
+                                        emitSubtree (fst kvs[iBegin]).Length (prefixLength + 1) iBegin iEnd))
 
         // return default value
         let defaultValueIsNull = not T.IsValueType && isNull (box defaultValue)
@@ -795,7 +795,7 @@ let createStaticStringMapping (defaultValue: 'T) (keyValues: #seq<string*'T>) : 
             let values = Array.zeroCreate returnedValueIndices.Count
             let mutable j = 0
             for i in returnedValueIndices do
-                values.[j] <- snd kvs.[i]
+                values[j] <- snd kvs[i]
                 j <- j + 1
             t.GetField("Values").SetValue(mapping, values)
 
@@ -817,9 +817,9 @@ let createStaticStringMapping (defaultValue: 'T) (keyValues: #seq<string*'T>) : 
                 dict.Add(k, v)
             let errorHandler (key: string) : unit =
                 let e = new System.Exception("An internal assert check in FParsec.StaticMapping.createStringMapping failed. Please report this error to fparsec@quanttec.com. (The Data member of the exception object contains the information needed to reproduce the error.)")
-                e.Data.["Argument"] <- key
-                e.Data.["KeysValues"] <- dict
-                e.Data.["DefaultValue"]  <- defaultValue
+                e.Data["Argument"] <- key
+                e.Data["KeysValues"] <- dict
+                e.Data["DefaultValue"]  <- defaultValue
                 raise e
 
             fun key ->

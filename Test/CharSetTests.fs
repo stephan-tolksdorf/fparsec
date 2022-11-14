@@ -27,23 +27,23 @@ let moreTests() =
         let cs = Array.zeroCreate n
         for i = 1 to n/2 do
             let r = rand.Next()
-            cs.[i*2 - 2] <- char r
-            cs.[i*2 - 1] <- char (r >>> 16)
-        if n%2 = 1 then cs.[cs.Length - 1] <- char (rand.Next())
+            cs[i*2 - 2] <- char r
+            cs[i*2 - 1] <- char (r >>> 16)
+        if n%2 = 1 then cs[cs.Length - 1] <- char (rand.Next())
 
         let set = FParsec.CharSet(new string(cs))
 
         Array.sortInPlace cs
 
         let mutable c_1 = '\uffff'
-        let mutable c = cs.[0]
+        let mutable c = cs[0]
 
         for i = 0 to n - 1 do
             set.Contains(c) |> True
             if c <> c_1 && int c - 1 <> int c_1 then
                 set.Contains(char (int c - 1)) |> False
             if i + 1 < n then
-                let c1 = cs.[i + 1]
+                let c1 = cs[i + 1]
                 if c < '\uffff' && c <> c1 && int c + 1 <> int c1 then
                     set.Contains(char (int c + 1)) |> False
                 c_1 <- c

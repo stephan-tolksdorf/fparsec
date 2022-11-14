@@ -195,8 +195,8 @@ let shuffleArray (rand: System.Random) (xs: 'a[]) =
     let n = xs.Length
     for i = 0 to n - 2 do
        let r = rand.Next(n - i - 1);
-       let t = xs.[i]
-       xs.[i]     <- xs.[i + r]
-       xs.[i + r] <- t
+       let t = xs[i]
+       xs[i]     <- xs[i + r]
+       xs[i + r] <- t
 
 let inline _1< ^t when ^t : (static member One : ^t) > = LanguagePrimitives.GenericOne< ^t >

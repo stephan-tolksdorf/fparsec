@@ -282,11 +282,11 @@ let choice (ps: seq<Parser<'a,'u>>)  =
             fun stream ->
                 let stateTag = stream.StateTag
                 let mutable error = NoErrorMessages
-                let mutable reply = ps.[0] stream
+                let mutable reply = ps[0] stream
                 let mutable i = 1
                 while reply.Status = Error && stateTag = stream.StateTag && i < ps.Length do
                     error <- mergeErrors error reply.Error
-                    reply <- ps.[i] stream
+                    reply <- ps[i] stream
                     i <- i + 1
                 if stateTag = stream.StateTag then
                     error <- mergeErrors error reply.Error
@@ -338,10 +338,10 @@ let choiceL (ps: seq<Parser<'a,'u>>) label : Parser<_,_> =
         else
             fun stream ->
                 let stateTag = stream.StateTag
-                let mutable reply = ps.[0] stream
+                let mutable reply = ps[0] stream
                 let mutable i = 1
                 while reply.Status = Error && stateTag = stream.StateTag && i < ps.Length do
-                    reply <- ps.[i] stream
+                    reply <- ps[i] stream
                     i <- i + 1
                 if stateTag = stream.StateTag then
                     reply.Error <- error
@@ -625,7 +625,7 @@ let parray n (p: Parser<'a,'u>) =
             let mutable newReply = Reply()
             if reply.Status = Ok then
                 let mutable xs = Array.zeroCreate n
-                xs.[0] <- reply.Result
+                xs[0] <- reply.Result
                 let mutable i = 1
                 while i < n do
                     let mutable stateTag = stream.StateTag
@@ -633,7 +633,7 @@ let parray n (p: Parser<'a,'u>) =
                     error <- if stateTag <> stream.StateTag then reply.Error
                              else mergeErrors error reply.Error
                     if reply.Status = Ok then
-                        xs.[i] <- reply.Result
+                        xs[i] <- reply.Result
                         i <- i + 1
                     else
                         i <- n // break

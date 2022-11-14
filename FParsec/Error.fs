@@ -128,7 +128,7 @@ let internal printErrorPosition (tabSize: int) (lw: LineWrapper) (stream: CharSt
     let writeStringWithSimplifiedWhitespace (tw: TextWriter) (s: string) =
         let mutable i0 = 0
         for i = 0 to s.Length - 1 do
-            let c = s.[i]
+            let c = s[i]
             if Text.IsWhitespace(c) then
                 if i0 < i then
                     tw.Write(s.Substring(i0, i - i0))
@@ -169,20 +169,20 @@ let internal printErrorPosition (tabSize: int) (lw: LineWrapper) (stream: CharSt
 
     if sn.Index < str.Length then
         let i = sn.Index
-        let c = str.[i]
+        let c = str[i]
         if System.Char.IsSurrogate(c) then
             if System.Char.IsHighSurrogate(c) then
-                if i + 1 < str.Length && System.Char.IsLowSurrogate(str.[i + 1]) then
+                if i + 1 < str.Length && System.Char.IsLowSurrogate(str[i + 1]) then
                     msgs.Add(Strings.ErrorOccurredAtBeginningOfSurrogatePair(str.Substring(i, 2)))
                 else
                     msgs.Add(Strings.CharAtErrorPositionIsIsolatedHighSurrogate(c))
             else // low surrogate
-                if i > 0 && System.Char.IsHighSurrogate(str.[i - 1]) then
+                if i > 0 && System.Char.IsHighSurrogate(str[i - 1]) then
                     msgs.Add(Strings.ErrorOccurredAtSecondCharInSurrogatePair(str.Substring(i - 1, 2)))
                 else
                     msgs.Add(Strings.CharAtErrorPositionIsIsolatedLowSurrogate(c))
         elif i > 0 then
-            let c1 = str.[i - 1]
+            let c1 = str[i - 1]
             if System.Char.IsHighSurrogate(c1) then
                 msgs.Add(Strings.CharBeforeErrorPositionIsIsolatedHighSurrogate(c1))
             elif System.Char.IsLowSurrogate(c1) then
@@ -192,7 +192,7 @@ let internal printErrorPosition (tabSize: int) (lw: LineWrapper) (stream: CharSt
         elif str.Length = 0 then msgs.Add(Strings.ErrorOccurredOnAnEmptyLine)
         else msgs.Add(Strings.ErrorOccurredAtEndOfLine)
 
-    if sn.LengthOfTextElement > 1 && (sn.LengthOfTextElement > 2 || not (System.Char.IsSurrogate(str.[sn.Index]))) then
+    if sn.LengthOfTextElement > 1 && (sn.LengthOfTextElement > 2 || not (System.Char.IsSurrogate(str[sn.Index]))) then
         let n = sn.Index - sn.IndexOfTextElement + 1
         let te = str.Substring(sn.IndexOfTextElement, sn.LengthOfTextElement)
         msgs.Add(Strings.ErrorOccurredAtNthCharInCombiningCharacterSequence(n, te))
@@ -203,7 +203,7 @@ let internal printErrorPosition (tabSize: int) (lw: LineWrapper) (stream: CharSt
         let n = sn.UnaccountedNewlines
         msgs.Add(Strings.InputContainsAtLeastNUnaccountedNewlines(n))
 
-    if msgs.Count = 1 then lw.PrintLine(Strings.Note, msgs.[0])
+    if msgs.Count = 1 then lw.PrintLine(Strings.Note, msgs[0])
     elif msgs.Count > 1 then
         let ind  = lw.Indentation
         let ind2 = ind + "  "
@@ -310,9 +310,9 @@ type ParserError(position: Position, userState: obj, messages: ErrorMessageList)
                 lw.Print(title, " ")
                 let n = a.Count
                 for i = 0 to n - 3 do
-                    lw.Print(a.[i], ", ")
-                if n > 1 then lw.Print(a.[n - 2], sep)
-                if n > 0 then lw.Print(a.[n - 1])
+                    lw.Print(a[i], ", ")
+                if n > 1 then lw.Print(a[n - 2], sep)
+                if n > 0 then lw.Print(a[n - 1])
                 lw.Newline()
             if expectedA.Count > 0 then
                 printArray Strings.Expecting expectedA Strings.Or

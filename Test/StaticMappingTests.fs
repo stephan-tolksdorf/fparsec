@@ -164,7 +164,7 @@ let testCreateStaticIntMapping() =
         for i = 0 to values.Length - 1 do
             // value in 0-7, but different from the last value
             lastValue <- (lastValue + 1 + rand.Next(7)) % 8
-            values.[i] <- byte lastValue
+            values[i] <- byte lastValue
 
         let ranges, values = filterOutDefaultValueRanges EqualityComparer<_>.Default ranges values 0uy
         let mapping = createStaticIntMappingImpl
@@ -233,12 +233,12 @@ let testCreateStaticStringMapping() =
                 mapping str |> Equal 1
                 mapping subStr |> Equal 2
                 for i = 0 to chars.Length - 1 do
-                    let c = chars.[i]
-                    chars.[i] <- char (int c + 1)
+                    let c = chars[i]
+                    chars[i] <- char (int c + 1)
                     mapping (new string(chars)) |> Equal 0
-                    chars.[i] <- char 0
+                    chars[i] <- char 0
                     mapping (new string(chars)) |> Equal 0
-                    chars.[i] <- c
+                    chars[i] <- c
 
 
     testStringComparison()

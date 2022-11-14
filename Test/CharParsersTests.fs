@@ -383,9 +383,9 @@ let testManySatisfy() =
     with :? System.ArgumentException -> ()
 
 let testMany() =
-    let ps1  = (constantTestParsers '1' (expected "1")).[1..] // no parser that returns OK without changing the state
-    let ps2  = (constantTestParsers '2' (expected "2")).[1..]
-    let ps3  = (constantTestParsers '3' (expected "3")).[1..]
+    let ps1  = (constantTestParsers '1' (expected "1"))[1..] // no parser that returns OK without changing the state
+    let ps2  = (constantTestParsers '2' (expected "2"))[1..]
+    let ps3  = (constantTestParsers '3' (expected "3"))[1..]
 
     let content = "the content doesn't matter"
     use stream = new FParsec.CharStream<int>(content, 0, content.Length)
@@ -451,8 +451,8 @@ let testMany() =
              for endp2 in eps2 do
              for p2    in ps2 do
              for endp3 in eps3 do
-             for p3    in ps3.[1..] do
-             yield [p1; p2; p3;], [endp1; endp2; endp3; eps3.[1]]}
+             for p3    in ps3[1..] do
+             yield [p1; p2; p3;], [endp1; endp2; endp3; eps3[1]]}
 
     for ps, es in manyTillSeq do
         let p_1, p_2, pr = seqParserAndReset2 ps
@@ -483,13 +483,13 @@ let testMany() =
     let manyStringsRef p  = many p |>> List.fold (fun acc s -> acc + s) ""
     let many1StringsRef p = many1 p |>> List.reduce (+)
 
-    let manySeq7 = seq {for p1 in sps1.[1..] do
-                        for p2 in sps2.[1..] do
-                        for p3 in sps3.[1..] do
-                        for p4 in sps4.[1..] do
-                        for p5 in sps5.[1..] do
-                        for p6 in sps6.[1..] do
-                        for p7 in sps7.[1..] do
+    let manySeq7 = seq {for p1 in sps1[1..] do
+                        for p2 in sps2[1..] do
+                        for p3 in sps3[1..] do
+                        for p4 in sps4[1..] do
+                        for p5 in sps5[1..] do
+                        for p6 in sps6[1..] do
+                        for p7 in sps7[1..] do
                             yield [p1;p2;p3;p4;p5;p6;p7]}
 
     let sw = new System.Diagnostics.Stopwatch()
@@ -507,12 +507,12 @@ let testMany() =
     let sepByTestParsers r1 e1 r2 e2 =
         let p1s = constantTestParsers r1 e1
         let p2s = constantTestParsers r2 e2
-        seq {for p1 in p1s.[1..] do
+        seq {for p1 in p1s[1..] do
                 for p2 in p2s do
                     yield p1, p2}
 
     let sepBySeq3 =
-        seq {for p1       in (constantTestParsers "1" (expected "p1")).[1..] do
+        seq {for p1       in (constantTestParsers "1" (expected "p1"))[1..] do
               for sep1, p2 in sepByTestParsers "a" (expected "sep1") "2" (expected "p2") do
                for sep2, p3 in sepByTestParsers "b" (expected "sep2") "3" (expected "p3") do
                 for sep3, p4 in sepByTestParsers "c" (expected "sep3") "4" (expected "p4") do
@@ -528,7 +528,7 @@ let testMany() =
               for p2, sep2 in sepByTestParsers "2" (expected "p2") "b" (expected "sep2") do
                for p3, sep3 in sepByTestParsers "3" (expected "p3") "c" (expected "sep3") do
                 for p4, sep4 in sepByTestParsers "4" (expected "p4") "d" (expected "sep4") do
-                 for p5 in (constantTestParsers "5" (expected "p5")).[1..] do
+                 for p5 in (constantTestParsers "5" (expected "p5"))[1..] do
                     yield [p1; p2; p3; p4; p5], [sep1; sep2; sep3; sep4]  *)
               }
 
@@ -1225,10 +1225,10 @@ let testFollowedBy() =
     nextCharSatisfiesNot (one '\n') |> RError "\r"   0 NoErrorMessages
 
     let two (str: string) =
-        fun c0 c1 -> if c0 = str.[0] && c1 = str.[1] then true
+        fun c0 c1 -> if c0 = str[0] && c1 = str[1] then true
                      else Fail()
     let twoN (str: string) =
-        fun c0 c1 -> if c0 = str.[0] && c1 = str.[1] then false
+        fun c0 c1 -> if c0 = str[0] && c1 = str[1] then false
                      else Fail()
 
     let eos2 = fun c0 c1 -> Fail()

@@ -1786,7 +1786,7 @@ module Parser =
         |>> fun s ->
                 let mutable n = 0
                 for i = 0 to s.Length - 1 do
-                    n <- n*16 + hex2int s.[i]
+                    n <- n*16 + hex2int s[i]
                 n
 
     let skipToBeginOfSection name =
@@ -1920,22 +1920,22 @@ let testIdentifierValidator() =
     let start = IdFlags.NonContinue ||| IdFlags.Continue
 
     let opts = Array.zeroCreate 128
-    opts.[int '$'] <- start
-    opts.[int '?'] <- IdFlags.Continue
+    opts[int '$'] <- start
+    opts[int '?'] <- IdFlags.Continue
     for i = 0 to 127 do
         if IdentifierValidator.IsXIdStartOrSurrogate(char i) then
-            opts.[i] <- start
+            opts[i] <- start
         elif IdentifierValidator.IsXIdContinueOrSurrogate(char i) then
-            opts.[i] <- IdFlags.Continue
+            opts[i] <- IdFlags.Continue
 
     let isSurrogate (str: string) (index: int) =
-        System.Char.IsHighSurrogate(str.[index])
+        System.Char.IsHighSurrogate(str[index])
         && index + 1 < str.Length
-        && System.Char.IsLowSurrogate(str.[index + 1])
+        && System.Char.IsLowSurrogate(str[index + 1])
 
     let isIdStart (opts: IdFlags[]) (str: string) (index: int) =
-        let c = (str.[index])
-        if int c < opts.Length then int (opts.[int c] &&& IdFlags.NonContinue) <> 0
+        let c = (str[index])
+        if int c < opts.Length then int (opts[int c] &&& IdFlags.NonContinue) <> 0
         elif not (System.Char.IsSurrogate(c)) then
             IdentifierValidator.IsXIdStartOrSurrogate(c)
         else
@@ -1943,8 +1943,8 @@ let testIdentifierValidator() =
             && IdentifierValidator.IsXIdStartSmp(System.Char.ConvertToUtf32(str, index) - 0x10000)
 
     let isIdContinue (opts: IdFlags[]) allowJoiner (str: string) (index: int) =
-        let c = (str.[index])
-        if int c < opts.Length then int (opts.[int c] &&& IdFlags.Continue) <> 0
+        let c = (str[index])
+        if int c < opts.Length then int (opts[int c] &&& IdFlags.Continue) <> 0
         elif not (System.Char.IsSurrogate(c)) then
             IdentifierValidator.IsXIdContinueOrSurrogate(c)
             || (allowJoiner && c >= '\u200c' && c <= '\u200d')

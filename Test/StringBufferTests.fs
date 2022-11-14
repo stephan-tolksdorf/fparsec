@@ -62,7 +62,7 @@ let test() =
             let n = rand.Next(1, buffers.Count + 1)
             for i = 1 to n do
                 let idx = rand.Next(buffers.Count)
-                let buffer = buffers.[idx]
+                let buffer = buffers[idx]
                 allocated <- allocated - buffer.Length
                 buffer.Dispose()
                 buffers.RemoveAt(idx)
