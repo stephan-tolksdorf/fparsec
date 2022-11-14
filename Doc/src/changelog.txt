@@ -2,10 +2,11 @@
 [no-subsection-numbers]
 
 [section#v2_0 Version 2.0, 2022-11-01]
-- Dropped .NET Framework 4.5 support and switched to using .NET 6.
+- Dropped support for .NET Framework 4.5 and PCL and switched to using .NET 6.
 - Changed NuGet build to always enable code signing. [url "https://github.com/stephan-tolksdorf/fparsec/pull/55" Contributed] by Radek Krahl -- thanks Radek!
 - Norman Krämer [url "https://github.com/stephan-tolksdorf/fparsec/pull/54" fixed] an error in the `CharStream.Skip` documentation -- thanks Norman! 
 - Nathan Adams [url "https://github.com/stephan-tolksdorf/fparsec/pull/56" fixed] a typo in the User's Guide -- thanks Nathan!
+- Theodore Tsirpanis [url "https://github.com/stephan-tolksdorf/fparsec/pull/92" optimized and cleaned-up] the codebase, taking advantage of new framework and langauge features and removing PCL support -- thanks Theodore!
 
 [/section]
 
