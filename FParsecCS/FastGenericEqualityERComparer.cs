@@ -26,19 +26,11 @@ internal static class FastGenericEqualityERComparer<T> {
 
 internal static class FastGenericEqualityERComparer {
     public static EqualityComparer<T> Create<T>() {
-        var t = typeof(T);
-        if (t.IsArray) return new ArrayStructuralEqualityERComparer<T>();
-    #if PCL || NETSTANDARD1_6
-        var ti = t.GetTypeInfo();
-        var ise = typeof(IStructuralEquatable).GetTypeInfo();
-    #else
-        var ti = t;
-        var ise = typeof(IStructuralEquatable);
-    #endif
-        if (ise.IsAssignableFrom(ti)) {
-            var gct = ti.IsValueType ? typeof(StructStructuralEqualityERComparer<>)
+        if (typeof(T).IsArray) return new ArrayStructuralEqualityERComparer<T>();
+        if (typeof(IStructuralEquatable).IsAssignableFrom(typeof(T))) {
+            var gct = typeof(T).IsValueType ? typeof(StructStructuralEqualityERComparer<>)
                                      : typeof(ClassStructuralEqualityERComparer<>);
-            var ct = gct.MakeGenericType(t);
+            var ct = gct.MakeGenericType(typeof(T));
         #if LOW_TRUST || NETSTANDARD1_6
             return (EqualityComparer<T>)Activator.CreateInstance(ct);
         #else

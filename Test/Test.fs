@@ -185,20 +185,10 @@ let seqParserAndReset2 ps =
     p1, p2, (fun () -> p1r(); p2r())
 
 let setStaticField (t: System.Type) name v =
-#if NETCORE
-    let ti = t.GetTypeInfo()
-#else
-    let ti = t
-#endif
-    ti.GetField(name, System.Reflection.BindingFlags.NonPublic ||| System.Reflection.BindingFlags.Static).SetValue(null, v)
+    t.GetField(name, BindingFlags.NonPublic ||| BindingFlags.Static).SetValue(null, v)
 
 let getStaticField (t: System.Type) name =
-#if NETCORE
-    let ti = t.GetTypeInfo()
-#else
-    let ti = t
-#endif
-    unbox (ti.GetField(name, System.Reflection.BindingFlags.NonPublic ||| System.Reflection.BindingFlags.Static).GetValue())
+    unbox (t.GetField(name, BindingFlags.NonPublic ||| BindingFlags.Static).GetValue())
 
 
 let shuffleArray (rand: System.Random) (xs: 'a[]) =
