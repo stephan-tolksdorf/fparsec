@@ -1,0 +1,35 @@
+name: Build and test
+
+on:
+  push:
+
+jobs:
+  build-and-test-low-trust:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        global-json-file: global.json
+    - name: Build Low-Trust version
+      run: dotnet build Test/Test-LowTrust.fsproj -c Release-LowTrust -p:Platform=AnyCPU
+    - name: Test Low-Trust version
+      run: dotnet run --no-build --project Test/Test-LowTrust.fsproj -c Release-LowTrust -p:Platform=AnyCPU
+    - name: Build samples for Low-Trust version
+      run: dotnet build FParsec-LowTrust.sln -c Release-LowTrust -p:Platform=AnyCPU
+
+  build-and-test-non-low-trust:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        global-json-file: global.json
+    - name: Build non-Low-Trust version
+      run: dotnet build Test/Test.fsproj -c Release -p:Platform=AnyCPU
+    - name: Test non-Low-Trust version
+      run: dotnet run --no-build --project Test/Test.fsproj -c Release -p:Platform=AnyCPU
+    - name: Build samples for non-Low-Trust version
+      run: dotnet build FParsec.sln -c Release -p:Platform=AnyCPU
