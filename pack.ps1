@@ -33,12 +33,11 @@ foreach ($folder in $("nupkgs", "FParsecCS\obj", "FParsecCS\bin", "FParsec\obj",
 
 foreach ($configSuffix in $configSuffices) {
     $config = "Release$configSuffix"
-    $props = "-c $config -p:VersionSuffix=$versionSuffix -p:FParsecNuGet=true -p:Platform='Any CPU'"
+    $props = "-c $config -p:VersionSuffix=$versionSuffix -p:FParsecNuGet=true -p:Platform=AnyCPU"
     invoke "dotnet build FParsec/FParsec$configSuffix.fsproj $props -v n"
     invoke "dotnet pack FParsec/FParsec$configSuffix.fsproj $props -o ""$pwd\nupkgs"""
     invoke "dotnet build Test/Test$configSuffix.fsproj $props -v n"
     foreach ($tf in $testTargetFrameworks[$configSuffix]) {
-        # invoke "dotnet run --no-build --project Test/Test$configSuffix.fsproj $props -f $tf" # doesn't work properly
-        invoke "Test/bin/'Any CPU'/$config/$tf/Test"
+        invoke "dotnet run --no-build --project Test/Test$configSuffix.fsproj $props"
     }
 }
