@@ -215,7 +215,11 @@ let createMultiBlockTestStream byteStream encoding =
                          encoding, true,
                          #if LOW_TRUST
                          #else
+                          #if DISABLE_STREAM_BACKTRACKING_TESTS
+                            128, 64,
+                          #else
                             8, 3,
+                          #endif
                          #endif
                             16);
 
@@ -1284,7 +1288,11 @@ let xTest() =
                                                encoding, true,
                                            #if LOW_TRUST
                                            #else
+                                             #if DISABLE_STREAM_BACKTRACKING_TESTS
+                                               chars.Length, blockOverlap,
+                                             #else 
                                                blockSize, blockOverlap,
+                                             #endif
                                            #endif
                                                byteBufferLength)
 
@@ -2452,7 +2460,9 @@ let run() =
 
 #if LOW_TRUST
 #else
+  #if !DISABLE_STREAM_BACKTRACKING_TESTS
     testNonSeekableCharStreamHandling()
+  #endif
 #endif
     testDecoderFallbackExceptionHandling()
 

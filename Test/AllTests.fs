@@ -13,8 +13,11 @@ let run() =
     FParsec.Test.TextTests.run()
 #if LOW_TRUST
 #else
+  #if !DISABLE_STREAM_BACKTRACKING_TESTS
+    // In .NET Core System.Text.Decoder no longer support serialization, see https://github.com/stephan-tolksdorf/fparsec/issues/95
     printfn "Testing FParsec.Cloning ..."
     FParsec.Test.CloningTests.run()
+  #endif
     printfn "Testing FParsec.StringBuffer ..."
     FParsec.Test.StringBufferTests.run()
 #endif
