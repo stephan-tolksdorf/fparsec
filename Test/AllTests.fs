@@ -51,5 +51,5 @@ let main _argv =
         0
     with
     | ex ->
-        printfn "error: %A" ex
+        printfn $"error: {ex}"
         1
