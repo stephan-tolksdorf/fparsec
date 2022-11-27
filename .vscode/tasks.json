@@ -5,7 +5,7 @@
     "tasks": [
         {
             "label": "Build Test (Config: Debug-LowTrust)",
-            "command": "dotnet build Test/Test.fsproj -c Debug-LowTrust -p:Platform='Any CPU'",
+            "command": "dotnet build Test/Test.fsproj -c Debug-LowTrust -p:Platform=AnyCPU",
             "type": "shell",
             "group": "build",
             "presentation": {
@@ -15,7 +15,7 @@
         },
         {
             "label": "Build All (Config: Debug-LowTrust)",
-            "command": "dotnet build FParsec.sln -c Debug-LowTrust -p:Platform='Any CPU'",
+            "command": "dotnet build FParsec.sln -c Debug-LowTrust -p:Platform=AnyCPU",
             "type": "shell",
             "group": "build",
             "presentation": {
