@@ -2452,7 +2452,6 @@ let run() =
     testEncodingDetection()
 
 #if !LOW_TRUST
-#else
   #if !DISABLE_STREAM_BACKTRACKING_TESTS
     testNonSeekableCharStreamHandling()
   #endif
