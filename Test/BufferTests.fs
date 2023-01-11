@@ -5,82 +5,130 @@ module FParsec.Test.BufferTests
 
 open System
 open System.Runtime.InteropServices
+open Xunit
+open FsCheck
 open Microsoft.FSharp.NativeInterop
 open FParsec.Test.Test
+open FsCheck.Xunit
 
 #nowarn "9" // "Uses of this construct may result in the generation of unverifiable .NET IL code."
 
 type Buffer = FParsec.Buffer
 
-let testSwapByteOrder() =
-    Buffer.SwapByteOrder(0xffffffffu) |> Equal 0xffffffffu
-    Buffer.SwapByteOrder(0x00000000u) |> Equal 0x00000000u
-    Buffer.SwapByteOrder(0x12345678u) |> Equal 0x78563412u
-    Buffer.SwapByteOrder(0xffffffffffffffffUL) |> Equal 0xffffffffffffffffUL
-    Buffer.SwapByteOrder(0x0000000000000000UL) |> Equal 0x0000000000000000UL
-    Buffer.SwapByteOrder(0x123456789abcdef0UL) |> Equal 0xf0debc9a78563412UL
+[<FParsecProperty>]
+let ``SwapByteOrder swaps 32bit unsigned integers`` (i: uint32) =
+    let expected =
+        BitConverter.GetBytes(i)
+        |> Array.rev
+        |> Convert.ToHexString
+    
+    let actual =
+        Buffer.SwapByteOrder i
+        |> BitConverter.GetBytes
+        |> Convert.ToHexString
+    
+    expected === actual
+
+[<FParsecProperty>]
+let ``SwapByteOrder swaps 64bit unsigned integers`` (i: uint64) =
+    let expected =
+        BitConverter.GetBytes(i)
+        |> Array.rev
+        |> Convert.ToHexString
+    
+    let actual =
+        Buffer.SwapByteOrder i
+        |> BitConverter.GetBytes
+        |> Convert.ToHexString
+    
+    expected === actual
+
 #if LOW_TRUST
-    let array = [|0x12345678u; 0x9abcdef0u; 0x12345678u|]
-    Buffer.SwapByteOrder(array)
-    array |> Equal [|0x78563412u; 0xf0debc9au; 0x78563412u;|]
+[<FParsecProperty>]
+let ``SwapByteOrder swaps 32bit unsigned integer arrays`` (i: uint32 array) =
+    let expected =
+        i
+        |> Array.collect (BitConverter.GetBytes >> Array.rev)
+        |> Convert.ToHexString
+    
+    Buffer.SwapByteOrder i
+    
+    let actual =
+        i
+        |> Array.collect BitConverter.GetBytes
+        |> Convert.ToHexString
+    
+    expected === actual
 #else
-    let p = NativePtr.stackalloc 3
-    NativePtr.set p 0 0x12345678u
-    NativePtr.set p 1 0x9abcdef0u
-    NativePtr.set p 2 0x12345678u
-    Buffer.SwapByteOrder(Span<_>(NativePtr.toVoidPtr p, 3))
-    NativePtr.get p 0 |> Equal 0x78563412u
-    NativePtr.get p 1 |> Equal 0xf0debc9au
-    NativePtr.get p 2 |> Equal 0x78563412u
-#endif
-    Buffer.SwapByteOrder(0x01020304u) |> Equal 0x04030201u
 
-#if !LOW_TRUST
+let inline createPointer (data: uint32 array) =
+    let length = data.Length
+    let intPtr = NativePtr.stackalloc length
+    data |> Array.iteri (NativePtr.set intPtr)
+    intPtr
 
-let testCopy() =
-    let n = 64
-    let bytes = Array.init n (fun i -> byte i)
-    let buffer1 = Array.zeroCreate n : byte[]
-    let buffer2 = Array.zeroCreate n : byte[]
-    let handle = GCHandle.Alloc(buffer2, GCHandleType.Pinned)
-    let buffer2Ptr = NativePtr.ofNativeInt (handle.AddrOfPinnedObject()) : nativeptr<byte>
+[<FParsecProperty>]
+let ``SwapByteOrder swaps 32bit unsigned integer spans`` (i: uint32 array) =
+    let expected =
+        i
+        |> Array.collect (BitConverter.GetBytes >> Array.rev)
+        |> Convert.ToHexString
+    
+    let actual =
+        let length = i.Length
+        let p = createPointer i
+        
+        Buffer.SwapByteOrder(Span<_>(NativePtr.toVoidPtr p, length))
+        i
+        |> Array.mapi (fun index _ -> NativePtr.get p index)
+        |> Array.collect BitConverter.GetBytes
+        |> Convert.ToHexString
+    
+    expected === actual
 
-    for iSrc = 0 to n do
-        for iDst = 0 to n do
-            for size = 0 to min (n - iSrc) (n - iDst) do
-                Array.blit bytes 0 buffer1 0 n
-                Array.blit bytes 0 buffer2 0 n
-                System.Buffer.BlockCopy(buffer1, iSrc, buffer1, iDst, size)
-                Buffer.Copy(NativePtr.add buffer2Ptr iDst,
-                            NativePtr.add buffer2Ptr iSrc, size)
-                if buffer1 <> buffer2 then
-                    Fail()
+[<FParsecProperty>]
+let ``Copy copies bytes between arrays`` (data: byte array) (seed: int) =
+    let rnd = Random(seed)
+    let length = data.Length
+    let iSrc = rnd.Next(0, length)
+    let iDst = rnd.Next(0, length)
+    let size = rnd.Next(0, min (length - iSrc) (length - iDst))
+    
+    let expected =
+        let buffer = Array.copy data
+        System.Buffer.BlockCopy(buffer, iSrc, buffer, iDst, size)
+        buffer
+    
+    let actual =
+        let buffer = Array.copy data
+        let handle = GCHandle.Alloc(buffer, GCHandleType.Pinned)
+        let bufferPtr = NativePtr.ofNativeInt (handle.AddrOfPinnedObject()) : nativeptr<byte>
+        Buffer.Copy(NativePtr.add bufferPtr iDst, NativePtr.add bufferPtr iSrc, size)
+        buffer
+        
+    expected === actual
 
-    try Buffer.Copy(NativePtr.ofNativeInt 0n, NativePtr.ofNativeInt 0n, -1)
-        Fail()
-    with :? System.ArgumentOutOfRangeException -> ()
+[<Fact>]
+let ``Copy throws an ArgumentOutOfRangeException when using a negative size`` () =
+    Assert.Throws<ArgumentOutOfRangeException>(fun () -> Buffer.Copy(NativePtr.ofNativeInt 0n, NativePtr.ofNativeInt 0n, -1))
 
-let testEqual() =
-    let n = 16
-    let buffer1 = NativePtr.stackalloc n
-    let buffer2 = NativePtr.stackalloc n
-    for i = 0 to n - 1 do
-        NativePtr.set buffer1 i (uint32 i)
-        NativePtr.set buffer2 i (uint32 i)
+[<FParsecProperty>]
+let ``Equal returns true for array pointers with the same data`` (data: uint32 array) (seed: int) =
+    let rnd = Random(seed)
+    let comparisonLength = rnd.Next(0, data.Length)
+    let buffer1 = createPointer data
+    let buffer2 = createPointer data
+    
+    Buffer.Equals(buffer1, buffer2, comparisonLength)
 
-    for length = 0 to n do
-        for i = 0 to length - 1 do
-            Buffer.Equals(buffer1, buffer2, length) |> True
-            NativePtr.set buffer2 i 0xffffffffu
-            Buffer.Equals(buffer1, buffer2, length) |> False
-            NativePtr.set buffer2 i (uint32 i)
+[<FParsecProperty>]
+let ``Equal returns false for array pointers with different data`` (NonEmptyArray data) (seed: int) =
+    let rnd = Random(seed)
+    let i = rnd.Next(0, data.Length-1)
+    let buffer1 = createPointer data
+    let buffer2 = createPointer data
+    NativePtr.set buffer2 i 0xffffffffu
+    
+    not <| Buffer.Equals(buffer1, buffer2, i + 1)
 
-
-#endif
-
-let run() =
-    testSwapByteOrder()
-#if !LOW_TRUST
-    testCopy()
-    testEqual()
 #endif
