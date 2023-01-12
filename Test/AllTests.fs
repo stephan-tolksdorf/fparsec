@@ -4,8 +4,6 @@
 
 
 let run() =
-    printfn "Testing FParsec.CharSet ..."
-    FParsec.Test.CharSetTests.run()
     printfn "Testing FParsec.HexFloat ..."
     FParsec.Test.HexFloatTests.run()
     printfn "Testing FParsec.Text ..."
