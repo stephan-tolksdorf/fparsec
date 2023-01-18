@@ -3,12 +3,191 @@
 
 module FParsec.Test.HexFloatTests
 
+open System
+open Microsoft.FSharp.Core
+open Xunit
 open FParsec.Test.Test
 
 let floatToHexString   = FParsec.CharParsers.floatToHexString
 let floatOfHexString   = FParsec.CharParsers.floatOfHexString
 let float32ToHexString = FParsec.CharParsers.float32ToHexString
 let float32OfHexString = FParsec.CharParsers.float32OfHexString
+    
+[<FParsecProperty(MaxTest = 100000)>]
+let ``floatToHexString output matches test oracle implementation`` (f: float) =
+    floatToHexString f === Float.toHexString f
+
+[<FParsecProperty>]
+let ``floatToHexString returns strings in the correct format`` (FiniteFloat f) =
+    floatToHexString f .* @"(-?0x[01].[0-9a-fA-F]*p-?[0-9]*$)"
+
+[<FParsecProperty(MaxTest = 100000)>]
+let ``floatToHexString and floatOfHexString functions are reciprocal`` (FiniteFloat f) =
+    (floatToHexString f |> floatOfHexString) === f
+
+[<FParsecProperty>]
+let ``floatToHexString returns strings that start with '0' for positive finite values`` (PositiveFiniteFloat f) =
+    let expected = '0'
+    
+    let actual = (floatToHexString f)[0]
+    
+    expected === actual
+
+[<FParsecProperty>]
+let ``Hex String starts with '-' for negative finite values`` (NegativeFiniteFloat f) =
+    let expected = '-'
+    
+    let actual = (floatToHexString f)[0]
+    
+    expected === actual
+
+[<Fact>]
+let ``floatToHexString returns 'Infinity' for a positive infinity value`` () =
+    Assert.Equal("Infinity", floatToHexString Double.PositiveInfinity)
+
+[<Fact>]
+let ``floatToHexString returns '-Infinity' for a negative infinity value`` () =
+    Assert.Equal("-Infinity", floatToHexString Double.NegativeInfinity)
+
+[<Fact>]
+let ``floatToHexString returns 'NaN' for an invalid float value`` () =
+    Assert.Equal("NaN", floatToHexString Double.NaN)
+
+[<Fact>]
+let ``Positive Zero exponent`` () =
+    Assert.Equal("0x0.0p0", floatToHexString 0.0)
+
+[<Fact>]
+let ``Negative Zero exponent`` () =
+    Assert.Equal("-0x0.0p0", floatToHexString -0.0)
+
+[<Theory>]
+[<InlineData("")>]
+[<InlineData(".")>]
+[<InlineData("p1")>]
+[<InlineData(".p1")>]
+[<InlineData("1x1")>]
+[<InlineData("x1")>]
+[<InlineData("0xx1")>]
+[<InlineData("0x/")>]
+[<InlineData("0x:")>]
+[<InlineData("0x@")>]
+[<InlineData("0xG")>]
+[<InlineData("0x`")>]
+[<InlineData("0xg")>]
+[<InlineData("0.1pp1")>]
+[<InlineData("0.1p+")>]
+[<InlineData("0.1p-")>]
+[<InlineData("0.fg")>]
+[<InlineData("1.0 ")>]
+[<InlineData("1..")>]
+[<InlineData("1.0.")>]
+let ``floatOfHexString correctly rejects malformed hex strings`` str =
+    Assert.Throws<FormatException>(fun () -> floatOfHexString str |> ignore)
+
+[<Fact>]
+let ``floatOfHexString correctly rejects a null string`` () =
+    Assert.Throws<ArgumentNullException>(fun () -> floatOfHexString null |> ignore)
+
+[<Theory>]
+[<InlineData("Inf", Double.PositiveInfinity)>]
+[<InlineData("iNf", Double.PositiveInfinity)>]
+[<InlineData("Infinity", Double.PositiveInfinity)>]
+[<InlineData("+InFinITy", Double.PositiveInfinity)>]
+[<InlineData("-Inf", Double.NegativeInfinity)>]
+[<InlineData("-InFinITy", Double.NegativeInfinity)>]
+[<InlineData("NaN", Double.NaN)>]
+[<InlineData("-nAn", Double.NaN)>]
+[<InlineData("+Nan", Double.NaN)>]
+let ``floatOfHexString correctly handles Infinity and NaN strings`` str expected =
+    Assert.Equal(expected, floatOfHexString str)
+
+[<Theory>]
+[<InlineData("001", 1L)>]
+[<InlineData("1.", 1L)>]
+[<InlineData("1.0", 1L)>]
+[<InlineData("0x1", 1L)>]
+[<InlineData("0X1", 1L)>]
+[<InlineData("0x0001", 1L)>]
+[<InlineData("0x1.", 1L)>]
+[<InlineData("0x1.0", 1L)>]
+[<InlineData("0x001.0", 1L)>]
+[<InlineData("1.0p0", 1L)>]
+[<InlineData("1.0P0", 1L)>]
+[<InlineData("001.00p+000", 1L)>]
+[<InlineData(".100p+004", 1L)>]
+[<InlineData(".0100p+008", 1L)>]
+[<InlineData("00.100p+004", 1L)>]
+[<InlineData("00.0100p+008", 1L)>]
+[<InlineData("0010.0p-004", 1L)>]
+[<InlineData("0x1.0p0", 1L)>]
+[<InlineData("0X1.0P0", 1L)>]
+[<InlineData("0x001.00p+000", 1L)>]
+[<InlineData("0x00.100p+004", 1L)>]
+[<InlineData("0x.100p+004", 1L)>]
+[<InlineData("0x0010.0p-004", 1L)>]
+[<InlineData("+001", 1L)>]
+[<InlineData("+1.", 1L)>]
+[<InlineData("+1.0", 1L)>]
+[<InlineData("+.100p+004", 1L)>]
+[<InlineData("+0x0010.0p-004", 1L)>]
+let ``floatOfHexString handles different formats of 1.0`` str expected =
+    Assert.Equal(expected, floatOfHexString str)
+
+[<Theory>]
+[<InlineData("-001", -1L)>]
+[<InlineData("-1.", -1L)>]
+[<InlineData("-1.0", -1L)>]
+[<InlineData("-0x1", -1L)>]
+[<InlineData("-0X1", -1L)>]
+[<InlineData("-0x0001", -1L)>]
+[<InlineData("-0x1.", -1L)>]
+[<InlineData("-0x1.0", -1L)>]
+[<InlineData("-0x001.0", -1L)>]
+[<InlineData("-1.0p0", -1L)>]
+[<InlineData("-1.0P0", -1L)>]
+[<InlineData("-001.00p+000", -1L)>]
+[<InlineData("-.100p+004", -1L)>]
+[<InlineData("-.0100p+008", -1L)>]
+[<InlineData("-00.100p+004", -1L)>]
+[<InlineData("-00.0100p+008", -1L)>]
+[<InlineData("-0010.0p-004", -1L)>]
+[<InlineData("-0x1.0p0", -1L)>]
+[<InlineData("-0X1.0P0", -1L)>]
+[<InlineData("-0x001.00p+000", -1L)>]
+[<InlineData("-0x00.100p+004", -1L)>]
+[<InlineData("-0x.100p+004", -1L)>]
+[<InlineData("-0x0010.0p-004", -1L)>]
+let ``floatOfHexString handles different formats of -1.0`` str expected =
+    Assert.Equal(expected, floatOfHexString str)
+
+[<Theory>]
+[<InlineData("0", 0L)>]
+[<InlineData("0.", 0L)>]
+[<InlineData("0.0", 0L)>]
+[<InlineData("00.0", 0L)>]
+[<InlineData("00.000", 0L)>]
+[<InlineData("00.000p0", 0L)>]
+[<InlineData("00.000p99999999", 0L)>]
+[<InlineData("0x0", 0L)>]
+[<InlineData("0x0.", 0L)>]
+[<InlineData("0x0.0", 0L)>]
+[<InlineData("0x00.0", 0L)>]
+[<InlineData("0x00.000", 0L)>]
+[<InlineData("0x00.000p0", 0L)>]
+[<InlineData("0x00.000p99999999", 0L)>]
+[<InlineData("100P-2147483639", 0L)>]
+[<InlineData("100P-2147483640", 0L)>]
+[<InlineData("100P-2147483647", 0L)>]
+[<InlineData("100P-9999999999999999999999999", 0L)>]
+[<InlineData("0.001P-2147483639", 0L)>]
+[<InlineData("0.001P-2147483640", 0L)>]
+[<InlineData("0.001P-2147483647", 0L)>]
+[<InlineData("0.001P-9999999999999999999999999", 0L)>]
+let ``floatOfHexString generates floats that are binary equivalent to 0`` str expected =
+    let actual = floatOfHexString str
+    Assert.Equal(BitConverter.DoubleToInt64Bits(expected), BitConverter.DoubleToInt64Bits(actual))
+
 
 let testDoubleHexFloat() =
     /// bitwise equal
@@ -18,149 +197,16 @@ let testDoubleHexFloat() =
     // float32ToHexString
     ///////////////////
 
-    let max    = System.Double.MaxValue
-    let eps    = System.Math.Pow(2.0, -53.0)
-    let min    = System.Math.Pow(2.0, -1022.0)  // smallest normal number
-    let minmin = System.Math.Pow(2.0, -1074.0) // smallest subnormal number
+    let max    = Double.MaxValue
+    let eps    = Math.Pow(2.0, -53.0)
+    let min    = Math.Pow(2.0, -1022.0)  // smallest normal number
+    let minmin = Math.Pow(2.0, -1074.0) // smallest subnormal number
 
-    floatToHexString 0.0 |> Equal "0x0.0p0"
-    floatToHexString -0.0 |> Equal "-0x0.0p0"
-    floatToHexString 1.0 |> Equal "0x1.0p0"
-    floatToHexString -1.0 |> Equal "-0x1.0p0"
-    floatToHexString (1.0 + 4.*eps) |> Equal "0x1.0000000000002p0"
-    floatToHexString (1.0 + 2.*eps) |> Equal "0x1.0000000000001p0"
-    floatToHexString (1.0 - eps) |> Equal "0x1.fffffffffffffp-1"
-    floatToHexString (1.0 - 2.*eps) |> Equal "0x1.ffffffffffffep-1"
-    floatToHexString min |> Equal "0x1.0p-1022"
-    floatToHexString (min + minmin) |> Equal "0x1.0000000000001p-1022"
-    floatToHexString (min - minmin) |> Equal "0x0.fffffffffffffp-1022"
-    floatToHexString (min - 2.*minmin) |> Equal "0x0.ffffffffffffep-1022"
-    floatToHexString (minmin) |> Equal "0x0.0000000000001p-1022"
-    floatToHexString max |> Equal "0x1.fffffffffffffp1023"
 
-    floatToHexString System.Double.PositiveInfinity |> Equal "Infinity"
-    floatToHexString System.Double.NegativeInfinity |> Equal "-Infinity"
-    floatToHexString System.Double.NaN |> Equal "NaN"
 
 
     // floatOfHexString
     ///////////////////
-
-    try floatOfHexString null |> ignore; Fail()
-    with :? System.ArgumentNullException -> ()
-
-    let checkFormatError s =
-        try floatOfHexString s |> ignore; Fail ()
-        with :? System.FormatException -> ()
-
-    checkFormatError ""
-    checkFormatError "."
-    checkFormatError "p1"
-    checkFormatError ".p1"
-    checkFormatError "1x1"
-    checkFormatError "x1"
-    checkFormatError "0xx1"
-    checkFormatError "0x/"
-    checkFormatError "0x:"
-    checkFormatError "0x@"
-    checkFormatError "0xG"
-    checkFormatError "0x`"
-    checkFormatError "0xg"
-    checkFormatError "0.1pp1"
-    checkFormatError "0.1p+"
-    checkFormatError "0.1p-"
-    checkFormatError "0.fg"
-    checkFormatError "1.0 "
-    checkFormatError "1.."
-    checkFormatError "1.0."
-
-    floatOfHexString "Inf"      |> Equal System.Double.PositiveInfinity
-
-    floatOfHexString "iNf"      |> Equal System.Double.PositiveInfinity
-    floatOfHexString "Infinity" |> Equal System.Double.PositiveInfinity
-    floatOfHexString "+InFinITy" |> Equal System.Double.PositiveInfinity
-    floatOfHexString "-Inf"      |> Equal (-System.Double.PositiveInfinity)
-    floatOfHexString "-InFinITy" |> Equal (-System.Double.PositiveInfinity)
-    floatOfHexString "NaN" |> BEqual System.Double.NaN
-    floatOfHexString "-nAn" |> BEqual System.Double.NaN
-    floatOfHexString "+Nan" |> BEqual System.Double.NaN
-
-    floatOfHexString "001"           |> Equal 1.0
-    floatOfHexString "1."            |> Equal 1.0
-    floatOfHexString "1.0"           |> Equal 1.0
-    floatOfHexString "0x1"           |> Equal 1.0
-    floatOfHexString "0X1"           |> Equal 1.0
-    floatOfHexString "0x0001"        |> Equal 1.0
-    floatOfHexString "0x1."          |> Equal 1.0
-    floatOfHexString "0x1.0"         |> Equal 1.0
-    floatOfHexString "0x001.0"       |> Equal 1.0
-    floatOfHexString "1.0p0"         |> Equal 1.0
-    floatOfHexString "1.0P0"         |> Equal 1.0
-    floatOfHexString "001.00p+000"   |> Equal 1.0
-    floatOfHexString ".100p+004"     |> Equal 1.0
-    floatOfHexString ".0100p+008"    |> Equal 1.0
-    floatOfHexString "00.100p+004"   |> Equal 1.0
-    floatOfHexString "00.0100p+008"  |> Equal 1.0
-    floatOfHexString "0010.0p-004"   |> Equal 1.0
-    floatOfHexString "0x1.0p0"       |> Equal 1.0
-    floatOfHexString "0X1.0P0"       |> Equal 1.0
-    floatOfHexString "0x001.00p+000" |> Equal 1.0
-    floatOfHexString "0x00.100p+004" |> Equal 1.0
-    floatOfHexString "0x.100p+004"   |> Equal 1.0
-    floatOfHexString "0x0010.0p-004" |> Equal 1.0
-
-    floatOfHexString "-001"           |> Equal -1.0
-    floatOfHexString "-1."            |> Equal -1.0
-    floatOfHexString "-1.0"           |> Equal -1.0
-    floatOfHexString "-0x1"           |> Equal -1.0
-    floatOfHexString "-0X1"           |> Equal -1.0
-    floatOfHexString "-0x0001"        |> Equal -1.0
-    floatOfHexString "-0x1."          |> Equal -1.0
-    floatOfHexString "-0x1.0"         |> Equal -1.0
-    floatOfHexString "-0x001.0"       |> Equal -1.0
-    floatOfHexString "-1.0p0"         |> Equal -1.0
-    floatOfHexString "-1.0P0"         |> Equal -1.0
-    floatOfHexString "-001.00p+000"   |> Equal -1.0
-    floatOfHexString "-.100p+004"     |> Equal -1.0
-    floatOfHexString "-.0100p+008"    |> Equal -1.0
-    floatOfHexString "-00.100p+004"   |> Equal -1.0
-    floatOfHexString "-00.0100p+008"  |> Equal -1.0
-    floatOfHexString "-0010.0p-004"   |> Equal -1.0
-    floatOfHexString "-0x1.0p0"       |> Equal -1.0
-    floatOfHexString "-0X1.0P0"       |> Equal -1.0
-    floatOfHexString "-0x001.00p+000" |> Equal -1.0
-    floatOfHexString "-0x00.100p+004" |> Equal -1.0
-    floatOfHexString "-0x.100p+004"   |> Equal -1.0
-    floatOfHexString "-0x0010.0p-004" |> Equal -1.0
-
-    floatOfHexString "+001"           |> Equal 1.0
-    floatOfHexString "+1."            |> Equal 1.0
-    floatOfHexString "+1.0"           |> Equal 1.0
-    floatOfHexString "+.100p+004"     |> Equal 1.0
-    floatOfHexString "+0x0010.0p-004" |> Equal 1.0
-
-    floatOfHexString "0"        |> BEqual 0.
-    floatOfHexString "0."       |> BEqual 0.
-    floatOfHexString "0.0"      |> BEqual 0.
-    floatOfHexString "00.0"     |> BEqual 0.
-    floatOfHexString "00.000"   |> BEqual 0.
-    floatOfHexString "00.000p0" |> BEqual 0.
-    floatOfHexString "00.000p99999999" |> BEqual 0.
-    floatOfHexString "0x0"        |> BEqual 0.
-    floatOfHexString "0x0."       |> BEqual 0.
-    floatOfHexString "0x0.0"      |> BEqual 0.
-    floatOfHexString "0x00.0"     |> BEqual 0.
-    floatOfHexString "0x00.000"   |> BEqual 0.
-    floatOfHexString "0x00.000p0" |> BEqual 0.
-    floatOfHexString "0x00.000p99999999" |> BEqual 0.
-    floatOfHexString "100P-2147483639"   |> BEqual 0.
-    floatOfHexString "100P-2147483640"   |> BEqual 0.
-    floatOfHexString "100P-2147483647"   |> BEqual 0.
-    floatOfHexString "100P-9999999999999999999999999"   |> BEqual 0.
-    floatOfHexString "0.001P-2147483639" |> BEqual 0.
-    floatOfHexString "0.001P-2147483640" |> BEqual 0.
-    floatOfHexString "0.001P-2147483647" |> BEqual 0.
-    floatOfHexString "0.001P-9999999999999999999999999" |> BEqual 0.
 
     floatOfHexString "-0"        |> BEqual -0.0
     floatOfHexString "-0."       |> BEqual -0.0
