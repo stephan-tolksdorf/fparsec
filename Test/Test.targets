@@ -30,6 +30,7 @@
     <Compile Include="BufferTests.fs" />
     <Compile Include="CharSetTests.fs" />
     <Compile Include="HexFloatTests.fs" />
+    <Compile Include="HexFloat32Tests.fs" />
     <Compile Include="TextTests.fs" />
     <Compile Include="CloningTests.fs" />
     <Compile Include="StringBufferTests.fs" />
