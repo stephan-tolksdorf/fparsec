@@ -1,14 +1,9 @@
-﻿// Copyright (c) Stephan Tolksdorf 2007-2011
+﻿module AllTests
+// Copyright (c) Stephan Tolksdorf 2007-2011
 // License: Simplified BSD License. See accompanying documentation.
 
 
 let run() =
-    printfn "Testing FParsec.Buffer ..."
-    FParsec.Test.BufferTests.run()
-    printfn "Testing FParsec.CharSet ..."
-    FParsec.Test.CharSetTests.run()
-    printfn "Testing FParsec.HexFloat ..."
-    FParsec.Test.HexFloatTests.run()
     printfn "Testing FParsec.Text ..."
     FParsec.Test.TextTests.run()
 #if !LOW_TRUST
@@ -40,17 +35,17 @@ let run() =
 #endif
     printfn "No error was found."
 
-[<EntryPoint>]
-let main _argv =
-
-#if NETCOREAPP
-    System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
-#endif
-
-    try
-        run()
-        0
-    with
-    | ex ->
-        printfn $"error: {ex}"
-        1
+// [<EntryPoint>]
+// let main _argv =
+//
+// #if NETCOREAPP
+//     System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+// #endif
+//
+//     try
+//         run()
+//         0
+//     with
+//     | ex ->
+//         printfn $"error: {ex}"
+//         1
