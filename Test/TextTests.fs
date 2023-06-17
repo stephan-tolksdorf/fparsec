@@ -104,6 +104,11 @@ let testCountTextElements() =
            let s = System.String.Concat(strings)
            Text.CountTextElements(s) |> Equal (countTextElementsRef s)
 
+// Suppress intentional compiler warnings from testIsSurrogate: warning FS0044: This construct is deprecated. Use System.Char.* instead.
+// Test asserts that FParsec deprecated methods and new methods behave the same. Beware that #nowarn applies to the
+// entire file.
+#nowarn "44"
+
 let testIsSurrogate() =
     for c = 0 to 0xffff do
         let c = char c
@@ -114,7 +119,6 @@ let testIsSurrogate() =
 let testIsWhitespace() =
     for c = 0 to 0xffff do
         Text.IsWhitespace(char c) |> Equal (System.Char.IsWhiteSpace(char c))
-
 
 let run() =
     testNormalizeNewlines()
