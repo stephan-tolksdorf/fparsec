@@ -105,12 +105,12 @@ module internal Range =
             System.Array.Sort(rvs, {new Comparer<Range*'T>() with
                                         member t.Compare((r1, _), (r2, _)) = compare r1.Min r2.Min})
             let mutable connected = 0
-            let (r, _) as rv = rvs[0]
+            let r, _ as rv = rvs[0]
             if r.Min > r.Max then raise (createInvalidRangeException())
             let mutable prevMax = r.Max
             let mutable prevRV = rv
             for i = 1 to rvs.Length - 1 do
-                let (r, _) as rv = rvs[i]
+                let r, _ as rv = rvs[i]
                 if r.Min > r.Max then raise (createInvalidRangeException())
                 if prevMax >= r.Min then
                     invalidArg "keyValueRanges" "The ranges must be non-overlapping."
@@ -127,7 +127,7 @@ module internal Range =
                     vs[i] <- snd rv
             else
                 let mutable j = 0
-                for ((r, _) as rv) in rvs do
+                for r, _ as rv in rvs do
                     if j = 0 || not (prevMax + 1 = r.Min && cmp.Equals(snd prevRV, snd rv)) then
                         rs[j] <- r
                         vs[j] <- snd rv

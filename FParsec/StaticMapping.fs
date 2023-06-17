@@ -49,9 +49,6 @@ let private createStaticMappingTypeBuilder<'TIn,'TOut>() =
                              typeof<'TOut>, [|typeof<'TIn>|])
     tb, mb.GetILGenerator()
 
-let createStaticMappingAssertException() =
-    System.Exception("An internal assert check in FParsec.StaticMapping failed. Please report this error to fparsec@quanttec.com. (The Data member of the exception object contains the information needed to reproduce the error.)")
-
 let internal defaultMappingLengthCap = 32
 let internal defaultMappingDensityThreshold = 0.4
 let internal defaultIndicatorLengthCap = 32*8
@@ -77,7 +74,7 @@ let internal createStaticIntIndicatorFunctionImpl<'TInt when 'TInt : struct>
     ilg.Emit(OpCodes.Ret)
 
     let t = tb.CreateType()
-    let indicator = FormatterServices.GetUninitializedObject(t) :?> ('TInt -> bool)
+    let indicator = FormatterServices.GetUninitializedObject(t) :?> 'TInt -> bool
 
 #if DEBUG_STATIC_MAPPING
     // saveEmitAssembly "FParsec.Emitted.dll"
@@ -145,16 +142,14 @@ let internal createStaticIntMappingImpl
 
     if ranges.Length = 0 then fun _ -> defaultValue
     else
-        let physicalEqualityComparer = PhysicalEqualityComparer<'T>.InstanceOrNull
         let T = typeof<'T>
         if T = typeof<bool> then
-            let values = box values :?> bool[]
             let defaultValue = box defaultValue :?> bool
             box (createStaticIntIndicatorFunctionImpl
                     (lengthCap*(defaultIndicatorLengthCap/defaultMappingLengthCap))
                     (densityThreshold*(defaultIndicatorDensityThreshold/defaultMappingDensityThreshold))
                     minKey maxKey
-                    defaultValue ranges) :?> (int -> 'T)
+                    defaultValue ranges) :?> int -> 'T
         else
             let tb, ilg = createStaticMappingTypeBuilder<int, 'T>()
 
@@ -244,7 +239,7 @@ let internal createStaticIntMappingImpl
             ilg.Emit(OpCodes.Ret)
 
             let t = tb.CreateType()
-            let mapping = FormatterServices.GetUninitializedObject(t) :?> (int -> 'T)
+            let mapping = FormatterServices.GetUninitializedObject(t) :?> int -> 'T
             if not isPrimitive then
                 // we can't use the previously used Fieldbuilders here, because SetValue is not implemented in FieldBuilders
                 if not defaultValueIsNull then t.GetField("DefaultValue").SetValue(mapping, defaultValue)
@@ -353,26 +348,23 @@ type SubtreeEqualityComparer<'T>(stringValues: (string*'T)[], valueComparer: Equ
 
 let createStaticStringMapping (defaultValue: 'T) (keyValues: #seq<string*'T>) : (string -> 'T) =
     let T = typeof<'T>
-
-    let physicalEqualityComparer = PhysicalEqualityComparer<'T>.InstanceOrNull
-
     let kvs = Array.ofSeq keyValues
     System.Array.Sort(kvs, {new Comparer<string*'T>() with
                                 member t.Compare((k1, _), (k2, _)) = System.String.CompareOrdinal(k1, k2)})
 
     let mutable previousKey = null
-    for (key, _) in kvs do
+    for key, _ in kvs do
         if isNull key then invalidArg "keyValues" "The string keys must not be null."
         if key = previousKey then invalidArg "keyValues" "The strings keys must be different."
         previousKey <- key
 
     match kvs.Length with
     | 0 -> fun str ->
-               let throwIfStringIsNull = str.Length
+               if str = null then nullArg "str"
                defaultValue
     | 1 -> let key, value = kvs[0]
            fun str ->
-               let throwIfStringIsNull = str.Length
+               if str = null then nullArg "str"
                if str = key then value else defaultValue
     | _ ->
         let mutable i0 = if fst kvs[0] = "" then 1 else 0
@@ -492,12 +484,12 @@ let createStaticStringMapping (defaultValue: 'T) (keyValues: #seq<string*'T>) : 
             if isPrimitive then
                 loadConstant (snd kvs[i])
             else
-                loadI4 ilg (returnedValueIndices.Count)
+                loadI4 ilg returnedValueIndices.Count
                 returnedValueIndices.Add(i)
             storeResult()
             ilg.Emit(OpCodes.Br, returnLabel)
 
-        let mutable longKeyData = new ResizeArray<_>(), null, null, null
+        let mutable longKeyData = ResizeArray<_>(), null, null, null
 
         /// Emit a call to FParsec.Buffer.Equal helper function to compare
         /// a long segment of the input string.
@@ -506,7 +498,7 @@ let createStaticStringMapping (defaultValue: 'T) (keyValues: #seq<string*'T>) : 
             let mutable f, m, pdl = fieldBuilder, methodInfo, pinnedDataLocal
             if isNull f then
                 f <- tb.DefineField("longKeyData", typeof<uint32[]>, FieldAttributes.Public)
-                m <- typeof<FParsec.Buffer>.GetMethod("Equals", [|typeof<ilsigptr<uint32>>; typeof<ilsigptr<uint32>>; typeof<int32>|])
+                m <- typeof<Buffer>.GetMethod("Equals", [|typeof<ilsigptr<uint32>>; typeof<ilsigptr<uint32>>; typeof<int32>|])
                 pdl <- ilg.DeclareLocal(typeof<uint32[]>, true)
                 longKeyData <- (data, f, m, pdl)
 
@@ -587,15 +579,11 @@ let createStaticStringMapping (defaultValue: 'T) (keyValues: #seq<string*'T>) : 
                     loadI4 ilg (int key[idx])
                     ilg.Emit(OpCodes.Bne_Un, defaultLabel)
 
-        let subtreeLabels = if isNull physicalEqualityComparer then null
-                            else System.Collections.Generic.Dictionary<Subtree, Label>(SubtreeEqualityComparer<'T>(kvs, physicalEqualityComparer))
-
         // Partitions the key pairs iBegin..(iEnd - 1) into branches with identical "branch-key".
         // Returns [|iBegin, i2, ..., iN, iEnd], [|fst kvs[iBegin], fst kvs[i2], ..., fst kvs[iN]|]
         // where iBegin .. indexN are the indices where the branches start.
         let getBranchIndicesAndKeys (iBegin: int) iEnd getBranchKey =
-            let mutable n = 0
-            let indices, keys = new ResizeArray<int>(iEnd - iBegin), new ResizeArray<int>(iEnd - iBegin)
+            let indices, keys = ResizeArray<int>(iEnd - iBegin), ResizeArray<int>(iEnd - iBegin)
             indices.Add(iBegin)
             let mutable prevKey : int = getBranchKey (fst kvs[iBegin])
             keys.Add(prevKey)
@@ -639,7 +627,7 @@ let createStaticStringMapping (defaultValue: 'T) (keyValues: #seq<string*'T>) : 
                         subtreeLabels.Add(subtree, label)
             labels, isNewLabel
 
-        let tempLocals = new TempLocals(ilg)
+        let tempLocals = TempLocals(ilg)
 
         // Assumes keys in iBegin..(iEnd - 1) are sorted by the branch-key returned by getBranchKey.
         let switch getBranchKey loadVar minVarValue maxVarValue subtreeLabels iBegin iEnd subtreeStringIndex emitBranchIter =
@@ -750,7 +738,7 @@ let createStaticStringMapping (defaultValue: 'T) (keyValues: #seq<string*'T>) : 
                         (prefixLength + 1)
                         (fun iBegin iEnd ->
                             // switch over length
-                            switch (fun str -> str.Length) (fun ilg -> loadLength()) 0 System.Int32.MaxValue
+                            switch (fun str -> str.Length) (fun _ -> loadLength()) 0 System.Int32.MaxValue
                                     subtreeLabels
                                     iBegin iEnd
                                     (prefixLength + 1)
@@ -788,7 +776,7 @@ let createStaticStringMapping (defaultValue: 'T) (keyValues: #seq<string*'T>) : 
         // compile type
         let t = tb.CreateType()
         // instantiate type
-        let mapping = FormatterServices.GetUninitializedObject(t) :?> (string -> 'T)
+        let mapping = FormatterServices.GetUninitializedObject(t) :?> string -> 'T
         if not isPrimitive then
             // we can't use the previously used Fieldbuilders here, because SetValue is not implemented in FieldBuilders
             if not defaultValueIsNull then t.GetField("DefaultValue").SetValue(mapping, defaultValue)
@@ -802,8 +790,8 @@ let createStaticStringMapping (defaultValue: 'T) (keyValues: #seq<string*'T>) : 
         let data, _, _, _ = longKeyData
         if data.Count <> 0 then
             let dataArray = data.ToArray()
-            if not (System.BitConverter.IsLittleEndian) then
-                FParsec.Buffer.SwapByteOrder(dataArray)
+            if not System.BitConverter.IsLittleEndian then
+                Buffer.SwapByteOrder(dataArray)
             t.GetField("longKeyData").SetValue(mapping, dataArray)
 
 

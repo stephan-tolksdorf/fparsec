@@ -4,10 +4,6 @@
 [<AutoOpen>]
 module FParsec.Error
 
-//open FParsec
-
-open System.Diagnostics
-open System.Globalization
 open System.IO
 open FParsec.Internals
 
@@ -119,7 +115,7 @@ let
            mergeErrors errorMessages1 errorMessages2 = ErrorMessageList.Merge(errorMessages1, errorMessages2)
 
 /// the default position printer
-let internal printPosition (tw: System.IO.TextWriter) (p: Position) (indent: string) (columnWidth: int) =
+let internal printPosition (tw: TextWriter) (p: Position) (indent: string) (_: int) =
     tw.Write(indent)
     tw.WriteLine(Strings.ErrorPosition(p))
 
@@ -228,27 +224,27 @@ type ParserError(position: Position, userState: obj, messages: ErrorMessageList)
     member T.Messages = messages
 
     override t.ToString() =
-        use sw = new System.IO.StringWriter()
+        use sw = new StringWriter()
         t.WriteTo(sw)
         sw.ToString()
 
     member t.ToString(streamWhereErrorOccurred: CharStream<'u>) =
-        use sw = new System.IO.StringWriter()
+        use sw = new StringWriter()
         t.WriteTo(sw, streamWhereErrorOccurred)
         sw.ToString()
 
-    member t.WriteTo(textWriter: System.IO.TextWriter,
-                     ?positionPrinter: (System.IO.TextWriter -> Position -> string -> int -> unit),
+    member t.WriteTo(textWriter: TextWriter,
+                     ?positionPrinter: TextWriter -> Position -> string -> int -> unit,
                      ?columnWidth: int, ?initialIndentation: string, ?indentationIncrement: string) =
 
         let positionPrinter = defaultArg positionPrinter printPosition
         let columnWidth     = defaultArg columnWidth defaultColumnWidth
         let ind             = defaultArg initialIndentation defaultIndentation
         let indIncrement    = defaultArg indentationIncrement defaultIndentationIncrement
-        let lw = new LineWrapper(textWriter, columnWidth, Indentation = ind)
+        let lw = LineWrapper(textWriter, columnWidth, Indentation = ind)
         t.WriteTo(lw, positionPrinter, indIncrement)
 
-    member t.WriteTo(textWriter: System.IO.TextWriter,
+    member t.WriteTo(textWriter: TextWriter,
                      streamWhereErrorOccurred: CharStream<'u>,
                      ?tabSize: int,
                      ?columnWidth: int, ?initialIndentation: string, ?indentationIncrement: string) =
@@ -257,8 +253,8 @@ type ParserError(position: Position, userState: obj, messages: ErrorMessageList)
         let getStream = fun (pos: Position) -> if pos.StreamName = originalStreamName then streamWhereErrorOccurred else null
         t.WriteTo(textWriter, getStream, ?tabSize = tabSize, ?columnWidth = columnWidth, ?initialIndentation = initialIndentation, ?indentationIncrement = indentationIncrement)
 
-    member t.WriteTo(textWriter: System.IO.TextWriter,
-                     getStream: (Position -> CharStream<'u>),
+    member t.WriteTo(textWriter: TextWriter,
+                     getStream: Position -> CharStream<'u>,
                      ?tabSize: int,
                      ?columnWidth: int, ?initialIndentation: string, ?indentationIncrement: string) =
 
@@ -266,9 +262,9 @@ type ParserError(position: Position, userState: obj, messages: ErrorMessageList)
         let ind          = defaultArg initialIndentation defaultIndentation
         let indIncrement = defaultArg indentationIncrement defaultIndentationIncrement
         let tabSize      = defaultArg tabSize defaultTabSize
-        let lw = new LineWrapper(textWriter, columnWidth, Indentation = ind)
+        let lw = LineWrapper(textWriter, columnWidth, Indentation = ind)
         let positionPrinter =
-            fun tw position indent columnWidth ->
+            fun _ position indent columnWidth ->
                 let stream = getStream position
                 if isNotNull stream then
                    printErrorPosition tabSize lw stream position
@@ -277,12 +273,12 @@ type ParserError(position: Position, userState: obj, messages: ErrorMessageList)
         t.WriteTo(lw, positionPrinter, indIncrement)
 
     member private t.WriteTo(lw: LineWrapper,
-                             positionPrinter: System.IO.TextWriter -> Position -> string -> int -> unit,
+                             positionPrinter: TextWriter -> Position -> string -> int -> unit,
                              indentationIncrement: string) =
 
         let rec printMessages (position: Position) (msgs: ErrorMessageList) =
             positionPrinter lw.TextWriter position lw.Indentation lw.ColumnWidth
-            let nra() = new ResizeArray<_>()
+            let nra() = ResizeArray<_>()
             let expectedA, unexpectedA, messageA, nestedA, compoundA = nra(), nra(), nra(), nra(), nra()
             let mutable otherCount = 0
             for msg in ErrorMessageList.ToSortedArray(msgs) do

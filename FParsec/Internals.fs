@@ -257,7 +257,7 @@ let getLineSnippet (stream: CharStream<'u>) (p: Position) (space: int) (tabSize:
         if not (isUnicodeNewlineOrEos c) then
             n <- maxExtraChars
             while isCombiningChar (stream.PeekString(2)) && n <> 0 do
-                stream.Skip() |> ignore
+                stream.Skip()
                 n <- n - 1
     let endIndexToken = stream.IndexToken
 
@@ -311,7 +311,7 @@ let getLineSnippet (stream: CharStream<'u>) (p: Position) (space: int) (tabSize:
     if nTabs > 0 then // replace tabs with spaces
         let mutable off = if columnOffset = 0L then 0
                           else int32 (columnOffset%(int64 tabSize))
-        let sb = new System.Text.StringBuilder(str.Length + nTabs*tabSize)
+        let sb = System.Text.StringBuilder(str.Length + nTabs*tabSize)
         let mutable i0 = 0
         let mutable idxIncr = 0
         for i = 0 to str.Length - 1 do
