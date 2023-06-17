@@ -23,8 +23,8 @@ type Parser<'a, 'u> = CharStream<'u> -> Reply<'a>
 // Parser primitives and combinators
 // =================================
 
-let preturn x : Parser<_,_> = fun stream -> Reply(x)
-let pzero : Parser<_,_> = fun stream -> Reply()
+let preturn x : Parser<_,_> = fun _ -> Reply(x)
+let pzero : Parser<_,_> = fun _ -> Reply()
 
 // ---------------------------
 // Chaining and piping parsers
@@ -334,7 +334,7 @@ let choiceL (ps: seq<Parser<'a,'u>>) label : Parser<_,_> =
     match ps with
     | :? (Parser<'a,'u>[]) as ps ->
         if ps.Length = 0 then
-            fun stream -> Reply(Error, error)
+            fun _ -> Reply(Error, error)
         else
             fun stream ->
                 let stateTag = stream.StateTag
@@ -348,7 +348,7 @@ let choiceL (ps: seq<Parser<'a,'u>>) label : Parser<_,_> =
                 reply
     | :? (Parser<'a,'u> list) as ps ->
         match ps with
-        | [] -> fun stream -> Reply(Error, error)
+        | [] -> fun _ -> Reply(Error, error)
         | hd::tl ->
             fun stream ->
                 let stateTag = stream.StateTag
@@ -601,11 +601,11 @@ let (<??>) (p: Parser<'a,'u>) label : Parser<'a,'u> =
 
 let fail msg : Parser<'a,'u> =
     let error = messageError msg
-    fun stream -> Reply(Error, error)
+    fun _ -> Reply(Error, error)
 
 let failFatally msg : Parser<'a,'u> =
     let error = messageError msg
-    fun stream -> Reply(FatalError, error)
+    fun _ -> Reply(FatalError, error)
 
 // -----------------
 // Parsing sequences
@@ -903,7 +903,7 @@ let chainr1 p op =
                  stateFromFirstElement = (fun x0 -> [(Unchecked.defaultof<_>, x0)]),
                  foldState = (fun acc op x -> (op, x)::acc),
                  resultFromState = function // is called with (op, y) list in reverse order
-                                   | ((op, y)::tl) ->
+                                   | (op, y)::tl ->
                                        let rec calc op y lst =
                                            match lst with
                                            | (op2, x)::tl -> calc op2 (op x y) tl
@@ -921,16 +921,16 @@ let chainr p op x = chainr1 p op <|>% x
 // ------------------------------
 [<Sealed>]
 type ParserCombinator() =
-    member t.Delay(f:(unit -> Parser<'a,'u>)) = fun stream -> (f()) stream
+    member t.Delay(f:unit -> Parser<'a,'u>) = fun stream -> f() stream
     member t.Return(x) = preturn x
     member t.Bind(p, f) = p >>= f
     member t.Zero() : Parser<'a,'u> = pzero
     member t.ReturnFrom(p: Parser<'a,'u>) = p
     // no Combine member by purpose
-    member t.TryWith(p:Parser<'a,'u>, cf:(exn -> Parser<'a,'u>)) =
+    member t.TryWith(p:Parser<'a,'u>, cf:exn -> Parser<'a,'u>) =
         fun stream ->
             (try p stream with e -> (cf e) stream)
-    member t.TryFinally(p:Parser<'a,'u>, ff:(unit -> unit)) =
+    member t.TryFinally(p:Parser<'a,'u>, ff:unit -> unit) =
         fun stream ->
             try p stream finally ff ()
 
@@ -942,6 +942,6 @@ let parse = ParserCombinator()
 // ----------------------
 
 let createParserForwardedToRef() =
-    let dummyParser = fun stream -> failwith "a parser created with createParserForwardedToRef was not initialized"
+    let dummyParser = fun _ -> failwith "a parser created with createParserForwardedToRef was not initialized"
     let r = ref dummyParser
     (fun stream -> r.Value stream), r : Parser<_,'u> * Parser<_,'u> ref

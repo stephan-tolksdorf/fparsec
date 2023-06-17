@@ -9,14 +9,8 @@ open System.Text
 open System.Text.RegularExpressions
 open System.Runtime.CompilerServices // for MethodImplAttribute
 
-#if !LOW_TRUST
-open Microsoft.FSharp.NativeInterop
-#endif
-
 open FParsec
 open FParsec.Internals
-open FParsec.Error
-open FParsec.Primitives
 
 #nowarn "9" // "Uses of this construct may result in the generation of unverifiable .NET IL code."
 #nowarn "51" // "The address-of operator may result in non-verifiable code."
@@ -68,7 +62,7 @@ let runParserOnString (parser: Parser<'Result,'UserState>) (ustate: 'UserState) 
 let runParserOnSubstring (parser: Parser<'Result,'UserState>) (ustate: 'UserState) (streamName: string) (chars: string) (index: int) length =
     CharStream.ParseString(chars, index, length, applyParser parser, ustate, streamName)
 
-let runParserOnStream (parser: Parser<'Result,'UserState>) (ustate: 'UserState) (streamName: string) (byteStream: System.IO.Stream) (encoding: System.Text.Encoding) =
+let runParserOnStream (parser: Parser<'Result,'UserState>) (ustate: 'UserState) (streamName: string) (byteStream: System.IO.Stream) (encoding: Encoding) =
 #if LOW_TRUST
     let
 #else
@@ -79,7 +73,7 @@ let runParserOnStream (parser: Parser<'Result,'UserState>) (ustate: 'UserState) 
     stream.Name <- streamName
     applyParser parser stream
 
-let runParserOnFile (parser: Parser<'Result,'UserState>) (ustate: 'UserState) (path: string) (encoding: System.Text.Encoding) =
+let runParserOnFile (parser: Parser<'Result,'UserState>) (ustate: 'UserState) (path: string) (encoding: Encoding) =
 #if LOW_TRUST
     let
 #else
@@ -252,27 +246,27 @@ let private charsToString (chars: seq<char>) =
 
 let isAnyOf (chars: seq<char>) =
 #if LOW_TRUST
-    let cs = new CharSet(charsToString chars)
+    let cs = CharSet(charsToString chars)
     fun c -> cs.Contains(c)
 #else
     #if USE_STATIC_MAPPING_FOR_IS_ANY_OF
          StaticMapping.createStaticCharIndicatorFunction false chars
     #else
-        let cs = new CharSet(charsToString chars)
+        let cs = CharSet(charsToString chars)
         fun c -> cs.Contains(c)
     #endif
 #endif
 
 let isNoneOf (chars: seq<char>) =
 #if LOW_TRUST
-    let cs = new CharSet(charsToString chars)
-    fun c -> not (cs.Contains(c))
+    let cs = CharSet(charsToString chars)
+    fun c -> not cs.Contains(c)
 #else
     #if USE_STATIC_MAPPING_FOR_IS_ANY_OF
         StaticMapping.createStaticCharIndicatorFunction true chars
     #else
-        let cs = new CharSet(charsToString chars)
-        fun c -> not (cs.Contains(c))
+        let cs = CharSet(charsToString chars)
+        fun c -> not cs.Contains(c)
     #endif
 #endif
 
@@ -593,8 +587,8 @@ let skipManyMinMaxSatisfy2L minCount maxCount f1 f label = skipManyMinMaxSatisfy
 
 
 let internal regexE pattern error : Parser<string,'u> =
-    let regex = new Regex("\\A" + pattern, RegexOptions.Multiline |||
-                                           RegexOptions.ExplicitCapture)
+    let regex = Regex("\\A" + pattern, RegexOptions.Multiline |||
+                                       RegexOptions.ExplicitCapture)
     fun stream ->
         let m = stream.Match(regex)
         if m.Success then
@@ -604,7 +598,6 @@ let internal regexE pattern error : Parser<string,'u> =
                 Reply(str)
             else
                 let nStr = normalizeNewlines str
-                let mutable nSkippedChars = 0
                 let n = stream.SkipCharsOrNewlines(nStr.Length)
                 if n = nStr.Length then Reply(nStr)
                 else Reply(FatalError, messageError "Internal error in the regex parser. Please report this error to fparsec@quanttec.com.")
@@ -647,7 +640,7 @@ type IdentifierOptions(?isAsciiIdStart, ?isAsciiIdContinue,
              if preCheckContinue c then v <- v ||| IdFlags.PreCheckContinue
           asciiOptions[i] <- v
 
-    let iv = new IdentifierValidator(asciiOptions)
+    let iv = IdentifierValidator(asciiOptions)
     do
        iv.NormalizationForm <- normalizationForm
        iv.NormalizeBeforeValidation <- normalizeBeforeValidation
@@ -752,7 +745,7 @@ let
                         if reply.Status <> Ok then reply.Result <- concat4 result1 result2 result3 result4
                         else
                             let n = 2*(result1.Length + result2.Length + result3.Length + result4.Length) + reply.Result.Length
-                            let sb = new StringBuilder(n)
+                            let sb = StringBuilder(n)
                             sb.Append(result1).Append(result2).Append(result3).Append(result4).Append(reply.Result) |> ignore
                             error <- reply.Error
                             stateTag <- stream.StateTag
@@ -830,7 +823,7 @@ let
                         reply <- p stream
                         if reply.Status = Ok then
                             let n = 2*(result1.Length + result2.Length + result3.Length + result4.Length) + reply.Result.Length
-                            let sb = new StringBuilder(n)
+                            let sb = StringBuilder(n)
                             sb.Append(result1).Append(result2).Append(result3).Append(result4) |> ignore
                             while reply.Status = Ok do
                                 sb.Append(reply.Result) |> ignore
@@ -1113,7 +1106,7 @@ let numberLiteralE (opt: NumberLiteralOptions) (errorInCaseNoLiteralFound: Error
                             nSuffix <- 4
                             s4 <- c
                             c <- stream.SkipAndPeek()
-                flags <- flags ||| (enum) nSuffix
+                flags <- flags ||| enum nSuffix
                 if (opt &&& NLO.IncludeSuffixCharsInString) <> NLO.None then
                     str <- stream.ReadFrom(index0)
                 Reply(NumberLiteral(str, flags, s1, s2, s3, s4))
@@ -1377,7 +1370,7 @@ let internal parseUInt32 (c0: char) (stream: CharStream<'u>) (status: ReplyStatu
         // else c = 0 && not (isDigit c1)
     n
 
-[<MethodImplAttribute(MethodImplOptions.NoInlining)>]
+[<MethodImpl(MethodImplOptions.NoInlining)>]
 let internal overflowError message =
     if isNotNull message then messageError message // isNotNull prevents fsc from inlining the function
     else NoErrorMessages
@@ -1428,8 +1421,8 @@ let inline internal pint (opt: NumberLiteralOptions) (max: 'uint) (uint64_: 'uin
 let pint64 stream = pint NumberLiteralOptions.DefaultInteger (uint64 System.Int64.MaxValue)            uint64 uint64 uint64 uint64 int64 int64 Errors.ExpectedInt64 Errors.NumberOutsideOfInt64Range stream
 let pint32 stream = pint NumberLiteralOptions.DefaultInteger (uint32 System.Int32.MaxValue)            uint64 uint32 uint32 uint32 int32 int32 Errors.ExpectedInt32 Errors.NumberOutsideOfInt32Range stream
                                                            // fsc's optimizer seems to have problems with literals of small int types
-let pint16 stream = pint NumberLiteralOptions.DefaultInteger ((*uint32 System.Int16.MaxValue*)0x7fffu) uint64 uint32 uint32 uint32 int16 int16 Errors.ExpectedInt16 Errors.NumberOutsideOfInt16Range stream
-let pint8  stream = pint NumberLiteralOptions.DefaultInteger ((*uint32 System.SByte.MaxValue*)0x7fu)   uint64 uint32 uint32 uint32 sbyte sbyte Errors.ExpectedInt8  Errors.NumberOutsideOfInt8Range stream
+let pint16 stream = pint NumberLiteralOptions.DefaultInteger (*uint32 System.Int16.MaxValue*)0x7fffu uint64 uint32 uint32 uint32 int16 int16 Errors.ExpectedInt16 Errors.NumberOutsideOfInt16Range stream
+let pint8  stream = pint NumberLiteralOptions.DefaultInteger (*uint32 System.SByte.MaxValue*)0x7fu   uint64 uint32 uint32 uint32 sbyte sbyte Errors.ExpectedInt8  Errors.NumberOutsideOfInt8Range stream
 
 let puint64 stream = pint NumberLiteralOptions.DefaultUnsignedInteger System.UInt64.MaxValue uint64 uint64 uint64 uint64 uint64 uint64 Errors.ExpectedUInt64 Errors.NumberOutsideOfUInt64Range stream
 let puint32 stream = pint NumberLiteralOptions.DefaultUnsignedInteger System.UInt32.MaxValue uint64 uint32 uint32 uint32 uint32 uint32 Errors.ExpectedUInt32 Errors.NumberOutsideOfUInt32Range stream
@@ -1444,7 +1437,7 @@ let puint8  stream = pint NumberLiteralOptions.DefaultUnsignedInteger 0xffu     
 
 let notFollowedByEof : Parser<unit,'u> =
     fun stream ->
-        if not (stream.IsEndOfStream) then Reply(())
+        if not stream.IsEndOfStream then Reply(())
         else Reply(Error, Errors.UnexpectedEndOfInput)
 
 let followedByNewline : Parser<unit,'u> =

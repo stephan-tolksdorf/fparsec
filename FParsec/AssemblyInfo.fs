@@ -1,6 +1,5 @@
 ﻿namespace FParsec
 
-open System.Reflection
 open System.Runtime.CompilerServices
 open System.Runtime.InteropServices
 
@@ -10,5 +9,5 @@ open System.Runtime.InteropServices
     [<assembly: System.Security.AllowPartiallyTrustedCallers>]
     [<assembly: System.Security.SecurityTransparent>]
 #endif
-[<assembly: InternalsVisibleTo(FParsec.CommonAssemblyInfo.TestAssemblyName + FParsec.CommonAssemblyInfo.StrongNamePublicKey)>]
+[<assembly: InternalsVisibleTo(CommonAssemblyInfo.TestAssemblyName + CommonAssemblyInfo.StrongNamePublicKey)>]
 do ()
