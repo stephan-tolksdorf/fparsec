@@ -144,7 +144,7 @@ let testSpecialCharParsers() =
     let count p = many p |>> List.fold (fun c x -> c + 1) 0
 
     match run (count unicodeNewline) "\n\r\r\n\u0085\u2028\u2029\r\n" with
-    | Success(c,_,pos) -> c |> Equal 7; pos.Index |> Equal 9L; pos.Line |> Equal 8L; pos.Column |> Equal 1L
+    | Success(result=c;endPosition=pos) -> c |> Equal 7; pos.Index |> Equal 9L; pos.Line |> Equal 8L; pos.Column |> Equal 1L
     | Failure _        -> Fail()
 
     spaces  |> ROk ""   0 ()
@@ -162,17 +162,17 @@ let testSpecialCharParsers() =
     unicodeSpaces1 |> ROk " \u200A" 2 ()
 
     match run spaces "\n \r\t\t\r\n\n " with
-    | Success(_, _, pos) -> pos.Index |> Equal 9L; pos.Line |> Equal 5L; pos.Column |> Equal 2L
+    | Success(endPosition=pos) -> pos.Index |> Equal 9L; pos.Line |> Equal 5L; pos.Column |> Equal 2L
     | _ -> Fail()
     match run spaces1 "\n \r\t\t\r\n\n " with
-    | Success(_, _, pos) -> pos.Index |> Equal 9L; pos.Line |> Equal 5L; pos.Column |> Equal 2L
+    | Success(endPosition=pos) -> pos.Index |> Equal 9L; pos.Line |> Equal 5L; pos.Column |> Equal 2L
     | _ -> Fail()
 
     match run unicodeSpaces "\n \r\t\t\r\n\n \u0085\u000C\u2028\u2029 \r\n\t\u200A" with
-    | Success(_, _, pos) -> pos.Index |> Equal 18L; pos.Line |> Equal 9L; pos.Column |> Equal 3L
+    | Success(endPosition=pos) -> pos.Index |> Equal 18L; pos.Line |> Equal 9L; pos.Column |> Equal 3L
     | _ -> Fail()
     match run unicodeSpaces1 "\n \r\t\t\r\n\n \u0085\u000C\u2028\u2029 \r\n\t\u200A" with
-    | Success(_, _, pos) -> pos.Index |> Equal 18L; pos.Line |> Equal 9L; pos.Column |> Equal 3L
+    | Success(endPosition=pos) -> pos.Index |> Equal 18L; pos.Line |> Equal 9L; pos.Column |> Equal 3L
     | _ -> Fail()
 
     eof |> ROk "" 0 ()

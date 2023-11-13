@@ -43,15 +43,15 @@ let float32OfHexString = HexFloat.SingleFromHexString
 
 [<StructuredFormatDisplay("{StructuredFormatDisplay}")>]
 type ParserResult<'Result,'UserState> =
-     | Success of 'Result * 'UserState * Position
-     | Failure of string * ParserError * 'UserState
+     | Success of result: 'Result * state: 'UserState * endPosition: Position
+     | Failure of message: string * error: ParserError * state: 'UserState
      with
         member private t.StructuredFormatDisplay =
             match t with
-            | Success(r,_,_) ->
+            | Success(result=r) ->
                 if typeof<'Result> = typeof<unit> then "Success: ()"
                 else sprintf "Success: %A" r
-            | Failure(msg,_,_) ->
+            | Failure(message=msg) ->
                 sprintf "Failure:\n%s" msg
 
 let internal applyParser (parser: Parser<'Result,'UserState>) (stream: CharStream<'UserState>) =

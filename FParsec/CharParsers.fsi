@@ -13,12 +13,12 @@ open Primitives
 
 /// Values of this type are returned by the runParser functions (not by `Parser<_,_>` functions).
 type ParserResult<'Result,'UserState> =
-     /// Success(result, userState, endPos) holds the result and the user state returned by a successful parser,
+     /// Success(result, state, endPosition) holds the result and the user state returned by a successful parser,
      /// together with the position where the parser stopped.
-     | Success of 'Result * 'UserState * Position
-     /// Failure(errorAsString, error, suserState) holds the parser error and the user state returned by a failing parser,
+     | Success of result: 'Result * state: 'UserState * endPosition: Position
+     /// Failure(message, error, suserState) holds the parser error and the user state returned by a failing parser,
      /// together with a string representation of the parser error.
-     | Failure of string * ParserError * 'UserState
+     | Failure of message: string * error: ParserError * state: 'UserState
 
 /// `runParserOnString p ustate streamName str` runs the parser `p` directly on the content of the string `str`,
 /// starting with the initial user state `ustate`. The `streamName` is used in error messages to describe

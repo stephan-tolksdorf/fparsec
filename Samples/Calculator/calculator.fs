@@ -47,9 +47,9 @@ let calculate s = run completeExpression s
 
 let equals expectedValue r =
     match r with
-    | Success (v, _, _) when v = expectedValue -> ()
-    | Success (v, _, _)     -> failwith "Math is hard, let's go shopping!"
-    | Failure (msg, err, _) -> printf "%s" msg; failwith msg
+    | Success (result=v) when v = expectedValue -> ()
+    | Success _ -> failwith "Math is hard, let's go shopping!"
+    | Failure (message=msg) -> printf "%s" msg; failwith msg
 
 let test() =
     calculate "10.5 + 123.25 + 877"  |> equals 1010.75
