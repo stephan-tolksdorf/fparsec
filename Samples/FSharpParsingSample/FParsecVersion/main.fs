@@ -23,8 +23,8 @@ let main(argv: string[]) =
 
     let myProg =
         match result with
-        | Success (v, _, _) -> v
-        | Failure (msg, _, _) ->
+        | Success (result=v) -> v
+        | Failure (message=msg) ->
             System.Console.WriteLine(msg)
             exit 1
 

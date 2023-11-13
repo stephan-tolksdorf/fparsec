@@ -22,6 +22,6 @@ let main(args: string[]) =
     let result = runParserOnFile Parser.pGrammar () fileName System.Text.Encoding.UTF8
     // for the moment we just print out the AST
     match result with
-    | Success (v, _, _) -> printf "The ast for the input file is:\n%A\n" v
-    | Failure (msg, err, _) -> printf "%s\n" msg
+    | Success (result=v) -> printf "The ast for the input file is:\n%A\n" v
+    | Failure (message=msg) -> printf "%s\n" msg
     0

@@ -1812,8 +1812,8 @@ open FParsec
 
 let testCharPredicates() =
     let xidStartRanges, xidContinueRanges = match Parser.parseXIdRanges() with
-                                            | CharParsers.Success(ranges, _, _ ) -> ranges
-                                            | CharParsers.Failure(msg,_,_) -> failwith msg
+                                            | CharParsers.Success(result=ranges) -> ranges
+                                            | CharParsers.Failure(message=msg) -> failwith msg
 
     let checkPredicate fBmp fSmp ranges =
         let mutable lastLast = -1

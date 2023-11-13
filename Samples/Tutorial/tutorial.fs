@@ -9,8 +9,8 @@ open FParsec
 
 let test p str =
     match run p str with
-    | Success(result, _, _)   -> printfn "Success: %A" result
-    | Failure(errorMsg, _, _) -> printfn "Failure: %s" errorMsg
+    | Success(result=result)   -> printfn "Success: %A" result
+    | Failure(message=errorMsg) -> printfn "Failure: %s" errorMsg
 
 test pfloat "1.25"
 test pfloat "1.25E 2"

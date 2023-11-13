@@ -22,10 +22,10 @@ let main(args: string[]) =
     let result = parseJsonFile args[0] System.Text.Encoding.UTF8
     // for the moment we just print out the AST
     match result with
-    | Success (v, _, _) ->
+    | Success (result=v) ->
         printf "The AST of the input file is:\n%A\n" v
         0
-    | Failure (msg, err, _) ->
+    | Failure (message=msg) ->
         printfn "%s" msg
         1
 
